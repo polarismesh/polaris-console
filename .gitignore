@@ -1,0 +1,13 @@
+polaris-console
+polaris-console-release
+polaris-console-release.tar.gz
+/node_modules
+/web/node_modules
+package.json
+department.txt
+
+# Editor directories and files
+/node_modules
+.idea
+department.txt
+package.json
