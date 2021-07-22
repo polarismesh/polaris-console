@@ -11,5 +11,9 @@ webServer:
   requestURL: "/naming/v1"
   webPath: "web/dist/"
 polarisServer:
-  address: "127.0.0.1:8080"
+  address: "127.0.0.1:8090"
   polarisToken: "polaris@12345678"
+oaAuthority:
+  enableOAAuth: false
+hrData:
+  enableHrData: false
