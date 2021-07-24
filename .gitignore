@@ -3,11 +3,10 @@ polaris-console-release
 polaris-console-release.tar.gz
 /node_modules
 /web/node_modules
-package.json
 department.txt
 
 # Editor directories and files
-/node_modules
+web/node_modules
+web/dist
 .idea
 department.txt
-package.json

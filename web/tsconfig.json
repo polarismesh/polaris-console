@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "jsx": "react",
+    "outDir": ".js-out",
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "lib": ["es2017", "dom"],
+    "paths": {
+      "@src/*": ["./src/*"],
+      "@common/*": ["./src/polaris/common/*"],
+      "@polaris/*": ["./src/polaris/*"]
+    }
+  },
+  "exclude": ["dist", "node_modules"]
+}
