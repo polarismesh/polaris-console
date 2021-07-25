@@ -84,13 +84,18 @@ const getMetadataForm = (field) => {
         <FormField field={type} label={"匹配方式"}>
           <Select size="s" options={MATCH_TYPE_OPTIONS} field={type} />
         </FormField>
-        <FormItem>
+        {field.getValue()?.length > 1 && (
           <Button
             type="icon"
             icon="close"
             onClick={() => removeArrayFieldValue(field, index)}
           ></Button>
-        </FormItem>
+        )}
+        <Button
+          type={"icon"}
+          icon={"plus"}
+          onClick={() => addMetadata(field)}
+        ></Button>
       </Form>
     );
   });
@@ -107,7 +112,7 @@ const renderInboundRule = (props) => {
     service,
     namespace,
     form: { values },
-    ruleIndex,
+    data: { ruleType },
   } = selector(store);
   const formApi = form.getAPI(store, dispatch);
   const {
@@ -116,7 +121,6 @@ const renderInboundRule = (props) => {
     outboundDestinations,
     outboundSources,
     editType,
-    ruleType,
     inboundNamespace,
     inboundService,
     outboundNamespace,
@@ -127,13 +131,12 @@ const renderInboundRule = (props) => {
     "outboundDestinations",
     "outboundSources",
     "editType",
-    "ruleType",
     "inboundNamespace",
     "inboundService",
     "outboundNamespace",
     "outboundService",
   ]);
-  const isInbound = ruleType.getValue() === RuleType.Inbound;
+  const isInbound = ruleType === RuleType.Inbound;
   let sources = isInbound ? inboundSources : outboundSources;
   let destinations = isInbound ? inboundDestinations : outboundDestinations;
   let ruleNamespace = isInbound ? inboundNamespace : outboundNamespace;
@@ -141,12 +144,9 @@ const renderInboundRule = (props) => {
   return (
     <>
       <FormItem
-        label={<H3 style={{ margin: "10px 0" }}>规则配置</H3>}
-      ></FormItem>
-      <FormItem
         label={
           <H4 style={{ margin: "10px 0" }}>
-            {isInbound ? "以下服务调用本服务时：" : "本服务调用以下服务时"}
+            {isInbound ? "当以下服务调用本服务时" : "当本服务调用以下服务时"}
           </H4>
         }
       ></FormItem>
@@ -179,27 +179,18 @@ const renderInboundRule = (props) => {
         return (
           <>
             <FormItem
-              label={
-                <H3 style={{ margin: "10px 0" }}>
-                  对带有以下标签的请求进行路由：
-                </H3>
-              }
+              label={<H3 style={{ margin: "10px 0" }}>对带有以下标签的请求</H3>}
             ></FormItem>
-            <Form style={{ width: "800px" }}>
-              <Form>
-                {getMetadataForm(metadata)}
-                <Button
-                  type={"icon"}
-                  icon={"plus"}
-                  onClick={() => addMetadata(metadata)}
-                ></Button>
-              </Form>
+            <Form style={{ width: "100%" }}>
+              <Form>{getMetadataForm(metadata)}</Form>
             </Form>
           </>
         );
       })}
       <FormItem
-        label={<H3 style={{ margin: "10px 0" }}>路由遵守以下策略：</H3>}
+        label={
+          <H3 style={{ margin: "10px 0" }}>按权重和优先级路由到以下实例分组</H3>
+        }
       ></FormItem>
 
       {[...destinations.asArray()].map((field, index) => {
@@ -240,11 +231,6 @@ const renderInboundRule = (props) => {
                   }
                 ></Justify>
                 {getMetadataForm(metadata)}
-                <Button
-                  type={"icon"}
-                  icon={"plus"}
-                  onClick={() => addMetadata(metadata)}
-                ></Button>
                 <Form layout={"inline"}>
                   <FormField field={weight} label={"权重"}>
                     <InputNumber hideButton field={weight} />
@@ -262,10 +248,11 @@ const renderInboundRule = (props) => {
         );
       })}
       <Button
-        type={"icon"}
-        icon={"plus"}
+        type={"link"}
         onClick={() => addDestination(destinations, service, namespace)}
-      ></Button>
+      >
+        添加
+      </Button>
     </>
   );
 };
@@ -280,10 +267,8 @@ export default purify(function CreateRoute(
     ducks: { form },
   } = duck;
   const {
-    service,
-    namespace,
+    data: { service, namespace, ruleIndex },
     form: { values },
-    ruleIndex,
   } = selector(store);
   const formApi = form.getAPI(store, dispatch);
   const {
@@ -310,73 +295,51 @@ export default purify(function CreateRoute(
       ? inboundJsonValue
       : outboundJsonValue;
   return (
-    <DetailPage
-      store={store}
-      duck={duck}
-      dispatch={dispatch}
-      title={ruleIndex === -1 ? "新建路由" : "编辑路由"}
-      backRoute={`/service-detail?namespace=${namespace}&name=${service}&tab=route`}
-    >
-      <Card>
-        <Card.Body>
-          <Form>
-            <FormItem label={"编辑方式"}>
-              <Segment
-                options={EditTypeOptions}
-                value={editType.getValue()}
-                onChange={(value) => editType.setValue(value as any)}
-              ></Segment>
-            </FormItem>
-            {!isEdit && (
-              <FormItem label={"规则类型"}>
-                <Segment
-                  options={RULE_TYPE_OPTIONS}
-                  value={ruleType.getValue()}
-                  onChange={(value) => ruleType.setValue(value as any)}
-                ></Segment>
-              </FormItem>
-            )}
-            {editType.getValue() === EditType.Json && (
-              <FormItem
-                message={
-                  <Text theme={"danger"}>
-                    {currentJsonValue.getTouched() &&
-                      currentJsonValue.getError()}
-                  </Text>
-                }
-                label={"JSON编辑"}
-              >
-                <section
-                  style={{ border: "1px solid #ebebeb", width: "1000px" }}
-                >
-                  <MonacoEditor
-                    ref={ref}
-                    monaco={monaco}
-                    height={400}
-                    width={1000}
-                    language="json"
-                    value={currentJsonValue.getValue()}
-                    onChange={(value) => {
-                      currentJsonValue.setTouched(true);
-                      currentJsonValue.setValue(value);
-                    }}
-                  />
-                </section>
-              </FormItem>
-            )}
-          </Form>
-          {editType.getValue() === EditType.Manual && renderInboundRule(props)}
-        </Card.Body>
-        <Card.Footer>
-          <Button
-            type={"primary"}
-            onClick={handlers.submit}
-            style={{ margin: "10px" }}
+    <>
+      <Form>
+        {/* <FormItem label={"编辑方式"}>
+          <Segment
+            options={EditTypeOptions}
+            value={editType.getValue()}
+            onChange={(value) => editType.setValue(value as any)}
+          ></Segment>
+        </FormItem> */}
+        {/* {!isEdit && (
+          <FormItem label={"规则类型"}>
+            <Segment
+              options={RULE_TYPE_OPTIONS}
+              value={ruleType.getValue()}
+              onChange={(value) => ruleType.setValue(value as any)}
+            ></Segment>
+          </FormItem>
+        )} */}
+        {editType.getValue() === EditType.Json && (
+          <FormItem
+            message={
+              <Text theme={"danger"}>
+                {currentJsonValue.getTouched() && currentJsonValue.getError()}
+              </Text>
+            }
+            label={"JSON编辑"}
           >
-            提交
-          </Button>
-        </Card.Footer>
-      </Card>
-    </DetailPage>
+            <section style={{ border: "1px solid #ebebeb", width: "1000px" }}>
+              <MonacoEditor
+                ref={ref}
+                monaco={monaco}
+                height={400}
+                width={1000}
+                language="json"
+                value={currentJsonValue.getValue()}
+                onChange={(value) => {
+                  currentJsonValue.setTouched(true);
+                  currentJsonValue.setValue(value);
+                }}
+              />
+            </section>
+          </FormItem>
+        )}
+      </Form>
+      {editType.getValue() === EditType.Manual && renderInboundRule(props)}
+    </>
   );
 });

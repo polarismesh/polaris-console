@@ -12,6 +12,7 @@ import {
   FormText,
   FormItem,
   Text,
+  H3,
 } from "tea-component";
 import GridPageGrid from "@src/polaris/common/duckComponents/GridPageGrid";
 import GridPagePagination from "@src/polaris/common/duckComponents/GridPagePagination";
@@ -23,10 +24,14 @@ import {
 } from "tea-component/lib/table/addons";
 import insertCSS from "@src/polaris/common/helpers/insertCSS";
 import csvColumns from "./csvColumns";
-import { LimitResource } from "./model";
-import { LIMIT_TYPE_MAP } from "./types";
+import { LimitResource, LimitType, LimitRange } from "./model";
+import {
+  LIMIT_TYPE_MAP,
+  LIMIT_THRESHOLD_MAP,
+  LimitThresholdMode,
+} from "./types";
 import { MATCH_TYPE_MAP } from "../circuitBreaker/types";
-import { MATCH_TYPE } from "../route/types";
+import { MATCH_TYPE, EDIT_TYPE_OPTION, EditType } from "../route/types";
 import { isReadOnly } from "../../utils";
 
 insertCSS(
@@ -68,6 +73,14 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
   return (
     <>
       <Table.ActionPanel>
+        <Form layout="inline">
+          <FormItem label={"编辑格式"}>
+            <Segment
+              options={EDIT_TYPE_OPTION}
+              value={EditType.Table}
+            ></Segment>
+          </FormItem>
+        </Form>
         <Justify
           left={
             <>
@@ -76,12 +89,14 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
                 onClick={handlers.create}
                 disabled={isReadOnly(namespace)}
                 tooltip={isReadOnly(namespace) && "该命名空间为只读的"}
+                style={{ marginTop: "20px" }}
               >
                 新建
               </Button>
               <Button
                 onClick={() => handlers.remove(selection)}
                 disabled={!selection || selection?.length <= 0}
+                style={{ marginTop: "20px" }}
               >
                 删除
               </Button>
@@ -97,6 +112,11 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
         />
       </Table.ActionPanel>
       <Card>
+        <Card.Header>
+          <H3 style={{ padding: "10px", color: "black" }}>
+            当本服务或者接口被调用时，遵守以下限流规则
+          </H3>
+        </Card.Header>
         <GridPageGrid
           duck={duck}
           dispatch={dispatch}
@@ -117,46 +137,50 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
               render: (record) => {
                 const method = record.labels?.["method"] || {};
                 return (
-                  <Form>
-                    <FormItem label="匹配接口">
-                      <FormText>
-                        {method.value
-                          ? `匹配值：${method?.value} 匹配模式：${
-                              MATCH_TYPE_MAP[method?.type || MATCH_TYPE.EXACT]
-                                .text
-                            }`
-                          : "-"}
-                      </FormText>
-                    </FormItem>
-                    <FormItem label="优先级">
-                      <FormText>{record.priority}</FormText>
-                    </FormItem>
-                    <FormItem label="限流资源">
-                      <FormText>
-                        {!record.resource ? LimitResource.QPS : record.resource}
-                      </FormText>
-                    </FormItem>
-                    <FormItem label="请求服务标签">
-                      <FormText>
-                        {Object.keys(record.labels)
-                          .map((key) => `${key}:${record.labels[key].value}`)
-                          .join(" ; ")}
-                      </FormText>
-                    </FormItem>
-                    <FormItem label="限流规则">
-                      <FormText>
-                        {record.amounts.map((amount) => {
-                          return (
-                            <Text parent="p">
-                              当{amount.validDuration}内，收到符合条件的请求超过
-                              {amount.maxAmount}个，将会进行
-                              {LIMIT_TYPE_MAP[record.action].text}限流
-                            </Text>
-                          );
-                        })}
-                      </FormText>
-                    </FormItem>
-                  </Form>
+                  <>
+                    <Form>
+                      <FormItem
+                        label={"如果请求标签匹配，按以下策略限流"}
+                      ></FormItem>
+                    </Form>
+
+                    <Form style={{ marginTop: "10px" }}>
+                      <FormItem label="限流条件">
+                        <FormText>
+                          {record.amounts.map((amount) => {
+                            return (
+                              <Text parent="p">
+                                当{amount.validDuration}
+                                内，收到符合条件的请求超过
+                                {amount.maxAmount}个，将会进行
+                                {LIMIT_TYPE_MAP[record.action].text}限流
+                              </Text>
+                            );
+                          })}
+                        </FormText>
+                      </FormItem>
+                      <FormItem label="限流效果">
+                        <FormText>
+                          {
+                            LIMIT_TYPE_MAP[
+                              !record.action ? LimitType.REJECT : record.action
+                            ].text
+                          }
+                        </FormText>
+                      </FormItem>
+                      <FormItem label="阈值模式">
+                        <FormText>
+                          {record.type === LimitRange.LOCAL
+                            ? "-"
+                            : LIMIT_THRESHOLD_MAP[
+                                !record.amountMode
+                                  ? LimitThresholdMode.GLOBAL_TOTAL
+                                  : record.amountMode
+                              ].text}
+                        </FormText>
+                      </FormItem>
+                    </Form>
+                  </>
                 );
               },
             }),

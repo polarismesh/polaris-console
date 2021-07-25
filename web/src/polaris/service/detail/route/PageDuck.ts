@@ -1,4 +1,4 @@
-import { createToPayload, reduceFromPayload } from "saga-duck";
+import { createToPayload, reduceFromPayload, connectWithDuck } from "saga-duck";
 import GridPageDuck, {
   Filter as BaseFilter,
 } from "@src/polaris/common/ducks/GridPage";
@@ -8,19 +8,22 @@ import {
   Source,
   InboundItem,
   OutboundItem,
+  EditType,
 } from "./types";
 import {
   describeRoutes,
   DescribeRoutesResult,
   DescribeRoutesParams,
   modifyRoutes,
+  Routing,
+  createRoutes,
 } from "./model";
 import { takeLatest } from "redux-saga-catch";
 import { resolvePromise } from "saga-duck/build/helper";
 import { showDialog } from "@src/polaris/common/helpers/showDialog";
 import Create from "./operations/Create";
-import CreateDuck from "./operations/CreateDuck";
-import { put, select } from "redux-saga/effects";
+import CreateDuck, { DynamicRouteCreateDuck } from "./operations/CreateDuck";
+import { put, select, take } from "redux-saga/effects";
 import { Modal } from "tea-component";
 import router from "@src/polaris/common/util/router";
 
@@ -28,12 +31,20 @@ interface Filter extends BaseFilter {
   namespace: string;
   service: string;
   ruleType: RuleType;
-  routeData: DescribeRoutesResult;
+  routeData: Routing;
 }
 
 interface ComposedId {
   name: string;
   namespace: string;
+}
+interface DrawerStatus {
+  visible: boolean;
+  title?: string;
+  createId?: string;
+  ruleIndex?: number;
+  ruleType?: string;
+  isEdit?: boolean;
 }
 export default class ServicePageDuck extends GridPageDuck {
   Filter: Filter;
@@ -52,6 +63,14 @@ export default class ServicePageDuck extends GridPageDuck {
       SET_RULE_TYPE,
       SET_ROUTE_DATA,
       LOAD,
+      SET_DRAWER_STATUS,
+      DRAWER_SUBMIT,
+      SUBMIT,
+      SET_EDIT_STATUS,
+      SET_ORIGIN_DATA,
+      SET_EDIT_TYPE,
+      SET_JSON_VALUE,
+      RESET_DATA,
     }
     return {
       ...super.quickTypes,
@@ -78,6 +97,7 @@ export default class ServicePageDuck extends GridPageDuck {
   get quickDucks() {
     return {
       ...super.quickDucks,
+      dynamicCreateDuck: DynamicRouteCreateDuck,
     };
   }
   get reducers() {
@@ -85,15 +105,25 @@ export default class ServicePageDuck extends GridPageDuck {
     return {
       ...super.reducers,
       data: reduceFromPayload<ComposedId>(types.LOAD, {} as any),
-      expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
+      expandedKeys: reduceFromPayload<string[]>(
+        types.SET_EXPANDED_KEYS,
+        [...new Array(100)].map((i, index) => index.toString())
+      ),
       ruleType: reduceFromPayload<RuleType>(
         types.SET_RULE_TYPE,
         RuleType.Inbound
       ),
-      routeData: reduceFromPayload<DescribeRoutesResult>(
-        types.SET_ROUTE_DATA,
-        null
+      routeData: reduceFromPayload<Routing>(types.SET_ROUTE_DATA, null),
+      drawerStatus: reduceFromPayload<DrawerStatus>(types.SET_DRAWER_STATUS, {
+        visible: false,
+      } as any),
+      edited: reduceFromPayload<boolean>(types.SET_EDIT_STATUS, false),
+      originData: reduceFromPayload<Routing>(types.SET_ORIGIN_DATA, null),
+      editType: reduceFromPayload<EditType>(
+        types.SET_EDIT_TYPE,
+        EditType.Table
       ),
+      jsonValue: reduceFromPayload<string>(types.SET_JSON_VALUE, ""),
     };
   }
   get creators() {
@@ -102,10 +132,16 @@ export default class ServicePageDuck extends GridPageDuck {
       ...super.creators,
       edit: createToPayload<void>(types.EDIT),
       remove: createToPayload<number>(types.REMOVE),
-      create: createToPayload<void>(types.CREATE),
+      create: createToPayload<number>(types.CREATE),
+      drawerSubmit: createToPayload<void>(types.DRAWER_SUBMIT),
       setExpandedKeys: createToPayload<string[]>(types.SET_EXPANDED_KEYS),
       load: createToPayload<ComposedId>(types.LOAD),
       setRuleType: createToPayload<RuleType>(types.SET_RULE_TYPE),
+      setDrawerStatus: createToPayload<DrawerStatus>(types.SET_DRAWER_STATUS),
+      submit: createToPayload<void>(types.SUBMIT),
+      setEditType: createToPayload<EditType>(types.SET_EDIT_TYPE),
+      setJsonValue: createToPayload<string>(types.SET_JSON_VALUE),
+      reset: createToPayload<void>(types.RESET_DATA),
     };
   }
   get rawSelectors() {
@@ -128,20 +164,70 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types, creators, selector, ducks } = this;
     yield* this.sagaInitLoad();
     yield* super.saga();
-    yield takeLatest(types.CREATE, function* () {
+    yield takeLatest(types.CREATE, function* (action) {
       const {
         data: { name, namespace },
+        routeData,
+        ruleType,
       } = selector(yield select());
-      router.navigate(`/route-create?service=${name}&namespace=${namespace}`);
+      const createId = Math.round(Math.random() * 1000000).toString();
+      yield put(ducks.dynamicCreateDuck.creators.createDuck(createId));
+      const createDuck = ducks.dynamicCreateDuck.getDuck(createId);
+      const ruleIndex = action.payload;
+      yield put({
+        type: types.SET_DRAWER_STATUS,
+        payload: {
+          title: "新建路由规则",
+          visible: true,
+          createId,
+          ruleIndex,
+          ruleType,
+          isEdit: false,
+        },
+      });
+      yield take(createDuck.types.READY);
+      yield put(
+        createDuck.creators.load({
+          ...JSON.parse(JSON.stringify(routeData)),
+          service: name,
+          namespace,
+          ruleIndex,
+          ruleType,
+          isEdit: false,
+        })
+      );
     });
     yield takeLatest(types.EDIT, function* (action) {
       const {
         data: { name, namespace },
         ruleType,
+        routeData,
       } = selector(yield select());
+      const createId = Math.round(Math.random() * 1000000).toString();
+      yield put(ducks.dynamicCreateDuck.creators.createDuck(createId));
+      const createDuck = ducks.dynamicCreateDuck.getDuck(createId);
       const ruleIndex = action.payload;
-      router.navigate(
-        `/route-create?service=${name}&namespace=${namespace}&ruleIndex=${ruleIndex}&ruleType=${ruleType}`
+      yield put({
+        type: types.SET_DRAWER_STATUS,
+        payload: {
+          title: "编辑路由规则",
+          visible: true,
+          createId,
+          ruleIndex,
+          ruleType,
+          isEdit: true,
+        },
+      });
+      yield take(createDuck.types.READY);
+      yield put(
+        createDuck.creators.load({
+          ...JSON.parse(JSON.stringify(routeData)),
+          service: name,
+          namespace,
+          ruleIndex,
+          ruleType,
+          isEdit: true,
+        })
       );
     });
     // yield takeLatest(types.REMOVE, function* (action) {
@@ -156,29 +242,110 @@ export default class ServicePageDuck extends GridPageDuck {
     //   yield put(creators.reload());
     // });
     yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
-      const { routeData } = action.payload;
+      const { routeData, originData } = action.payload;
       yield put({ type: types.SET_ROUTE_DATA, payload: routeData });
+      if (originData)
+        yield put({ type: types.SET_ORIGIN_DATA, payload: originData });
+    });
+    yield takeLatest(types.RESET_DATA, function* (action) {
+      const { originData } = selector(yield select());
+      yield put({ type: types.SET_ROUTE_DATA, payload: originData });
+      yield put({
+        type: types.SET_EDIT_STATUS,
+        payload: false,
+      });
+      yield put(creators.reload());
+    });
+    yield takeLatest(types.SUBMIT, function* () {
+      const { originData, routeData } = selector(yield select());
+      console.log(originData);
+      if (originData?.ctime) {
+        const result = yield modifyRoutes([routeData]);
+      } else {
+        const result = yield createRoutes([routeData]);
+      }
+      yield put({
+        type: types.SET_EDIT_STATUS,
+        payload: false,
+      });
+      yield put({
+        type: types.SET_ROUTE_DATA,
+        payload: null,
+      });
+      yield put(creators.reload());
+    });
+    yield takeLatest(types.DRAWER_SUBMIT, function* (action) {
+      const {
+        drawerStatus: { createId, ruleType, ruleIndex, isEdit },
+        routeData,
+        data: { name, namespace },
+      } = selector(yield select());
+      const formValue = yield* ducks.dynamicCreateDuck
+        .getDuck(createId)
+        .submit();
+      if (!formValue) return;
+      let originData =
+        routeData ||
+        ({ service: name, namespace, inbounds: [], outbounds: [] } as Routing);
+      if (ruleType === RuleType.Inbound) {
+        let newArray;
+        let tempArray = [...originData.inbounds] || [];
+        tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue);
+        newArray = tempArray;
+        yield put({
+          type: types.SET_ROUTE_DATA,
+          payload: {
+            ...originData,
+            inbounds: newArray,
+            outbounds: originData?.outbounds || [],
+          },
+        });
+      } else {
+        let newArray;
+        let tempArray = [...originData?.outbounds] || [];
+        tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue);
+        newArray = tempArray;
+        yield put({
+          type: types.SET_ROUTE_DATA,
+          payload: {
+            ...originData,
+            inbounds: originData?.inbounds || [],
+            outbounds: newArray,
+          },
+        });
+      }
+      yield put({
+        type: types.SET_DRAWER_STATUS,
+        payload: {
+          visible: false,
+        },
+      });
+      yield put({
+        type: types.SET_EDIT_STATUS,
+        payload: true,
+      });
+      yield put(creators.reload());
     });
     yield takeLatest(types.REMOVE, function* (action) {
-      const removeIndex = action.payload;
-      const { routeData, ruleType } = selector(yield select());
-      const routing = routeData[0];
-      routing[ruleType].splice(removeIndex, 1);
-      const params = [
-        {
-          ...routing,
-          ctime: undefined,
-          mtime: undefined,
-          revision: undefined,
-          [ruleType]: routing[ruleType],
-        },
-      ];
       const confirm = yield Modal.confirm({
         message: `确认删除路由规则`,
         description: "删除后，无法恢复",
       });
       if (confirm) {
-        yield modifyRoutes(params);
+        const removeIndex = action.payload;
+        const { routeData, ruleType } = selector(yield select());
+        const routing = routeData;
+        routing[ruleType].splice(removeIndex, 1);
+        const newRouteData = {
+          ...routing,
+          [ruleType]: routing[ruleType],
+        };
+
+        yield put({ type: types.SET_ROUTE_DATA, payload: newRouteData });
+        yield put({
+          type: types.SET_EDIT_STATUS,
+          payload: true,
+        });
         yield put(creators.reload());
       }
     });
@@ -188,24 +355,36 @@ export default class ServicePageDuck extends GridPageDuck {
     const { ducks } = this;
   }
   async getData(filters: this["Filter"]) {
-    const { page, count, namespace, service, ruleType, routeData } = filters;
-    const result = await describeRoutes({
-      namespace,
-      service,
-    });
-    if (!result?.[0]) {
-      return {
-        totalCount: 0,
-        list: [],
-      };
+    const { page, count, namespace, service, ruleType } = filters;
+    let routeData = filters.routeData;
+    console.log(routeData);
+    let originData;
+    if (!routeData) {
+      const result = await describeRoutes({
+        namespace,
+        service,
+      });
+      if (!result?.[0]) {
+        return {
+          totalCount: 0,
+          list: [],
+        };
+      }
+      routeData = result[0];
+      originData = JSON.parse(JSON.stringify(result[0]));
     }
-    const data = result[0];
+
     const offset = (page - 1) * count;
-    const listSlice = data[ruleType]?.slice(offset, offset + count + 1) || [];
+    const listSlice =
+      routeData[ruleType]?.slice(offset, offset + count + 1) || [];
     return {
-      totalCount: data[ruleType]?.length || 0,
-      list: listSlice.map((item, index) => ({ ...item, id: offset + index })),
-      routeData: result,
+      totalCount: routeData[ruleType]?.length || 0,
+      list: listSlice.map((item, index) => ({
+        ...item,
+        id: (offset + index).toString(),
+      })),
+      routeData,
+      originData,
     };
   }
 }

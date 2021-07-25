@@ -130,6 +130,11 @@ export default class ServicePageDuck extends GridPageDuck {
         `/ratelimit-create?service=${name}&namespace=${namespace}`
       );
     });
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
+      const { list } = action.payload;
+      const expandedKeys = list.map((item) => item.id);
+      yield put(creators.setExpandedKeys(expandedKeys));
+    });
     yield takeLatest(types.EDIT, function* (action) {
       const {
         data: { name, namespace },

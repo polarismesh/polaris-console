@@ -6,63 +6,107 @@ import { Text, Icon, Modal } from "tea-component";
 import Action from "@src/polaris/common/duckComponents/grid/Action";
 import RoutePageDuck from "./PageDuck";
 import { isReadOnly } from "../../utils";
+import { RuleType } from "../circuitBreaker/types";
 export default ({
   duck: { creators, selector },
   store,
 }: DuckCmpProps<RoutePageDuck>): Column<any>[] => {
+  const { ruleType } = selector(store);
+  console.log(ruleType);
   return [
-    {
-      key: "sourceNamespace",
-      header: "请求命名空间",
-      render: (x) => (
-        <React.Fragment>
-          <Text>
-            {x.sources
-              .map((source) => source.namespace)
-              .join(",")
-              .replace("*", "所有")}
-          </Text>
-        </React.Fragment>
-      ),
-    },
-    {
-      key: "sourceService",
-      header: "请求服务名",
-      render: (x) => (
-        <Text>
-          {x.sources
-            .map((source) => source.service)
-            .join(",")
-            .replace("*", "所有")}
-        </Text>
-      ),
-    },
-    {
-      key: "desNamespace",
-      header: "目标命名空间",
-      render: (x) => (
-        <React.Fragment>
-          <Text>
-            {x.destinations
-              .map((destination) => destination.namespace)
-              .join(",")
-              .replace("*", "所有")}
-          </Text>
-        </React.Fragment>
-      ),
-    },
-    {
-      key: "desService",
-      header: "目标服务名",
-      render: (x) => (
-        <Text>
-          {x.destinations
-            .map((destination) => destination.service)
-            .join(",")
-            .replace("*", "所有")}
-        </Text>
-      ),
-    },
+    ...(ruleType === RuleType.Inbound
+      ? [
+          {
+            key: "sourceNamespace",
+            header: "命名空间",
+            render: (x) => (
+              <React.Fragment>
+                <Text>
+                  {x.sources
+                    .map((source) =>
+                      source.namespace === "*" ? "全部" : source.namespace
+                    )
+                    .join(",")}
+                </Text>
+              </React.Fragment>
+            ),
+          },
+          {
+            key: "sourceService",
+            header: "服务名",
+            render: (x) => (
+              <Text>
+                {x.sources
+                  .map((source) =>
+                    source.service === "*" ? "全部" : source.service
+                  )
+                  .join(",")}
+              </Text>
+            ),
+          },
+          {
+            key: "labels",
+            header: "请求标签",
+            render: (x) => {
+              const result = x.sources
+                ?.map((source) =>
+                  Object.keys(source.metadata || {}).map(
+                    (key) => `${key}:${source.metadata[key]?.value}`
+                  )
+                )
+                .join(" ; ");
+              return <React.Fragment>{result || "-"}</React.Fragment>;
+            },
+          },
+        ]
+      : []),
+    ...(ruleType === RuleType.Outbound
+      ? [
+          {
+            key: "desNamespace",
+            header: "命名空间",
+            render: (x) => {
+              const destination = x.destinations?.[0] || {};
+              return (
+                <React.Fragment>
+                  <Text>
+                    {destination.namespace === "*"
+                      ? "全部"
+                      : destination.namespace}
+                  </Text>
+                </React.Fragment>
+              );
+            },
+          },
+          {
+            key: "desService",
+            header: "服务名",
+            render: (x) => {
+              const destination = x.destinations?.[0] || {};
+              return (
+                <Text>
+                  {destination.service === "*" ? "全部" : destination.service}
+                </Text>
+              );
+            },
+          },
+          {
+            key: "labels",
+            header: "请求标签",
+            render: (x) => {
+              const result = x.destionations
+                ?.map((destination) =>
+                  Object.keys(destination.metadata || {}).map(
+                    (key) => `${key}:${destination.metadata[key]?.value}`
+                  )
+                )
+                .join(" ; ");
+              return <React.Fragment>{result || "-"}</React.Fragment>;
+            },
+          },
+        ]
+      : []),
+
     {
       key: "action",
       header: "操作",
@@ -87,6 +131,13 @@ export default ({
               tip={disabled ? "该命名空间为只读的" : "删除"}
             >
               <Icon type={"delete"}></Icon>
+            </Action>
+            <Action
+              fn={(dispatch) => dispatch(creators.create(x.id))}
+              disabled={disabled}
+              tip={disabled ? "该命名空间为只读的" : "在该规则前新建规则"}
+            >
+              <Icon type={"plus"}></Icon>
             </Action>
           </React.Fragment>
         );

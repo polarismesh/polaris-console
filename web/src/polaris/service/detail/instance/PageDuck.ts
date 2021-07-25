@@ -43,6 +43,7 @@ interface Filter extends BaseFilter {
   metadata?: string;
   healthy?: boolean;
   isolate?: boolean;
+  customFilters: CustomFilters;
 }
 interface CustomFilters {
   host?: string;
@@ -51,8 +52,8 @@ interface CustomFilters {
   protocol?: string;
   version?: string;
   metadata?: string;
-  healthy?: boolean;
-  isolate?: boolean;
+  healthy?: any;
+  isolate?: any;
 }
 interface ComposedId {
   name: string;
@@ -111,7 +112,10 @@ export default class ServicePageDuck extends GridPageDuck {
       ),
       selection: reduceFromPayload<string[]>(types.SET_SELECTION, []),
 
-      expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
+      expandedKeys: reduceFromPayload<string[]>(
+        types.SET_EXPANDED_KEYS,
+        new Array(100).map((i, index) => index.toString())
+      ),
     };
   }
   get creators() {
@@ -146,7 +150,7 @@ export default class ServicePageDuck extends GridPageDuck {
         keyword: state.keyword,
         service: state.data.name,
         namespace: state.data.namespace,
-        ...state.customFilters,
+        customFilters: state.customFilters,
       }),
       customFilters: (state: State) => state.customFilters,
       selection: (state: State) => state.selection,
@@ -262,8 +266,8 @@ export default class ServicePageDuck extends GridPageDuck {
       });
       if (confirm) {
         const res = yield deleteInstances(ids.map((id) => ({ id })));
+        yield put(creators.reload());
       }
-      yield put(creators.reload());
     });
   }
 
@@ -276,26 +280,31 @@ export default class ServicePageDuck extends GridPageDuck {
       count,
       namespace,
       service,
-      port,
-      weight,
-      protocol,
-      version,
-      healthy,
-      isolate,
-      metadata,
+      customFilters: {
+        host,
+        port,
+        weight,
+        protocol,
+        version,
+        healthy,
+        isolate,
+        metadata,
+      },
     } = filters;
     const [keys, values] = (metadata || "").split(":");
+    console.log(port, weight, protocol, version, healthy, isolate, metadata);
     const result = await describeInstances({
       limit: count,
       offset: (page - 1) * count,
       namespace,
       service,
+      host: host || undefined,
       port: port || undefined,
       weight: weight || undefined,
       protocol: protocol || undefined,
       version: version || undefined,
-      healthy: healthy || undefined,
-      isolate: isolate || undefined,
+      healthy: healthy === "" ? undefined : healthy,
+      isolate: isolate === "" ? undefined : isolate,
       keys: keys || undefined,
       values: values || undefined,
     });

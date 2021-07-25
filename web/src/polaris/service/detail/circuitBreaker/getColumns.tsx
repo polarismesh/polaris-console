@@ -18,27 +18,29 @@ export default ({
       ? [
           {
             key: "sourceNamespace",
-            header: "请求命名空间",
+            header: "命名空间",
             render: (x) => (
               <React.Fragment>
                 <Text>
                   {x.sources
-                    .map((source) => source.namespace)
-                    .join(",")
-                    .replace("*", "所有") || "-"}
+                    .map((source) =>
+                      source.namespace === "*" ? "全部" : source.namespace
+                    )
+                    .join(",") || "-"}
                 </Text>
               </React.Fragment>
             ),
           },
           {
             key: "sourceService",
-            header: "请求服务名",
+            header: "服务名",
             render: (x) => (
               <Text>
                 {x.sources
-                  .map((source) => source.service)
-                  .join(",")
-                  .replace("*", "所有") || "-"}
+                  .map((source) =>
+                    source.service === "*" ? "全部" : source.service
+                  )
+                  .join(",") || "-"}
               </Text>
             ),
           },
@@ -48,32 +50,62 @@ export default ({
       ? [
           {
             key: "desNamespace",
-            header: "目标命名空间",
+            header: "命名空间",
             render: (x) => (
               <React.Fragment>
                 <Text>
                   {x.destinations
-                    .map((destination) => destination.namespace)
-                    .join(",")
-                    .replace("*", "所有") || "-"}
+                    .map((destination) =>
+                      destination.namespace === "*"
+                        ? "全部"
+                        : destination.namespace
+                    )
+                    .join(",") || "-"}
                 </Text>
               </React.Fragment>
             ),
           },
           {
             key: "desService",
-            header: "目标服务名",
+            header: "服务名",
             render: (x) => (
               <Text>
                 {x.destinations
-                  .map((destination) => destination.service)
-                  .join(",")
-                  .replace("*", "所有") || "-"}
+                  .map((destination) =>
+                    destination.service === "*" ? "全部" : destination.service
+                  )
+                  .join(",") || "-"}
               </Text>
             ),
           },
         ]
       : []),
+    {
+      key: "sourceMethod",
+      header: "接口名",
+      render: (x) => (
+        <Text>
+          {x.destinations
+            .map((destination) => destination.method?.value)
+            .join(",") || "-"}
+        </Text>
+      ),
+    },
+    {
+      key: "labels",
+      header: "请求标签",
+      render: (x) => (
+        <Text>
+          {x.sources
+            .map((source) =>
+              Object.keys(source.labels).map(
+                (key) => `${key}:${source.labels[key].value}`
+              )
+            )
+            .join(",")}
+        </Text>
+      ),
+    },
     {
       key: "action",
       header: "操作",

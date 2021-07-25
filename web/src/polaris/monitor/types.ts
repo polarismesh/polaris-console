@@ -18,7 +18,7 @@ export const MetricNameMap = {
     unit: "个",
   },
   [MetricName.UpstreamRqSuccess]: {
-    text: "总成功数",
+    text: "成功数",
     unit: "个",
   },
   [MetricName.UpstreamRqMaxTimeout]: {
@@ -34,11 +34,11 @@ export const MetricNameMap = {
     unit: "个",
   },
   [MetricName.RatelimitRqPass]: {
-    text: "总成功数",
+    text: "通过数",
     unit: "个",
   },
   [MetricName.RatelimitRqLimit]: {
-    text: "总限流数",
+    text: "限流数",
     unit: "个",
   },
   [MetricName.CircuitbreakerOpen]: {
@@ -63,7 +63,9 @@ export enum MonitorLabelKey {
 
   RetCode = "callee_result_code", //返回码
 
-  Labels = "callee_labels", //请求标签
+  CalleeLabels = "callee_labels", //被调请求标签
+
+  CallerLabels = "caller_labels", //主调请求标签
 
   CallerNamespace = "caller_namespace", //主调命名空间
 
@@ -85,19 +87,19 @@ export const LabelKeyMap = {
     text: "被调服务名",
   },
   [MonitorLabelKey.Method]: {
-    text: "被调接口",
+    text: "被调接口名",
   },
   [MonitorLabelKey.Subset]: {
     text: "被调实例分组",
   },
   [MonitorLabelKey.Instance]: {
-    text: "被调实例（IP:PORT格式）",
+    text: "被调实例",
+  },
+  [MonitorLabelKey.CalleeLabels]: {
+    text: "被调请求标签",
   },
   [MonitorLabelKey.RetCode]: {
     text: "返回码",
-  },
-  [MonitorLabelKey.Labels]: {
-    text: "请求标签",
   },
   [MonitorLabelKey.CallerNamespace]: {
     text: "主调命名空间",
@@ -106,7 +108,10 @@ export const LabelKeyMap = {
     text: "主调服务名",
   },
   [MonitorLabelKey.CallerIp]: {
-    text: "主调IP",
+    text: "主调实例IP",
+  },
+  [MonitorLabelKey.CallerLabels]: {
+    text: "主调请求标签",
   },
 };
 

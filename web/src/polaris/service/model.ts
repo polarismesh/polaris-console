@@ -65,7 +65,7 @@ export async function describeServices(params: DescribeServicesParams) {
   });
   return {
     list: res.services,
-    totalCount: res.size,
+    totalCount: res.amount,
   };
 }
 

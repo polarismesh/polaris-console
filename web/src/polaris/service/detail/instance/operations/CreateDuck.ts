@@ -58,7 +58,9 @@ const generateParams = (params) => {
   const hosts = host.split(splitRegex);
   const ports = port.split(splitRegex);
   hosts.forEach((host) => {
+    if (!host) return;
     ports.forEach((port) => {
+      if (!port) return;
       operateRequests.push({
         host,
         port: Number(port),
@@ -230,6 +232,8 @@ export default class CreateDuck extends FormDialog {
     yield put(form.creators.setMeta(options));
     yield put(
       form.creators.setValues({
+        healthy: true,
+        enableHealthCheck: false,
         ...data,
         metadata: convertMetaData(data.metadata || {}),
         ...(options.instance

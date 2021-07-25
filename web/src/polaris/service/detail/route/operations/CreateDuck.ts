@@ -27,6 +27,9 @@ import { ComposedId } from "../../types";
 import { EditType } from "./Create";
 import router from "@src/polaris/common/util/router";
 import tips from "@src/polaris/common/util/tips";
+import PageDuck from "@src/polaris/common/ducks/Page";
+import DynamicDuck from "@src/polaris/common/ducks/DynamicDuck";
+import CreateDuck from "@src/polaris/service/operation/CreateDuck";
 
 const convertMetadataMapInArray = (o) => {
   return o.map((item) => {
@@ -63,40 +66,19 @@ const convertRuleValuesToParams = (ruleValues, namespace, service) => {
   });
 };
 
-export default class RouteCreateDuck extends DetailPageDuck {
+interface RuleIndicator {
+  ruleIndex: number;
+  ruleType: RuleType;
+  isEdit: boolean;
+}
+export default class RouteCreateDuck extends PageDuck {
   ComposedId: ComposedId;
   Data: Routing;
 
   get baseUrl() {
-    return "/#/route-create";
+    return null;
   }
 
-  get params() {
-    const { types } = this;
-    return [
-      ...super.params,
-      {
-        key: "namespace",
-        type: types.SET_NAMESPACE,
-        defaults: "",
-      },
-      {
-        key: "service",
-        type: types.SET_SERVICE_NAME,
-        defaults: "",
-      },
-      {
-        key: "ruleIndex",
-        type: types.SET_RULEINDEX,
-        defaults: -1,
-      },
-      {
-        key: "ruleType",
-        type: types.SET_RULE_TYPE,
-        defaults: RuleType.Inbound,
-      },
-    ];
-  }
   get quickTypes() {
     enum Types {
       SWITCH,
@@ -105,6 +87,7 @@ export default class RouteCreateDuck extends DetailPageDuck {
       SET_RULEINDEX,
       SET_RULE_TYPE,
       SUBMIT,
+      LOAD,
     }
     return {
       ...super.quickTypes,
@@ -121,11 +104,7 @@ export default class RouteCreateDuck extends DetailPageDuck {
     const { types } = this;
     return {
       ...super.reducers,
-      namespace: reduceFromPayload(types.SET_NAMESPACE, ""),
-      service: reduceFromPayload(types.SET_SERVICE_NAME, ""),
-
-      ruleIndex: reduceFromPayload(types.SET_RULEINDEX, -1),
-      ruleType: reduceFromPayload(types.SET_RULE_TYPE, RuleType.Inbound),
+      data: reduceFromPayload(types.LOAD, {} as Routing & RuleIndicator),
     };
   }
   get creators() {
@@ -133,16 +112,13 @@ export default class RouteCreateDuck extends DetailPageDuck {
     return {
       ...super.creators,
       submit: createToPayload<void>(types.SUBMIT),
+      load: createToPayload<this["Data"] & RuleIndicator>(types.LOAD),
     };
   }
   get rawSelectors() {
     type State = this["State"];
     return {
       ...super.rawSelectors,
-      composedId: (state: State) => ({
-        name: state.service,
-        namespace: state.namespace,
-      }),
     };
   }
   async getData(composedId: this["ComposedId"]) {
@@ -153,14 +129,106 @@ export default class RouteCreateDuck extends DetailPageDuck {
     });
     return result;
   }
+  *submit() {
+    const { types, selector, creators, ducks } = this;
+    const { values } = ducks.form.selector(yield select());
+    const { data } = selector(yield select());
+    const { ruleIndex } = data;
+    yield put(ducks.form.creators.setAllTouched(true));
+
+    const firstInvalid = yield select(ducks.form.selectors.firstInvalid);
+    if (firstInvalid) {
+      console.log(firstInvalid);
+      return false;
+    }
+    const {
+      service: currentService,
+      namespace: currentNamespace,
+      inboundDestinations,
+      inboundSources,
+      outboundDestinations,
+      outboundSources,
+      inboundNamespace,
+      inboundService,
+      outboundService,
+      outboundNamespace,
+      editType,
+      ruleType,
+      inboundJsonValue,
+      outboundJsonValue,
+    } = values;
+    let params = {
+      service: currentService,
+      namespace: currentNamespace,
+    } as any;
+    let originData = data[0] || {};
+    if (ruleType === RuleType.Inbound) {
+      const editItem =
+        editType === EditType.Json
+          ? JSON.parse(inboundJsonValue)
+          : {
+              sources: convertRuleValuesToParams(
+                inboundSources,
+                inboundNamespace,
+                inboundService
+              ),
+              destinations: convertRuleValuesToParams(
+                inboundDestinations,
+                currentNamespace,
+                currentService
+              ),
+            };
+      return editItem;
+      let newArray;
+    } else {
+      const editItem =
+        editType === EditType.Json
+          ? JSON.parse(outboundJsonValue)
+          : {
+              sources: convertRuleValuesToParams(
+                outboundSources,
+                currentNamespace,
+                currentService
+              ),
+              destinations: convertRuleValuesToParams(
+                outboundDestinations,
+                outboundNamespace,
+                outboundService
+              ),
+            };
+      return editItem;
+      let newArray;
+      // if (Number(ruleIndex) === -1) {
+      //   newArray = (originData.outbounds || []).concat([editItem]);
+      // } else {
+      //   (originData.outbounds || []).splice(ruleIndex, 1, editItem);
+      //   newArray = originData.outbounds;
+      // }
+      // params = {
+      //   ...params,
+      //   inbounds: originData.inbounds || [],
+      //   outbounds: newArray,
+      // };
+    }
+    // if (originData?.inbounds?.length > 0 || originData?.outbounds?.length > 0) {
+    //   const result = yield modifyRoutes([params]);
+    // } else {
+    //   const result = yield createRoutes([params]);
+    // }
+    // router.navigate(
+    //   `/service-detail?namespace=${currentNamespace}&name=${currentService}&tab=route`
+    // );
+  }
+
   *saga() {
     const { types, selector, creators, ducks } = this;
     yield* super.saga();
-    yield takeLatest(types.FETCH_DONE, function* (action) {
+    yield takeLatest(types.LOAD, function* (action) {
       const values = action.payload;
-      const { ruleIndex, ruleType, service, namespace } = selector(
-        yield select()
-      );
+      console.log(values);
+      const {
+        data: { ruleIndex, ruleType, service, namespace, isEdit },
+      } = selector(yield select());
       const emptyRule = {
         service,
         namespace,
@@ -203,15 +271,15 @@ export default class RouteCreateDuck extends DetailPageDuck {
         outboundService: "*",
         outboundNamespace: "*",
         editType: EditType.Manual,
-        ruleType: RuleType.Inbound,
+        ruleType: ruleType,
         inboundJsonValue: getTemplateRouteInbounds(namespace, service),
         outboundJsonValue: getTemplateRouteOutbounds(namespace, service),
       };
-      if (Number(ruleIndex) === -1) {
+      if (!isEdit) {
         yield put(ducks.form.creators.setValues(emptyRule));
       } else {
-        if (values.length > 0) {
-          const routing = values[0] as Routing;
+        if (values.ctime) {
+          const routing = values as Routing;
           const rule = routing[ruleType][ruleIndex];
           const ruleNamespace =
             ruleType === RuleType.Inbound
@@ -240,105 +308,6 @@ export default class RouteCreateDuck extends DetailPageDuck {
           );
         }
       }
-    });
-    yield takeLatest(types.SUBMIT, function* (action) {
-      const { values } = ducks.form.selector(yield select());
-      const { ruleIndex, data } = selector(yield select());
-      yield put(ducks.form.creators.setAllTouched(true));
-
-      const firstInvalid = yield select(ducks.form.selectors.firstInvalid);
-      if (firstInvalid) {
-        return false;
-      }
-      const {
-        service: currentService,
-        namespace: currentNamespace,
-        inboundDestinations,
-        inboundSources,
-        outboundDestinations,
-        outboundSources,
-        inboundNamespace,
-        inboundService,
-        outboundService,
-        outboundNamespace,
-        editType,
-        ruleType,
-        inboundJsonValue,
-        outboundJsonValue,
-      } = values;
-      let params = {
-        service: currentService,
-        namespace: currentNamespace,
-      } as any;
-      let originData = data[0] || {};
-      if (ruleType === RuleType.Inbound) {
-        const editItem =
-          editType === EditType.Json
-            ? JSON.parse(inboundJsonValue)
-            : {
-                sources: convertRuleValuesToParams(
-                  inboundSources,
-                  inboundNamespace,
-                  inboundService
-                ),
-                destinations: convertRuleValuesToParams(
-                  inboundDestinations,
-                  currentNamespace,
-                  currentService
-                ),
-              };
-        let newArray;
-        if (Number(ruleIndex) === -1) {
-          newArray = (originData.inbounds || []).concat([editItem]);
-        } else {
-          (originData.inbounds || []).splice(ruleIndex, 1, editItem);
-          newArray = originData.inbounds;
-        }
-        params = {
-          ...params,
-          inbounds: newArray,
-          outbounds: originData.outbounds || [],
-        };
-      } else {
-        const editItem =
-          editType === EditType.Json
-            ? JSON.parse(outboundJsonValue)
-            : {
-                sources: convertRuleValuesToParams(
-                  outboundSources,
-                  currentNamespace,
-                  currentService
-                ),
-                destinations: convertRuleValuesToParams(
-                  outboundDestinations,
-                  outboundNamespace,
-                  outboundService
-                ),
-              };
-        let newArray;
-        if (Number(ruleIndex) === -1) {
-          newArray = (originData.outbounds || []).concat([editItem]);
-        } else {
-          (originData.outbounds || []).splice(ruleIndex, 1, editItem);
-          newArray = originData.outbounds;
-        }
-        params = {
-          ...params,
-          inbounds: originData.inbounds || [],
-          outbounds: newArray,
-        };
-      }
-      if (
-        originData?.inbounds?.length > 0 ||
-        originData?.outbounds?.length > 0
-      ) {
-        const result = yield modifyRoutes([params]);
-      } else {
-        const result = yield createRoutes([params]);
-      }
-      router.navigate(
-        `/service-detail?namespace=${currentNamespace}&name=${currentService}&tab=route`
-      );
     });
   }
 }
@@ -522,3 +491,9 @@ const validator = CreateForm.combineValidators<Values, {}>({
     }
   },
 });
+
+export class DynamicRouteCreateDuck extends DynamicDuck {
+  get ProtoDuck() {
+    return RouteCreateDuck;
+  }
+}

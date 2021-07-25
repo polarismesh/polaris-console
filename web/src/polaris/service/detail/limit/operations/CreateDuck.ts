@@ -167,7 +167,7 @@ export default class RouteCreateDuck extends DetailPageDuck {
           disable: false,
           priority: 0,
           labels: [{ key: "*", value: "*", type: MATCH_TYPE.REGEX }],
-          amount_mode: LimitThresholdMode.GLOBAL_TOTAL,
+          amountMode: LimitThresholdMode.GLOBAL_TOTAL,
           method: {
             value: "*",
             type: MATCH_TYPE.REGEX,
@@ -203,6 +203,11 @@ export default class RouteCreateDuck extends DetailPageDuck {
               ...item,
               validDuration: Number(item.validDuration.replace("s", "")),
             })),
+            amountMode: item.amountMode
+              ? item.amountMode
+              : item.type === LimitRange.GLOBAL
+              ? LimitThresholdMode.GLOBAL_TOTAL
+              : undefined,
             method: values.labels?.["method"],
           })
         );
@@ -229,7 +234,7 @@ export default class RouteCreateDuck extends DetailPageDuck {
         type,
         editType,
         jsonValue,
-        amount_mode,
+        amountMode,
         method,
       } = values;
       let params = {
@@ -246,7 +251,7 @@ export default class RouteCreateDuck extends DetailPageDuck {
         labels: { ...convertMetadataArrayToMap(labels), method },
         id: ruleId ? ruleId : undefined,
         type,
-        amount_mode: type === LimitRange.GLOBAL ? amount_mode : undefined,
+        amountMode: type === LimitRange.GLOBAL ? amountMode : undefined,
         method,
       } as any;
       if (editType === EditType.Json) {
@@ -268,7 +273,7 @@ export interface Values {
   namespace: string;
   type: LimitRange;
   action: LimitType;
-  amount_mode: LimitThresholdMode;
+  amountMode: LimitThresholdMode;
   resource: LimitResource;
   amounts: LimitConfig[];
   disable: boolean;

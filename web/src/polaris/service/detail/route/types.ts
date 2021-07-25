@@ -86,6 +86,24 @@ export const RULE_TYPE_OPTIONS = [
   },
 ];
 
+export enum EditType {
+  Table = "table",
+  Json = "json",
+}
+
+export const EDIT_TYPE_MAP = {
+  [EditType.Table]: {
+    text: "图表编辑",
+  },
+  // [EditType.Json]: {
+  //   text: "JSON编辑",
+  // },
+};
+
+export const EDIT_TYPE_OPTION = Object.keys(EDIT_TYPE_MAP).map((key) => ({
+  text: EDIT_TYPE_MAP[key].text,
+  value: key,
+}));
 export const MATCH_TYPE_OPTIONS = [
   {
     text: MATCH_TYPE_MAP[MATCH_TYPE.EXACT].text,

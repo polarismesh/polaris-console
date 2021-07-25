@@ -51,7 +51,7 @@ export default function BaseInfo(props: DuckCmpProps<BaseInfoDuck>) {
                 <FormItem label={"修改时间"}>
                   <FormText>{data.mtime}</FormText>
                 </FormItem>
-                <FormItem label={"Revision"}>
+                <FormItem label={"版本号"}>
                   <FormText>{data.revision}</FormText>
                 </FormItem>
                 <FormItem label={`服务标签(${serviceTags.length}个)`}>

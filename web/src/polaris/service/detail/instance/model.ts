@@ -88,7 +88,7 @@ export async function describeInstances(params: DescribeInstancesParams) {
   });
   return {
     list: res.instances,
-    totalCount: res.size,
+    totalCount: res.amount,
   };
 }
 

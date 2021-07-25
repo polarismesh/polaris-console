@@ -44,7 +44,7 @@ insertCSS(
   `
 .justify-search{
   margin-right:20px;
-  margin-top:20px;
+  margin-top:40px;
 }
 .justify-button{
   vertical-align: bottom;
@@ -56,15 +56,23 @@ insertCSS(
   "service-detail-input",
   `
   .input-style > .tea-input{
-    width:150px;
+    width:200px;   
+    text-align:left;
   }
-  .input-style {
-    width:150px;
+  .input-style  {
+    width:200px;
+  }
+  .tea-dropdown.input-style .tea-text-weak{
+    color:black !important;
   }
 `
 );
 
 const HealthStatusOptions = [
+  {
+    text: "全部",
+    value: null,
+  },
   {
     text: HEALTH_STATUS_MAP[HEALTH_STATUS.HEALTH].text,
     value: String(HEALTH_STATUS.HEALTH),
@@ -76,6 +84,10 @@ const HealthStatusOptions = [
 ];
 
 const IsolateStatusOptions = [
+  {
+    text: "全部",
+    value: null,
+  },
   {
     text: ISOLATE_STATUS_MAP[ISOLATE_STATUS.ISOLATE].text,
     value: String(ISOLATE_STATUS.ISOLATE),
@@ -151,6 +163,7 @@ export default function ServiceInstancePage(
                         port: value,
                       })
                     }
+                    style={{ textAlign: "left" }}
                     className={"input-style"}
                   ></InputNumber>
                 </Text>
@@ -189,12 +202,14 @@ export default function ServiceInstancePage(
                     onChange={(value) =>
                       handlers.setCustomFilters({
                         ...customFilters,
-                        healthy: value === "true" ? true : false,
+                        healthy: !value ? "" : value === "true" ? true : false,
                       })
                     }
                     type="simulate"
                     appearance="button"
                     className={"input-style"}
+                    placeholder={"全部"}
+                    style={{ color: "black !important" }}
                   ></Select>
                 </Text>
                 <Text reset className="justify-search">
@@ -205,12 +220,14 @@ export default function ServiceInstancePage(
                     onChange={(value) =>
                       handlers.setCustomFilters({
                         ...customFilters,
-                        isolate: value === "true" ? true : false,
+                        isolate: !value ? "" : value === "true" ? true : false,
                       })
                     }
                     type="simulate"
                     appearance="button"
                     className={"input-style"}
+                    placeholder={"全部"}
+                    style={{ color: "black !important" }}
                   ></Select>
                 </Text>
               </section>
@@ -230,6 +247,11 @@ export default function ServiceInstancePage(
               <Button className={"justify-button"} onClick={handlers.clear}>
                 重置
               </Button>
+              <span
+                style={{
+                  margin: "0px 20px",
+                }}
+              ></span>
               <Button
                 type={"primary"}
                 onClick={handlers.create}
@@ -252,13 +274,40 @@ export default function ServiceInstancePage(
                     disabled={selection?.length === 0}
                     tooltip={selection?.length === 0 && "请选择实例"}
                   >
-                    修改
+                    其他操作
                   </Button>
                 }
                 appearance="pure"
               >
                 {(close) => (
                   <List type="option">
+                    {selection?.length === 0 ? (
+                      <List.Item
+                        disabled={selection?.length === 0}
+                        tooltip={selection?.length === 0 && "请选择实例"}
+                      >
+                        复制IP
+                      </List.Item>
+                    ) : (
+                      <Copy
+                        text={selection
+                          .map((id) => {
+                            const item = list.find((item) => id === item.id);
+                            return `${item?.host}`;
+                          })
+                          .join("\n")}
+                      >
+                        <List.Item
+                          onClick={() => {
+                            close();
+                          }}
+                          disabled={selection?.length === 0}
+                          tooltip={selection?.length === 0 && "请选择实例"}
+                        >
+                          复制IP
+                        </List.Item>
+                      </Copy>
+                    )}
                     <List.Item
                       onClick={() => {
                         handlers.modifyWeight(selection);
@@ -289,34 +338,6 @@ export default function ServiceInstancePage(
                     >
                       修改隔离状态
                     </List.Item>
-
-                    {selection?.length === 0 ? (
-                      <List.Item
-                        disabled={selection?.length === 0}
-                        tooltip={selection?.length === 0 && "请选择实例"}
-                      >
-                        复制IP
-                      </List.Item>
-                    ) : (
-                      <Copy
-                        text={selection
-                          .map((id) => {
-                            const item = list.find((item) => id === item.id);
-                            return `${item?.host}:${item?.port}`;
-                          })
-                          .join(";")}
-                      >
-                        <List.Item
-                          onClick={() => {
-                            close();
-                          }}
-                          disabled={selection?.length === 0}
-                          tooltip={selection?.length === 0 && "请选择实例"}
-                        >
-                          复制IP
-                        </List.Item>
-                      </Copy>
-                    )}
                   </List>
                 )}
               </Dropdown>
@@ -355,16 +376,7 @@ export default function ServiceInstancePage(
                     <Form>
                       <FormItem label="实例ID">
                         <FormText>
-                          <Text
-                            overflow
-                            tooltip={record.id}
-                            style={{ width: "100px" }}
-                          >
-                            {record.id}
-                          </Text>
-                          <Copy text={record.id}>
-                            <Button type={"icon"} icon={"copy"}></Button>
-                          </Copy>
+                          <Text tooltip={record.id}>{record.id}</Text>
                         </FormText>
                       </FormItem>
                       <FormItem label="健康检查">

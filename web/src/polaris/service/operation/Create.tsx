@@ -21,7 +21,7 @@ export default function Create(props: DuckCmpProps<Duck>) {
       store={store}
       dispatch={dispatch}
       size="l"
-      title={"新建服务"}
+      title={data.name ? "编辑服务" : "新建服务"}
     >
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>

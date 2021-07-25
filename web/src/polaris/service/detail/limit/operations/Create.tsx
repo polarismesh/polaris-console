@@ -95,13 +95,18 @@ const getMetadataForm = (field) => {
         <FormField field={type} label={"匹配方式"}>
           <Select size="s" options={MATCH_TYPE_OPTIONS} field={type} />
         </FormField>
-        <FormItem>
+        {field.getValue()?.length > 1 && (
           <Button
             type="icon"
             icon="close"
             onClick={() => removeArrayFieldValue(field, index)}
           ></Button>
-        </FormItem>
+        )}
+        <Button
+          type={"icon"}
+          icon={"plus"}
+          onClick={() => addMetadata(field)}
+        ></Button>
       </Form>
     );
   });
@@ -128,7 +133,7 @@ const renderLimitRule = (props) => {
     disable,
     priority,
     labels,
-    amount_mode,
+    amountMode,
     type,
     method,
   } = formApi.getFields([
@@ -141,7 +146,7 @@ const renderLimitRule = (props) => {
     "disable",
     "priority",
     "labels",
-    "amount_mode",
+    "amountMode",
     "method",
   ]);
   const { value: methodValue, type: methodType } = method.getFields([
@@ -151,24 +156,9 @@ const renderLimitRule = (props) => {
   return (
     <>
       <FormItem
-        label={<H3 style={{ margin: "10px 0" }}>规则配置</H3>}
+        label={<H3 style={{ margin: "10px 0" }}>本服务的以下接口被调用时</H3>}
       ></FormItem>
-      {type.getValue() === LimitRange.GLOBAL && (
-        <>
-          <FormItem
-            label={<H3 style={{ margin: "10px 0" }}>阈值模式</H3>}
-          ></FormItem>
-          <Segment
-            options={LIMIT_THRESHOLD_OPTIONS}
-            value={amount_mode.getValue()}
-            onChange={(value) => amount_mode.setValue(value)}
-          ></Segment>
-        </>
-      )}
-      <FormItem
-        label={<H3 style={{ margin: "10px 0" }}>本服务的以下接口被调用时：</H3>}
-      ></FormItem>
-      <Form style={{ width: "800px" }}>
+      <Form style={{ width: "850px" }}>
         <Form style={{ width: "100%" }} layout="inline">
           <FormField
             field={methodValue}
@@ -186,28 +176,19 @@ const renderLimitRule = (props) => {
       </Form>
       <>
         <FormItem
-          label={
-            <H3 style={{ margin: "10px 0" }}>对带有以下标签的请求进行限流：</H3>
-          }
+          label={<H3 style={{ margin: "10px 0" }}>对带有以下标签的请求</H3>}
         ></FormItem>
-        <Form style={{ width: "800px" }}>
-          <Form style={{ width: "100%" }}>
-            {getMetadataForm(labels)}
-            <Button
-              type={"icon"}
-              icon={"plus"}
-              onClick={() => addMetadata(labels)}
-            ></Button>
-          </Form>
+        <Form style={{ width: "850px" }}>
+          <Form style={{ width: "100%" }}>{getMetadataForm(labels)}</Form>
         </Form>
       </>
       <FormItem
         label={
-          <H3 style={{ margin: "10px 0" }}>满足以下任意条件时进行限流：</H3>
+          <H3 style={{ margin: "10px 0" }}>如果满足以下任意条件，进行限流</H3>
         }
       ></FormItem>
       <Form>
-        <Form style={{ width: "800px" }}>
+        <Form style={{ width: "850px" }}>
           {[...amounts.asArray()].map((field, index) => {
             const { maxAmount, validDuration } = field.getFields([
               "maxAmount",
@@ -232,42 +213,57 @@ const renderLimitRule = (props) => {
                     field={maxAmount}
                   />
                 </FormField>
-                {amounts.getValue()?.length > 0 && (
-                  <FormItem>
+                {amounts.getValue()?.length > 1 && (
+                  <>
                     <Button
                       type="icon"
                       icon="close"
                       onClick={() => removeArrayFieldValue(amounts, index)}
                     ></Button>
-                  </FormItem>
+                  </>
                 )}
+                <Button
+                  type={"icon"}
+                  icon={"plus"}
+                  onClick={() => addAmount(amounts)}
+                ></Button>
               </Form>
             );
           })}
-          <Button
-            type={"icon"}
-            icon={"plus"}
-            onClick={() => addAmount(amounts)}
-          ></Button>
         </Form>
       </Form>
-      <FormItem
-        label={<H3 style={{ margin: "10px 0" }}>限流效果</H3>}
-      ></FormItem>
-      <Segment
-        options={LIMIT_TYPE_OPTIONS}
-        value={action.getValue()}
-        onChange={(value) => action.setValue(value)}
-      ></Segment>
-      <FormItem
-        label={<H3 style={{ margin: "10px 0" }}>规则启用</H3>}
-      ></FormItem>
-      <Switch
-        value={!disable.getValue()}
-        onChange={(value) => {
-          disable.setValue(!value);
-        }}
-      ></Switch>
+      <Form style={{ marginTop: "20px" }}>
+        <FormItem label={"限流效果"}>
+          <Segment
+            options={LIMIT_TYPE_OPTIONS}
+            value={action.getValue()}
+            onChange={(value) => action.setValue(value)}
+          ></Segment>
+        </FormItem>
+
+        {type.getValue() === LimitRange.GLOBAL && (
+          <>
+            <FormItem label={"阈值模式"}>
+              <Segment
+                options={LIMIT_THRESHOLD_OPTIONS}
+                value={amountMode.getValue()}
+                onChange={(value) => amountMode.setValue(value)}
+              ></Segment>
+            </FormItem>
+          </>
+        )}
+        <FormItem label={"优先级"}>
+          <InputNumber hideButton min={0} field={priority} />
+        </FormItem>
+        <FormItem label={"是否启用"}>
+          <Switch
+            value={!disable.getValue()}
+            onChange={(value) => {
+              disable.setValue(!value);
+            }}
+          ></Switch>
+        </FormItem>
+      </Form>
     </>
   );
 };
@@ -312,13 +308,13 @@ export default purify(function CreateRoute(
       <Card>
         <Card.Body>
           <Form>
-            <FormItem label={"编辑方式"}>
+            {/* <FormItem label={"编辑方式"}>
               <Segment
                 options={EditTypeOptions}
                 value={editType.getValue()}
                 onChange={(value) => editType.setValue(value as any)}
               ></Segment>
-            </FormItem>
+            </FormItem> */}
             <FormItem label={"限流类型"}>
               <Segment
                 options={LIMIT_RANGE_OPTIONS}

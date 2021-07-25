@@ -44,6 +44,9 @@ insertCSS(
   .modify-form-control > .tea-form__controls--text{
     padding-top: 0px;
   }
+  .monitor-select-style .tea-text-weak{
+    color: black !important;
+  }
 `
 );
 
@@ -148,6 +151,17 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                     </Form>
                   }
                 />
+                {duck.monitorLabels.filter(
+                  (labelKey) => labelKey.indexOf("caller") !== -1
+                ).length > 0 && (
+                  <Text
+                    theme={"label"}
+                    parent={"div"}
+                    style={{ marginBottom: "10px" }}
+                  >
+                    主调方
+                  </Text>
+                )}
                 <Justify
                   left={
                     <Form layout="inline">
@@ -160,7 +174,12 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                             store
                           );
                           return (
-                            <FormItem label={LabelKeyMap[labelKey].text}>
+                            <FormItem
+                              label={LabelKeyMap[labelKey].text.replace(
+                                "主调",
+                                ""
+                              )}
+                            >
                               {
                                 <InputAdornment
                                   after={
@@ -187,7 +206,6 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                       <noscript />
                                     )
                                   }
-                                  appearance="pure"
                                 >
                                   <SelectMultiple
                                     placeholder={"汇总"}
@@ -196,6 +214,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                       text: "全部",
                                       value: OptionAllKey,
                                     }}
+                                    className={"monitor-select-style"}
                                     appearance={"button"}
                                     options={options || []}
                                     value={
@@ -232,6 +251,18 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                     </Form>
                   }
                 />
+                {duck.monitorLabels.filter(
+                  (labelKey) => labelKey.indexOf("callee") !== -1
+                ).length > 0 &&
+                  duck.type !== "ratelimit" && (
+                    <Text
+                      theme={"label"}
+                      parent={"div"}
+                      style={{ marginBottom: "10px" }}
+                    >
+                      被调方
+                    </Text>
+                  )}
                 <Justify
                   left={
                     <Form layout="inline">
@@ -244,7 +275,12 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                             store
                           );
                           return (
-                            <FormItem label={LabelKeyMap[labelKey].text}>
+                            <FormItem
+                              label={LabelKeyMap[labelKey].text.replace(
+                                "被调",
+                                ""
+                              )}
+                            >
                               {
                                 <InputAdornment
                                   after={
@@ -280,6 +316,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                       text: "全部",
                                       value: OptionAllKey,
                                     }}
+                                    className={"monitor-select-style"}
                                     appearance={"button"}
                                     options={options || []}
                                     value={
@@ -333,7 +370,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
               <Card style={{ width: "100%" }}>
                 <Card.Body
                   title={
-                    metricQuerySets.length === 0 ? "暂无图表数据" : "图表列表"
+                    metricQuerySets.length === 0 ? "暂无图表数据" : "监控曲线"
                   }
                   operation={
                     metricQuerySets.length === 0 ? (

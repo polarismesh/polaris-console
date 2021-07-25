@@ -14,16 +14,16 @@ import TimeSelect from "@src/polaris/common/components/TimeSelect";
 
 export const TimePickerTab = [
   {
-    text: "近30分钟",
-    date: [moment().subtract(30, "minute"), moment()],
-  },
-  {
-    text: "近3小时",
-    date: [moment().subtract(3, "hour"), moment()],
+    text: "近1小时",
+    date: [moment().subtract(1, "h"), moment()],
   },
   {
     text: "近1天",
     date: [moment().subtract(1, "d"), moment()],
+  },
+  {
+    text: "近1周",
+    date: [moment().subtract(1, "w"), moment()],
   },
 ];
 

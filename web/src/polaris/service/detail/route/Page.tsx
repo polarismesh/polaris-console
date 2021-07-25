@@ -1,5 +1,5 @@
 import BasicLayout from "@src/polaris/common/components/BaseLayout";
-import React from "react";
+import React, { useRef } from "react";
 import { DuckCmpProps } from "saga-duck";
 import ServicePageDuck from "./PageDuck";
 import {
@@ -11,6 +11,13 @@ import {
   Form,
   FormText,
   FormItem,
+  Drawer,
+  Text,
+  MonacoEditor,
+  Alert,
+  H3,
+  Row,
+  Col,
 } from "tea-component";
 import GridPageGrid from "@src/polaris/common/duckComponents/GridPageGrid";
 import GridPagePagination from "@src/polaris/common/duckComponents/GridPagePagination";
@@ -21,9 +28,15 @@ import {
   expandable,
 } from "tea-component/lib/table/addons";
 import insertCSS from "@src/polaris/common/helpers/insertCSS";
-import { RULE_TYPE_OPTIONS } from "./types";
+import {
+  RULE_TYPE_OPTIONS,
+  EDIT_TYPE_OPTION,
+  EditType,
+  RuleType,
+} from "./types";
 import { isReadOnly } from "../../utils";
-
+import Create from "./operations/Create";
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 insertCSS(
   "service-detail-instance",
   `
@@ -40,44 +53,99 @@ export default function ServiceInstancePage(
   props: DuckCmpProps<ServicePageDuck>
 ) {
   const { duck, store, dispatch } = props;
-  const { creators, selectors, selector } = duck;
+  const { creators, selectors, selector, ducks } = duck;
   const handlers = React.useMemo(
     () => ({
       reload: () => dispatch(creators.reload()),
       search: () => dispatch(creators.search("")),
-      create: () => dispatch(creators.create()),
+      create: (payload = 0) => dispatch(creators.create(payload)),
       remove: (payload) => dispatch(creators.remove(payload)),
+      drawerSubmit: () => dispatch(creators.drawerSubmit()),
+      submit: () => dispatch(creators.submit()),
+      reset: () => dispatch(creators.reset()),
+      setDrawerStatus: (payload) => dispatch(creators.setDrawerStatus(payload)),
       setExpandedKeys: (payload) => dispatch(creators.setExpandedKeys(payload)),
       setRuleType: (payload) => dispatch(creators.setRuleType(payload)),
+      setEditType: (payload) => dispatch(creators.setEditType(payload)),
+      setJsonValue: (payload) => dispatch(creators.setJsonValue(payload)),
     }),
     []
   );
-  const columns = React.useMemo(() => getColumns(props), []);
+  const columns = getColumns(props);
   const {
     expandedKeys,
     grid: { list },
     ruleType,
     data: { namespace },
+    drawerStatus,
+    edited,
+    jsonValue,
+    editType,
   } = selector(store);
+  let createDuck;
+  if (drawerStatus.visible) {
+    createDuck = ducks.dynamicCreateDuck.getDuck(drawerStatus.createId);
+  }
+  const ref = useRef(null);
+
   return (
     <>
       <Table.ActionPanel>
+        <Form layout="inline">
+          <FormItem label={"编辑格式"}>
+            <Segment
+              options={EDIT_TYPE_OPTION}
+              value={editType}
+              onChange={handlers.setEditType}
+            ></Segment>
+          </FormItem>
+        </Form>
+        <Form layout="inline">
+          <FormItem label={"规则类型"}>
+            <Segment
+              options={RULE_TYPE_OPTIONS}
+              value={ruleType}
+              onChange={handlers.setRuleType}
+            ></Segment>
+          </FormItem>
+        </Form>
         <Justify
           left={
             <>
               <Button
                 type={"primary"}
-                onClick={handlers.create}
-                disabled={isReadOnly(namespace)}
-                tooltip={isReadOnly(namespace) && "该命名空间为只读的"}
+                onClick={() => handlers.submit()}
+                disabled={
+                  isReadOnly(namespace) || drawerStatus.visible || !edited
+                }
+                tooltip={
+                  isReadOnly(namespace)
+                    ? "该命名空间为只读的"
+                    : !edited
+                    ? "未更改"
+                    : "向服务器端提交变更"
+                }
+                style={{ marginTop: "20px" }}
+              >
+                提交
+              </Button>
+              {edited && (
+                <Button
+                  onClick={() => handlers.reset()}
+                  style={{ marginTop: "20px" }}
+                >
+                  取消
+                </Button>
+              )}
+              <Button
+                type={"primary"}
+                onClick={() => handlers.create()}
+                disabled={isReadOnly(namespace) || drawerStatus.visible}
+                tooltip={"新建一条规则"}
+                style={{ marginTop: "20px" }}
               >
                 新建
               </Button>
-              <Segment
-                options={RULE_TYPE_OPTIONS}
-                value={ruleType}
-                onChange={handlers.setRuleType}
-              ></Segment>
             </>
           }
           right={
@@ -89,90 +157,142 @@ export default function ServiceInstancePage(
           }
         />
       </Table.ActionPanel>
-      <Card>
-        <GridPageGrid
-          duck={duck}
-          dispatch={dispatch}
-          store={store}
-          columns={columns}
-          addons={[
-            expandable({
-              // 已经展开的产品
-              expandedKeys,
-              // 发生展开行为时，回调更新展开键值
-              onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
-              render: (record) => {
-                return (
-                  <Form>
-                    {record.sources.map((source) => {
-                      return (
-                        <>
-                          <FormItem label="请求命名空间">
-                            <FormText>
-                              {source.namespace.replace("*", "所有")}
-                            </FormText>
-                          </FormItem>
-                          <FormItem label="请求服务">
-                            <FormText>
-                              {source.service.replace("*", "所有")}
-                            </FormText>
-                          </FormItem>
-                          <FormItem label="请求服务标签">
-                            <FormText>
-                              {Object.keys(source.metadata)
-                                .map(
-                                  (key) =>
-                                    `${key}:${source.metadata[key].value}`
-                                )
-                                .join(" ; ")}
-                            </FormText>
-                          </FormItem>
-                        </>
-                      );
-                    })}
-                    {record.destinations.map((destination, index) => {
-                      return (
-                        <FormItem label={`实例分组${index + 1}`}>
-                          <Form layout="inline">
-                            <FormItem label="目标命名空间">
-                              <FormText>{destination.namespace}</FormText>
-                            </FormItem>
-                            <FormItem label="目标服务">
-                              <FormText>{destination.service}</FormText>
-                            </FormItem>
-                            <FormItem label="目标权重">
-                              <FormText>{destination.weight}</FormText>
-                            </FormItem>
-                            <FormItem label="目标优先级">
-                              <FormText>{destination.priority}</FormText>
-                            </FormItem>
-                            <FormItem label="目标是否隔离">
-                              <FormText>
-                                {destination.isolate ? "隔离" : "不隔离"}
-                              </FormText>
-                            </FormItem>
-                            <FormItem label="目标服务标签">
-                              <FormText>
-                                {Object.keys(destination.metadata)
-                                  .map(
-                                    (key) =>
-                                      `${key}:${destination.metadata[key].value}`
-                                  )
-                                  .join(" ; ")}
-                              </FormText>
-                            </FormItem>
-                          </Form>
-                        </FormItem>
-                      );
-                    })}
-                  </Form>
-                );
-              },
-            }),
-          ]}
-        />
-        <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
-      </Card>
+      {editType === EditType.Table ? (
+        <Card>
+          <Card.Header>
+            <H3 style={{ padding: "10px", color: "black" }}>
+              {ruleType === RuleType.Inbound
+                ? "当以下服务调用本服务时，遵守下列路由规则"
+                : "当本服务调用以下服务时，遵守以下路由规则"}
+            </H3>
+          </Card.Header>
+          <GridPageGrid
+            duck={duck}
+            dispatch={dispatch}
+            store={store}
+            columns={columns}
+            addons={[
+              expandable({
+                // 已经展开的产品
+                expandedKeys,
+                // 发生展开行为时，回调更新展开键值
+                onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
+                render: (record) => {
+                  const requestFrom =
+                    (ruleType === RuleType.Inbound
+                      ? record.sources
+                      : record.destinations) || [];
+                  return (
+                    <>
+                      <Form>
+                        <FormItem
+                          label={
+                            "如果请求标签匹配，按权重和优先级路由到以下实例分组"
+                          }
+                        ></FormItem>
+                      </Form>
+                      {record.destinations.map((destination, index) => {
+                        return (
+                          <Row style={{ marginTop: "10px" }}>
+                            <Col span={2}>
+                              <Text
+                                style={{ lineHeight: "30px" }}
+                                theme={"label"}
+                              >{`实例分组${index + 1}`}</Text>
+                            </Col>
+                            <Col span={22}>
+                              <Form layout="inline">
+                                <FormItem label="命名空间">
+                                  <FormText>{destination.namespace}</FormText>
+                                </FormItem>
+                                <FormItem label="服务">
+                                  <FormText>{destination.service}</FormText>
+                                </FormItem>
+                                <FormItem label="实例标签">
+                                  <FormText>
+                                    {Object.keys(destination.metadata)
+                                      .map(
+                                        (key) =>
+                                          `${key}:${destination.metadata[key].value}`
+                                      )
+                                      .join(" ; ")}
+                                  </FormText>
+                                </FormItem>
+                                <FormItem label="权重">
+                                  <FormText>{destination.weight}</FormText>
+                                </FormItem>
+                                <FormItem label="优先级">
+                                  <FormText>{destination.priority}</FormText>
+                                </FormItem>
+                                <FormItem label="是否隔离">
+                                  <FormText>
+                                    {destination.isolate ? "隔离" : "不隔离"}
+                                  </FormText>
+                                </FormItem>
+                              </Form>
+                            </Col>
+                          </Row>
+                        );
+                      })}
+                    </>
+                  );
+                },
+              }),
+            ]}
+          />
+          <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
+        </Card>
+      ) : (
+        <Card>
+          <Card.Body>
+            <section style={{ border: "1px solid #ebebeb" }}>
+              <MonacoEditor
+                ref={ref}
+                monaco={monaco}
+                height={800}
+                language="json"
+                value={jsonValue}
+                onChange={(value) => {
+                  handlers.setJsonValue(value);
+                }}
+              />
+            </section>
+          </Card.Body>
+        </Card>
+      )}
+      <Drawer
+        title={drawerStatus.title}
+        outerClickClosable={false}
+        disableCloseIcon={true}
+        visible={drawerStatus.visible}
+        onClose={() => {}}
+        style={{ width: "1000px" }}
+        footer={
+          <>
+            <Button
+              type={"primary"}
+              onClick={createDuck ? () => handlers.drawerSubmit() : undefined}
+              style={{ margin: "0 10px" }}
+            >
+              确定
+            </Button>
+            <Button
+              onClick={
+                createDuck
+                  ? () => handlers.setDrawerStatus({ visible: false })
+                  : undefined
+              }
+              style={{ margin: "0 10px" }}
+            >
+              取消
+            </Button>
+          </>
+        }
+      >
+        {createDuck && (
+          <Create duck={createDuck} store={store} dispatch={dispatch}></Create>
+        )}
+      </Drawer>
     </>
   );
 }

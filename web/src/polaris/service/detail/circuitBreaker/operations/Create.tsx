@@ -104,13 +104,18 @@ const getMetadataForm = (field) => {
         <FormField showStatusIcon={false} field={type} label={"匹配方式"}>
           <Select size="s" options={MATCH_TYPE_OPTIONS} field={type} />
         </FormField>
-        <FormItem>
+        {field.getValue()?.length > 1 && (
           <Button
             type="icon"
             icon="close"
             onClick={() => removeArrayFieldValue(field, index)}
           ></Button>
-        </FormItem>
+        )}
+        <Button
+          type={"icon"}
+          icon={"plus"}
+          onClick={() => addMetadata(field)}
+        ></Button>
       </Form>
     );
   });
@@ -161,17 +166,14 @@ const renderInboundRule = (props) => {
   return (
     <>
       <FormItem
-        label={<H3 style={{ margin: "10px 0" }}>规则配置</H3>}
-      ></FormItem>
-      <FormItem
         label={
           <H4 style={{ margin: "10px 0" }}>
-            {isInbound ? "对于以下服务" : "本服务调用以下服务时"}
+            {isInbound ? "以下服务" : "本服务调用以下服务或者接口时"}
           </H4>
         }
       ></FormItem>
       <Form>
-        <Form style={{ width: "800px" }}>
+        <Form style={{ width: "850px" }}>
           <Form layout={"inline"}>
             <FormField
               showStatusIcon={false}
@@ -195,13 +197,13 @@ const renderInboundRule = (props) => {
       <FormItem
         label={
           <H3 style={{ margin: "10px 0" }}>
-            {isInbound ? "调用本服务的以下接口时：" : "本服务调用以下接口时"}
+            {isInbound ? "调用本服务的以下接口时" : ""}
           </H3>
         }
       ></FormItem>
 
-      <Form style={{ width: "100%", marginBottom: "20px" }}>
-        <Form style={{ width: "800px" }} layout={"inline"}>
+      <Form style={{ width: "100%" }}>
+        <Form style={{ width: "850px", paddingLeft: "20px" }} layout={"inline"}>
           {[...destinations.asArray()].map((field, index) => {
             const { method } = field.getFields(["method"]);
             const { value: methodValue } = method.getFields(["value"]);
@@ -223,25 +225,18 @@ const renderInboundRule = (props) => {
           <>
             <FormItem
               label={
-                <H3 style={{ margin: "10px 0" }}>调用带有以下标签接口时：</H3>
+                <H3 style={{ margin: "10px 0" }}>对于带有以下标签的请求</H3>
               }
             ></FormItem>
             <Form>
-              <Form style={{ width: "800px" }}>
-                {getMetadataForm(labels)}
-                <Button
-                  type={"icon"}
-                  icon={"plus"}
-                  onClick={() => addMetadata(labels)}
-                ></Button>
-              </Form>
+              <Form style={{ width: "850px" }}>{getMetadataForm(labels)}</Form>
             </Form>
           </>
         );
       })}
       <FormItem
         label={
-          <H3 style={{ margin: "10px 0" }}>满足以下任意条件时，进行熔断：</H3>
+          <H3 style={{ margin: "10px 0" }}>如果满足以下任意条件，进行熔断 </H3>
         }
       ></FormItem>
       {[...destinations.asArray()].map((field, index) => {
@@ -258,7 +253,7 @@ const renderInboundRule = (props) => {
         return (
           <>
             <Form style={{ width: "100%", marginBottom: "20px" }}>
-              <Form style={{ width: "800px" }}>
+              <Form style={{ width: "850px" }}>
                 {[...policy.asArray()].map((policyItem) => {
                   const {
                     policyName,
@@ -341,63 +336,42 @@ const renderInboundRule = (props) => {
                           ></Button>
                         </FormItem>
                       )}
+                      <Button
+                        type={"icon"}
+                        icon={"plus"}
+                        onClick={() => addPolicy(policy)}
+                      ></Button>
                     </Form>
                   );
                 })}
-                <Button
-                  type={"icon"}
-                  icon={"plus"}
-                  onClick={() => addPolicy(policy)}
-                ></Button>
               </Form>
             </Form>
-            <FormItem
-              label={<H3 style={{ margin: "10px 0" }}>满足以下条件时恢复：</H3>}
-            ></FormItem>
             <Form>
-              <Form layout="inline" style={{ width: "800px" }}>
-                <FormField
-                  showStatusIcon={false}
-                  field={sleepWindow}
-                  label={"等待时间大于"}
-                >
-                  <TeaInputNumber
-                    value={Number(sleepWindow.getValue().replace("s", ""))}
-                    hideButton
-                    unit="秒"
-                    min={0}
-                    onChange={(value) => sleepWindow.setValue(`${value}s`)}
-                  ></TeaInputNumber>
-                </FormField>
-              </Form>
-            </Form>
-            <FormItem
-              label={<H3 style={{ margin: "10px 0" }}>熔断粒度：</H3>}
-            ></FormItem>
-            <Form>
-              <Form layout="inline" style={{ width: "800px" }}>
-                <FormItem label={"粒度"}>
-                  <Segment
-                    options={BreakResourceOptions}
-                    value={resource.getValue()}
-                    onChange={(value) => resource.setValue(value)}
-                  ></Segment>
-                </FormItem>
-              </Form>
-            </Form>
-            <FormItem
-              label={<H3 style={{ margin: "10px 0" }}>主动探测：</H3>}
-            ></FormItem>
-            <Form>
-              <Form layout="inline" style={{ width: "800px" }}>
-                <FormItem label={"探测规则"}>
-                  <Segment
-                    options={OUTLIER_DETECT_MAP_OPTIONS}
-                    value={outlierDetectWhen.getValue()}
-                    onChange={(value) => outlierDetectWhen.setValue(value)}
-                  ></Segment>
-                </FormItem>
-              </Form>
+              <FormItem label={"半开时间"}>
+                <TeaInputNumber
+                  value={Number(sleepWindow.getValue().replace("s", ""))}
+                  hideButton
+                  unit="秒"
+                  min={0}
+                  onChange={(value) => sleepWindow.setValue(`${value}s`)}
+                ></TeaInputNumber>
+              </FormItem>
+
+              <FormItem label={"熔断粒度"}>
+                <Segment
+                  options={BreakResourceOptions}
+                  value={resource.getValue()}
+                  onChange={(value) => resource.setValue(value)}
+                ></Segment>
+              </FormItem>
+
+              <FormItem label={"主动探测"}>
+                <Segment
+                  options={OUTLIER_DETECT_MAP_OPTIONS}
+                  value={outlierDetectWhen.getValue()}
+                  onChange={(value) => outlierDetectWhen.setValue(value)}
+                ></Segment>
+              </FormItem>
             </Form>
           </>
         );
@@ -456,13 +430,13 @@ export default purify(function CreateRoute(
       <Card>
         <Card.Body>
           <Form>
-            <FormItem label={"编辑方式"}>
+            {/* <FormItem label={"编辑方式"}>
               <Segment
                 options={EditTypeOptions}
                 value={editType.getValue()}
                 onChange={(value) => editType.setValue(value as any)}
               ></Segment>
-            </FormItem>
+            </FormItem> */}
             {!isEdit && (
               <FormItem label={"规则类型"}>
                 <Segment

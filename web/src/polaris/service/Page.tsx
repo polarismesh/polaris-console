@@ -100,7 +100,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                   }
                   type="simulate"
                   appearance="button"
-                  style={{ width: "200px" }}
+                  style={{ width: "200px", color: "black" }}
                 ></Select>
               </Text>
               <Text reset className="justify-search">
@@ -146,27 +146,28 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               </Text>
               <Text reset className="justify-search">
                 业务&nbsp;
-                <Input
-                  value={customFilters.business}
-                  onChange={(value) =>
-                    handlers.setCustomFilters({
-                      ...customFilters,
-                      business: value,
-                    })
+                <InputAdornment
+                  before={
+                    <Select
+                      options={SEARCH_METHOD_OPTIONS.filter(
+                        (item) => item.value === "vague"
+                      )}
+                      value={"vague"}
+                      style={{ width: "auto", marginRight: "0px" }}
+                    />
                   }
-                ></Input>
-              </Text>
-              <Text reset className="justify-search">
-                实例IP&nbsp;
-                <Input
-                  value={customFilters.instanceIp}
-                  onChange={(value) =>
-                    handlers.setCustomFilters({
-                      ...customFilters,
-                      instanceIp: value,
-                    })
-                  }
-                ></Input>
+                >
+                  <Input
+                    value={customFilters.business}
+                    onChange={(value) =>
+                      handlers.setCustomFilters({
+                        ...customFilters,
+                        business: value,
+                      })
+                    }
+                    style={{ width: "128px" }}
+                  ></Input>
+                </InputAdornment>
               </Text>
               <Text reset className="justify-search">
                 服务标签&nbsp;
@@ -179,6 +180,18 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                     });
                   }}
                   placeholder={"示例：Key:Value"}
+                ></Input>
+              </Text>
+              <Text reset className="justify-search">
+                实例IP&nbsp;
+                <Input
+                  value={customFilters.instanceIp}
+                  onChange={(value) =>
+                    handlers.setCustomFilters({
+                      ...customFilters,
+                      instanceIp: value,
+                    })
+                  }
                 ></Input>
               </Text>
             </section>
@@ -197,6 +210,11 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               <Button className={"justify-button"} onClick={handlers.clear}>
                 重置
               </Button>
+              <span
+                style={{
+                  margin: "0px 20px",
+                }}
+              ></span>
               <Button type={"primary"} onClick={handlers.create}>
                 新建
               </Button>
@@ -256,11 +274,6 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                 type={"icon"}
                 icon={"refresh"}
                 onClick={handlers.reload}
-              ></Button>
-              <Button
-                type={"icon"}
-                icon={"download"}
-                onClick={handlers.export}
               ></Button>
             </>
           }

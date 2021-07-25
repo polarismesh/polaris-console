@@ -127,14 +127,21 @@ export const PolicyNameOptions = [
     value: PolicyName.ConsecutiveError,
   },
 ];
-
+export const BREAK_RESOURCE_TYPE_MAP = {
+  [BREAK_RESOURCE_TYPE.INSTANCE]: {
+    text: "实例",
+  },
+  [BREAK_RESOURCE_TYPE.SUBSET]: {
+    text: "实例分组",
+  },
+};
 export const BreakResourceOptions = [
   {
-    text: "实例",
+    text: BREAK_RESOURCE_TYPE_MAP[BREAK_RESOURCE_TYPE.INSTANCE].text,
     value: BREAK_RESOURCE_TYPE.INSTANCE,
   },
   {
-    text: "实例分组",
+    text: BREAK_RESOURCE_TYPE_MAP[BREAK_RESOURCE_TYPE.SUBSET].text,
     value: BREAK_RESOURCE_TYPE.SUBSET,
   },
 ];
@@ -193,29 +200,29 @@ export enum OutlierDetectWhen {
   ALWAYS = "ALWAYS",
 }
 export const OUTLIER_DETECT_MAP = {
-  [OutlierDetectWhen.ALWAYS]: {
-    text: "开启，用于熔断和恢复",
+  [OutlierDetectWhen.NEVER]: {
+    text: "关闭",
   },
   [OutlierDetectWhen.ON_RECOVER]: {
-    text: "用于恢复",
+    text: "仅用于恢复",
   },
-  [OutlierDetectWhen.NEVER]: {
-    text: "不开启",
+  [OutlierDetectWhen.ALWAYS]: {
+    text: "用于熔断和恢复",
   },
 };
 
 export const OUTLIER_DETECT_MAP_OPTIONS = [
   {
-    text: OUTLIER_DETECT_MAP[OutlierDetectWhen.ALWAYS].text,
-    value: OutlierDetectWhen.ALWAYS,
+    text: OUTLIER_DETECT_MAP[OutlierDetectWhen.NEVER].text,
+    value: OutlierDetectWhen.NEVER,
   },
   {
     text: OUTLIER_DETECT_MAP[OutlierDetectWhen.ON_RECOVER].text,
     value: OutlierDetectWhen.ON_RECOVER,
   },
   {
-    text: OUTLIER_DETECT_MAP[OutlierDetectWhen.NEVER].text,
-    value: OutlierDetectWhen.NEVER,
+    text: OUTLIER_DETECT_MAP[OutlierDetectWhen.ALWAYS].text,
+    value: OutlierDetectWhen.ALWAYS,
   },
 ];
 export const getTemplateCircuitBreakerInbounds = () => `{

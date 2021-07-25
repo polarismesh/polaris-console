@@ -8,6 +8,7 @@ import RoutePageDuck from "./PageDuck";
 import { RateLimit, LimitRange, LimitType } from "./model";
 import { LIMIT_RANGE_MAP, LIMIT_TYPE_OPTIONS, LIMIT_TYPE_MAP } from "./types";
 import { isReadOnly } from "../../utils";
+import { MATCH_TYPE_MAP, MATCH_TYPE } from "../route/types";
 export default ({
   duck: { creators, selector },
   dispatch,
@@ -26,19 +27,26 @@ export default ({
       ),
     },
     {
-      key: "ratelimitAction",
-      header: "限流行为",
-      render: (x: RateLimit) => (
-        <React.Fragment>
-          <Text>
-            {LIMIT_TYPE_MAP[!x.action ? LimitType.REJECT : x.action].text}
-          </Text>
-        </React.Fragment>
-      ),
+      key: "type",
+      header: "接口名",
+      render: (x: RateLimit) => {
+        const method = x.labels?.["method"];
+        return (
+          <React.Fragment>
+            <Text>
+              {method?.value
+                ? `匹配值：${method?.value} 匹配模式：${
+                    MATCH_TYPE_MAP[method?.type || MATCH_TYPE.EXACT].text
+                  }`
+                : "-"}
+            </Text>
+          </React.Fragment>
+        );
+      },
     },
     {
       key: "labels",
-      header: "匹配标签",
+      header: "请求标签",
       render: (x) => (
         <Text overflow>
           {Object.keys(x.labels)
@@ -53,15 +61,6 @@ export default ({
       render: (x) => (
         <React.Fragment>
           <Text>{x.priority}</Text>
-        </React.Fragment>
-      ),
-    },
-    {
-      key: "mtime",
-      header: "更新时间",
-      render: (x) => (
-        <React.Fragment>
-          <Text>{x.mtime}</Text>
         </React.Fragment>
       ),
     },

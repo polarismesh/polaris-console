@@ -114,7 +114,7 @@ export default class MonitorDuck extends Page {
       ),
       filterConfig: reduceFromPayload(types.SET_FILTER_CONFIG, {
         filterTime: {
-          start: moment().subtract(30, "m").unix(),
+          start: moment().subtract(1, "h").unix(),
           end: moment().unix(),
         },
         metricNames: metricNames,
@@ -467,13 +467,14 @@ export class CircuitBreakerMonitorDuck extends MonitorDuck {
     return "circuit-breaker";
   }
   get metricNames() {
-    return [MetricName.CircuitbreakerHalfopen, MetricName.CircuitbreakerOpen];
+    return [MetricName.CircuitbreakerOpen, MetricName.CircuitbreakerHalfopen];
   }
   get monitorLabels() {
     return Object.keys(LabelKeyMap).filter(
       (labelKey) =>
-        labelKey !== MonitorLabelKey.Labels &&
-        labelKey !== MonitorLabelKey.RetCode
+        labelKey !== MonitorLabelKey.CalleeLabels &&
+        labelKey !== MonitorLabelKey.RetCode &&
+        labelKey !== MonitorLabelKey.CallerLabels
     );
   }
 }
@@ -496,7 +497,9 @@ export class RouteMonitorDuck extends MonitorDuck {
     ];
   }
   get monitorLabels() {
-    return Object.keys(LabelKeyMap);
+    return Object.keys(LabelKeyMap).filter(
+      (labelKey) => labelKey !== MonitorLabelKey.CalleeLabels
+    );
   }
 }
 export class RatelimitMonitorDuck extends MonitorDuck {
@@ -512,8 +515,8 @@ export class RatelimitMonitorDuck extends MonitorDuck {
   get metricNames() {
     return [
       MetricName.RatelimitRqTotal,
-      MetricName.RatelimitRqLimit,
       MetricName.RatelimitRqPass,
+      MetricName.RatelimitRqLimit,
     ];
   }
   get monitorLabels() {
@@ -521,7 +524,7 @@ export class RatelimitMonitorDuck extends MonitorDuck {
       MonitorLabelKey.Namespace,
       MonitorLabelKey.Service,
       MonitorLabelKey.Method,
-      MonitorLabelKey.Labels,
+      MonitorLabelKey.CalleeLabels,
     ];
   }
 }

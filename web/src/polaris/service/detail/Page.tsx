@@ -13,8 +13,8 @@ import CircuitBreaker from "./circuitBreaker/Page";
 const tabs: Array<Tab> = [
   TAB.Instance,
   TAB.Route,
-  TAB.RateLimit,
   TAB.CircuitBreaker,
+  TAB.RateLimit,
   TAB.Info,
 ].map((id) => ({
   id,

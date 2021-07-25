@@ -30,13 +30,14 @@ export default function Create(props: DuckCmpProps<Duck>) {
     return <noscript />;
   }
   const data = selectors.data(store);
+
   return (
     <Dialog
       duck={duck}
       store={store}
       dispatch={dispatch}
       size="l"
-      title={"新建服务"}
+      title={data.host ? "编辑服务实例" : "新建服务实例"}
     >
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
@@ -143,7 +144,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             <Input
               field={port}
               placeholder={
-                "多个端口以英文逗号、英文分号、空格或换行分隔，每次最多添加100个IP"
+                "多个端口以英文逗号、英文分号、空格或换行分隔，每次最多添加100个端口"
               }
               size={"l"}
               multiline
@@ -152,7 +153,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           )}
         </FormField>
         <FormField field={weight} label={"权重"} required>
-          <InputNumber field={weight} min={0} hideButton></InputNumber>
+          <InputNumber field={weight} min={0}></InputNumber>
         </FormField>
         <FormField field={protocol} label={"协议"}>
           <Input field={protocol} size={"l"} />
@@ -200,7 +201,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         </FormField>
         {enableHealthCheck.getValue() && (
           <FormItem label={"健康检查方式"}>
-            <Form>
+            <Form style={{ width: "420px" }}>
               <FormField field={healthCheckMethod} label={"检查方式"}>
                 <Select
                   value={healthCheckMethod.getValue()}
@@ -208,7 +209,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                   onChange={(value) => healthCheckMethod.setValue(value)}
                   type={"simulate"}
                   appearance={"button"}
-                  size="l"
+                  size="m"
                 ></Select>
               </FormField>
               <FormField field={ttl} label="TTL">

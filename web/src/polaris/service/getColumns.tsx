@@ -16,7 +16,10 @@ export default ({
     header: "服务名",
     render: (x) => (
       <React.Fragment>
-        <Link to={`/service-detail?name=${x.name}&namespace=${x.namespace}`}>
+        <Link
+          to={`/service-detail?name=${x.name}&namespace=${x.namespace}`}
+          target={"_blank"}
+        >
           {x.name}
         </Link>
       </React.Fragment>

@@ -126,6 +126,8 @@ export default class ServicePageDuck extends GridPageDuck {
         instanceIp: state.customFilters.instanceIp,
         serviceTag: state.customFilters.serviceTag,
         searchMethod: state.customFilters.searchMethod,
+        department: state.customFilters.department,
+        business: state.customFilters.business,
       }),
       customFilters: (state: State) => state.customFilters,
       selection: (state: State) => state.selection,
@@ -134,13 +136,15 @@ export default class ServicePageDuck extends GridPageDuck {
   }
   *loadNamespaceList() {
     const namespaceList = yield describeNamespaces();
+    const options = namespaceList.map((item) => ({
+      ...item,
+      text: item.name,
+      value: item.name,
+    }));
+    options.unshift({ text: "全部", value: "" });
     yield put({
       type: this.types.SET_NAMESPACE_LIST,
-      payload: namespaceList.map((item) => ({
-        ...item,
-        text: item.name,
-        value: item.name,
-      })),
+      payload: options,
     });
   }
 
@@ -194,9 +198,8 @@ export default class ServicePageDuck extends GridPageDuck {
       });
       if (confirm) {
         const res = yield deleteService(params);
-        console.log(res);
+        yield put(creators.reload());
       }
-      yield put(creators.reload());
     });
   }
 
@@ -219,6 +222,7 @@ export default class ServicePageDuck extends GridPageDuck {
     if (searchMethod === "vague" && serviceName) {
       serviceName = serviceName + "*";
     }
+    console.log(department);
     const result = await describeServices({
       limit: count,
       offset: (page - 1) * count,

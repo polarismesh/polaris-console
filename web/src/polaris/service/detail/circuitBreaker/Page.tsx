@@ -12,6 +12,7 @@ import {
   FormText,
   FormItem,
   Text,
+  H3,
 } from "tea-component";
 import GridPageGrid from "@src/polaris/common/duckComponents/GridPageGrid";
 import GridPagePagination from "@src/polaris/common/duckComponents/GridPagePagination";
@@ -28,8 +29,13 @@ import {
   PolicyMap,
   PolicyName,
   OUTLIER_DETECT_MAP,
+  RuleType,
+  BREAK_RESOURCE_TYPE_MAP,
+  OutlierDetectWhen,
+  BREAK_RESOURCE_TYPE,
 } from "./types";
 import { isReadOnly } from "../../utils";
+import { EDIT_TYPE_OPTION, EditType } from "../route/types";
 
 insertCSS(
   "service-detail-instance",
@@ -71,6 +77,23 @@ export default function ServiceInstancePage(
   return (
     <>
       <Table.ActionPanel>
+        <Form layout="inline">
+          <FormItem label={"编辑格式"}>
+            <Segment
+              options={EDIT_TYPE_OPTION}
+              value={EditType.Table}
+            ></Segment>
+          </FormItem>
+        </Form>
+        <Form layout="inline">
+          <FormItem label={"规则类型"}>
+            <Segment
+              options={RULE_TYPE_OPTIONS}
+              value={ruleType}
+              onChange={handlers.setRuleType}
+            ></Segment>
+          </FormItem>
+        </Form>
         <Justify
           left={
             <>
@@ -79,14 +102,10 @@ export default function ServiceInstancePage(
                 onClick={handlers.create}
                 disabled={isReadOnly(namespace)}
                 tooltip={isReadOnly(namespace) && "该命名空间为只读的"}
+                style={{ marginTop: "20px" }}
               >
                 新建
               </Button>
-              <Segment
-                options={RULE_TYPE_OPTIONS}
-                value={ruleType}
-                onChange={handlers.setRuleType}
-              ></Segment>
             </>
           }
           right={
@@ -99,6 +118,13 @@ export default function ServiceInstancePage(
         />
       </Table.ActionPanel>
       <Card>
+        <Card.Header>
+          <H3 style={{ padding: "10px", color: "black" }}>
+            {ruleType === RuleType.Inbound
+              ? "当以下服务调用本服务时，遵守下列熔断规则"
+              : "当本服务调用以下服务时，遵守下列熔断规则"}
+          </H3>
+        </Card.Header>
         <GridPageGrid
           duck={duck}
           dispatch={dispatch}
@@ -112,131 +138,98 @@ export default function ServiceInstancePage(
               onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
               render: (record) => {
                 return (
-                  <Form
-                    key={record.sources
-                      .map((source) => source.namespace)
-                      .join(",")}
-                  >
-                    {record.sources.map((source, index) => {
-                      return (
-                        <>
-                          <FormItem
-                            label="请求命名空间"
-                            key={`req-namespace${index}`}
-                          >
-                            <FormText>
-                              {(source.namespace || "-").replace("*", "所有")}
-                            </FormText>
-                          </FormItem>
-                          <FormItem
-                            label="请求服务"
-                            key={`req-service${index}`}
-                          >
-                            <FormText>
-                              {(source.service || "-").replace("*", "所有")}
-                            </FormText>
-                          </FormItem>
-                          <FormItem label="业务标签" key={`req-labels${index}`}>
-                            <FormText>
-                              {Object.keys(source.labels)
-                                .map(
-                                  (key) => `${key}:${source.labels[key].value}`
-                                )
-                                .join(" ; ")}
-                            </FormText>
-                          </FormItem>
-                        </>
-                      );
-                    })}
-                    {record.destinations.map((destination, index) => {
-                      return (
-                        <>
-                          <FormItem
-                            label="目标命名空间"
-                            key={`res-namespace${index}`}
-                          >
-                            <FormText>
-                              {(destination.namespace || "-").replace(
-                                "*",
-                                "所有"
-                              )}
-                            </FormText>
-                          </FormItem>
-                          <FormItem
-                            label="目标服务"
-                            key={`res-service${index}`}
-                          >
-                            <FormText>
-                              {(destination.service || "-").replace(
-                                "*",
-                                "所有"
-                              )}
-                            </FormText>
-                          </FormItem>
-                          <FormItem label="目标接口" key={`res-method${index}`}>
-                            <FormText>
-                              {destination.method?.value || "-"}
-                            </FormText>
-                          </FormItem>
-                          <FormItem label="熔断策略" key={`res-policy${index}`}>
-                            <FormText>
-                              {Object.keys(destination.policy).map(
-                                (key, index) => {
-                                  if (key === PolicyName.ErrorRate) {
-                                    return (
-                                      <Text
-                                        parent="p"
-                                        key={index}
-                                      >{`当请求个数大于${
-                                        destination.policy[key]
-                                          ?.requestVolumeThreshold || 10
-                                      }个，且${PolicyMap[key].text}大于${
-                                        destination.policy[key].errorRateToOpen
-                                      }%时熔断`}</Text>
-                                    );
+                  <>
+                    <Form style={{ marginBottom: "15px" }}>
+                      <FormItem
+                        label={"如果请求标签匹配，按以下策略熔断"}
+                      ></FormItem>
+                    </Form>
+                    <Form
+                      key={record.sources
+                        .map((source) => source.namespace)
+                        .join(",")}
+                    >
+                      {record.destinations.map((destination, index) => {
+                        return (
+                          <>
+                            <FormItem
+                              label="熔断条件"
+                              key={`res-policy${index}`}
+                            >
+                              <FormText>
+                                {Object.keys(destination.policy).map(
+                                  (key, index) => {
+                                    if (key === PolicyName.ErrorRate) {
+                                      return (
+                                        <Text
+                                          parent="p"
+                                          key={index}
+                                        >{`当请求个数大于${
+                                          destination.policy[key]
+                                            ?.requestVolumeThreshold || 10
+                                        }个，且${PolicyMap[key].text}大于${
+                                          destination.policy[key]
+                                            .errorRateToOpen
+                                        }%时熔断`}</Text>
+                                      );
+                                    }
+                                    if (key === PolicyName.SlowRate) {
+                                      return (
+                                        <Text
+                                          parent="p"
+                                          key={index}
+                                        >{`以超过${destination.policy[key].maxRt}的请求作为超时请求，${PolicyMap[key].text}大于${destination.policy[key].slowRateToOpen}%时熔断`}</Text>
+                                      );
+                                    }
+                                    if (key === PolicyName.ConsecutiveError) {
+                                      return (
+                                        <Text
+                                          parent="p"
+                                          key={index}
+                                        >{`当连续请求错误超过${destination.policy[key].consecutiveErrorToOpen}个时熔断`}</Text>
+                                      );
+                                    }
                                   }
-                                  if (key === PolicyName.SlowRate) {
-                                    return (
-                                      <Text
-                                        parent="p"
-                                        key={index}
-                                      >{`以超过${destination.policy[key].maxRt}的请求作为超时请求，${PolicyMap[key].text}大于${destination.policy[key].slowRateToOpen}%时熔断`}</Text>
-                                    );
-                                  }
-                                  if (key === PolicyName.ConsecutiveError) {
-                                    return (
-                                      <Text
-                                        parent="p"
-                                        key={index}
-                                      >{`当连续请求错误超过${destination.policy[key].consecutiveErrorToOpen}个时熔断`}</Text>
-                                    );
-                                  }
-                                }
-                              )}
-                            </FormText>
-                          </FormItem>
-                          <FormItem
-                            label="熔断恢复时间"
-                            key={`res-recover-time${index}`}
-                          >
-                            <FormText>
-                              {destination.recover?.sleepWindow || "-"}
-                            </FormText>
-                          </FormItem>
-                          <FormItem
-                            label="主动探测"
-                            key={`res-recover-detect${index}`}
-                          >
-                            <FormText>
-                              {OUTLIER_DETECT_MAP[
-                                destination.recover?.outlierDetectWhen
-                              ]?.text || "-"}
-                            </FormText>
-                          </FormItem>
-                        </>
-                      );
-                    })}
-                  </Form>
+                                )}
+                              </FormText>
+                            </FormItem>
+                            <FormItem
+                              label="半开时间"
+                              key={`res-recover-time${index}`}
+                            >
+                              <FormText>
+                                {destination.recover?.sleepWindow || "-"}
+                              </FormText>
+                            </FormItem>
+                            <FormItem
+                              label="熔断粒度"
+                              key={`res-recover-detect${index}`}
+                            >
+                              {/* 默认值 */}
+                              <FormText>
+                                {BREAK_RESOURCE_TYPE_MAP[
+                                  destination.resource ||
+                                    BREAK_RESOURCE_TYPE.SUBSET
+                                ]?.text || "-"}
+                              </FormText>
+                            </FormItem>
+                            <FormItem
+                              label="主动探测"
+                              key={`res-recover-detect${index}`}
+                            >
+                              {/* 默认值 */}
+                              <FormText>
+                                {OUTLIER_DETECT_MAP[
+                                  destination.recover?.outlierDetectWhen ||
+                                    OutlierDetectWhen.NEVER
+                                ]?.text || "-"}
+                              </FormText>
+                            </FormItem>
+                          </>
+                        );
+                      })}
+                    </Form>
+                  </>
                 );
               },
             }),

@@ -204,7 +204,7 @@ export default class RouteCreateDuck extends DetailPageDuck {
             ],
             recover: {
               sleepWindow: "1s",
-              outlierDetectWhen: OutlierDetectWhen.ON_RECOVER,
+              outlierDetectWhen: OutlierDetectWhen.NEVER,
             },
             resource: BREAK_RESOURCE_TYPE.INSTANCE,
             method: {
@@ -242,7 +242,7 @@ export default class RouteCreateDuck extends DetailPageDuck {
             ],
             recover: {
               sleepWindow: "1s",
-              outlierDetectWhen: OutlierDetectWhen.ON_RECOVER,
+              outlierDetectWhen: OutlierDetectWhen.NEVER,
             },
             resource: BREAK_RESOURCE_TYPE.INSTANCE,
             method: {

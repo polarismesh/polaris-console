@@ -82,7 +82,10 @@ export default class ServicePageDuck extends GridPageDuck {
     return {
       ...super.reducers,
       data: reduceFromPayload<ComposedId>(types.LOAD, {} as any),
-      expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
+      expandedKeys: reduceFromPayload<string[]>(
+        types.SET_EXPANDED_KEYS,
+        [...new Array(100)].map((i, index) => index.toString())
+      ),
       ruleType: reduceFromPayload<RuleType>(
         types.SET_RULE_TYPE,
         RuleType.Inbound
@@ -203,7 +206,10 @@ export default class ServicePageDuck extends GridPageDuck {
     const listSlice = result[ruleType]?.slice(offset, offset + count + 1) || [];
     return {
       totalCount: result[ruleType]?.length || 0,
-      list: listSlice.map((item, index) => ({ ...item, id: offset + index })),
+      list: listSlice.map((item, index) => ({
+        ...item,
+        id: (offset + index).toString(),
+      })),
       circuitBreaker: result,
     };
   }

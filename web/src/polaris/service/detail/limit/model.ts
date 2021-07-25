@@ -46,7 +46,7 @@ export interface RateLimit {
 
 export interface DescribeLimitRulesResult {
   rateLimits: RateLimit[];
-  size: number;
+  amount: number;
 }
 export async function describeLimitRules(params: DescribeLimitRulesParams) {
   const res = await getApiRequest<DescribeLimitRulesResult>({
@@ -55,7 +55,7 @@ export async function describeLimitRules(params: DescribeLimitRulesParams) {
   });
   return {
     list: res.rateLimits,
-    totalCount: res.size,
+    totalCount: res.amount,
   };
 }
 

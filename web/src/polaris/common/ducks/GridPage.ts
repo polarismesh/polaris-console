@@ -299,7 +299,7 @@ export default abstract class GridPageDuck extends PageDuck {
   }
   /** 默认每页条数 */
   get defaultPageSize() {
-    return 20;
+    return 10;
   }
   /** 页面参数列表 */
   get params(): this["Params"] {
