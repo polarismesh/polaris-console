@@ -8,6 +8,7 @@ import { DataPoint } from "./MetricFetcher";
 import { match } from "assert/strict";
 import { delay } from "redux-saga";
 import { param } from "jquery";
+import { BuildConfig } from "@src/buildConfig/Base";
 
 interface PromethusResponse<T> {
   data: T;
@@ -52,7 +53,7 @@ export interface GetLabelDataParams {
 }
 export async function getMonitorData(params: GetMonitorDataParams) {
   const res = await getPromethusApiRequest<{ result: MonitorFetcherData[] }>({
-    action: `http://119.91.66.54:9090/api/v1/query_range`,
+    action: `http://${BuildConfig.promethusHost}/api/v1/query_range`,
     data: params,
   });
   return res.data.result;
@@ -66,7 +67,7 @@ export async function getLabelData(params: GetLabelDataParams) {
     searchParams.append("end", params.end.toString());
   }
   const res = await getPromethusApiRequest<string[]>({
-    action: `http://119.91.66.54:9090/api/v1/label/${params.labelKey}/values`,
+    action: `http://${BuildConfig.promethusHost}/api/v1/label/${params.labelKey}/values`,
     data: searchParams,
   });
   return res.data;
