@@ -219,21 +219,6 @@ const renderInboundRule = (props) => {
           })}
         </Form>
       </Form>
-      {[...sources.asArray()].map((field) => {
-        const { labels } = field.getFields(["namespace", "service", "labels"]);
-        return (
-          <>
-            <FormItem
-              label={
-                <H3 style={{ margin: "10px 0" }}>对于带有以下标签的请求</H3>
-              }
-            ></FormItem>
-            <Form>
-              <Form style={{ width: "850px" }}>{getMetadataForm(labels)}</Form>
-            </Form>
-          </>
-        );
-      })}
       <FormItem
         label={
           <H3 style={{ margin: "10px 0" }}>如果满足以下任意条件，进行熔断 </H3>
@@ -254,7 +239,7 @@ const renderInboundRule = (props) => {
           <>
             <Form style={{ width: "100%", marginBottom: "20px" }}>
               <Form style={{ width: "850px" }}>
-                {[...policy.asArray()].map((policyItem) => {
+                {[...policy.asArray()].map((policyItem, index) => {
                   const {
                     policyName,
                     errorRateToOpen,

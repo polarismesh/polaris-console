@@ -151,7 +151,7 @@ const renderInboundRule = (props) => {
         }
       ></FormItem>
       <Form>
-        <Form style={{ width: "800px" }}>
+        <Form style={{ width: "850px" }}>
           <Form layout={"inline"}>
             <FormField
               showStatusIcon={false}
@@ -182,7 +182,9 @@ const renderInboundRule = (props) => {
               label={<H3 style={{ margin: "10px 0" }}>对带有以下标签的请求</H3>}
             ></FormItem>
             <Form style={{ width: "100%" }}>
-              <Form>{getMetadataForm(metadata)}</Form>
+              <Form style={{ width: "850px" }}>
+                {getMetadataForm(metadata)}
+              </Form>
             </Form>
           </>
         );
@@ -213,7 +215,7 @@ const renderInboundRule = (props) => {
         return (
           <>
             <Form style={{ width: "100%", marginBottom: "20px" }}>
-              <Form>
+              <Form style={{ width: "850px" }}>
                 <Justify
                   left={<H4 style={{ margin: "10px" }}>实例分组{index + 1}</H4>}
                   right={

@@ -143,8 +143,7 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
                         label={"如果请求标签匹配，按以下策略限流"}
                       ></FormItem>
                     </Form>
-
-                    <Form style={{ marginTop: "10px" }}>
+                    <Form style={{ marginTop: "15px" }}>
                       <FormItem label="限流条件">
                         <FormText>
                           {record.amounts.map((amount) => {

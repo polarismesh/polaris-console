@@ -92,21 +92,6 @@ export default ({
       ),
     },
     {
-      key: "labels",
-      header: "请求标签",
-      render: (x) => (
-        <Text>
-          {x.sources
-            .map((source) =>
-              Object.keys(source.labels).map(
-                (key) => `${key}:${source.labels[key].value}`
-              )
-            )
-            .join(",")}
-        </Text>
-      ),
-    },
-    {
       key: "action",
       header: "操作",
       render: (x) => {

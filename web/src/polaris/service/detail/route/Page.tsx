@@ -184,7 +184,7 @@ export default function ServiceInstancePage(
                       : record.destinations) || [];
                   return (
                     <>
-                      <Form>
+                      <Form style={{ marginBottom: "20px" }}>
                         <FormItem
                           label={
                             "如果请求标签匹配，按权重和优先级路由到以下实例分组"
@@ -193,14 +193,14 @@ export default function ServiceInstancePage(
                       </Form>
                       {record.destinations.map((destination, index) => {
                         return (
-                          <Row style={{ marginTop: "10px" }}>
-                            <Col span={2}>
+                          <Row>
+                            <Col span={2} style={{ paddingTop: "0" }}>
                               <Text
                                 style={{ lineHeight: "30px" }}
                                 theme={"label"}
                               >{`实例分组${index + 1}`}</Text>
                             </Col>
-                            <Col span={22}>
+                            <Col span={22} style={{ paddingTop: "0" }}>
                               <Form layout="inline">
                                 <FormItem label="命名空间">
                                   <FormText>{destination.namespace}</FormText>

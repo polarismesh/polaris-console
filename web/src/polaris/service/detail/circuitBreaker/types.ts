@@ -66,7 +66,7 @@ export interface Source {
 export interface SourceItem {
   service: string;
   namespace: string;
-  labels: Array<MetadataItem>;
+  labels?: Array<MetadataItem>;
 }
 
 export interface DestinationItem {

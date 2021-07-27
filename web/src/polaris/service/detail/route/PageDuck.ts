@@ -375,8 +375,7 @@ export default class ServicePageDuck extends GridPageDuck {
     }
 
     const offset = (page - 1) * count;
-    const listSlice =
-      routeData[ruleType]?.slice(offset, offset + count + 1) || [];
+    const listSlice = routeData[ruleType]?.slice(offset, offset + count) || [];
     return {
       totalCount: routeData[ruleType]?.length || 0,
       list: listSlice.map((item, index) => ({

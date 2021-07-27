@@ -216,14 +216,12 @@ export default class RouteCreateDuck extends DetailPageDuck {
           {
             service: "",
             namespace: "",
-            labels: [{ key: "", value: "", type: MATCH_TYPE.EXACT }],
           },
         ],
         outboundSources: [
           {
             service: "",
             namespace: "",
-            labels: [{ key: "", value: "", type: MATCH_TYPE.EXACT }],
           },
         ],
         outboundDestinations: [
@@ -283,10 +281,15 @@ export default class RouteCreateDuck extends DetailPageDuck {
               resource: item.resource
                 ? item.resource
                 : BREAK_RESOURCE_TYPE.INSTANCE,
+              recover: {
+                ...item.recover,
+                outlierDetectWhen: item.recover.outlierDetectWhen
+                  ? item.recover.outlierDetectWhen
+                  : OutlierDetectWhen.NEVER,
+              },
             })),
             [`${formValueKey}Sources`]: rule.sources.map((item) => ({
               ...item,
-              labels: convertMetadataMapToArray(item.labels),
             })),
             ruleType,
             [`${formValueKey}Namespace`]: ruleNamespace,
@@ -332,7 +335,6 @@ export default class RouteCreateDuck extends DetailPageDuck {
                 sources: inboundSources.map((source) => {
                   return {
                     ...source,
-                    labels: convertMetadataArrayToMap(source.labels),
                     namespace: inboundNamespace,
                     service: inboundService,
                   };
@@ -367,7 +369,6 @@ export default class RouteCreateDuck extends DetailPageDuck {
                 sources: outboundSources.map((source) => {
                   return {
                     ...source,
-                    labels: convertMetadataArrayToMap(source.labels),
                     namespace: undefined,
                     service: undefined,
                   };
@@ -520,54 +521,5 @@ const validator = CreateForm.combineValidators<Values, {}>({
     ) {
       return "请输入服务名";
     }
-  },
-  inboundSources(v, meta) {
-    if (meta.ruleType !== RuleType.Inbound || meta.editType === EditType.Json) {
-      return;
-    }
-    const res = Form.combineValidators<SourceItem[]>([
-      {
-        labels(v, meta) {
-          const res = Form.combineValidators<MetadataItem[]>([
-            {
-              key(v) {
-                if (!v) return "标签键不能为空";
-              },
-              value(v) {
-                if (!v) return "标签值不能为空";
-              },
-            },
-          ])(v, meta);
-          return res;
-        },
-      },
-    ])(v, meta);
-    return res;
-  },
-  outboundSources(v, meta) {
-    if (
-      meta.ruleType !== RuleType.Outbound ||
-      meta.editType === EditType.Json
-    ) {
-      return;
-    }
-    const res = Form.combineValidators<SourceItem[]>([
-      {
-        labels(v, meta) {
-          const res = Form.combineValidators<MetadataItem[]>([
-            {
-              key(v) {
-                if (!v) return "标签键不能为空";
-              },
-              value(v) {
-                if (!v) return "标签值不能为空";
-              },
-            },
-          ])(v, meta);
-          return res;
-        },
-      },
-    ])(v, meta);
-    return res;
   },
 });
