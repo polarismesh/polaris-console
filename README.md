@@ -13,10 +13,6 @@ Go 1.12 及以上版本，本项目依赖 go mod 进行包管理
 ### Build
 
 ```
-git clone https://github.com/PolarisMesh/polaris-console.git
-```
-
-```
 ./build.sh
 ```
 
