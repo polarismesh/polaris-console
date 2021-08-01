@@ -1,6 +1,6 @@
 # Polaris Console
 
-Visit [polaris](https://github.com/PolarisMesh/polaris) to learn more
+Visit [website](https://polarismesh.cn) to learn more
 
 ## Quick Start
 
