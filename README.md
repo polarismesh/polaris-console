@@ -17,16 +17,7 @@ git clone https://github.com/PolarisMesh/polaris-console.git
 ```
 
 ```
-// Web
-cd polaris-console/web
-npm i
-npm run build
-```
-
-```
-// Web服务器
-cd polaris-console
-go build -o polaris-console
+./build.sh
 ```
 
 ### 提交依赖
