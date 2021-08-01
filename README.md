@@ -2,20 +2,19 @@
 
 Visit [website](https://polarismesh.cn) to learn more
 
-## Quick Start
+## Getting started
 
-### 环境要求
+### Preparing environment
 
 Node 开发环境
+
 Go 1.12 及以上版本，本项目依赖 go mod 进行包管理
 
-### 获取代码
+### Build
 
 ```
 git clone https://github.com/PolarisMesh/polaris-console.git
 ```
-
-### 编译
 
 ```
 // Web
