@@ -1,6 +1,8 @@
 # Polaris Console
 
-## 开发说明
+Visit [polaris](https://github.com/PolarisMesh/polaris) to learn more
+
+## Quick Start
 
 ### 环境要求
 
