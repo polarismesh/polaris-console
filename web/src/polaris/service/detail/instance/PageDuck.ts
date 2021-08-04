@@ -28,7 +28,7 @@ export const EmptyCustomFilter = {
   version: "",
   keys: "",
   values: "",
-  healthy: null,
+  healthy: "true",
   isolate: null,
 };
 
