@@ -214,12 +214,9 @@ export default class ServicePageDuck extends GridPageDuck {
     });
     yield takeLatest(ducks.grid.types.FETCH_DONE,function*(action){
       const {searchParams,list} = action.payload
-      const newSearchParams = JSON.stringify(searchParams)
-      const {lastSearchParams,selection} = selector(yield select())
-      if(newSearchParams !== lastSearchParams){
-        const validSelection = selection.filter(id=>!!list.find(item=>item.id===id))
-        yield put(creators.setSelection(validSelection))
-      }
+      const {selection} = selector(yield select())
+      const validSelection = selection.filter(id=>!!list.find(item=>item.id===id))
+      yield put(creators.setSelection(validSelection))
       yield put({type:types.SET_LAST_SEARCH_PARAMS,payload: JSON.stringify(searchParams)})
     })
     yield takeLatest(
