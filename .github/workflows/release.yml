@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+    
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        goos: [linux]
+        goarch: [amd64]
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15
+        
+    # Compile
+    - name: Build server
+      id: build
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}    
+      run: |
+        bash build.sh
+        PACKAGE_NAME=$(ls | grep polaris-console-release*.tar.gz | sed -n '1p')
+        echo ::set-output name=name::${PACKAGE_NAME}
+        
+    - name: Upload asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./${{ steps.build.outputs.name }}
+        asset_name: ${{ steps.build.outputs.name }}
+        asset_content_type: application/gzip        
