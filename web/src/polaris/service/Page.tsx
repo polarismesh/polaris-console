@@ -1,7 +1,7 @@
-import BasicLayout from "../common/components/BaseLayout";
-import React from "react";
-import { DuckCmpProps } from "saga-duck";
-import ServicePageDuck, { EmptyCustomFilter } from "./PageDuck";
+import BasicLayout from '../common/components/BaseLayout'
+import React from 'react'
+import { DuckCmpProps } from 'saga-duck'
+import ServicePageDuck, { EmptyCustomFilter } from './PageDuck'
 import {
   Button,
   Card,
@@ -18,23 +18,19 @@ import {
   FormText,
   Copy,
   Bubble,
-} from "tea-component";
-import GridPageGrid from "../common/duckComponents/GridPageGrid";
-import GridPagePagination from "../common/duckComponents/GridPagePagination";
-import getColumns from "./getColumns";
-import {
-  filterable,
-  selectable,
-  expandable,
-} from "tea-component/lib/table/addons";
-import insertCSS from "../common/helpers/insertCSS";
-import csvColumns from "./csvColumns";
-import { enableNearbyString } from "./operation/CreateDuck";
-import { READ_ONLY_NAMESPACE } from "./types";
-import { isReadOnly } from "./utils";
+} from 'tea-component'
+import GridPageGrid from '../common/duckComponents/GridPageGrid'
+import GridPagePagination from '../common/duckComponents/GridPagePagination'
+import getColumns from './getColumns'
+import { filterable, selectable, expandable } from 'tea-component/lib/table/addons'
+import insertCSS from '../common/helpers/insertCSS'
+import csvColumns from './csvColumns'
+import { enableNearbyString } from './operation/CreateDuck'
+import { READ_ONLY_NAMESPACE } from './types'
+import { isReadOnly, showAllLabels } from './utils'
 
 insertCSS(
-  "service",
+  'service',
   `
 .justify-search{
   margin-right:20px
@@ -42,53 +38,46 @@ insertCSS(
 .justify-button{
   vertical-align: bottom
 }
-`
-);
+`,
+)
 
 const SEARCH_METHOD_OPTIONS = [
-  { text: "精确", value: "accurate" },
-  { text: "模糊", value: "vague" },
-];
+  { text: '精确', value: 'accurate' },
+  { text: '模糊', value: 'vague' },
+]
 
 export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
-  const { duck, store, dispatch } = props;
-  const { creators, selectors, selector } = duck;
+  const { duck, store, dispatch } = props
+  const { creators, selectors, selector } = duck
   const handlers = React.useMemo(
     () => ({
       reload: () => dispatch(creators.reload()),
-      export: () => dispatch(creators.export(csvColumns, "service-list")),
-      search: () => dispatch(creators.search("")),
-      setCustomFilters: (filters) =>
-        dispatch(creators.setCustomFilters(filters)),
+      export: () => dispatch(creators.export(csvColumns, 'service-list')),
+      search: () => dispatch(creators.search('')),
+      setCustomFilters: (filters) => dispatch(creators.setCustomFilters(filters)),
       clear: () => dispatch(creators.setCustomFilters(EmptyCustomFilter)),
       create: () => dispatch(creators.create()),
       select: (payload) => dispatch(creators.setSelection(payload)),
       remove: (payload) => dispatch(creators.remove(payload)),
       setExpandedKeys: (payload) => dispatch(creators.setExpandedKeys(payload)),
     }),
-    []
-  );
-  const columns = React.useMemo(() => getColumns(props), []);
+    [],
+  )
+  const columns = React.useMemo(() => getColumns(props), [])
   const {
     customFilters,
     selection,
     namespaceList,
     expandedKeys,
     grid: { list },
-  } = selector(store);
+  } = selector(store)
   return (
-    <BasicLayout
-      title={"服务列表"}
-      store={store}
-      selectors={duck.selectors}
-      header={<></>}
-    >
+    <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
         <Justify
           left={
-            <section style={{ marginBottom: "20px" }}>
-              <Text reset className="justify-search">
-                命名空间&nbsp;
+            <Form style={{ marginBottom: '20px' }} layout={'inline'}>
+              <FormItem label={<Text theme={'strong'}>命名空间</Text>} className='justify-search'>
                 <Select
                   value={customFilters.namespace}
                   options={namespaceList}
@@ -98,13 +87,12 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                       namespace: value,
                     })
                   }
-                  type="simulate"
-                  appearance="button"
-                  style={{ width: "200px", color: "black" }}
+                  type='simulate'
+                  appearance='button'
+                  style={{ width: '200px', color: 'black' }}
                 ></Select>
-              </Text>
-              <Text reset className="justify-search">
-                服务名&nbsp;
+              </FormItem>
+              <FormItem label={<Text theme={'strong'}>服务名</Text>} className='justify-search'>
                 <InputAdornment
                   before={
                     <Select
@@ -116,7 +104,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                           searchMethod: value,
                         })
                       }
-                      style={{ width: "auto", marginRight: "0px" }}
+                      style={{ width: 'auto', marginRight: '0px' }}
                     />
                   }
                 >
@@ -128,12 +116,11 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                         serviceName: value,
                       })
                     }
-                    style={{ width: "128px" }}
+                    style={{ width: '128px' }}
                   ></Input>
                 </InputAdornment>
-              </Text>
-              <Text reset className="justify-search">
-                部门&nbsp;
+              </FormItem>
+              <FormItem label={<Text theme={'strong'}>部门</Text>} className='justify-search'>
                 <Input
                   value={customFilters.department}
                   onChange={(value) =>
@@ -143,17 +130,14 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                     })
                   }
                 ></Input>
-              </Text>
-              <Text reset className="justify-search">
-                业务&nbsp;
+              </FormItem>
+              <FormItem label={<Text theme={'strong'}>业务</Text>} className='justify-search'>
                 <InputAdornment
                   before={
                     <Select
-                      options={SEARCH_METHOD_OPTIONS.filter(
-                        (item) => item.value === "vague"
-                      )}
-                      value={"vague"}
-                      style={{ width: "auto", marginRight: "0px" }}
+                      options={SEARCH_METHOD_OPTIONS.filter((item) => item.value === 'vague')}
+                      value={'vague'}
+                      style={{ width: 'auto', marginRight: '0px' }}
                     />
                   }
                 >
@@ -165,25 +149,23 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                         business: value,
                       })
                     }
-                    style={{ width: "128px" }}
+                    style={{ width: '128px' }}
                   ></Input>
                 </InputAdornment>
-              </Text>
-              <Text reset className="justify-search">
-                服务标签&nbsp;
+              </FormItem>
+              <FormItem label={<Text theme={'strong'}>服务标签</Text>} className='justify-search'>
                 <Input
                   value={customFilters.serviceTag}
                   onChange={(value) => {
                     handlers.setCustomFilters({
                       ...customFilters,
                       serviceTag: value,
-                    });
+                    })
                   }}
-                  placeholder={"示例：Key:Value"}
+                  placeholder={'示例：Key:Value'}
                 ></Input>
-              </Text>
-              <Text reset className="justify-search">
-                实例IP&nbsp;
+              </FormItem>
+              <FormItem label={<Text theme={'strong'}>实例IP</Text>} className='justify-search'>
                 <Input
                   value={customFilters.instanceIp}
                   onChange={(value) =>
@@ -193,35 +175,28 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                     })
                   }
                 ></Input>
-              </Text>
-            </section>
+              </FormItem>
+            </Form>
           }
         />
         <Justify
           left={
             <>
-              <Button
-                type={"primary"}
-                className={"justify-button"}
-                onClick={handlers.search}
-              >
+              <Button type={'primary'} className={'justify-button'} onClick={handlers.search}>
                 查询
               </Button>
-              <Button className={"justify-button"} onClick={handlers.clear}>
+              <Button className={'justify-button'} onClick={handlers.clear}>
                 重置
               </Button>
               <span
                 style={{
-                  margin: "0px 20px",
+                  margin: '0px 20px',
                 }}
               ></span>
-              <Button type={"primary"} onClick={handlers.create}>
+              <Button type={'primary'} onClick={handlers.create}>
                 新建
               </Button>
-              <Button
-                onClick={() => handlers.remove(selection)}
-                disabled={selection.length === 0}
-              >
+              <Button onClick={() => handlers.remove(selection)} disabled={selection.length === 0}>
                 删除
               </Button>
 
@@ -270,11 +245,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
           }
           right={
             <>
-              <Button
-                type={"icon"}
-                icon={"refresh"}
-                onClick={handlers.reload}
-              ></Button>
+              <Button type={'icon'} icon={'refresh'} onClick={handlers.reload}></Button>
             </>
           }
         />
@@ -290,8 +261,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               all: true,
               value: selection,
               onChange: handlers.select,
-              rowSelectable: (rowKey, { record }) =>
-                !isReadOnly(record.namespace),
+              rowSelectable: (rowKey, { record }) => !isReadOnly(record.namespace),
             }),
             expandable({
               // 已经展开的产品
@@ -299,28 +269,31 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               // 发生展开行为时，回调更新展开键值
               onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
               render: (record) => {
+                const labelList = Object.keys(record.metadata || {})
                 return (
                   <Form>
-                    <FormItem label="服务标签">
+                    <FormItem label='服务标签'>
                       <FormText>
-                        {Object.keys(record.metadata || {})
-                          .filter((item) => item !== enableNearbyString)
+                        {labelList
+                          .slice(0, 5)
                           .map((item) => `${item}:${record.metadata[item]}`)
-                          .join(" ; ") || "-"}
+                          .join(' ; ') || '-'}
+                        {labelList.length > 5 && '...'}
+                        {labelList.length > 5 && (
+                          <Button onClick={() => showAllLabels(record.metadata)} type='link'>
+                            展示全部
+                          </Button>
+                        )}
                       </FormText>
                     </FormItem>
-                    <FormItem label="描述">
-                      <FormText>{record.comment || "-"}</FormText>
-                    </FormItem>{" "}
-                    <FormItem label="就近访问">
-                      <FormText>
-                        {record.metadata?.[enableNearbyString]
-                          ? "开启"
-                          : "关闭"}
-                      </FormText>
+                    <FormItem label='描述'>
+                      <FormText>{record.comment || '-'}</FormText>
+                    </FormItem>
+                    <FormItem label='就近访问'>
+                      <FormText>{record.metadata?.[enableNearbyString] ? '开启' : '关闭'}</FormText>
                     </FormItem>
                   </Form>
-                );
+                )
               },
             }),
           ]}
@@ -328,5 +301,5 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
         <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
       </Card>
     </BasicLayout>
-  );
+  )
 }
