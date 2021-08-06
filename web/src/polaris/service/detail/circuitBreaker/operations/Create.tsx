@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
-import { DuckCmpProps, purify } from "saga-duck";
-import CreateRouteDuck from "./CreateDuck";
-import DetailPage from "@src/polaris/common/duckComponents/DetailPage";
+import React, { useRef } from 'react'
+import { DuckCmpProps, purify } from 'saga-duck'
+import CreateRouteDuck from './CreateDuck'
+import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import {
   Card,
   Form,
@@ -15,7 +15,7 @@ import {
   Text,
   FormText,
   InputNumber as TeaInputNumber,
-} from "tea-component";
+} from 'tea-component'
 import {
   RULE_TYPE_OPTIONS,
   MATCH_TYPE_OPTIONS,
@@ -27,41 +27,38 @@ import {
   BREAK_RESOURCE_TYPE,
   OUTLIER_DETECT_MAP_OPTIONS,
   PolicyMap,
-} from "../types";
-import Input from "@src/polaris/common/duckComponents/form/Input";
-import FormField from "@src/polaris/common/duckComponents/form/Field";
-import Select from "@src/polaris/common/duckComponents/form/Select";
-import InputNumber from "@src/polaris/common/duckComponents/form/InputNumber";
-import Switch from "@src/polaris/common/duckComponents/form/Switch";
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
-import { REGEX_STAR_TIPS } from "../../limit/operations/Create";
+} from '../types'
+import Input from '@src/polaris/common/duckComponents/form/Input'
+import FormField from '@src/polaris/common/duckComponents/form/Field'
+import Select from '@src/polaris/common/duckComponents/form/Select'
+import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
+import Switch from '@src/polaris/common/duckComponents/form/Switch'
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import { REGEX_STAR_TIPS } from '../../limit/operations/Create'
 
 export enum EditType {
-  Manual = "Manual",
-  Json = "Json",
+  Manual = 'Manual',
+  Json = 'Json',
 }
 const EditTypeOptions = [
   {
-    text: "手动配置",
+    text: '手动配置',
     value: EditType.Manual,
   },
   {
-    text: "JSON配置",
+    text: 'JSON配置',
     value: EditType.Json,
   },
-];
+]
 
 const addMetadata = (field) => {
-  field.setValue([
-    ...field.getValue(),
-    { key: "", value: "", type: MATCH_TYPE.EXACT },
-  ]);
-};
+  field.setValue([...field.getValue(), { key: '', value: '', type: MATCH_TYPE.EXACT }])
+}
 const removeArrayFieldValue = (field, index) => {
-  const newValue = field.getValue();
-  newValue.splice(index, 1);
-  field.setValue([...newValue]);
-};
+  const newValue = field.getValue()
+  newValue.splice(index, 1)
+  field.setValue([...newValue])
+}
 const addPolicy = (field) => {
   field.setValue([
     ...field.getValue(),
@@ -72,69 +69,47 @@ const addPolicy = (field) => {
       consecutiveErrorToOpen: 10,
       maxRt: 1,
     },
-  ]);
-};
+  ])
+}
 const getMetadataForm = (field) => {
   return [...field.asArray()].map((metadataField, index) => {
-    const { key, value, type } = metadataField.getFields([
-      "key",
-      "value",
-      "type",
-    ]);
-    const isRegex = type.getValue() === MATCH_TYPE.REGEX;
+    const { key, value, type } = metadataField.getFields(['key', 'value', 'type'])
+    const isRegex = type.getValue() === MATCH_TYPE.REGEX
 
     return (
-      <Form layout={"inline"}>
-        <FormField
-          showStatusIcon={false}
-          field={key}
-          label={"标签键"}
-          message={isRegex && REGEX_STAR_TIPS}
-        >
+      <Form layout={'inline'}>
+        <FormField showStatusIcon={false} field={key} label={'标签键'} message={isRegex && REGEX_STAR_TIPS}>
           <Input field={key} />
         </FormField>
-        <FormField
-          showStatusIcon={false}
-          field={value}
-          label={"标签值"}
-          message={isRegex && REGEX_STAR_TIPS}
-        >
+        <FormField showStatusIcon={false} field={value} label={'标签值'} message={isRegex && REGEX_STAR_TIPS}>
           <Input field={value} />
         </FormField>
-        <FormField showStatusIcon={false} field={type} label={"匹配方式"}>
-          <Select size="s" options={MATCH_TYPE_OPTIONS} field={type} />
+        <FormField showStatusIcon={false} field={type} label={'匹配方式'}>
+          <Select size='s' options={MATCH_TYPE_OPTIONS} field={type} />
         </FormField>
         {field.getValue()?.length > 1 && (
-          <Button
-            type="icon"
-            icon="close"
-            onClick={() => removeArrayFieldValue(field, index)}
-          ></Button>
+          <Button type='icon' icon='close' onClick={() => removeArrayFieldValue(field, index)}></Button>
         )}
-        <Button
-          type={"icon"}
-          icon={"plus"}
-          onClick={() => addMetadata(field)}
-        ></Button>
+        <Button type={'icon'} icon={'plus'} onClick={() => addMetadata(field)}></Button>
       </Form>
-    );
-  });
-};
+    )
+  })
+}
 
 const renderInboundRule = (props) => {
-  const { duck, store, dispatch } = props;
+  const { duck, store, dispatch } = props
   const {
     selector,
     creators,
     ducks: { form },
-  } = duck;
+  } = duck
   const {
     service,
     namespace,
     form: { values },
     ruleIndex,
-  } = selector(store);
-  const formApi = form.getAPI(store, dispatch);
+  } = selector(store)
+  const formApi = form.getAPI(store, dispatch)
   const {
     inboundDestinations,
     inboundSources,
@@ -147,98 +122,67 @@ const renderInboundRule = (props) => {
     outboundNamespace,
     outboundService,
   } = formApi.getFields([
-    "inboundDestinations",
-    "inboundSources",
-    "outboundDestinations",
-    "outboundSources",
-    "editType",
-    "ruleType",
-    "inboundNamespace",
-    "inboundService",
-    "outboundNamespace",
-    "outboundService",
-  ]);
-  const isInbound = ruleType.getValue() === RuleType.Inbound;
-  let sources = isInbound ? inboundSources : outboundSources;
-  let destinations = isInbound ? inboundDestinations : outboundDestinations;
-  let ruleNamespace = isInbound ? inboundNamespace : outboundNamespace;
-  let ruleService = isInbound ? inboundService : outboundService;
+    'inboundDestinations',
+    'inboundSources',
+    'outboundDestinations',
+    'outboundSources',
+    'editType',
+    'ruleType',
+    'inboundNamespace',
+    'inboundService',
+    'outboundNamespace',
+    'outboundService',
+  ])
+  const isInbound = ruleType.getValue() === RuleType.Inbound
+  let sources = isInbound ? inboundSources : outboundSources
+  let destinations = isInbound ? inboundDestinations : outboundDestinations
+  let ruleNamespace = isInbound ? inboundNamespace : outboundNamespace
+  let ruleService = isInbound ? inboundService : outboundService
   return (
     <>
       <FormItem
-        label={
-          <H4 style={{ margin: "10px 0" }}>
-            {isInbound ? "以下服务" : "本服务调用以下服务或者接口时"}
-          </H4>
-        }
+        label={<H4 style={{ margin: '10px 0' }}>{isInbound ? '以下服务' : '本服务调用以下服务或者接口时'}</H4>}
       ></FormItem>
       <Form>
-        <Form style={{ width: "850px" }}>
-          <Form layout={"inline"}>
-            <FormField
-              showStatusIcon={false}
-              field={ruleNamespace}
-              label={"命名空间"}
-              message={REGEX_STAR_TIPS}
-            >
+        <Form style={{ width: '850px' }}>
+          <Form layout={'inline'}>
+            <FormField showStatusIcon={false} field={ruleNamespace} label={'命名空间'} message={REGEX_STAR_TIPS}>
               <Input field={ruleNamespace} />
             </FormField>
-            <FormField
-              showStatusIcon={false}
-              field={ruleService}
-              label={"服务"}
-              message={REGEX_STAR_TIPS}
-            >
+            <FormField showStatusIcon={false} field={ruleService} label={'服务'} message={REGEX_STAR_TIPS}>
               <Input field={ruleService} />
             </FormField>
           </Form>
         </Form>
       </Form>
-      <FormItem
-        label={
-          <H3 style={{ margin: "10px 0" }}>
-            {isInbound ? "调用本服务的以下接口时" : ""}
-          </H3>
-        }
-      ></FormItem>
+      <FormItem label={<H3 style={{ margin: '10px 0' }}>{isInbound ? '调用本服务的以下接口时' : ''}</H3>}></FormItem>
 
-      <Form style={{ width: "100%" }}>
-        <Form style={{ width: "850px", paddingLeft: "20px" }} layout={"inline"}>
+      <Form style={{ width: '100%' }}>
+        <Form style={{ width: '850px', paddingLeft: '20px' }} layout={'inline'}>
           {[...destinations.asArray()].map((field, index) => {
-            const { method } = field.getFields(["method"]);
-            const { value: methodValue } = method.getFields(["value"]);
+            const { method } = field.getFields(['method'])
+            const { value: methodValue } = method.getFields(['value'])
             return (
-              <FormField
-                showStatusIcon={false}
-                field={methodValue}
-                label={"接口"}
-              >
+              <FormField showStatusIcon={false} field={methodValue} label={'接口'}>
                 <Input field={methodValue} />
               </FormField>
-            );
+            )
           })}
         </Form>
       </Form>
-      <FormItem
-        label={
-          <H3 style={{ margin: "10px 0" }}>如果满足以下任意条件，进行熔断 </H3>
-        }
-      ></FormItem>
+      <FormItem label={<H3 style={{ margin: '10px 0' }}>如果满足以下任意条件，进行熔断 </H3>}></FormItem>
       {[...destinations.asArray()].map((field, index) => {
         const { policy, resource, recover, resourceSetMark } = field.getFields([
-          "policy",
-          "resource",
-          "recover",
-          "resourceSetMark",
-        ]);
-        const { sleepWindow, outlierDetectWhen } = recover.getFields([
-          "sleepWindow",
-          "outlierDetectWhen",
-        ]);
+          'policy',
+          'resource',
+          'recover',
+          'resourceSetMark',
+        ])
+        const { sleepWindow, outlierDetectWhen } = recover.getFields(['sleepWindow', 'outlierDetectWhen'])
         return (
           <>
-            <Form style={{ width: "100%", marginBottom: "20px" }}>
-              <Form style={{ width: "850px" }}>
+            <Form style={{ width: '100%', marginBottom: '20px' }}>
+              <Form style={{ width: '850px' }}>
                 {[...policy.asArray()].map((policyItem, index) => {
                   const {
                     policyName,
@@ -248,31 +192,22 @@ const renderInboundRule = (props) => {
                     requestVolumeThreshold,
                     consecutiveErrorToOpen,
                   } = policyItem.getFields([
-                    "policyName",
-                    "errorRateToOpen",
-                    "slowRateToOpen",
-                    "maxRt",
-                    "requestVolumeThreshold",
-                    "consecutiveErrorToOpen",
-                  ]);
+                    'policyName',
+                    'errorRateToOpen',
+                    'slowRateToOpen',
+                    'maxRt',
+                    'requestVolumeThreshold',
+                    'consecutiveErrorToOpen',
+                  ])
                   const threshold =
-                    policyName.getValue() === PolicyName.ErrorRate
-                      ? errorRateToOpen
-                      : consecutiveErrorToOpen;
+                    policyName.getValue() === PolicyName.ErrorRate ? errorRateToOpen : consecutiveErrorToOpen
                   return (
-                    <Form layout={"inline"}>
-                      <FormField
-                        field={policyName}
-                        label={"条件"}
-                        showStatusIcon={false}
-                      >
-                        <Select
-                          field={policyName}
-                          options={PolicyNameOptions}
-                        />
+                    <Form layout={'inline'}>
+                      <FormField field={policyName} label={'条件'} showStatusIcon={false}>
+                        <Select field={policyName} options={PolicyNameOptions} />
                       </FormField>
                       <FormItem>
-                        <FormText>{">="}</FormText>
+                        <FormText>{'>='}</FormText>
                       </FormItem>
                       <FormField showStatusIcon={false} field={threshold}>
                         <InputNumber
@@ -284,65 +219,42 @@ const renderInboundRule = (props) => {
                         />
                       </FormField>
                       {policyName.getValue() === PolicyName.SlowRate && (
-                        <FormField
-                          showStatusIcon={false}
-                          field={maxRt}
-                          label={"最大响应时间"}
-                        >
-                          <InputNumber
-                            size="m"
-                            field={maxRt}
-                            unit={"秒"}
-                            min={0}
-                          />
+                        <FormField showStatusIcon={false} field={maxRt} label={'最大响应时间'}>
+                          <InputNumber size='m' field={maxRt} unit={'秒'} min={0} />
                         </FormField>
                       )}
                       {policyName.getValue() === PolicyName.ErrorRate && (
-                        <FormField
-                          showStatusIcon={false}
-                          field={requestVolumeThreshold}
-                          label={"请求数阈值"}
-                        >
-                          <InputNumber
-                            hideButton
-                            size="m"
-                            field={requestVolumeThreshold}
-                            unit={"个"}
-                            min={0}
-                          />
+                        <FormField showStatusIcon={false} field={requestVolumeThreshold} label={'请求数阈值'}>
+                          <InputNumber hideButton size='m' field={requestVolumeThreshold} unit={'个'} min={0} />
                         </FormField>
                       )}
                       {policy.getValue().length > 1 && (
                         <FormItem>
                           <Button
-                            type="icon"
-                            icon="close"
+                            type='icon'
+                            icon='close'
                             onClick={() => removeArrayFieldValue(policy, index)}
                           ></Button>
                         </FormItem>
                       )}
-                      <Button
-                        type={"icon"}
-                        icon={"plus"}
-                        onClick={() => addPolicy(policy)}
-                      ></Button>
+                      <Button type={'icon'} icon={'plus'} onClick={() => addPolicy(policy)}></Button>
                     </Form>
-                  );
+                  )
                 })}
               </Form>
             </Form>
             <Form>
-              <FormItem label={"半开时间"}>
+              <FormItem label={'半开时间'}>
                 <TeaInputNumber
-                  value={Number(sleepWindow.getValue().replace("s", ""))}
+                  value={Number(sleepWindow.getValue().replace('s', ''))}
                   hideButton
-                  unit="秒"
+                  unit='秒'
                   min={0}
                   onChange={(value) => sleepWindow.setValue(`${value}s`)}
                 ></TeaInputNumber>
               </FormItem>
 
-              <FormItem label={"熔断粒度"}>
+              <FormItem label={'熔断粒度'}>
                 <Segment
                   options={BreakResourceOptions}
                   value={resource.getValue()}
@@ -350,7 +262,7 @@ const renderInboundRule = (props) => {
                 ></Segment>
               </FormItem>
 
-              <FormItem label={"主动探测"}>
+              <FormItem label={'主动探测'}>
                 <Segment
                   options={OUTLIER_DETECT_MAP_OPTIONS}
                   value={outlierDetectWhen.getValue()}
@@ -359,119 +271,83 @@ const renderInboundRule = (props) => {
               </FormItem>
             </Form>
           </>
-        );
+        )
       })}
     </>
-  );
-};
+  )
+}
 
-export default purify(function CreateRoute(
-  props: DuckCmpProps<CreateRouteDuck>
-) {
-  const { duck, store, dispatch } = props;
+export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>) {
+  const { duck, store, dispatch } = props
   const {
     selector,
     creators,
     ducks: { form },
-  } = duck;
+  } = duck
   const {
     service,
     namespace,
     form: { values },
     ruleIndex,
-  } = selector(store);
-  const formApi = form.getAPI(store, dispatch);
-  const {
-    editType,
-    ruleType,
-    inboundJsonValue,
-    outboundJsonValue,
-  } = formApi.getFields([
-    "editType",
-    "ruleType",
-    "inboundJsonValue",
-    "outboundJsonValue",
-  ]);
+  } = selector(store)
+  const formApi = form.getAPI(store, dispatch)
+  const { editType, ruleType, inboundJsonValue, outboundJsonValue } = formApi.getFields([
+    'editType',
+    'ruleType',
+    'inboundJsonValue',
+    'outboundJsonValue',
+  ])
   const handlers = React.useMemo(
     () => ({
       submit: () => dispatch(duck.creators.submit()),
     }),
-    []
-  );
-  const ref = useRef(null);
-  const isEdit = Number(ruleIndex) !== -1;
-  const currentJsonValue =
-    ruleType.getValue() === RuleType.Inbound
-      ? inboundJsonValue
-      : outboundJsonValue;
+    [],
+  )
+  const ref = useRef(null)
+  const isEdit = Number(ruleIndex) !== -1
+  const currentJsonValue = ruleType.getValue() === RuleType.Inbound ? inboundJsonValue : outboundJsonValue
   return (
-    <DetailPage
-      store={store}
-      duck={duck}
-      dispatch={dispatch}
-      title={ruleIndex === -1 ? "新建熔断规则" : "编辑熔断规则"}
-      backRoute={`/service-detail?namespace=${namespace}&name=${service}&tab=circuitBreaker`}
-    >
-      <Card>
-        <Card.Body>
-          <Form>
-            {/* <FormItem label={"编辑方式"}>
+    <>
+      <Form>
+        {/* <FormItem label={"编辑方式"}>
               <Segment
                 options={EditTypeOptions}
                 value={editType.getValue()}
                 onChange={(value) => editType.setValue(value as any)}
               ></Segment>
             </FormItem> */}
-            {!isEdit && (
-              <FormItem label={"规则类型"}>
-                <Segment
-                  options={RULE_TYPE_OPTIONS}
-                  value={ruleType.getValue()}
-                  onChange={(value) => ruleType.setValue(value as any)}
-                ></Segment>
-              </FormItem>
-            )}
-            {editType.getValue() === EditType.Json && (
-              <FormItem
-                message={
-                  <Text theme={"danger"}>
-                    {currentJsonValue.getTouched() &&
-                      currentJsonValue.getError()}
-                  </Text>
-                }
-                label={"JSON编辑"}
-              >
-                <section
-                  style={{ border: "1px solid #ebebeb", width: "1000px" }}
-                >
-                  <MonacoEditor
-                    ref={ref}
-                    monaco={monaco}
-                    height={400}
-                    width={1000}
-                    language="json"
-                    value={currentJsonValue.getValue()}
-                    onChange={(value) => {
-                      currentJsonValue.setTouched(true);
-                      currentJsonValue.setValue(value);
-                    }}
-                  />
-                </section>
-              </FormItem>
-            )}
-          </Form>
-          {editType.getValue() === EditType.Manual && renderInboundRule(props)}
-        </Card.Body>
-        <Card.Footer>
-          <Button
-            type={"primary"}
-            onClick={handlers.submit}
-            style={{ margin: "10px" }}
+        {/* {!isEdit && (
+          <FormItem label={'规则类型'}>
+            <Segment
+              options={RULE_TYPE_OPTIONS}
+              value={ruleType.getValue()}
+              onChange={(value) => ruleType.setValue(value as any)}
+            ></Segment>
+          </FormItem>
+        )} */}
+        {editType.getValue() === EditType.Json && (
+          <FormItem
+            message={<Text theme={'danger'}>{currentJsonValue.getTouched() && currentJsonValue.getError()}</Text>}
+            label={'JSON编辑'}
           >
-            提交
-          </Button>
-        </Card.Footer>
-      </Card>
-    </DetailPage>
-  );
-});
+            <section style={{ border: '1px solid #ebebeb', width: '1000px' }}>
+              <MonacoEditor
+                ref={ref}
+                monaco={monaco}
+                height={400}
+                width={1000}
+                language='json'
+                value={currentJsonValue.getValue()}
+                onChange={(value) => {
+                  currentJsonValue.setTouched(true)
+                  currentJsonValue.setValue(value)
+                }}
+              />
+            </section>
+          </FormItem>
+        )}
+      </Form>
+      {editType.getValue() === EditType.Manual && renderInboundRule(props)}
+    </>
+  )
+})
