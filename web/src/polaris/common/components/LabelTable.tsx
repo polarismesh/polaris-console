@@ -42,7 +42,7 @@ export default function (props: Props) {
         bordered
         records={records}
         columns={[
-          { key: 'key', header: '标签键', render: (x) => <Text tooltip={x.value}>{x.value}</Text> },
+          { key: 'key', header: '标签键', render: (x) => <Text tooltip={x.key}>{x.key}</Text> },
           { key: 'value', header: '标签值', render: (x) => <Text tooltip={x.value}>{x.value}</Text> },
         ]}
         addons={[
