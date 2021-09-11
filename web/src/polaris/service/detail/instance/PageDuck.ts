@@ -28,7 +28,7 @@ export const EmptyCustomFilter = {
   version: "",
   keys: "",
   values: "",
-  healthy: null,
+  healthy: "true",
   isolate: null,
 };
 
@@ -78,6 +78,7 @@ export default class ServicePageDuck extends GridPageDuck {
       MODIFY_HEALTH_STATUS,
       MODIFY_ISOLATE_STATUS,
       LOAD,
+      SET_LAST_SEARCH_PARAMS
     }
     return {
       ...super.quickTypes,
@@ -111,7 +112,7 @@ export default class ServicePageDuck extends GridPageDuck {
         EmptyCustomFilter
       ),
       selection: reduceFromPayload<string[]>(types.SET_SELECTION, []),
-
+      lastSearchParams: reduceFromPayload<string>(types.SET_LAST_SEARCH_PARAMS, ''),
       expandedKeys: reduceFromPayload<string[]>(
         types.SET_EXPANDED_KEYS,
         new Array(100).map((i, index) => index.toString())
@@ -156,7 +157,6 @@ export default class ServicePageDuck extends GridPageDuck {
       selection: (state: State) => state.selection,
     };
   }
-
   *saga() {
     const { types, creators, selector, ducks } = this;
     yield* this.sagaInitLoad();
@@ -212,6 +212,13 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload());
       }
     });
+    yield takeLatest(ducks.grid.types.FETCH_DONE,function*(action){
+      const {searchParams,list} = action.payload
+      const {selection} = selector(yield select())
+      const validSelection = selection.filter(id=>!!list.find(item=>item.id===id))
+      yield put(creators.setSelection(validSelection))
+      yield put({type:types.SET_LAST_SEARCH_PARAMS,payload: JSON.stringify(searchParams)})
+    })
     yield takeLatest(
       [
         types.MODIFY_ISOLATE_STATUS,
@@ -292,8 +299,7 @@ export default class ServicePageDuck extends GridPageDuck {
       },
     } = filters;
     const [keys, values] = (metadata || "").split(":");
-    console.log(port, weight, protocol, version, healthy, isolate, metadata);
-    const result = await describeInstances({
+    const searchParams = {
       limit: count,
       offset: (page - 1) * count,
       namespace,
@@ -307,10 +313,12 @@ export default class ServicePageDuck extends GridPageDuck {
       isolate: isolate === "" ? undefined : isolate,
       keys: keys || undefined,
       values: values || undefined,
-    });
+    }
+    const result = await describeInstances(searchParams);
     return {
       totalCount: result.totalCount,
       list: result.list || [],
+      searchParams
     };
   }
 }

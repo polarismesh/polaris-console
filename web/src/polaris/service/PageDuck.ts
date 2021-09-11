@@ -7,7 +7,7 @@ import { resolvePromise } from "saga-duck/build/helper";
 import { showDialog } from "../common/helpers/showDialog";
 import Create from "./operation/Create";
 import CreateDuck from "./operation/CreateDuck";
-import { put } from "redux-saga/effects";
+import { put, select } from "redux-saga/effects";
 import { Modal } from "tea-component";
 
 export const EmptyCustomFilter = {
@@ -149,10 +149,16 @@ export default class ServicePageDuck extends GridPageDuck {
   }
 
   *saga() {
-    const { types, creators } = this;
+    const { types, creators,selector,ducks } = this;
     yield* this.sagaInitLoad();
     yield* super.saga();
     yield* this.loadNamespaceList();
+    yield takeLatest(ducks.grid.types.FETCH_DONE,function*(action){
+      const {list} = action.payload
+      const {selection} = selector(yield select())
+      const validSelection = selection.filter(id=>!!list.find(item=>item.id===id))
+      yield put(creators.setSelection(validSelection))
+    })
     yield takeLatest(types.CREATE, function* () {
       const res = yield* resolvePromise(
         new Promise((resolve) => {

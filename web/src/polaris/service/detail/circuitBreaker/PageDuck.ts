@@ -1,42 +1,45 @@
-import { createToPayload, reduceFromPayload } from "saga-duck";
-import GridPageDuck, {
-  Filter as BaseFilter,
-} from "@src/polaris/common/ducks/GridPage";
-import {
-  RuleType,
-  Destination,
-  Source,
-  InboundItem,
-  OutboundItem,
-} from "./types";
+import { createToPayload, reduceFromPayload } from 'saga-duck'
+import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/GridPage'
+import { RuleType, Destination, Source, InboundItem, OutboundItem } from './types'
 import {
   describeServiceCircuitBreaker,
   CircuitBreaker,
   createServiceCircuitBreakerVersion,
   releaseServiceCircuitBreaker,
-} from "./model";
-import { takeLatest } from "redux-saga-catch";
-import { resolvePromise } from "saga-duck/build/helper";
-import { showDialog } from "@src/polaris/common/helpers/showDialog";
-import { put, select } from "redux-saga/effects";
-import { Modal } from "tea-component";
-import router from "@src/polaris/common/util/router";
+  createServiceCircuitBreaker,
+} from './model'
+import { takeLatest } from 'redux-saga-catch'
+import { resolvePromise } from 'saga-duck/build/helper'
+import { showDialog } from '@src/polaris/common/helpers/showDialog'
+import { put, select, take } from 'redux-saga/effects'
+import { Modal } from 'tea-component'
+import router from '@src/polaris/common/util/router'
+import { DynamicCircuitBreakerCreateDuck } from './operations/CreateDuck'
 
 interface Filter extends BaseFilter {
-  namespace: string;
-  service: string;
-  ruleType: RuleType;
+  namespace: string
+  service: string
+  ruleType: RuleType
+  circuitBreaker: CircuitBreaker
 }
 
 interface ComposedId {
-  name: string;
-  namespace: string;
+  name: string
+  namespace: string
+}
+interface DrawerStatus {
+  visible: boolean
+  title?: string
+  createId?: string
+  ruleIndex?: number
+  ruleType?: string
+  isEdit?: boolean
 }
 export default class ServicePageDuck extends GridPageDuck {
-  Filter: Filter;
-  Item: any;
+  Filter: Filter
+  Item: any
   get baseUrl() {
-    return null;
+    return null
   }
   get quickTypes() {
     enum Types {
@@ -48,68 +51,73 @@ export default class ServicePageDuck extends GridPageDuck {
       SET_EXPANDED_KEYS,
       SET_RULE_TYPE,
       SET_CIRCUIT_BREAKER,
+      SET_DRAWER_STATUS,
+      DRAWER_SUBMIT,
+      SET_EDIT_STATUS,
       LOAD,
+      SET_ORIGIN_DATA,
+      SUBMIT,
+      RESET_DATA,
     }
     return {
       ...super.quickTypes,
       ...Types,
-    };
+    }
   }
   get initialFetch() {
-    return false;
+    return false
   }
   get recordKey() {
-    return "id";
+    return 'id'
   }
   get watchTypes() {
-    return [
-      ...super.watchTypes,
-      this.types.SEARCH,
-      this.types.LOAD,
-      this.types.SET_RULE_TYPE,
-    ];
+    return [...super.watchTypes, this.types.SEARCH, this.types.LOAD, this.types.SET_RULE_TYPE]
   }
   get params() {
-    return [...super.params];
+    return [...super.params]
   }
   get quickDucks() {
     return {
       ...super.quickDucks,
-    };
+      dynamicCreateDuck: DynamicCircuitBreakerCreateDuck,
+    }
   }
   get reducers() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.reducers,
       data: reduceFromPayload<ComposedId>(types.LOAD, {} as any),
       expandedKeys: reduceFromPayload<string[]>(
         types.SET_EXPANDED_KEYS,
-        [...new Array(100)].map((i, index) => index.toString())
+        [...new Array(100)].map((i, index) => index.toString()),
       ),
-      ruleType: reduceFromPayload<RuleType>(
-        types.SET_RULE_TYPE,
-        RuleType.Inbound
-      ),
-      circuitBreaker: reduceFromPayload<CircuitBreaker>(
-        types.SET_CIRCUIT_BREAKER,
-        null
-      ),
-    };
+      ruleType: reduceFromPayload<RuleType>(types.SET_RULE_TYPE, RuleType.Inbound),
+      circuitBreaker: reduceFromPayload<CircuitBreaker>(types.SET_CIRCUIT_BREAKER, null),
+      drawerStatus: reduceFromPayload<DrawerStatus>(types.SET_DRAWER_STATUS, {
+        visible: false,
+      } as any),
+      edited: reduceFromPayload<boolean>(types.SET_EDIT_STATUS, false),
+      originData: reduceFromPayload<CircuitBreaker>(types.SET_ORIGIN_DATA, null),
+    }
   }
   get creators() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.creators,
       edit: createToPayload<void>(types.EDIT),
       remove: createToPayload<number>(types.REMOVE),
-      create: createToPayload<void>(types.CREATE),
+      create: createToPayload<number>(types.CREATE),
       setExpandedKeys: createToPayload<string[]>(types.SET_EXPANDED_KEYS),
       load: createToPayload<ComposedId>(types.LOAD),
       setRuleType: createToPayload<RuleType>(types.SET_RULE_TYPE),
-    };
+      setDrawerStatus: createToPayload<DrawerStatus>(types.SET_DRAWER_STATUS),
+      drawerSubmit: createToPayload<void>(types.DRAWER_SUBMIT),
+      submit: createToPayload<void>(types.SUBMIT),
+      reset: createToPayload<void>(types.RESET_DATA),
+    }
   }
   get rawSelectors() {
-    type State = this["State"];
+    type State = this['State']
     return {
       ...super.rawSelectors,
       filter: (state: State) => ({
@@ -119,98 +127,264 @@ export default class ServicePageDuck extends GridPageDuck {
         service: state.data.name,
         namespace: state.data.namespace,
         ruleType: state.ruleType,
+        circuitBreaker: state.circuitBreaker,
       }),
-    };
+    }
   }
 
   *saga() {
-    const { types, creators, selector, ducks } = this;
-    yield* this.sagaInitLoad();
-    yield* super.saga();
-    yield takeLatest(types.CREATE, function* () {
+    const { types, creators, selector, ducks } = this
+    yield* this.sagaInitLoad()
+    yield* super.saga()
+    yield takeLatest(types.CREATE, function* (action) {
       const {
         data: { name, namespace },
-      } = selector(yield select());
-      router.navigate(
-        `/circuitBreaker-create?service=${name}&namespace=${namespace}`
-      );
-    });
+        circuitBreaker,
+        ruleType,
+      } = selector(yield select())
+      const createId = Math.round(Math.random() * 1000000).toString()
+      yield put(ducks.dynamicCreateDuck.creators.createDuck(createId))
+      const createDuck = ducks.dynamicCreateDuck.getDuck(createId)
+      const ruleIndex = action.payload
+      yield put({
+        type: types.SET_DRAWER_STATUS,
+        payload: {
+          title: '新建熔断规则',
+          visible: true,
+          createId,
+          ruleIndex,
+          ruleType,
+          isEdit: false,
+        },
+      })
+      yield take(createDuck.types.READY)
+      yield put(
+        createDuck.creators.load({
+          values: { ...JSON.parse(JSON.stringify(circuitBreaker)) },
+          service: name,
+          namespace,
+          ruleIndex,
+          ruleType,
+          isEdit: false,
+        }),
+      )
+    })
     yield takeLatest(types.EDIT, function* (action) {
       const {
         data: { name, namespace },
         ruleType,
-      } = selector(yield select());
-      const ruleIndex = action.payload;
-      router.navigate(
-        `/circuitBreaker-create?service=${name}&namespace=${namespace}&ruleIndex=${ruleIndex}&ruleType=${ruleType}`
-      );
-    });
-
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
-      const { circuitBreaker } = action.payload;
-      yield put({ type: types.SET_CIRCUIT_BREAKER, payload: circuitBreaker });
-    });
-    yield takeLatest(types.REMOVE, function* (action) {
-      const removeIndex = action.payload;
-      const {
-        ruleType,
         circuitBreaker,
-        data: { namespace, name },
-      } = selector(yield select());
-      circuitBreaker[ruleType].splice(removeIndex, 1);
-      const params = {
-        ...circuitBreaker,
-        ctime: undefined,
-        mtime: undefined,
-        revision: undefined,
-        [ruleType]: circuitBreaker[ruleType],
-      };
+      } = selector(yield select())
+      const createId = Math.round(Math.random() * 1000000).toString()
+      yield put(ducks.dynamicCreateDuck.creators.createDuck(createId))
+      const createDuck = ducks.dynamicCreateDuck.getDuck(createId)
+      const ruleIndex = action.payload
+      yield put({
+        type: types.SET_DRAWER_STATUS,
+        payload: {
+          title: '编辑路由规则',
+          visible: true,
+          createId,
+          ruleIndex,
+          ruleType,
+          isEdit: true,
+        },
+      })
+      yield take(createDuck.types.READY)
+      yield put(
+        createDuck.creators.load({
+          values: { ...JSON.parse(JSON.stringify(circuitBreaker)) },
+          service: name,
+          namespace,
+          ruleIndex,
+          ruleType,
+          isEdit: true,
+        }),
+      )
+    })
+    yield takeLatest(types.REMOVE, function* (action) {
       const confirm = yield Modal.confirm({
-        message: `确认删除熔断规则`,
-        description: "删除后，无法恢复",
-      });
+        message: `确认删除路由规则`,
+        description: '删除后，无法恢复',
+      })
       if (confirm) {
-        const version = new Date().getTime().toString();
-        const versionParams = { ...params, version, name } as any;
-        yield createServiceCircuitBreakerVersion([versionParams]);
+        const removeIndex = action.payload
+        const { circuitBreaker, ruleType } = selector(yield select())
+        const cloneBreaker = circuitBreaker
+        cloneBreaker[ruleType].splice(removeIndex, 1)
+        const newRouteData = {
+          ...cloneBreaker,
+          [ruleType]: cloneBreaker[ruleType],
+        }
+
+        yield put({ type: types.SET_CIRCUIT_BREAKER, payload: newRouteData })
+        yield put({
+          type: types.SET_EDIT_STATUS,
+          payload: true,
+        })
+        yield put(creators.reload())
+      }
+    })
+    yield takeLatest(types.DRAWER_SUBMIT, function* (action) {
+      const {
+        drawerStatus: { createId, ruleType, ruleIndex, isEdit },
+        circuitBreaker,
+        data: { name, namespace },
+      } = selector(yield select())
+      const formValue = yield* ducks.dynamicCreateDuck.getDuck(createId).submit()
+      if (!formValue) return
+      let originData =
+        circuitBreaker || (({ service: name, namespace, inbounds: [], outbounds: [] } as unknown) as CircuitBreaker)
+      if (ruleType === RuleType.Inbound) {
+        let newArray
+        let tempArray = [...originData.inbounds] || []
+        tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue)
+        newArray = tempArray
+        yield put({
+          type: types.SET_CIRCUIT_BREAKER,
+          payload: {
+            ...originData,
+            inbounds: newArray,
+            outbounds: originData?.outbounds || [],
+          },
+        })
+      } else {
+        let newArray
+        let tempArray = [...originData?.outbounds] || []
+        tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue)
+        newArray = tempArray
+        yield put({
+          type: types.SET_CIRCUIT_BREAKER,
+          payload: {
+            ...originData,
+            inbounds: originData?.inbounds || [],
+            outbounds: newArray,
+          },
+        })
+      }
+      yield put({
+        type: types.SET_DRAWER_STATUS,
+        payload: {
+          visible: false,
+        },
+      })
+      yield put({
+        type: types.SET_EDIT_STATUS,
+        payload: true,
+      })
+      yield put(creators.reload())
+    })
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
+      const { circuitBreaker, originData } = action.payload
+      console.log(circuitBreaker, originData)
+      yield put({ type: types.SET_CIRCUIT_BREAKER, payload: circuitBreaker })
+      if (originData) yield put({ type: types.SET_ORIGIN_DATA, payload: originData })
+    })
+    yield takeLatest(types.RESET_DATA, function* (action) {
+      const { originData } = selector(yield select())
+      yield put({ type: types.SET_CIRCUIT_BREAKER, payload: originData })
+      yield put({
+        type: types.SET_EDIT_STATUS,
+        payload: false,
+      })
+      yield put(creators.reload())
+    })
+    yield takeLatest(types.SUBMIT, function* () {
+      const {
+        originData,
+        circuitBreaker,
+        data: { name: service, namespace },
+      } = selector(yield select())
+      console.log(originData)
+      const params = {
+        service,
+        namespace,
+        inbounds: circuitBreaker.inbounds,
+        outbounds: circuitBreaker.outbounds,
+      }
+      if (originData.ctime) {
+        const version = new Date().getTime().toString()
+        const versionResult = yield createServiceCircuitBreakerVersion([
+          { ...params, id: originData.id, version, name: service },
+        ])
         const releaseParams = {
           service: {
-            name,
+            name: service,
             namespace,
           },
           circuitBreaker: {
-            name,
+            name: service,
             namespace,
             version,
           },
-        };
-        yield releaseServiceCircuitBreaker([releaseParams]);
-        yield put(creators.reload());
+        }
+        yield releaseServiceCircuitBreaker([releaseParams])
+      } else {
+        const createResult = yield createServiceCircuitBreaker([{ ...params, owners: 'Polaris' }])
+        if (createResult.code === 200000) {
+          const version = new Date().getTime().toString()
+          const versionResult = yield createServiceCircuitBreakerVersion([
+            { ...params, id: undefined, version, name: service },
+          ])
+          const releaseParams = {
+            service: {
+              name: service,
+              namespace,
+            },
+            circuitBreaker: {
+              name: service,
+              namespace,
+              version,
+            },
+          }
+          yield releaseServiceCircuitBreaker([releaseParams])
+        }
       }
-    });
+      yield put({
+        type: types.SET_EDIT_STATUS,
+        payload: false,
+      })
+      yield put({
+        type: types.SET_CIRCUIT_BREAKER,
+        payload: null,
+      })
+      yield put(creators.reload())
+    })
   }
 
   *sagaInitLoad() {
-    const { ducks } = this;
+    const { ducks } = this
   }
-  async getData(filters: this["Filter"]) {
-    const { page, count, namespace, service, ruleType } = filters;
-    const result = await describeServiceCircuitBreaker({
-      namespace,
-      service,
-    });
-    if (!result) {
-      return { totalCount: 0, list: [] };
+  async getData(filters: this['Filter']) {
+    const { page, count, namespace, service, ruleType } = filters
+    let circuitBreaker = filters.circuitBreaker
+    let originData
+    if (!circuitBreaker) {
+      const result = await describeServiceCircuitBreaker({
+        namespace,
+        service,
+      })
+      console.log(result)
+      if (!result?.id) {
+        return {
+          totalCount: 0,
+          list: [],
+        }
+      }
+      circuitBreaker = result
+      originData = JSON.parse(JSON.stringify(result))
     }
-    const offset = (page - 1) * count;
-    const listSlice = result[ruleType]?.slice(offset, offset + count + 1) || [];
+    console.log()
+    const offset = (page - 1) * count
+    const listSlice = circuitBreaker[ruleType]?.slice(offset, offset + count + 1) || []
     return {
-      totalCount: result[ruleType]?.length || 0,
+      totalCount: circuitBreaker[ruleType]?.length || 0,
       list: listSlice.map((item, index) => ({
         ...item,
         id: (offset + index).toString(),
       })),
-      circuitBreaker: result,
-    };
+      circuitBreaker: circuitBreaker,
+      originData: originData,
+    }
   }
 }

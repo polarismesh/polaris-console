@@ -1,15 +1,6 @@
-import { createToPayload, reduceFromPayload, connectWithDuck } from "saga-duck";
-import GridPageDuck, {
-  Filter as BaseFilter,
-} from "@src/polaris/common/ducks/GridPage";
-import {
-  RuleType,
-  Destination,
-  Source,
-  InboundItem,
-  OutboundItem,
-  EditType,
-} from "./types";
+import { createToPayload, reduceFromPayload, connectWithDuck } from 'saga-duck'
+import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/GridPage'
+import { RuleType, Destination, Source, InboundItem, OutboundItem, EditType } from './types'
 import {
   describeRoutes,
   DescribeRoutesResult,
@@ -17,40 +8,40 @@ import {
   modifyRoutes,
   Routing,
   createRoutes,
-} from "./model";
-import { takeLatest } from "redux-saga-catch";
-import { resolvePromise } from "saga-duck/build/helper";
-import { showDialog } from "@src/polaris/common/helpers/showDialog";
-import Create from "./operations/Create";
-import CreateDuck, { DynamicRouteCreateDuck } from "./operations/CreateDuck";
-import { put, select, take } from "redux-saga/effects";
-import { Modal } from "tea-component";
-import router from "@src/polaris/common/util/router";
+} from './model'
+import { takeLatest } from 'redux-saga-catch'
+import { resolvePromise } from 'saga-duck/build/helper'
+import { showDialog } from '@src/polaris/common/helpers/showDialog'
+import Create from './operations/Create'
+import CreateDuck, { DynamicRouteCreateDuck } from './operations/CreateDuck'
+import { put, select, take } from 'redux-saga/effects'
+import { Modal } from 'tea-component'
+import router from '@src/polaris/common/util/router'
 
 interface Filter extends BaseFilter {
-  namespace: string;
-  service: string;
-  ruleType: RuleType;
-  routeData: Routing;
+  namespace: string
+  service: string
+  ruleType: RuleType
+  routeData: Routing
 }
 
 interface ComposedId {
-  name: string;
-  namespace: string;
+  name: string
+  namespace: string
 }
 interface DrawerStatus {
-  visible: boolean;
-  title?: string;
-  createId?: string;
-  ruleIndex?: number;
-  ruleType?: string;
-  isEdit?: boolean;
+  visible: boolean
+  title?: string
+  createId?: string
+  ruleIndex?: number
+  ruleType?: string
+  isEdit?: boolean
 }
 export default class ServicePageDuck extends GridPageDuck {
-  Filter: Filter;
-  Item: any;
+  Filter: Filter
+  Item: any
   get baseUrl() {
-    return null;
+    return null
   }
   get quickTypes() {
     enum Types {
@@ -75,59 +66,48 @@ export default class ServicePageDuck extends GridPageDuck {
     return {
       ...super.quickTypes,
       ...Types,
-    };
+    }
   }
   get initialFetch() {
-    return false;
+    return false
   }
   get recordKey() {
-    return "id";
+    return 'id'
   }
   get watchTypes() {
-    return [
-      ...super.watchTypes,
-      this.types.SEARCH,
-      this.types.LOAD,
-      this.types.SET_RULE_TYPE,
-    ];
+    return [...super.watchTypes, this.types.SEARCH, this.types.LOAD, this.types.SET_RULE_TYPE]
   }
   get params() {
-    return [...super.params];
+    return [...super.params]
   }
   get quickDucks() {
     return {
       ...super.quickDucks,
       dynamicCreateDuck: DynamicRouteCreateDuck,
-    };
+    }
   }
   get reducers() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.reducers,
       data: reduceFromPayload<ComposedId>(types.LOAD, {} as any),
       expandedKeys: reduceFromPayload<string[]>(
         types.SET_EXPANDED_KEYS,
-        [...new Array(100)].map((i, index) => index.toString())
+        [...new Array(100)].map((i, index) => index.toString()),
       ),
-      ruleType: reduceFromPayload<RuleType>(
-        types.SET_RULE_TYPE,
-        RuleType.Inbound
-      ),
+      ruleType: reduceFromPayload<RuleType>(types.SET_RULE_TYPE, RuleType.Inbound),
       routeData: reduceFromPayload<Routing>(types.SET_ROUTE_DATA, null),
       drawerStatus: reduceFromPayload<DrawerStatus>(types.SET_DRAWER_STATUS, {
         visible: false,
       } as any),
       edited: reduceFromPayload<boolean>(types.SET_EDIT_STATUS, false),
       originData: reduceFromPayload<Routing>(types.SET_ORIGIN_DATA, null),
-      editType: reduceFromPayload<EditType>(
-        types.SET_EDIT_TYPE,
-        EditType.Table
-      ),
-      jsonValue: reduceFromPayload<string>(types.SET_JSON_VALUE, ""),
-    };
+      editType: reduceFromPayload<EditType>(types.SET_EDIT_TYPE, EditType.Table),
+      jsonValue: reduceFromPayload<string>(types.SET_JSON_VALUE, ''),
+    }
   }
   get creators() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.creators,
       edit: createToPayload<void>(types.EDIT),
@@ -142,10 +122,10 @@ export default class ServicePageDuck extends GridPageDuck {
       setEditType: createToPayload<EditType>(types.SET_EDIT_TYPE),
       setJsonValue: createToPayload<string>(types.SET_JSON_VALUE),
       reset: createToPayload<void>(types.RESET_DATA),
-    };
+    }
   }
   get rawSelectors() {
-    type State = this["State"];
+    type State = this['State']
     return {
       ...super.rawSelectors,
       filter: (state: State) => ({
@@ -157,35 +137,35 @@ export default class ServicePageDuck extends GridPageDuck {
         ruleType: state.ruleType,
         routeData: state.routeData,
       }),
-    };
+    }
   }
 
   *saga() {
-    const { types, creators, selector, ducks } = this;
-    yield* this.sagaInitLoad();
-    yield* super.saga();
+    const { types, creators, selector, ducks } = this
+    yield* this.sagaInitLoad()
+    yield* super.saga()
     yield takeLatest(types.CREATE, function* (action) {
       const {
         data: { name, namespace },
         routeData,
         ruleType,
-      } = selector(yield select());
-      const createId = Math.round(Math.random() * 1000000).toString();
-      yield put(ducks.dynamicCreateDuck.creators.createDuck(createId));
-      const createDuck = ducks.dynamicCreateDuck.getDuck(createId);
-      const ruleIndex = action.payload;
+      } = selector(yield select())
+      const createId = Math.round(Math.random() * 1000000).toString()
+      yield put(ducks.dynamicCreateDuck.creators.createDuck(createId))
+      const createDuck = ducks.dynamicCreateDuck.getDuck(createId)
+      const ruleIndex = action.payload
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: "新建路由规则",
+          title: '新建路由规则',
           visible: true,
           createId,
           ruleIndex,
           ruleType,
           isEdit: false,
         },
-      });
-      yield take(createDuck.types.READY);
+      })
+      yield take(createDuck.types.READY)
       yield put(
         createDuck.creators.load({
           ...JSON.parse(JSON.stringify(routeData)),
@@ -194,31 +174,31 @@ export default class ServicePageDuck extends GridPageDuck {
           ruleIndex,
           ruleType,
           isEdit: false,
-        })
-      );
-    });
+        }),
+      )
+    })
     yield takeLatest(types.EDIT, function* (action) {
       const {
         data: { name, namespace },
         ruleType,
         routeData,
-      } = selector(yield select());
-      const createId = Math.round(Math.random() * 1000000).toString();
-      yield put(ducks.dynamicCreateDuck.creators.createDuck(createId));
-      const createDuck = ducks.dynamicCreateDuck.getDuck(createId);
-      const ruleIndex = action.payload;
+      } = selector(yield select())
+      const createId = Math.round(Math.random() * 1000000).toString()
+      yield put(ducks.dynamicCreateDuck.creators.createDuck(createId))
+      const createDuck = ducks.dynamicCreateDuck.getDuck(createId)
+      const ruleIndex = action.payload
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: "编辑路由规则",
+          title: '编辑路由规则',
           visible: true,
           createId,
           ruleIndex,
           ruleType,
           isEdit: true,
         },
-      });
-      yield take(createDuck.types.READY);
+      })
+      yield take(createDuck.types.READY)
       yield put(
         createDuck.creators.load({
           ...JSON.parse(JSON.stringify(routeData)),
@@ -227,9 +207,9 @@ export default class ServicePageDuck extends GridPageDuck {
           ruleIndex,
           ruleType,
           isEdit: true,
-        })
-      );
-    });
+        }),
+      )
+    })
     // yield takeLatest(types.REMOVE, function* (action) {
     //   const ids = action.payload;
     //   const confirm = yield Modal.confirm({
@@ -242,56 +222,51 @@ export default class ServicePageDuck extends GridPageDuck {
     //   yield put(creators.reload());
     // });
     yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
-      const { routeData, originData } = action.payload;
-      yield put({ type: types.SET_ROUTE_DATA, payload: routeData });
-      if (originData)
-        yield put({ type: types.SET_ORIGIN_DATA, payload: originData });
-    });
+      const { routeData, originData } = action.payload
+      yield put({ type: types.SET_ROUTE_DATA, payload: routeData })
+      if (originData) yield put({ type: types.SET_ORIGIN_DATA, payload: originData })
+    })
     yield takeLatest(types.RESET_DATA, function* (action) {
-      const { originData } = selector(yield select());
-      yield put({ type: types.SET_ROUTE_DATA, payload: originData });
+      const { originData } = selector(yield select())
+      yield put({ type: types.SET_ROUTE_DATA, payload: originData })
       yield put({
         type: types.SET_EDIT_STATUS,
         payload: false,
-      });
-      yield put(creators.reload());
-    });
+      })
+      yield put(creators.reload())
+    })
     yield takeLatest(types.SUBMIT, function* () {
-      const { originData, routeData } = selector(yield select());
-      console.log(originData);
+      const { originData, routeData } = selector(yield select())
+      console.log(originData)
       if (originData?.ctime) {
-        const result = yield modifyRoutes([routeData]);
+        const result = yield modifyRoutes([routeData])
       } else {
-        const result = yield createRoutes([routeData]);
+        const result = yield createRoutes([routeData])
       }
       yield put({
         type: types.SET_EDIT_STATUS,
         payload: false,
-      });
+      })
       yield put({
         type: types.SET_ROUTE_DATA,
         payload: null,
-      });
-      yield put(creators.reload());
-    });
+      })
+      yield put(creators.reload())
+    })
     yield takeLatest(types.DRAWER_SUBMIT, function* (action) {
       const {
         drawerStatus: { createId, ruleType, ruleIndex, isEdit },
         routeData,
         data: { name, namespace },
-      } = selector(yield select());
-      const formValue = yield* ducks.dynamicCreateDuck
-        .getDuck(createId)
-        .submit();
-      if (!formValue) return;
-      let originData =
-        routeData ||
-        ({ service: name, namespace, inbounds: [], outbounds: [] } as Routing);
+      } = selector(yield select())
+      const formValue = yield* ducks.dynamicCreateDuck.getDuck(createId).submit()
+      if (!formValue) return
+      let originData = routeData || ({ service: name, namespace, inbounds: [], outbounds: [] } as Routing)
       if (ruleType === RuleType.Inbound) {
-        let newArray;
-        let tempArray = [...originData.inbounds] || [];
-        tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue);
-        newArray = tempArray;
+        let newArray
+        let tempArray = [...originData.inbounds] || []
+        tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue)
+        newArray = tempArray
         yield put({
           type: types.SET_ROUTE_DATA,
           payload: {
@@ -299,12 +274,12 @@ export default class ServicePageDuck extends GridPageDuck {
             inbounds: newArray,
             outbounds: originData?.outbounds || [],
           },
-        });
+        })
       } else {
-        let newArray;
-        let tempArray = [...originData?.outbounds] || [];
-        tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue);
-        newArray = tempArray;
+        let newArray
+        let tempArray = [...originData?.outbounds] || []
+        tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue)
+        newArray = tempArray
         yield put({
           type: types.SET_ROUTE_DATA,
           payload: {
@@ -312,70 +287,69 @@ export default class ServicePageDuck extends GridPageDuck {
             inbounds: originData?.inbounds || [],
             outbounds: newArray,
           },
-        });
+        })
       }
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
           visible: false,
         },
-      });
+      })
       yield put({
         type: types.SET_EDIT_STATUS,
         payload: true,
-      });
-      yield put(creators.reload());
-    });
+      })
+      yield put(creators.reload())
+    })
     yield takeLatest(types.REMOVE, function* (action) {
       const confirm = yield Modal.confirm({
         message: `确认删除路由规则`,
-        description: "删除后，无法恢复",
-      });
+        description: '删除后，无法恢复',
+      })
       if (confirm) {
-        const removeIndex = action.payload;
-        const { routeData, ruleType } = selector(yield select());
-        const routing = routeData;
-        routing[ruleType].splice(removeIndex, 1);
+        const removeIndex = action.payload
+        const { routeData, ruleType } = selector(yield select())
+        const routing = routeData
+        routing[ruleType].splice(removeIndex, 1)
         const newRouteData = {
           ...routing,
           [ruleType]: routing[ruleType],
-        };
+        }
 
-        yield put({ type: types.SET_ROUTE_DATA, payload: newRouteData });
+        yield put({ type: types.SET_ROUTE_DATA, payload: newRouteData })
         yield put({
           type: types.SET_EDIT_STATUS,
           payload: true,
-        });
-        yield put(creators.reload());
+        })
+        yield put(creators.reload())
       }
-    });
+    })
   }
 
   *sagaInitLoad() {
-    const { ducks } = this;
+    const { ducks } = this
   }
-  async getData(filters: this["Filter"]) {
-    const { page, count, namespace, service, ruleType } = filters;
-    let routeData = filters.routeData;
-    console.log(routeData);
-    let originData;
+  async getData(filters: this['Filter']) {
+    const { page, count, namespace, service, ruleType } = filters
+    let routeData = filters.routeData
+    let originData
     if (!routeData) {
       const result = await describeRoutes({
         namespace,
         service,
-      });
+      })
       if (!result?.[0]) {
         return {
           totalCount: 0,
           list: [],
-        };
+        }
       }
-      routeData = result[0];
-      originData = JSON.parse(JSON.stringify(result[0]));
+      routeData = result[0]
+      originData = JSON.parse(JSON.stringify(result[0]))
     }
 
-    const offset = (page - 1) * count;
-    const listSlice = routeData[ruleType]?.slice(offset, offset + count) || [];
+    const offset = (page - 1) * count
+    const listSlice = routeData[ruleType]?.slice(offset, offset + count) || []
     return {
       totalCount: routeData[ruleType]?.length || 0,
       list: listSlice.map((item, index) => ({
@@ -384,6 +358,6 @@ export default class ServicePageDuck extends GridPageDuck {
       })),
       routeData,
       originData,
-    };
+    }
   }
 }
