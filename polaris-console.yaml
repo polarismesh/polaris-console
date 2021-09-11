@@ -7,7 +7,7 @@ logger:
 webServer:
   mode: "release"
   listenIP: "0.0.0.0"
-  listenPort: 80
+  listenPort: 8080
   requestURL: "/naming/v1"
   webPath: "web/dist/"
 polarisServer:
