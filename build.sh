@@ -12,7 +12,7 @@ fi
 folder_name="polaris-console-release_${version}.${GOOS}.${GOARCH}"
 pkg_name="${folder_name}.zip"
 if [ ${GOOS} == "windows" ];then
-  bin_name="polaris-server.exe"
+  bin_name="polaris-console.exe"
 fi
 echo "GOOS is ${GOOS}, binary name is ${bin_name}"
 
