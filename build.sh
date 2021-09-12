@@ -42,3 +42,9 @@ cp polaris-console.yaml ${folder_name}
 cp -r tool/ ${folder_name}/tool/
 zip -r "${pkg_name}" ${folder_name}
 md5sum ${pkg_name} > "${pkg_name}.md5sum"
+
+if [[ $(uname -a | grep "Darwin" | wc -l) -eq 1 ]]; then
+  md5 ${pkg_name} >"${pkg_name}.md5sum"
+else
+  md5sum ${pkg_name} >"${pkg_name}.md5sum"
+fi
