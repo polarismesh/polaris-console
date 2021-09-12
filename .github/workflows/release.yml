@@ -13,8 +13,11 @@ jobs:
       matrix:
         node-version: [14.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-        goos: [linux, windows]
+        goos: [linux, windows, darwin]
         goarch: [amd64, 386]
+        exclude:
+          - goos: darwin
+            goarch: 386
 
     steps:
     - uses: actions/checkout@v2
