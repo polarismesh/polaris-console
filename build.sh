@@ -1,6 +1,7 @@
 #!/bin/bash
 
-workdir=$(dirname $(realpath $0))
+#workdir=$(dirname $(realpath $0))
+workdir=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 version=$(cat version 2>/dev/null)
 folder_name="polaris-console-release_${version}"
 if [ -n $GOOS ] && [ -n $GOARCH ]
@@ -34,4 +35,10 @@ mv polaris-console ${folder_name}
 cp polaris-console.yaml ${folder_name}
 cp -r tool/ ${folder_name}/tool/
 tar -czvf "${pkg_name}" ${folder_name}
-md5sum ${pkg_name} > "${pkg_name}.md5sum"
+#md5sum ${pkg_name} > "${pkg_name}.md5sum"
+
+if [[ $(uname -a | grep "Darwin" | wc -l) -eq 1 ]]; then
+  md5 ${pkg_name} >"${pkg_name}.md5sum"
+else
+  md5sum ${pkg_name} >"${pkg_name}.md5sum"
+fi
