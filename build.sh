@@ -40,5 +40,5 @@ mv web/dist/ ${folder_name}/web/
 mv ${bin_name} ${folder_name}
 cp polaris-console.yaml ${folder_name}
 cp -r tool/ ${folder_name}/tool/
-tar -czvf "${pkg_name}" ${folder_name}
+zip -r "${pkg_name}" ${folder_name}
 md5sum ${pkg_name} > "${pkg_name}.md5sum"
