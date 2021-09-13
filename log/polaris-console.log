@@ -1,0 +1,18 @@
+2021-09-12T15:38:42.118030Z	error	handlers/hrData.go:75	read department.txt err: open department.txt: no such file or directory
+2021-09-12T16:03:08.681879Z	error	handlers/hrData.go:75	read department.txt err: open department.txt: no such file or directory
+2021-09-12T16:16:52.446744Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-12T16:17:11.867437Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-12T16:21:50.541538Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-12T16:24:48.358763Z	error	handlers/hrData.go:75	read department.txt err: open department.txt: no such file or directory
+2021-09-12T16:25:24.024704Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-12T16:25:27.993994Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-12T16:25:36.260905Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-12T16:25:36.274621Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-12T16:27:14.763040Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-12T17:02:24.690173Z	info	httputil/reverseproxy.go:188	http: proxy error: EOF
+2021-09-12T17:02:25.386099Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-12T17:37:41.565953Z	info	httputil/reverseproxy.go:188	http: proxy error: EOF
+2021-09-12T17:43:40.483669Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-12T21:34:18.410348Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
+2021-09-13T00:38:42.495574Z	error	handlers/hrData.go:75	read department.txt err: open department.txt: no such file or directory
+2021-09-13T00:49:19.833702Z	info	httputil/reverseproxy.go:188	http: proxy error: dial tcp 127.0.0.1:8090: connect: connection refused
