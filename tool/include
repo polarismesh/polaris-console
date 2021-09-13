@@ -35,7 +35,7 @@ function start() {
 }
 
 function stop() {
-    pids=$(ps -e -o pid,cmd | grep -w "$cmdline" | grep -v "grep" | awk '{print $1}')
+    pids=$(ps -ef | grep -w "$cmdline" | grep -v "grep" | awk '{print $2}')
     array=($pids)
     for pid in ${array[@]}; do
         log_info "stop $server_name: pid=$pid"

@@ -10,3 +10,4 @@ web/node_modules
 web/dist
 .idea
 department.txt
+./log/
