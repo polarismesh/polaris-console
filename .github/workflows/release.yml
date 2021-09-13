@@ -14,12 +14,8 @@ jobs:
         node-version: [14.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         goos: [linux, windows, darwin]
-        goarch: [amd64, 386, arm64]
+        goarch: [amd64, arm64]
         exclude:
-          - goos: darwin
-            goarch: 386
-          - goos: windows
-            goarch: 386
           - goos: windows
             goarch: arm64
           - goos: linux
