@@ -102,6 +102,10 @@ func Router(config *bootstrap.Config) {
 	// 解绑熔断规则
 	v1.POST("circuitbreakers/unbind", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
 
+	// 监控请求路由组
+	mv1 := r.Group(config.WebServer.MonitorURL)
+	mv1.GET("/query_range", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
+
 	address := fmt.Sprintf("%v:%v", config.WebServer.ListenIP, config.WebServer.ListenPort)
 	r.Run(address)
 }

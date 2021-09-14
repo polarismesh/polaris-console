@@ -34,6 +34,10 @@ type PolarisServer struct {
 	PolarisToken string `yaml:"polarisToken"`
 }
 
+type MonitorServer struct {
+	Address string `yaml:"address"`
+}
+
 /**
  * @brief 查询部门名称的地址
  */
@@ -86,6 +90,19 @@ func ReverseProxyForServer(polarisServer *PolarisServer, oaAuthority *OAAuthorit
 			req.URL.Scheme = "http"
 			req.URL.Host = polarisServer.Address
 			req.Host = polarisServer.Address
+		}
+		proxy := &httputil.ReverseProxy{Director: director}
+		proxy.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+func ReverseProxyForMonitorServer(monitorServer *MonitorServer) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		director := func(req *http.Request) {
+			req.URL.Scheme = "http"
+			req.URL.Host = monitorServer.Address
+			req.Host = monitorServer.Address
 		}
 		proxy := &httputil.ReverseProxy{Director: director}
 		proxy.ServeHTTP(c.Writer, c.Request)
