@@ -35,6 +35,7 @@ type Config struct {
 	Logger        log.Options            `yaml:"logger"`
 	WebServer     WebServer              `yaml:"webServer"`
 	PolarisServer handlers.PolarisServer `yaml:"polarisServer"`
+	MonitorServer handlers.MonitorServer `yaml:"monitorServer"`
 	OAAuthority   handlers.OAAuthority   `yaml:"oaAuthority"`
 	HRData        handlers.HRData        `yaml:"hrData"`
 	ZhiYan        handlers.ZhiYan        `yaml:"zhiYan"`
@@ -48,6 +49,7 @@ type WebServer struct {
 	ListenIP   string `yaml:"listenIP"`
 	ListenPort int    `yaml:"listenPort"`
 	RequestURL string `yaml:"requestURL"`
+	MonitorURL string `yaml:"monitorURL"`
 	WebPath    string `yaml:"webPath"`
 }
 
