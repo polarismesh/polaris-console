@@ -7,6 +7,10 @@ export const MenuConfig = {
       title: "服务列表",
       icon: ["/static/img/service.svg", "/static/img/service.svg"],
     },
+    namespace: {
+      title: "命名空间",
+      icon: ["/static/img/namespace.svg", "/static/img/namespace.svg"],
+    },
   },
   observability: {
     isGroup: true,
@@ -17,10 +21,7 @@ export const MenuConfig = {
     },
     "circuitBreaker-monitor": {
       title: "熔断监控",
-      icon: [
-        "/static/img/circuit-monitor.svg",
-        "/static/img/circuit-monitor.svg",
-      ],
+      icon: ["/static/img/circuit-monitor.svg", "/static/img/circuit-monitor.svg"],
     },
     "ratelimit-monitor": {
       title: "限流监控",
