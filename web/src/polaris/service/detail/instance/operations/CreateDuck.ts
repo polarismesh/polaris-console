@@ -2,12 +2,7 @@ import FormDialog from "@src/polaris/common/ducks/FormDialog";
 import Form from "@src/polaris/common/ducks/Form";
 import { put, select } from "redux-saga/effects";
 import { resolvePromise } from "saga-duck/build/helper";
-import {
-  createInstances,
-  CreateInstanceParams,
-  modifyInstances,
-  ModifyInstanceParams,
-} from "../model";
+import { createInstances, CreateInstanceParams, modifyInstances, ModifyInstanceParams } from "../model";
 import { Instance, BATCH_EDIT_TYPE } from "../types";
 
 export interface DialogOptions {
@@ -23,9 +18,7 @@ const convertMetaData = (metaData) => {
   let metaDataString = "";
   Object.keys(metaData).forEach((key, index, arr) => {
     if (key !== enableNearbyString) {
-      metaDataString += `${key}:${metaData[key]}${
-        index < arr.length ? "\n" : ""
-      }`;
+      metaDataString += `${key}:${metaData[key]}${index < arr.length ? "\n" : ""}`;
     }
   });
   return metaDataString;
@@ -202,20 +195,14 @@ export default class CreateDuck extends FormDialog {
     const values = form.selectors.values(yield select());
 
     if (options.batchEditType && options.instances) {
-      const res = yield* resolvePromise(
-        modifyInstances(generateBatchModifyParams({ ...values, ...options }))
-      );
+      const res = yield* resolvePromise(modifyInstances(generateBatchModifyParams({ ...values, ...options })));
       return res;
     }
     if (options.isModify) {
-      const res = yield* resolvePromise(
-        modifyInstances(generateModifyParams({ ...values, ...options }))
-      );
+      const res = yield* resolvePromise(modifyInstances(generateModifyParams({ ...values, ...options })));
       return res;
     } else {
-      const res = yield* resolvePromise(
-        createInstances(generateParams({ ...values, ...options }))
-      );
+      const res = yield* resolvePromise(createInstances(generateParams({ ...values, ...options })));
       return res;
     }
   }
@@ -232,6 +219,7 @@ export default class CreateDuck extends FormDialog {
     yield put(form.creators.setMeta(options));
     yield put(
       form.creators.setValues({
+        weight: 100,
         healthy: true,
         enableHealthCheck: false,
         ...data,
@@ -242,7 +230,7 @@ export default class CreateDuck extends FormDialog {
               ttl: options.instance.healthCheck?.heartbeat?.ttl,
             }
           : {}),
-      })
+      }),
     );
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel
   }
