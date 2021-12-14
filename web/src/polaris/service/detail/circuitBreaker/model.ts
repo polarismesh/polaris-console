@@ -34,6 +34,7 @@ export interface CreateCircuitBreakerParams {
   inbounds: InboundItem[]
   outbounds: OutboundItem[]
   owners: string
+  name: string
 }
 export interface ModifyCircuitBreakerParams {
   id: string
