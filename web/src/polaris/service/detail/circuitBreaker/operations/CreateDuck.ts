@@ -77,7 +77,7 @@ const convertPolicyArrayToMap = (policyArray) => {
   return metadataMap
 }
 const convertPolicyMapToArray = (policy) => {
-  const policyArray = Object.keys(policy).map((key) => {
+  const policyArray = Object.keys(policy).filter(key => policy[key]).map((key) => {
     return { policyName: key, ...policy[key] }
   })
   return policyArray
