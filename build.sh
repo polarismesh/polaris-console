@@ -3,15 +3,15 @@
 workdir=$(dirname $(realpath $0))
 version=$(cat version 2>/dev/null)
 bin_name="polaris-console"
-if [ ${GOOS} == "" ];then
-  GOOS=`go env GOOS`
+if [ ${GOOS} == "" ]; then
+  GOOS=$(go env GOOS)
 fi
-if [ ${GOARCH} == "" ];then
-  GOARCH=`go env GOARCH`
+if [ ${GOARCH} == "" ]; then
+  GOARCH=$(go env GOARCH)
 fi
 folder_name="polaris-console-release_${version}.${GOOS}.${GOARCH}"
 pkg_name="${folder_name}.zip"
-if [ ${GOOS} == "windows" ];then
+if [ ${GOOS} == "windows" ]; then
   bin_name="polaris-console.exe"
 fi
 echo "GOOS is ${GOOS}, binary name is ${bin_name}"
@@ -21,6 +21,7 @@ cd $workdir
 # 清理环境
 rm -rf ${folder_name}
 rm -f ${pkg_name}
+rm -rf "polaris_console_package"
 
 # 编译web
 cd $workdir/web
@@ -31,7 +32,7 @@ npm run build
 # 编译web服务器
 cd $workdir
 rm -f polaris-console
-go build -o ${bin_name}
+CGO_ENABLED=0 go build -o ${bin_name}
 
 # 打包
 cd $workdir
@@ -41,7 +42,8 @@ mv ${bin_name} ${folder_name}
 cp polaris-console.yaml ${folder_name}
 cp -r tool/ ${folder_name}/tool/
 zip -r "${pkg_name}" ${folder_name}
-md5sum ${pkg_name} > "${pkg_name}.md5sum"
+md5sum ${pkg_name} >"${pkg_name}.md5sum"
+mv ${folder_name} "polaris_console_package"
 
 if [[ $(uname -a | grep "Darwin" | wc -l) -eq 1 ]]; then
   md5 ${pkg_name} >"${pkg_name}.md5sum"

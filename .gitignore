@@ -11,3 +11,5 @@ web/dist
 .idea
 department.txt
 ./log/
+
+vendor
