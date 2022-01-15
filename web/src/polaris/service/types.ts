@@ -18,6 +18,8 @@ export interface Namespace {
   ctime: string;
   mtime: string;
   name: string;
+  owners?: string;
+  token: string;
 }
 
 export const READ_ONLY_NAMESPACE = BuildConfig.readonlyNamespace;

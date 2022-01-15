@@ -1,4 +1,4 @@
 export const BuildConfig = {
-  readonlyNamespace: ['Polaris'],
+  readonlyNamespace: [],
   promethusHost: '119.91.66.54:9090',
 }

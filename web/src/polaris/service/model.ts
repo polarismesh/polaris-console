@@ -1,10 +1,4 @@
-import {
-  apiRequest,
-  APIRequestOption,
-  getAllList,
-  getApiRequest,
-  putApiRequest,
-} from "../common/util/apiRequest";
+import { apiRequest, APIRequestOption, getAllList, getApiRequest, putApiRequest } from "../common/util/apiRequest";
 import { Service, Namespace } from "./types";
 
 export interface DescribeServicesParams {
@@ -99,7 +93,7 @@ export async function deleteService(params: DeleteServicesParams[]) {
 export async function describeNamespaces() {
   const res = await getApiRequest<DescribeNamespacesResult>({
     action: "naming/v1/namespaces",
-    data: {},
+    data: { limit: 100, offset: 0 },
   });
 
   return res.namespaces;

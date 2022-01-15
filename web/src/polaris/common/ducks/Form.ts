@@ -270,6 +270,7 @@ export default class Form extends Base {
     type State = this["State"];
     type Values = this["Values"];
     type InvalidsSelector = (state: State) => INVALIDS<Values>;
+    // @ts-ignore
     const invalidsSelector: InvalidsSelector = createSelector(
       (state: State) => state.invalids,
       (state: State) => this.rawSelectors.values(state),
