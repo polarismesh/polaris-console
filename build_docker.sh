@@ -4,17 +4,16 @@ workdir=$(dirname $(realpath $0))
 version=$(cat version 2>/dev/null)
 
 # build docker file
-if [ $# != 4 ]; then
-    echo "e.g.: bash $0 polaris_mesh/polaris-console v1.0 docker_username docekr_user_password"
+if [ $# != 3 ]; then
+    echo "e.g.: bash $0 v1.0 docker_username docekr_user_password"
     exit 1
 fi
 
-docker_repository=$1
-docker_tag=$2
-docker_username=$3
-docker_password=$4
+docker_tag=$1
+docker_username=$2
+docker_password=$3
 
-echo "docker repository : ${docker_repository}, tag : ${docker_tag}"
+echo "docker repository : polarismesh/polaris-console, tag : ${docker_tag}"
 
 bash build.sh
 
@@ -23,7 +22,7 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-docker build --network=host -t ${docker_repository}:${docker_tag} ./
+docker build --network=host -t polarismesh/polaris-console:${docker_tag} ./
 
 docker login --username=${docker_username} --password=${docker_password}
 
@@ -31,6 +30,6 @@ if [[ $? != 0 ]]; then
     echo "docker login failed"
 fi
 
-docker push ${docker_repository}:${docker_tag}
-docker tag ${docker_repository}:${docker_tag} ${docker_repository}:latest
-docker push ${docker_repository}:latest
+docker push polarismesh/polaris-console:${docker_tag}
+docker tag polarismesh/polaris-console:${docker_tag} polarismesh/polaris-console:latest
+docker push polarismesh/polaris-console:latest
