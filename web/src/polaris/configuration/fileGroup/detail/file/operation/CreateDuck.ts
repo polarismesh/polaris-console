@@ -1,0 +1,170 @@
+import { put, select } from 'redux-saga/effects'
+import { takeLatest } from 'redux-saga-catch'
+import { NamespaceItem } from '@src/polaris/namespace/PageDuck'
+import FormDialog from '@src/polaris/common/ducks/FormDialog'
+import Form from '@src/polaris/common/ducks/Form'
+import { getAllList } from '@src/polaris/common/util/apiRequest'
+import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
+import { KeyValuePair, ConfigFileGroup } from '@src/polaris/configuration/fileGroup/types'
+import { describeConfigFileGroups, createConfigFile } from '@src/polaris/configuration/fileGroup/model'
+import { reduceFromPayload } from 'saga-duck'
+import { notification } from 'tea-component'
+
+export interface DialogOptions {
+  namespaceList?: NamespaceItem[]
+  fromFileList: boolean
+}
+
+export default class CreateDuck extends FormDialog {
+  Options: DialogOptions
+  get Form() {
+    return CreateForm
+  }
+  get quickTypes() {
+    enum Types {
+      SET_NAMESPACE_LIST,
+      SET_CONFIGGROUP_LIST,
+    }
+    return {
+      ...super.quickTypes,
+      ...Types,
+    }
+  }
+  get quickDucks() {
+    return {
+      ...super.quickDucks,
+    }
+  }
+  get reducers() {
+    const { types } = this
+    return {
+      ...super.reducers,
+      configGroupList: reduceFromPayload(types.SET_CONFIGGROUP_LIST, [] as ConfigFileGroup[]),
+    }
+  }
+  *onSubmit() {
+    const {
+      ducks: { form },
+    } = this
+
+    const { name, comment, namespace, group, format, tags } = form.selectors.values(yield select())
+    const { configFile } = yield createConfigFile({ name, comment, namespace, group, format, tags, content: '' })
+    if (configFile?.name) {
+      notification.success({ description: '创建成功' })
+      return true
+    } else {
+      notification.error({ description: '创建失败' })
+      return false
+    }
+  }
+  *beforeSubmit() {
+    const {
+      ducks: { form },
+    } = this
+    yield put(form.creators.setAllTouched(true))
+    const firstInvalid = yield select(form.selectors.firstInvalid)
+    if (firstInvalid) {
+      throw false
+    }
+  }
+  *saga() {
+    const {
+      ducks: { form },
+      types,
+      selector,
+    } = this
+    super.saga()
+    yield takeLatest(form.types.SET_VALUE, function*(action) {
+      if (action.path?.indexOf('namespace') === -1) {
+        return
+      }
+      const {
+        form: {
+          values: { namespace },
+        },
+      } = selector(yield select())
+      const { list } = yield getAllList(describeConfigFileGroups, {})({ namespace })
+      yield put({ type: types.SET_CONFIGGROUP_LIST, payload: list })
+      yield put(form.creators.setValue('group', ''))
+    })
+  }
+  *onShow() {
+    yield* super.onShow()
+    const {
+      selectors,
+      ducks: { form },
+      types,
+    } = this
+    const options = selectors.options(yield select())
+    const data = selectors.data(yield select())
+    const { list: namespaceList } = yield getAllList(describeComplicatedNamespaces, {
+      listKey: 'namespaces',
+      totalKey: 'amount',
+    })({})
+    yield put({
+      type: types.SET_OPTIONS,
+      payload: {
+        ...options,
+        namespaceList: namespaceList.map(item => {
+          return {
+            ...item,
+            text: item.name,
+            value: item.name,
+          }
+        }),
+      },
+    })
+    yield put(form.creators.setMeta(options))
+    yield put(
+      form.creators.setValues({
+        ...data,
+      }),
+    )
+    // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel
+  }
+}
+export interface Values {
+  id: string
+  namespace: string
+  comment: string
+  name: string
+  group: string
+  format: string
+  tags?: Array<KeyValuePair>
+}
+class CreateForm extends Form {
+  Values: Values
+  Meta: any
+  validate(v: this['Values'], meta: this['Meta']) {
+    return validator(v, meta)
+  }
+  get quickTypes() {
+    enum Types {
+      SET_NAMESPACE,
+    }
+    return {
+      ...super.quickTypes,
+      ...Types,
+    }
+  }
+  get actionMapping() {
+    return {
+      ...super.actionMapping,
+      namespace: this.types.SET_NAMESPACE,
+    }
+  }
+}
+const validator = CreateForm.combineValidators<Values, any>({
+  name(v) {
+    if (!v) return '请填写文件名'
+  },
+  namespace(v) {
+    if (!v) return '请选择命名空间'
+  },
+  group(v) {
+    if (!v) return '请选择分组'
+  },
+  format(v) {
+    if (!v) return '请选择格式'
+  },
+})
