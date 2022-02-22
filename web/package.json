@@ -52,6 +52,13 @@
     "saga-duck": "^3.4.2",
     "tea-component": "^2.6.17",
     "tea-chart": "^2.4.2",
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.30.0",
+    "@typescript-eslint/parser": "^4.30.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.17.0",
+    "prettier": "^1.19.1"
   }
 }
