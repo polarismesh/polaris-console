@@ -55,7 +55,6 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     'tags',
   ])
   const options = selectors.options(store)
-  const { configGroupList } = selector(store)
 
   return (
     <>
@@ -65,27 +64,38 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             searchable
             value={namespace.getValue()}
             options={options.namespaceList}
-            onChange={value => namespace.setValue(value)}
+            onChange={value => {
+              if (value !== namespace.getValue()) {
+                group.setValue('')
+              }
+              namespace.setValue(value)
+            }}
             type={'simulate'}
             appearance={'button'}
             size='m'
-            disabled={!options.fromFileList}
+            disabled={options.isModify}
           ></Select>
         </FormField>
         <FormField field={group} label={'配置分组'} required>
           <Select
             searchable
             value={group.getValue()}
-            options={configGroupList.map(item => ({ text: item.name, value: item.name }))}
+            options={options.configFileGroupList?.map(item => ({ text: item.name, value: item.name }))}
             onChange={value => group.setValue(value)}
             type={'simulate'}
             appearance={'button'}
             size='m'
-            disabled={!options.fromFileList}
+            disabled={options.isModify}
           ></Select>
         </FormField>
         <FormField field={name} label={'配置文件名'} required>
-          <Input field={name} maxLength={128} placeholder={'允许数字、英文字母、.、-、_，限制128个字符'} size={'l'} />
+          <Input
+            field={name}
+            disabled={options.isModify}
+            maxLength={128}
+            placeholder={'允许数字、英文字母、.、-、_，限制128个字符'}
+            size={'l'}
+          />
         </FormField>
         <FormField field={format} label={'文件格式'} required>
           <Select

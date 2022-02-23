@@ -177,12 +177,25 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
     yield takeLatest(types.SHOW_DIFF, function*(action) {
-      const { namespace, group, name, content, format } = action.payload
-      const { configFileRelease: lastRelease } = yield describeLastReleaseConfigFile({ namespace, name, group })
+      const { namespace, group, name, content, format, id } = action.payload
+      const { list: previousRelease } = yield describeConfigFileReleaseHistories({
+        namespace,
+        name,
+        group,
+        offset: 0,
+        limit: 1,
+        endId: id,
+      })
+      if (!previousRelease?.[0]?.content) {
+        yield Modal.confirm({
+          caption: '无内容对比',
+          description: '该次发布是第一次发布',
+        } as any)
+      }
       yield Modal.confirm({
         size: 'xl',
         caption: '内容对比',
-        description: <FileDiff original={lastRelease.content} now={content} format={format} />,
+        description: <FileDiff original={previousRelease?.[0].content} now={content || ''} format={format} />,
       } as any)
     })
     yield takeLatest(types.ROUTE_INITIALIZED, function*() {

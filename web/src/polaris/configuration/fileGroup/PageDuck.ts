@@ -208,12 +208,13 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, group } = filters
+    const { page, count, namespace, group, fileName } = filters
     const result = await describeConfigFileGroups({
       limit: count,
       offset: (page - 1) * count,
       group: group || undefined,
       namespace: namespace || undefined,
+      fileName: fileName || undefined,
     })
     return {
       totalCount: result.totalCount,

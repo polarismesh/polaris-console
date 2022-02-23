@@ -131,7 +131,7 @@ export default class PageDuck extends Base {
       SET_HISTORY_MAP,
       SET_HIT_PATH,
       SELECT,
-      SET_EDIT_NODE,
+      EDIT_FILE_META,
       CANCEL,
     }
     return {
@@ -182,7 +182,7 @@ export default class PageDuck extends Base {
       setSearchKeyword: createToPayload<string>(types.SET_SEARCH_PATH_KEYWORD),
       fetchData: createToPayload<void>(types.FETCH_DATA),
       editCurrentNode: createToPayload<void>(types.EDIT_CURRENT_NODE),
-      edit: createToPayload<string>(types.SET_EDIT_NODE),
+      edit: createToPayload<string>(types.EDIT_FILE_META),
       setEditContent: createToPayload<string>(types.SET_EDIT_CONTENT),
       releaseCurrentFile: createToPayload<void>(types.RELEASE_CURRENT_NODE),
       showReleaseHistory: createToPayload<ConfigFile>(types.SHOW_RELEASE_HISTORY),
@@ -225,10 +225,7 @@ export default class PageDuck extends Base {
           showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
               resolve(
-                yield* duck.execute(
-                  { namespace: composedId.namespace, group: composedId.group },
-                  { fromFileList: true },
-                ),
+                yield* duck.execute({ namespace: composedId.namespace, group: composedId.group }, { isModify: false }),
               )
             } finally {
               resolve(false)
@@ -240,19 +237,23 @@ export default class PageDuck extends Base {
         yield put({ type: types.FETCH_DATA })
       }
     })
-    yield takeLatest(types.SET_EDIT_NODE, function*(action) {
-      const fileName = action.payload
-      const { fileMap, currentNode, editing } = selector(yield select())
-      const file = fileMap[fileName]
-      if (editing && currentNode.name !== file.name) {
-        const confirm = yield Modal.confirm({
-          message: '确认切换节点？',
-          description: '编辑未发布，现在切换将丢失已编辑内容',
-        })
-        if (!confirm) return
+    yield takeLatest(types.EDIT_FILE_META, function*(action) {
+      const composedId = selectors.composedId(yield select())
+      const { fileMap } = selector(yield select())
+      const res = yield* resolvePromise(
+        new Promise(resolve => {
+          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+            try {
+              resolve(yield* duck.execute(fileMap[action.payload], { isModify: true }))
+            } finally {
+              resolve(false)
+            }
+          })
+        }),
+      )
+      if (res) {
+        yield put({ type: types.FETCH_DATA })
       }
-      yield put({ type: types.SET_CURRENT_SHOW_NODE, payload: file })
-      yield put({ type: types.EDIT_CURRENT_NODE })
     })
     yield takeLatest(types.CANCEL, function*(action) {
       const currentNode = selectors.currentNode(yield select())

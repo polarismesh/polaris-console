@@ -6,13 +6,17 @@ import Form from '@src/polaris/common/ducks/Form'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
 import { KeyValuePair, ConfigFileGroup } from '@src/polaris/configuration/fileGroup/types'
-import { describeConfigFileGroups, createConfigFile } from '@src/polaris/configuration/fileGroup/model'
+import {
+  describeConfigFileGroups,
+  createConfigFile,
+  modifyConfigFile,
+} from '@src/polaris/configuration/fileGroup/model'
 import { reduceFromPayload } from 'saga-duck'
 import { notification } from 'tea-component'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
-  fromFileList: boolean
+  isModify?: boolean
 }
 
 export default class CreateDuck extends FormDialog {
@@ -45,16 +49,30 @@ export default class CreateDuck extends FormDialog {
   *onSubmit() {
     const {
       ducks: { form },
+      selectors,
     } = this
 
     const { name, comment, namespace, group, format, tags } = form.selectors.values(yield select())
-    const { configFile } = yield createConfigFile({ name, comment, namespace, group, format, tags, content: '' })
-    if (configFile?.name) {
-      notification.success({ description: '创建成功' })
-      return true
+    const options = selectors.options(yield select())
+    const data = selectors.data(yield select())
+    if (options.isModify) {
+      const { configFile } = yield modifyConfigFile({ name, comment, namespace, group, format, tags, content: '' })
+      if (configFile?.name) {
+        notification.success({ description: '编辑成功' })
+        return true
+      } else {
+        notification.error({ description: '编辑失败' })
+        return false
+      }
     } else {
-      notification.error({ description: '创建失败' })
-      return false
+      const { configFile } = yield createConfigFile({ name, comment, namespace, group, format, tags, content: '' })
+      if (configFile?.name) {
+        notification.success({ description: '创建成功' })
+        return true
+      } else {
+        notification.error({ description: '创建失败' })
+        return false
+      }
     }
   }
   *beforeSubmit() {
@@ -72,20 +90,21 @@ export default class CreateDuck extends FormDialog {
       ducks: { form },
       types,
       selector,
+      selectors,
     } = this
     super.saga()
     yield takeLatest(form.types.SET_VALUE, function*(action) {
-      if (action.path?.indexOf('namespace') === -1) {
+      if (!action.path || action.path?.indexOf('namespace') === -1) {
         return
       }
+      const options = selectors.options(yield select())
       const {
         form: {
           values: { namespace },
         },
       } = selector(yield select())
       const { list } = yield getAllList(describeConfigFileGroups, {})({ namespace })
-      yield put({ type: types.SET_CONFIGGROUP_LIST, payload: list })
-      yield put(form.creators.setValue('group', ''))
+      yield put({ type: types.SET_OPTIONS, payload: { ...options, configFileGroupList: list } })
     })
   }
   *onShow() {
@@ -97,10 +116,15 @@ export default class CreateDuck extends FormDialog {
     } = this
     const options = selectors.options(yield select())
     const data = selectors.data(yield select())
+    console.log(data)
     const { list: namespaceList } = yield getAllList(describeComplicatedNamespaces, {
       listKey: 'namespaces',
       totalKey: 'amount',
     })({})
+    const { list: configFileGroupList } = yield getAllList(
+      describeConfigFileGroups,
+      {},
+    )({ namespace: data?.namespace || namespaceList?.[0].name })
     yield put({
       type: types.SET_OPTIONS,
       payload: {
@@ -112,6 +136,7 @@ export default class CreateDuck extends FormDialog {
             value: item.name,
           }
         }),
+        configFileGroupList,
       },
     })
     yield put(form.creators.setMeta(options))

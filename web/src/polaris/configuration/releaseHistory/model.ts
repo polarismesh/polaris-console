@@ -7,6 +7,7 @@ export interface DescribeConfigFileReleaseHistoriesParams {
   namespace: string
   group?: string
   name?: string
+  endId?: string
 }
 export interface DescribeConfigFileReleaseHistoriesResult {
   total: number

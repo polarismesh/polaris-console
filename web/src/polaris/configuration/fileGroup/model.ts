@@ -6,6 +6,7 @@ export interface DescribeConfigFileGroupsParams {
   limit: number
   namespace?: string
   group?: string
+  fileName?: string
 }
 export interface DescribeConfigFileGroupsResult {
   total: number
