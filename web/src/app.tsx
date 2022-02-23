@@ -86,7 +86,7 @@ export default function root() {
       <Body>
         <Sider>
           <Menu collapsable theme='dark' title={MenuConfig.title}>
-            {Object.keys(MenuConfig).map((item, index) => {
+            {Object.keys(MenuConfig).map(item => {
               // return <Menu.Item title={"服务列表"} />;
 
               if (MenuConfig[item].isGroup) {
@@ -100,7 +100,7 @@ export default function root() {
                         return null
                       }
 
-                      return <Menu.Item key={index} {...menuConfig} {...getMenuItemProps(item)} />
+                      return <Menu.Item key={menuConfig.title} {...menuConfig} {...getMenuItemProps(item)} />
                     })}
                   </Menu.Group>
                 )
@@ -108,7 +108,7 @@ export default function root() {
               if (typeof MenuConfig[item] !== 'object') {
                 return
               }
-              return <Menu.Item key={index} {...MenuConfig[item]} {...getMenuItemProps(item)} />
+              return <Menu.Item key={MenuConfig.title} {...MenuConfig[item]} {...getMenuItemProps(item)} />
             })}
           </Menu>
         </Sider>

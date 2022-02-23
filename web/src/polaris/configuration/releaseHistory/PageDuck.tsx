@@ -1,9 +1,9 @@
 import { createToPayload } from 'saga-duck'
 import { takeLatest } from 'redux-saga-catch'
-import { put } from 'redux-saga/effects'
-import { TagValue, Modal } from 'tea-component'
+import { put, select, take } from 'redux-saga/effects'
+import { Modal } from 'tea-component'
 import { reduceFromPayload } from 'saga-duck/build/helper'
-import { GroupNameTagKey, DefaultGroupTagAttribute } from './Page'
+import { GroupNameTagKey, DefaultGroupTagAttribute, FileNameTagKey } from './Page'
 import GridPageDuck, { Filter } from '@src/polaris/common/ducks/GridPage'
 import { NamespaceItem } from '@src/polaris/service/PageDuck'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
@@ -41,6 +41,9 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       SET_NAMESPACE_LIST,
       SET_GROUP_LIST,
       SHOW_DIFF,
+      SET_NAMESPACE,
+      SET_GROUP_NAME,
+      SET_FILENAME,
     }
     return {
       ...super.quickTypes,
@@ -54,10 +57,28 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS]
+    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS, this.types.SET_NAMESPACE]
   }
   get params() {
-    return [...super.params]
+    const { types } = this
+    return [
+      ...super.params,
+      {
+        key: 'namespace',
+        type: types.SET_NAMESPACE,
+        defaults: '',
+      },
+      {
+        key: 'group',
+        type: types.SET_GROUP_NAME,
+        defaults: '',
+      },
+      {
+        key: 'fileName',
+        type: types.SET_FILENAME,
+        defaults: '',
+      },
+    ]
   }
   get quickDucks() {
     return {
@@ -68,10 +89,17 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
     const { types } = this
     return {
       ...super.reducers,
-      tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
+      tags: reduceFromPayload<any[]>(types.SET_TAGS, []),
       customFilters: reduceFromPayload<CustomFilters>(types.SET_CUSTOM_FILTERS, EmptyCustomFilter),
-      namespaceList: reduceFromPayload<NamespaceItem[]>(types.SET_NAMESPACE_LIST, []),
-      configFileGroupList: reduceFromPayload<ConfigFileGroup[]>(types.SET_GROUP_LIST, []),
+      namespaceList: reduceFromPayload<NamespaceItem & { key?: string; name?: string }[]>(
+        types.SET_NAMESPACE_LIST,
+        [] as any,
+      ),
+      configFileGroupList: reduceFromPayload<ConfigFileGroup & { key?: string; name?: string }[]>(
+        types.SET_GROUP_LIST,
+        [] as any,
+      ),
+      namespace: reduceFromPayload<string>(types.SET_NAMESPACE, ''),
     }
   }
   get creators() {
@@ -81,6 +109,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       setCustomFilters: createToPayload<CustomFilters>(types.SET_CUSTOM_FILTERS),
       changeTags: createToPayload(types.CHANGE_TAGS),
       showDiff: createToPayload(types.SHOW_DIFF),
+      setNamespace: createToPayload(types.SET_NAMESPACE),
     }
   }
   get rawSelectors() {
@@ -91,11 +120,14 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
         page: state.page,
         count: state.count,
         keyword: state.keyword,
-        namespace: state.customFilters.namespace,
+        namespace: state.namespace,
         group: state.customFilters.group,
         fileName: state.customFilters.fileName,
       }),
     }
+  }
+  get waitRouteInitialized() {
+    return true
   }
   *init() {
     const { list: namespaceList } = yield getAllList(describeComplicatedNamespaces, {
@@ -115,12 +147,19 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       payload: options,
     })
     const { list } = yield getAllList(describeConfigFileGroups, {})({})
-    yield put({ type: this.types.SET_GROUP_LIST, payload: list })
+    yield put({
+      type: this.types.SET_GROUP_LIST,
+      payload: list.map(item => ({
+        ...item,
+        text: item.name,
+        value: item.name,
+        key: item.name,
+        name: item.name,
+      })),
+    })
   }
   *saga() {
-    const { types } = this
-    yield* super.saga()
-    yield* this.init()
+    const { types, selector } = this
     yield takeLatest(types.CHANGE_TAGS, function*(action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
@@ -141,24 +180,55 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       const { namespace, group, name, content, format } = action.payload
       const { configFileRelease: lastRelease } = yield describeLastReleaseConfigFile({ namespace, name, group })
       yield Modal.confirm({
-        size: 'l',
-        message: '内容对比',
+        size: 'xl',
+        caption: '内容对比',
         description: <FileDiff original={lastRelease.content} now={content} format={format} />,
-      })
+      } as any)
     })
+    yield takeLatest(types.ROUTE_INITIALIZED, function*() {
+      yield take([types.SET_NAMESPACE_LIST, types.SET_GROUP_LIST])
+      yield take([types.SET_NAMESPACE_LIST, types.SET_GROUP_LIST])
+      const { routes, configFileGroupList } = selector(yield select())
+      const tags = []
+      if (routes.namespace) {
+        yield put({ type: types.SET_NAMESPACE, payload: routes.namespace })
+      }
+      if (routes.group) {
+        const option = configFileGroupList.find(item => item.key === routes.group)
+        tags.push({
+          attr: {
+            type: 'single',
+            key: GroupNameTagKey,
+            name: '分组',
+            values: configFileGroupList,
+          },
+          values: [option],
+        })
+      }
+      if (routes.fileName) {
+        tags.push({
+          attr: {
+            type: 'input',
+            key: FileNameTagKey,
+            name: '配置文件名',
+          },
+          values: [{ name: routes.fileName }],
+        })
+      }
+      yield put({ type: types.CHANGE_TAGS, payload: tags })
+    })
+
+    yield* super.saga()
+    yield* this.init()
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, keyword, namespace, fileName } = filters
-    if (!namespace)
-      return {
-        totalCount: 0,
-        list: [],
-      }
+    const { page, count, namespace, fileName, group } = filters
+
     const result = await describeConfigFileReleaseHistories({
       limit: count,
       offset: (page - 1) * count,
-      group: keyword,
+      group: group || undefined,
       namespace: namespace || undefined,
       name: fileName,
     })
@@ -167,7 +237,6 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       list:
         result.list?.map(item => ({
           ...item,
-          id: item.name,
         })) || [],
     }
   }

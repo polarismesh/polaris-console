@@ -31,14 +31,8 @@ export const DefaultGroupTagAttribute = {
 }
 function getTagAttributes(props: DuckCmpProps<ConfigFileGroupDuck>) {
   const { duck, store } = props
-  const { namespaceList, configFileGroupList } = duck.selector(store)
+  const { configFileGroupList } = duck.selector(store)
   return [
-    {
-      type: 'single',
-      key: NamespaceTagKey,
-      name: '命名空间',
-      values: namespaceList,
-    },
     {
       type: 'single',
       key: GroupNameTagKey,
@@ -54,17 +48,18 @@ function getTagAttributes(props: DuckCmpProps<ConfigFileGroupDuck>) {
 }
 const getHandlers = memorize(({ creators }: ConfigFileGroupDuck, dispatch) => ({
   reload: () => dispatch(creators.reload()),
-
   changeTags: v => dispatch(creators.changeTags(v)),
+  setCustomFilters: v => dispatch(creators.setCustomFilters(v)),
+  setNamespace: v => dispatch(creators.setNamespace(v)),
 }))
 export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
   const { duck, store, dispatch } = props
   const { selector } = duck
   const columns = React.useMemo(() => getColumns(props), [])
   const handlers = getHandlers(props)
-  const { tags, customFilters, namespaceList, configFileGroupList } = selector(store)
+  const { tags, customFilters, namespaceList, configFileGroupList, namespace } = selector(store)
   const namespaceOptions = namespaceList.map(item => ({ text: item.name, value: item.name }))
-  namespaceOptions.unshift({ text: '全部', value: '' })
+  namespaceOptions.unshift({ text: '全部命名空间', value: '' })
   return (
     <BasicLayout title={'发布历史'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
@@ -72,20 +67,15 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
           right={
             <>
               <Select
+                searchable
                 type={'simulate'}
                 options={namespaceOptions}
-                value={customFilters.namespace}
+                value={namespace}
                 appearance={'button'}
                 onChange={value => {
-                  const replacedTags = replaceTags(NamespaceTagKey, value, tags, namespaceList, {
-                    type: 'single',
-                    key: NamespaceTagKey,
-                    name: '命名空间',
-                    values: namespaceList,
-                  })
-                  handlers.changeTags(replacedTags)
+                  handlers.setNamespace(value)
                 }}
-                style={{ margin: '0px 20px' }}
+                style={{ width: '120px' }}
               ></Select>
               <TagSearchBox
                 attributes={getTagAttributes(props) as any}

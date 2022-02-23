@@ -20,16 +20,19 @@ import {
   Text,
   Dropdown,
   List,
+  Icon,
 } from 'tea-component'
 import { FileStatusMap } from './constants'
-import { autotip, radioable } from 'tea-component/lib/table/addons'
+import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
 import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
+import { Link } from 'react-router-dom'
 
 export const NoSearchResultKey = '__NO_SEARCH_RESULT__'
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   add: () => dispatch(creators.add()),
-  edit: () => dispatch(creators.editCurrentNode()),
+  editCurrentNode: () => dispatch(creators.editCurrentNode()),
+  edit: v => dispatch(creators.edit(v)),
   clickFileItem: path => dispatch(creators.clickFileItem(path)),
   setExpandedIds: expandedIds => dispatch(creators.setExpandedIds(expandedIds)),
   delete: path => dispatch(creators.delete(path)),
@@ -40,22 +43,21 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   setEditContent: v => dispatch(creators.setEditContent(v)),
   releaseCurrentFile: () => dispatch(creators.releaseCurrentFile()),
   showReleaseHistory: v => dispatch(creators.showReleaseHistory(v)),
+  select: v => dispatch(creators.select(v)),
 }))
 
 insertCSS(
   'tse_zk_tree',
-  `.tse_zk_tree .app-tse-tree__node-content:hover{
-  background-color: #f9fafb !important;
-}
-.tse_zk_tree .app-tse-tree__label:hover{
-  background-color: #f9fafb; 
-}
-.tse_zk_tree .app-tse-tree__action{
-  background: none; 
-}
-.tse_zk_tree .is-selected>.app-tse-tree__node-content:hover{
-  background-color: #ebeef2 !important;
-}
+  `
+  .configuration-tree-node .tea-form-check{
+    width:auto;
+  }
+  .configuration-tree-node .tea-tree__label-title{
+    width:100%;
+  }
+  .no-switcher .tea-tree__switcher{
+    display:none;
+  }
 `,
 )
 
@@ -76,58 +78,84 @@ export default function Page(props: DuckCmpProps<Duck>) {
       <Table.ActionPanel>
         <Justify
           left={
-            <Button type={'primary'} onClick={() => handlers.add()}>
-              新增
-            </Button>
+            <>
+              <Button type={'primary'} onClick={() => handlers.add()}>
+                新增
+              </Button>
+              {/* <Button type={'weak'} onClick={() => handlers.delete(selection)}>
+                删除
+              </Button> */}
+            </>
           }
         />
       </Table.ActionPanel>
       <Card>
         <Card.Body style={{ height: 660 }}>
           <Row showSplitLine gap={40}>
-            <Col span={8}>
+            <div style={{ width: '450px', height: 600, overflowY: 'hidden', margin: '15px 20px' }}>
               <SearchBox
                 value={searchKeyword}
                 onChange={handlers.setSearchKeyword}
                 placeholder={'请输入文件名搜索'}
                 onSearch={handlers.searchPath}
+                style={{ width: '420px' }}
               />
-              <div style={{ height: 600, overflowY: 'hidden' }}>
-                <Tree
-                  activeIds={currentNode ? [currentNode?.name] : []}
-                  className='tse_zk_tree'
-                  activable
-                  onActive={paths => {
-                    handlers.clickFileItem(paths[0])
-                  }}
-                  expandedIds={expandedIds}
-                  onExpand={expandedIds => {
-                    handlers.setExpandedIds(expandedIds)
-                  }}
-                  fullExpandable
-                  height={600}
-                  style={{ width: '500px' }}
-                >
-                  {renderTree(props, fileTree, '', '')}
-                </Tree>
-              </div>
-            </Col>
-            <Col span={16}>
+              <Tree
+                activable
+                onActive={(activeIds, { nodeId }) => {
+                  // if (!fileMap[nodeId]) {
+                  //   const index = expandedIds.findIndex(item => item === nodeId)
+                  //   if (index === -1) {
+                  //     expandedIds.push(nodeId)
+                  //     handlers.setExpandedIds([...expandedIds])
+                  //   } else {
+                  //     const newArray = [...expandedIds]
+                  //     newArray.splice(index, 1)
+                  //     handlers.setExpandedIds(newArray)
+                  //   }
+                  // } else {
+                  //   handlers.clickFileItem(nodeId)
+                  // }
+                  handlers.clickFileItem(nodeId)
+                }}
+                activeIds={currentNode ? [currentNode?.name] : []}
+                expandedIds={expandedIds}
+                onExpand={expandedIds => {
+                  handlers.setExpandedIds(expandedIds)
+                }}
+                fullExpandable
+                height={600}
+                style={{ width: '500px' }}
+                // onSelect={v => {
+                //   handlers.select(v)
+                // }}
+                // selectable
+                // selectedIds={selection}
+                // selectValueMode={'onlyLeaf'}
+              >
+                {renderTree(props, fileTree, '', '')}
+              </Tree>
+            </div>
+            <div style={{ width: 'calc(100% - 540px)', margin: '15px 20px' }}>
               {currentNode?.name &&
                 (currentNode?.name !== NoSearchResultKey ? (
                   <>
                     <Card.Body
                       title={
                         <section style={{ width: '500px' }}>
-                          <Copy
-                            text={`${currentNode?.name}.${currentNode?.format}`}
-                          >{`${currentNode?.name}.${currentNode?.format}`}</Copy>
+                          <Copy text={`${currentNode?.name}`}>{`${currentNode?.name}`}</Copy>
                         </section>
                       }
                       operation={
-                        <Button type={'link'} onClick={() => handlers.showReleaseHistory(currentNode)}>
-                          {showHistoryMap[currentNode?.name] ? '查看当前文件' : '查看发布历史'}
-                        </Button>
+                        <Link
+                          to={`/file-release-history?namespace=${currentNode.namespace}&group=${currentNode.group}&fileName=${currentNode.name}`}
+                          target={'_blank'}
+                        >
+                          <Text reset>查看发布历史</Text>
+                        </Link>
+                        // <Button type={'link'} onClick={() => {}}>
+                        //   {showHistoryMap[currentNode?.name] ? '查看当前文件' : '查看发布历史'}
+                        // </Button>
                       }
                       style={{ padding: 0 }}
                     >
@@ -155,6 +183,9 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <FormItem label='最后发布人'>
                               <FormText>{currentNode.releaseBy || '-'}</FormText>
                             </FormItem>
+                            <FormItem label='备注'>
+                              <FormText>{currentNode.comment || '-'}</FormText>
+                            </FormItem>
                           </Col>
                         </Row>
                       </Form>
@@ -162,7 +193,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                         style={{ marginBottom: '20px' }}
                         left={
                           <>
-                            <Button type={'primary'} onClick={() => handlers.releaseCurrentFile()}>
+                            <Button type={'primary'} disabled={editing} onClick={() => handlers.releaseCurrentFile()}>
                               发布
                             </Button>
                             {editing ? (
@@ -170,7 +201,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 保存
                               </Button>
                             ) : (
-                              <Button type={'weak'} onClick={() => handlers.edit()}>
+                              <Button type={'weak'} onClick={() => handlers.editCurrentNode()}>
                                 编辑
                               </Button>
                             )}
@@ -183,17 +214,19 @@ export default function Page(props: DuckCmpProps<Duck>) {
                           <Col span={6}>
                             <Table
                               bordered
-                              records={currentHistoryDuck.selector(store).data}
+                              recordKey={'id'}
+                              records={currentHistoryDuck.selector(store).data || []}
                               columns={[
                                 { key: 'id', header: '版本' },
                                 { key: 'modifyTime', header: '发布时间' },
                               ]}
                               addons={[
+                                scrollable({ maxHeight: '350px' }),
                                 autotip({ isLoading: currentHistoryDuck.selector(store).loading }),
                                 radioable({
                                   rowSelect: true,
                                   render: () => <noscript />,
-                                  value: currentHistoryDuck.selector(store)?.selected?.version,
+                                  value: currentHistoryDuck.selector(store)?.selected?.id,
                                   onChange: (v, { record }) => dispatch(currentHistoryDuck.creators.select(record)),
                                 }),
                               ]}
@@ -235,7 +268,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                     <H3>未搜索到对应文件</H3>
                   </>
                 ))}
-            </Col>
+            </div>
           </Row>
         </Card.Body>
       </Card>
@@ -260,7 +293,7 @@ function renderTree(props, folder, path: string, currPath: string) {
     node = folder
   }
   const currentNode = selectors.currentNode(store)
-  const { hitPath } = selector(store)
+  const { hitPath, expandedIds } = selector(store)
   if (!(Object.keys(node).length > 0)) {
     return <noscript />
   }
@@ -271,29 +304,33 @@ function renderTree(props, folder, path: string, currPath: string) {
         const obj = node[childPath]
         const showContent = obj.__isDir__ ? childPath : getFileName(obj.name)
         const nextPath = `${currPath}${currPath ? '.' : ''}${childPath}`
+        const folderIcon = expandedIds.indexOf(obj.name) > -1 ? 'folderopen' : 'folderclose'
         return (
           <TreeNode
             id={obj.__isDir__ ? nextPath : obj.name}
+            icon={<Icon type={obj.__isDir__ ? folderIcon : 'daily'} />}
+            className={!obj.__isDir__ ? 'configuration-tree-node no-switcher' : 'configuration-tree-node'}
             content={hitPath.indexOf(nextPath) > -1 ? <Text theme={'warning'}>{showContent}</Text> : showContent}
             operation={
               !obj.__isDir__ && (
                 <div style={{ visibility: currentNode && currentNode?.key === obj.name ? 'visible' : null }}>
-                  <Dropdown appearence='pure' clickClose={false} button={<Button type='icon' icon='more' />}>
+                  <Dropdown appearence='pure' clickClose={true} button={<Button type='icon' icon='more' />}>
                     <List type='option'>
                       <List.Item
-                        onClick={() => {
-                          handlers.clickFileItem(obj.name)
-                          handlers.edit()
+                        onClick={e => {
+                          e.stopPropagation()
+                          handlers.edit(obj.name)
                         }}
                       >
                         编辑
                       </List.Item>
-                      <List.Item onClick={() => handlers.delete(obj.name)}>删除</List.Item>
+                      <List.Item onClick={() => handlers.delete([obj.name])}>删除</List.Item>
                     </List>
                   </Dropdown>
                 </div>
               )
             }
+            // selectable={!obj.__isDir__}
             key={obj.__isDir__ ? nextPath : obj.name}
           >
             {obj.__isDir__ ? renderTree(props, obj, childPath, nextPath) : null}

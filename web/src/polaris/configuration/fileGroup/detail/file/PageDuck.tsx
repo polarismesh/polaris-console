@@ -130,6 +130,8 @@ export default class PageDuck extends Base {
       SHOW_RELEASE_HISTORY,
       SET_HISTORY_MAP,
       SET_HIT_PATH,
+      SELECT,
+      SET_EDIT_NODE,
     }
     return {
       ...super.quickTypes,
@@ -159,6 +161,7 @@ export default class PageDuck extends Base {
       fileMap: reduceFromPayload(types.SET_FILE_MAP, {} as Record<string, ConfigFile>),
       showHistoryMap: reduceFromPayload(types.SET_HISTORY_MAP, {}),
       hitPath: reduceFromPayload(types.SET_HIT_PATH, []),
+      selection: reduceFromPayload(types.SELECT, [] as string[]),
     }
   }
 
@@ -171,17 +174,19 @@ export default class PageDuck extends Base {
         payload: { composedId, data },
       }),
       add: createToPayload<void>(types.ADD),
-      delete: createToPayload<string>(types.DELETE),
+      delete: createToPayload<string[]>(types.DELETE),
       clickFileItem: createToPayload<string>(types.CLICK_FILE_ITEM),
       setExpandedIds: createToPayload<string[]>(types.SET_EXPANDED_IDS),
       searchPath: createToPayload<string>(types.SEARCH_PATH),
       setSearchKeyword: createToPayload<string>(types.SET_SEARCH_PATH_KEYWORD),
       fetchData: createToPayload<void>(types.FETCH_DATA),
       editCurrentNode: createToPayload<void>(types.EDIT_CURRENT_NODE),
+      edit: createToPayload<string>(types.SET_EDIT_NODE),
       setEditContent: createToPayload<string>(types.SET_EDIT_CONTENT),
       releaseCurrentFile: createToPayload<void>(types.RELEASE_CURRENT_NODE),
       showReleaseHistory: createToPayload<ConfigFile>(types.SHOW_RELEASE_HISTORY),
       save: createToPayload<void>(types.SAVE_CURRENT_NODE),
+      select: createToPayload<string[]>(types.SELECT),
     }
   }
 
@@ -233,6 +238,20 @@ export default class PageDuck extends Base {
         yield put({ type: types.FETCH_DATA })
       }
     })
+    yield takeLatest(types.SET_EDIT_NODE, function*(action) {
+      const fileName = action.payload
+      const { fileMap, currentNode, editing } = selector(yield select())
+      const file = fileMap[fileName]
+      if (editing && currentNode.name !== file.name) {
+        const confirm = yield Modal.confirm({
+          message: '确认切换节点？',
+          description: '编辑未发布，现在切换将丢失已编辑内容',
+        })
+        if (!confirm) return
+      }
+      yield put({ type: types.SET_CURRENT_SHOW_NODE, payload: file })
+      yield put({ type: types.EDIT_CURRENT_NODE })
+    })
     yield takeLatest(types.EDIT_CURRENT_NODE, function*() {
       const currentNode = selectors.currentNode(yield select())
       yield put({ type: types.SET_EDITING, payload: true })
@@ -245,7 +264,8 @@ export default class PageDuck extends Base {
         description: '删除后，无法恢复。',
       })
       if (confirm) {
-        const result = yield deleteConfigFiles({ namespace, group, name: action.payload })
+        const deleteList = action.payload
+        const result = yield deleteConfigFiles(deleteList.map(item => ({ namespace, group, name: item })))
         if (result) {
           notification.success({ description: '删除成功' })
           yield put({ type: types.FETCH_DATA })
@@ -273,6 +293,11 @@ export default class PageDuck extends Base {
       }
     })
     yield takeLatest(types.SEARCH_PATH, function*(action) {
+      if (action.payload === '') {
+        yield put({ type: types.SET_EXPANDED_IDS, payload: [...new Set([])] })
+        yield put({ type: types.SET_HIT_PATH, payload: [...new Set([])] })
+        return
+      }
       const { fileMap } = selector(yield select())
       const keyword = action.payload
       const hitName = Object.keys(fileMap).filter(fileName => {
@@ -326,10 +351,10 @@ export default class PageDuck extends Base {
       const { configFileRelease: lastRelease } = yield describeLastReleaseConfigFile({ namespace, name, group })
       if (lastRelease) {
         const confirm = yield Modal.confirm({
-          size: 'l',
-          message: '内容对比',
+          size: 'xl',
+          caption: '内容对比',
           description: <FileDiff original={lastRelease.content} now={content} format={format} />,
-        })
+        } as any)
         if (!confirm) {
           return
         }

@@ -40,7 +40,7 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
       return (
         <React.Fragment>
           <Action fn={dispatch => dispatch(creators.edit(x))}>{'编辑'}</Action>
-          <Action fn={dispatch => dispatch(creators.remove([x.name]))}>{'删除'}</Action>
+          <Action fn={dispatch => dispatch(creators.remove(x.name))}>{'删除'}</Action>
         </React.Fragment>
       )
     },

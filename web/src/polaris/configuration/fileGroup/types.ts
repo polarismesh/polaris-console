@@ -43,7 +43,7 @@ export interface ConfigFileRelease {
   modifyBy: string
 }
 export interface ConfigFileReleaseHistory {
-  version: string
+  id: string
   name: string
   namespace: string
   group: string

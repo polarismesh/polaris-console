@@ -45,6 +45,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       SET_TAGS,
       CHANGE_TAGS,
       SET_NAMESPACE_LIST,
+      SET_NAMESPACE,
     }
     return {
       ...super.quickTypes,
@@ -58,7 +59,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_COMPOSE_ID, this.types.SET_CUSTOM_FILTERS]
+    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS, this.types.SET_NAMESPACE]
   }
   get params() {
     return [...super.params]
@@ -76,6 +77,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
       customFilters: reduceFromPayload<CustomFilters>(types.SET_CUSTOM_FILTERS, EmptyCustomFilter),
       namespaceList: reduceFromPayload<NamespaceItem[]>(types.SET_NAMESPACE_LIST, []),
+      namespace: reduceFromPayload<string>(types.SET_NAMESPACE, ''),
     }
   }
   get creators() {
@@ -83,7 +85,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
     return {
       ...super.creators,
       edit: createToPayload<ConfigFileGroupItem>(types.EDIT),
-      remove: createToPayload<string[]>(types.REMOVE),
+      remove: createToPayload<string>(types.REMOVE),
       create: createToPayload<void>(types.CREATE),
       load: (composedId, data) => ({
         type: types.LOAD,
@@ -92,6 +94,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       select: createToPayload<string[]>(types.SELECT),
       setCustomFilters: createToPayload<CustomFilters>(types.SET_CUSTOM_FILTERS),
       changeTags: createToPayload(types.CHANGE_TAGS),
+      setNamespace: createToPayload(types.SET_NAMESPACE),
     }
   }
   get rawSelectors() {
@@ -102,7 +105,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
         page: state.page,
         count: state.count,
         keyword: state.keyword,
-        namespace: state.customFilters.namespace,
+        namespace: state.namespace,
         group: state.customFilters.group,
         fileName: state.customFilters.fileName,
       }),
@@ -173,22 +176,15 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       yield* duck.loadNamespaceList()
     })
     yield takeLatest(types.REMOVE, function*(action) {
-      const nameList = action.payload
-      const {
-        grid: { list },
-      } = selector(yield select())
-      const selectedList = nameList.map(item =>
-        list.find(configFileGroup => configFileGroup.name === item),
-      ) as ConfigFileGroupItem[]
+      const { group, namespace } = action.payload
+
       const confirm = yield Modal.confirm({
         message: `确认删除配置组`,
-        description: '删除后，无法恢复',
+        description: '删除配置组也会同时删除配置组下所有配置文件，请谨慎删除。',
         okText: '删除',
       })
       if (confirm) {
-        const res = yield deleteConfigFileGroups(
-          selectedList.map(item => ({ group: item.name, namespace: item.namespace })),
-        )
+        const res = yield deleteConfigFileGroups({ group, namespace })
         if (res) notification.success({ description: '删除成功' })
         yield put(creators.reload())
       }

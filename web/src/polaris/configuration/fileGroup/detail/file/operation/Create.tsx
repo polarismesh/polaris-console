@@ -62,6 +62,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
       <Form>
         <FormField field={namespace} label={'命名空间'} required>
           <Select
+            searchable
             value={namespace.getValue()}
             options={options.namespaceList}
             onChange={value => namespace.setValue(value)}
@@ -73,6 +74,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         </FormField>
         <FormField field={group} label={'配置分组'} required>
           <Select
+            searchable
             value={group.getValue()}
             options={configGroupList.map(item => ({ text: item.name, value: item.name }))}
             onChange={value => group.setValue(value)}

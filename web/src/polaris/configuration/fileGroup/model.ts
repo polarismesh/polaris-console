@@ -57,7 +57,7 @@ export interface DeleteConfigFileGroupParams {
   namespace: string
 }
 export type DeleteConfigFileGroupResult = {}
-export async function deleteConfigFileGroups(params: DeleteConfigFileGroupParams[]) {
+export async function deleteConfigFileGroups(params: DeleteConfigFileGroupParams) {
   const res = await deleteApiRequest<DeleteConfigFileGroupResult>({
     action: 'config/v1/configfilegroups',
     data: params,
@@ -150,7 +150,7 @@ export interface DeleteConfigFileParams {
   deleteBy?: string
 }
 export type DeleteConfigFileResult = {}
-export async function deleteConfigFiles(params: DeleteConfigFileParams) {
+export async function deleteConfigFiles(params: DeleteConfigFileParams[]) {
   const res = await deleteApiRequest<DeleteConfigFileResult>({
     action: 'config/v1/configfiles',
     data: params,
