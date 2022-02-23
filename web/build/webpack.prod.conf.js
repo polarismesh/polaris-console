@@ -1,17 +1,12 @@
 const path = require("path");
 const base = require("./webpack.base.conf");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = Object.assign({}, base, {
   optimization: {
-    minimizer: [
-      new UglifyJsPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: true,
-      }),
-    ],
+    minimize: true,
+    minimizer: [new TerserPlugin()],
   },
   plugins: [new CleanWebpackPlugin(), ...base.plugins],
   mode: "production",

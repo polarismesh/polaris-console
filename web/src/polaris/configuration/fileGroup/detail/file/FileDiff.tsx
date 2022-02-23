@@ -13,8 +13,8 @@ export default function FileDiff(props: Props) {
   return (
     <section>
       <Row style={{ margin: '10px 0px' }}>
-        <Col>当前发布</Col>
         <Col>历史发布</Col>
+        <Col>当前发布</Col>
       </Row>
       <DiffEditor monaco={monaco} height={400} language={format} original={original} value={now} />
     </section>

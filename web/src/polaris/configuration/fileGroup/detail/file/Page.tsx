@@ -44,6 +44,7 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   releaseCurrentFile: () => dispatch(creators.releaseCurrentFile()),
   showReleaseHistory: v => dispatch(creators.showReleaseHistory(v)),
   select: v => dispatch(creators.select(v)),
+  cancel: () => dispatch(creators.cancel()),
 }))
 
 insertCSS(
@@ -203,6 +204,11 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             ) : (
                               <Button type={'weak'} onClick={() => handlers.editCurrentNode()}>
                                 编辑
+                              </Button>
+                            )}
+                            {editing && (
+                              <Button type={'weak'} onClick={() => handlers.cancel()}>
+                                取消
                               </Button>
                             )}
                           </>

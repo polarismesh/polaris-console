@@ -132,6 +132,7 @@ export default class PageDuck extends Base {
       SET_HIT_PATH,
       SELECT,
       SET_EDIT_NODE,
+      CANCEL,
     }
     return {
       ...super.quickTypes,
@@ -187,6 +188,7 @@ export default class PageDuck extends Base {
       showReleaseHistory: createToPayload<ConfigFile>(types.SHOW_RELEASE_HISTORY),
       save: createToPayload<void>(types.SAVE_CURRENT_NODE),
       select: createToPayload<string[]>(types.SELECT),
+      cancel: createToPayload<void>(types.CANCEL),
     }
   }
 
@@ -251,6 +253,11 @@ export default class PageDuck extends Base {
       }
       yield put({ type: types.SET_CURRENT_SHOW_NODE, payload: file })
       yield put({ type: types.EDIT_CURRENT_NODE })
+    })
+    yield takeLatest(types.CANCEL, function*(action) {
+      const currentNode = selectors.currentNode(yield select())
+      yield put({ type: types.SET_EDITING, payload: false })
+      yield put(creators.setEditContent(currentNode.content))
     })
     yield takeLatest(types.EDIT_CURRENT_NODE, function*() {
       const currentNode = selectors.currentNode(yield select())

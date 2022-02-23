@@ -27,6 +27,7 @@ export const DefaultGroupTagAttribute = {
   key: GroupNameTagKey,
   name: '分组名',
 }
+console.log(React)
 function getTagAttributes() {
   return [
     {
@@ -91,7 +92,6 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                   verticalAlign: 'middle',
                   width: '400px',
                 }}
-                value={tags}
                 onChange={value => handlers.changeTags(value)}
                 tips={'请选择条件进行过滤'}
                 hideHelp={true}
