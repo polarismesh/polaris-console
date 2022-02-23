@@ -187,16 +187,20 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
         endId: id,
       })
       if (!previousRelease?.[0]?.content) {
-        yield Modal.confirm({
+        const modal = Modal.show({
           caption: '无内容对比',
-          description: '该次发布是第一次发布',
-        } as any)
+          children: '该次发布是第一次发布',
+          onClose: () => modal.destroy(),
+        })
+        return
       }
-      yield Modal.confirm({
+      const modal = Modal.show({
         size: 'xl',
         caption: '内容对比',
-        description: <FileDiff original={previousRelease?.[0].content} now={content || ''} format={format} />,
-      } as any)
+        children: <FileDiff original={previousRelease?.[0].content} now={content || ''} format={format} />,
+        destroyOnClose: true,
+        onClose: () => modal.destroy(),
+      })
     })
     yield takeLatest(types.ROUTE_INITIALIZED, function*() {
       yield take([types.SET_NAMESPACE_LIST, types.SET_GROUP_LIST])

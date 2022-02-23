@@ -28,11 +28,6 @@ export default ({
     render: x => <Text>{x.modifyBy}</Text>,
   },
   {
-    key: 'type',
-    header: '发布方式',
-    render: x => <Text>{x.type}</Text>,
-  },
-  {
     key: 'createtime',
     header: '创建时间',
     render: x => <Text>{x.createTime}</Text>,
