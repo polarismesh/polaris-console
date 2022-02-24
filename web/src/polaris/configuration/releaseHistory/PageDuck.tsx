@@ -190,7 +190,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       const modal = Modal.show({
         size: 'xl',
         caption: '内容对比',
-        children: <FileDiff original={previousRelease?.[0].content || ''} now={content || ''} format={format} />,
+        children: <FileDiff original={previousRelease?.[0]?.content || ''} now={content || ''} format={format} />,
         destroyOnClose: true,
         onClose: () => modal.destroy(),
       })

@@ -26,13 +26,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
     [],
   )
   return (
-    <DetailPage
-      store={store}
-      duck={duck}
-      dispatch={dispatch}
-      title={`${group}(${namespace})`}
-      backRoute={'/#/filegroup'}
-    >
+    <DetailPage store={store} duck={duck} dispatch={dispatch} title={`${group}(${namespace})`} backRoute={'/filegroup'}>
       <Tabs ceiling tabs={tabs} activeId={tab} onActive={handlers.switch}>
         <TabPanel id={TAB.File}>
           <File duck={ducks[TAB.File]} store={store} dispatch={dispatch} />

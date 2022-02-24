@@ -12,9 +12,7 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
     header: '名称',
     render: x => (
       <Text>
-        <Link to={`/filegroup-detail?group=${x.name}&namespace=${x.namespace}`} target={'_blank'}>
-          {x.name}
-        </Link>
+        <Link to={`/filegroup-detail?group=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
       </Text>
     ),
   },
