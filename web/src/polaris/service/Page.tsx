@@ -10,23 +10,18 @@ import {
   Text,
   Select,
   Input,
-  Dropdown,
   InputAdornment,
-  List,
   FormItem,
   Form,
   FormText,
-  Copy,
-  Bubble,
 } from 'tea-component'
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
-import { filterable, selectable, expandable } from 'tea-component/lib/table/addons'
+import { selectable, expandable } from 'tea-component/lib/table/addons'
 import insertCSS from '../common/helpers/insertCSS'
 import csvColumns from './csvColumns'
 import { enableNearbyString } from './operation/CreateDuck'
-import { READ_ONLY_NAMESPACE } from './types'
 import { isReadOnly, showAllLabels } from './utils'
 
 insertCSS(
@@ -48,29 +43,23 @@ const SEARCH_METHOD_OPTIONS = [
 
 export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
   const { duck, store, dispatch } = props
-  const { creators, selectors, selector } = duck
+  const { creators, selector } = duck
   const handlers = React.useMemo(
     () => ({
       reload: () => dispatch(creators.reload()),
       export: () => dispatch(creators.export(csvColumns, 'service-list')),
       search: () => dispatch(creators.search('')),
-      setCustomFilters: (filters) => dispatch(creators.setCustomFilters(filters)),
+      setCustomFilters: filters => dispatch(creators.setCustomFilters(filters)),
       clear: () => dispatch(creators.setCustomFilters(EmptyCustomFilter)),
       create: () => dispatch(creators.create()),
-      select: (payload) => dispatch(creators.setSelection(payload)),
-      remove: (payload) => dispatch(creators.remove(payload)),
-      setExpandedKeys: (payload) => dispatch(creators.setExpandedKeys(payload)),
+      select: payload => dispatch(creators.setSelection(payload)),
+      remove: payload => dispatch(creators.remove(payload)),
+      setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
     }),
     [],
   )
   const columns = React.useMemo(() => getColumns(props), [])
-  const {
-    customFilters,
-    selection,
-    namespaceList,
-    expandedKeys,
-    grid: { list },
-  } = selector(store)
+  const { customFilters, selection, namespaceList, expandedKeys } = selector(store)
   return (
     <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
@@ -81,7 +70,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                 <Select
                   value={customFilters.namespace}
                   options={namespaceList}
-                  onChange={(value) =>
+                  onChange={value =>
                     handlers.setCustomFilters({
                       ...customFilters,
                       namespace: value,
@@ -98,7 +87,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                     <Select
                       options={SEARCH_METHOD_OPTIONS}
                       value={customFilters.searchMethod}
-                      onChange={(value) =>
+                      onChange={value =>
                         handlers.setCustomFilters({
                           ...customFilters,
                           searchMethod: value,
@@ -110,7 +99,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                 >
                   <Input
                     value={customFilters.serviceName}
-                    onChange={(value) =>
+                    onChange={value =>
                       handlers.setCustomFilters({
                         ...customFilters,
                         serviceName: value,
@@ -123,7 +112,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               <FormItem label={<Text theme={'strong'}>部门</Text>} className='justify-search'>
                 <Input
                   value={customFilters.department}
-                  onChange={(value) =>
+                  onChange={value =>
                     handlers.setCustomFilters({
                       ...customFilters,
                       department: value,
@@ -135,7 +124,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                 <InputAdornment
                   before={
                     <Select
-                      options={SEARCH_METHOD_OPTIONS.filter((item) => item.value === 'vague')}
+                      options={SEARCH_METHOD_OPTIONS.filter(item => item.value === 'vague')}
                       value={'vague'}
                       style={{ width: 'auto', marginRight: '0px' }}
                     />
@@ -143,7 +132,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                 >
                   <Input
                     value={customFilters.business}
-                    onChange={(value) =>
+                    onChange={value =>
                       handlers.setCustomFilters({
                         ...customFilters,
                         business: value,
@@ -156,7 +145,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               <FormItem label={<Text theme={'strong'}>服务标签</Text>} className='justify-search'>
                 <Input
                   value={customFilters.serviceTag}
-                  onChange={(value) => {
+                  onChange={value => {
                     handlers.setCustomFilters({
                       ...customFilters,
                       serviceTag: value,
@@ -168,7 +157,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               <FormItem label={<Text theme={'strong'}>实例IP</Text>} className='justify-search'>
                 <Input
                   value={customFilters.instanceIp}
-                  onChange={(value) =>
+                  onChange={value =>
                     handlers.setCustomFilters({
                       ...customFilters,
                       instanceIp: value,
@@ -267,8 +256,8 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               // 已经展开的产品
               expandedKeys,
               // 发生展开行为时，回调更新展开键值
-              onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
-              render: (record) => {
+              onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
+              render: record => {
                 const labelList = Object.keys(record.metadata || {})
                 return (
                   <Form>
@@ -276,7 +265,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                       <FormText>
                         {labelList
                           .slice(0, 5)
-                          .map((item) => `${item}:${record.metadata[item]}`)
+                          .map(item => `${item}:${record.metadata[item]}`)
                           .join(' ; ') || '-'}
                         {labelList.length > 5 && '...'}
                         {labelList.length > 5 && (

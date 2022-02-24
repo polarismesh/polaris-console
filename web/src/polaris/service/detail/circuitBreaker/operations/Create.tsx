@@ -51,7 +51,7 @@ const EditTypeOptions = [
   },
 ]
 
-const addMetadata = (field) => {
+const addMetadata = field => {
   field.setValue([...field.getValue(), { key: '', value: '', type: MATCH_TYPE.EXACT }])
 }
 const removeArrayFieldValue = (field, index) => {
@@ -59,7 +59,7 @@ const removeArrayFieldValue = (field, index) => {
   newValue.splice(index, 1)
   field.setValue([...newValue])
 }
-const addPolicy = (field) => {
+const addPolicy = field => {
   field.setValue([
     ...field.getValue(),
     {
@@ -71,7 +71,7 @@ const addPolicy = (field) => {
     },
   ])
 }
-const getMetadataForm = (field) => {
+const getMetadataForm = field => {
   return [...field.asArray()].map((metadataField, index) => {
     const { key, value, type } = metadataField.getFields(['key', 'value', 'type'])
     const isRegex = type.getValue() === MATCH_TYPE.REGEX
@@ -96,7 +96,7 @@ const getMetadataForm = (field) => {
   })
 }
 
-const renderInboundRule = (props) => {
+const renderInboundRule = props => {
   const { duck, store, dispatch } = props
   const {
     selector,
@@ -134,10 +134,10 @@ const renderInboundRule = (props) => {
     'outboundService',
   ])
   const isInbound = ruleType.getValue() === RuleType.Inbound
-  let sources = isInbound ? inboundSources : outboundSources
-  let destinations = isInbound ? inboundDestinations : outboundDestinations
-  let ruleNamespace = isInbound ? inboundNamespace : outboundNamespace
-  let ruleService = isInbound ? inboundService : outboundService
+  const sources = isInbound ? inboundSources : outboundSources
+  const destinations = isInbound ? inboundDestinations : outboundDestinations
+  const ruleNamespace = isInbound ? inboundNamespace : outboundNamespace
+  const ruleService = isInbound ? inboundService : outboundService
   return (
     <>
       <FormItem
@@ -250,7 +250,7 @@ const renderInboundRule = (props) => {
                   hideButton
                   unit='秒'
                   min={0}
-                  onChange={(value) => sleepWindow.setValue(`${value}s`)}
+                  onChange={value => sleepWindow.setValue(`${value}s`)}
                 ></TeaInputNumber>
               </FormItem>
 
@@ -258,7 +258,7 @@ const renderInboundRule = (props) => {
                 <Segment
                   options={BreakResourceOptions}
                   value={resource.getValue()}
-                  onChange={(value) => resource.setValue(value)}
+                  onChange={value => resource.setValue(value)}
                 ></Segment>
               </FormItem>
 
@@ -266,7 +266,7 @@ const renderInboundRule = (props) => {
                 <Segment
                   options={OUTLIER_DETECT_MAP_OPTIONS}
                   value={outlierDetectWhen.getValue()}
-                  onChange={(value) => outlierDetectWhen.setValue(value)}
+                  onChange={value => outlierDetectWhen.setValue(value)}
                 ></Segment>
               </FormItem>
             </Form>
@@ -309,13 +309,13 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
   return (
     <>
       <Form>
-        {/* <FormItem label={"编辑方式"}>
-              <Segment
-                options={EditTypeOptions}
-                value={editType.getValue()}
-                onChange={(value) => editType.setValue(value as any)}
-              ></Segment>
-            </FormItem> */}
+        <FormItem label={'编辑方式'}>
+          <Segment
+            options={EditTypeOptions}
+            value={editType.getValue()}
+            onChange={value => editType.setValue(value as any)}
+          ></Segment>
+        </FormItem>
         {/* {!isEdit && (
           <FormItem label={'规则类型'}>
             <Segment
@@ -338,7 +338,7 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
                 width={1000}
                 language='json'
                 value={currentJsonValue.getValue()}
-                onChange={(value) => {
+                onChange={value => {
                   currentJsonValue.setTouched(true)
                   currentJsonValue.setValue(value)
                 }}
