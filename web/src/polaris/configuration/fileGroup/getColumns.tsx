@@ -27,6 +27,11 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
     render: x => <Text tooltip={x.comment}>{x.comment || '-'}</Text>,
   },
   {
+    key: 'config',
+    header: '配置文件数',
+    render: x => <Text tooltip={x.fileCount}>{x.fileCount || '-'}</Text>,
+  },
+  {
     key: 'ctime',
     header: '创建时间',
     render: x => <Text>{x.createTime}</Text>,

@@ -6,6 +6,7 @@ export interface ConfigFileGroup {
   createBy: string
   modifyTime: string
   modifyBy: string
+  fileCount: number
 }
 export interface ConfigFile {
   name: string
