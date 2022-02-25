@@ -116,7 +116,6 @@ export default class CreateDuck extends FormDialog {
     } = this
     const options = selectors.options(yield select())
     const data = selectors.data(yield select())
-    console.log(data)
     const { list: namespaceList } = yield getAllList(describeComplicatedNamespaces, {
       listKey: 'namespaces',
       totalKey: 'amount',

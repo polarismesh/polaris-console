@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout, NavMenu, Menu } from 'tea-component'
+import { Layout, NavMenu, Menu, List } from 'tea-component'
 import { Switch, Route, useHistory } from 'react-router-dom'
 const { Header, Body, Sider, Content } = Layout
 import { MenuConfig } from './menu'
@@ -46,6 +46,36 @@ const CircuitBreakerMonitor = connectWithDuck(MonitorPage, CircuitBreakerMonitor
 const RouteMonitor = connectWithDuck(MonitorPage, RouteMonitorDuck)
 const RatelimitMonitor = connectWithDuck(MonitorPage, RatelimitMonitorDuck)
 
+import UserPage from '@src/polaris/auth/user/Page'
+import UserPageDuck from '@src/polaris/auth/user/PageDuck'
+const User = connectWithDuck(UserPage, UserPageDuck)
+
+import UserDetailPage from '@src/polaris/auth/user/detail/Page'
+import UserDetailPageDuck from '@src/polaris/auth/user/detail/PageDuck'
+const UserDetail = connectWithDuck(UserDetailPage, UserDetailPageDuck as any)
+
+import UserGroupPage from '@src/polaris/auth/userGroup/Page'
+import UserGroupPageDuck from '@src/polaris/auth/userGroup/PageDuck'
+const UserGroup = connectWithDuck(UserGroupPage, UserGroupPageDuck)
+
+import UserGroupDetailPage from '@src/polaris/auth/userGroup/detail/Page'
+import UserGroupDetailPageDuck from '@src/polaris/auth/userGroup/detail/PageDuck'
+const UserGroupDetail = connectWithDuck(UserGroupDetailPage, UserGroupDetailPageDuck as any)
+
+import PolicyPage from '@src/polaris/auth/policy/Page'
+import PolicyPageDuck from '@src/polaris/auth/policy/PageDuck'
+const Policy = connectWithDuck(PolicyPage, PolicyPageDuck as any)
+
+import PolicyCreatePage from '@src/polaris/auth/policy/operation/Create'
+import PolicyCreatePageDuck from '@src/polaris/auth/policy/operation/CreateDuck'
+const PolicyCreate = connectWithDuck(PolicyCreatePage, PolicyCreatePageDuck as any)
+
+import LoginPage from '@src/polaris/auth/login/Page'
+import LoginPageDuck from '@src/polaris/auth/login/PageDuck'
+import { userLogout, getUin, getLoginName } from './polaris/common/util/common'
+import router from './polaris/common/util/router'
+const Login = connectWithDuck(LoginPage, LoginPageDuck as any)
+
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1])
@@ -56,7 +86,10 @@ export default function root() {
       history.push(`/${id}`)
     },
   })
-  return (
+  const isLogin = history.location.pathname === '/login'
+  return isLogin ? (
+    <Route exact path='/login' component={Login} />
+  ) : (
     <Layout>
       <Header>
         <NavMenu
@@ -69,17 +102,44 @@ export default function root() {
             </>
           }
           right={
-            <NavMenu.Item type='default'>
-              <a
-                href={
-                  'https://polarismesh.cn/zh/doc/%E7%AE%80%E4%BB%8B/%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88.html#%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88'
-                }
-                target={'_blank'}
-                rel='noreferrer'
+            <>
+              <NavMenu.Item type='default'>
+                <a
+                  href={
+                    'https://polarismesh.cn/zh/doc/%E7%AE%80%E4%BB%8B/%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88.html#%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88'
+                  }
+                  target={'_blank'}
+                  rel='noreferrer'
+                >
+                  文档
+                </a>
+              </NavMenu.Item>
+              <NavMenu.Item
+                type='dropdown'
+                overlay={close => (
+                  <List type='option'>
+                    <List.Item
+                      onClick={() => {
+                        router.navigate(`/user-detail?id=${getUin()}`)
+                        close()
+                      }}
+                    >
+                      账号信息
+                    </List.Item>
+                    <List.Item
+                      onClick={() => {
+                        userLogout()
+                        close()
+                      }}
+                    >
+                      退出
+                    </List.Item>
+                  </List>
+                )}
               >
-                文档
-              </a>
-            </NavMenu.Item>
+                {getLoginName()}
+              </NavMenu.Item>
+            </>
           }
         />
       </Header>
@@ -127,6 +187,13 @@ export default function root() {
             <Route exact path='/filegroup' component={FileGroup} />
             <Route exact path='/filegroup-detail' component={FileGroupDetail} />
             <Route exact path='/file-release-history' component={FileRelease} />
+            <Route exact path='/user' component={User} />
+            <Route exact path='/usergroup' component={UserGroup} />
+            <Route exact path='/policy' component={Policy} />
+            <Route exact path='/user-detail' component={UserDetail} />
+            <Route exact path='/usergroup-detail' component={UserGroupDetail} />
+            <Route exact path='/policy-create' component={PolicyCreate} />
+            <Route exact path='/login' component={Login} />
           </Switch>
         </Content>
       </Body>

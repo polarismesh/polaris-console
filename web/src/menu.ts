@@ -24,6 +24,22 @@ export const MenuConfig = {
       icon: ['/static/img/circuit-monitor.svg', '/static/img/circuit-monitor.svg'],
     },
   },
+  auth: {
+    isGroup: true,
+    title: '权限控制',
+    user: {
+      title: '用户',
+      icon: ['/static/img/route-monitor.svg', '/static/img/route-monitor.svg'],
+    },
+    usergroup: {
+      title: '用户组',
+      icon: ['/static/img/circuit-monitor.svg', '/static/img/circuit-monitor.svg'],
+    },
+    policy: {
+      title: '策略',
+      icon: ['/static/img/circuit-monitor.svg', '/static/img/circuit-monitor.svg'],
+    },
+  },
   observability: {
     isGroup: true,
     title: '可观测性',

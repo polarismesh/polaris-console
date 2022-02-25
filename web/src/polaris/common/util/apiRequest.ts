@@ -11,7 +11,7 @@ export interface ApiResponse {
   code: number
   message: string
 }
-
+export const SuccessCode = 200000
 export async function apiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts } = options
   try {
@@ -19,6 +19,9 @@ export async function apiRequest<T>(options: APIRequestOption) {
     const res = (await axios
       .post<T & ApiResponse>(action, data, {
         ...opts,
+        headers: {
+          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+        },
       })
       .catch(function(error) {
         if (error.response) {
@@ -42,6 +45,9 @@ export async function getApiRequest<T>(options: APIRequestOption) {
     const res = await axios.get<T & ApiResponse>(action, {
       params: data,
       ...opts,
+      headers: {
+        'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+      },
     })
     if (res.status >= 400) {
       throw res
@@ -60,6 +66,9 @@ export async function putApiRequest<T>(options: APIRequestOption) {
     tips.showLoading({})
     const res = await axios.put<T & ApiResponse>(action, data, {
       ...opts,
+      headers: {
+        'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+      },
     })
     if (res.status >= 400) {
       throw res.data
@@ -78,6 +87,9 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
     const res = await axios.delete<T & ApiResponse>(action, {
       params: data,
       ...opts,
+      headers: {
+        'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+      },
     })
     if (res.status >= 400) {
       throw res
