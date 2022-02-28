@@ -92,7 +92,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
         />
       </Table.ActionPanel>
       <Card>
-        <Card.Body style={{ height: 660 }}>
+        <Card.Body>
           <Row showSplitLine gap={40}>
             <div style={{ width: '450px', height: 600, overflowY: 'hidden', margin: '15px 20px' }}>
               <SearchBox

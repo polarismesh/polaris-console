@@ -381,7 +381,13 @@ export default class PageDuck extends Base {
         currentNode,
         composedId: { namespace, group },
       } = selector(yield select())
-      const result = yield modifyConfigFile({ namespace, group, content: editContent, name: currentNode.name })
+      const result = yield modifyConfigFile({
+        ...currentNode,
+        namespace,
+        group,
+        content: editContent,
+        name: currentNode.name,
+      })
       if (result) {
         notification.success({ description: '保存成功' })
         yield put({ type: types.FETCH_DATA })

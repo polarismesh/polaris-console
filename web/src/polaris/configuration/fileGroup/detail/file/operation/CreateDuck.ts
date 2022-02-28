@@ -54,6 +54,7 @@ export default class CreateDuck extends FormDialog {
 
     const { name, comment, namespace, group, format, tags } = form.selectors.values(yield select())
     const options = selectors.options(yield select())
+    const data = selectors.data(yield select())
     const parsedName = name
       .split('/')
       .filter(item => item !== '')
@@ -61,13 +62,13 @@ export default class CreateDuck extends FormDialog {
 
     if (options.isModify) {
       const { configFile } = yield modifyConfigFile({
+        ...data,
         name: parsedName,
         comment,
         namespace,
         group,
         format,
         tags,
-        content: '',
       })
       if (configFile?.name) {
         notification.success({ description: '编辑成功' })
