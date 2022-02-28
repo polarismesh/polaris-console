@@ -51,7 +51,7 @@ export async function describeGovernanceStrategies(params: DescribeGovernanceStr
   })
   return {
     totalCount: result.amount,
-    content: result.authStrategies,
+    content: result.authStrategy,
   }
 }
 /** **DescribeGovernanceStrategies入参**
@@ -87,7 +87,7 @@ export interface DescribeGovernanceStrategiesResult {
   amount: number
 
   /** 策略列表 */
-  authStrategies: AuthStrategy[]
+  authStrategy: AuthStrategy[]
 }
 
 /** 查询治理中心鉴权策略详细 */
@@ -532,6 +532,26 @@ export interface LoginUserResult {
 export async function loginUser(params: LoginUserParams) {
   const result = await apiRequest<LoginUserResult>({ action: 'core/v1/user/login', data: params })
   return result
+}
+
+/** **CheckAuth**
+
+检查策略是否已开启  */
+export type CheckAuthParams = {}
+/** **DeleteGovernanceStrategies出参**
+
+检查策略是否已开启 */
+export interface CheckAuthResult {
+  /** 执行结果 */
+  optionSwitch: {
+    auth: boolean
+  }
+}
+
+/** 检查策略是否已开启 */
+export async function checkAuth(params: CheckAuthParams) {
+  const result = await getApiRequest<CheckAuthResult>({ action: 'core/v1/auth/status', data: params })
+  return result.optionSwitch.auth
 }
 
 /** **ResetGovernanceGroupToken入参**

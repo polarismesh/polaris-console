@@ -250,7 +250,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               all: true,
               value: selection,
               onChange: handlers.select,
-              rowSelectable: (rowKey, { record }) => !isReadOnly(record.namespace),
+              rowSelectable: (rowKey, { record }) => !isReadOnly(record.namespace) && record.editable,
             }),
             expandable({
               // 已经展开的产品

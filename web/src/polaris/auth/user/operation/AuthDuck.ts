@@ -75,8 +75,8 @@ export default class AuthDuck extends FormDialog {
     const data = selectors.data(yield select())
     const { regionId, instanceId, id } = options
     const { list } = yield getAllList(describeGovernanceStrategies, { listKey: 'content' })({
-      principalId: id,
-      principalType: PrincipalTypeMap[options.authSubjectType],
+      principal_id: id,
+      principal_type: PrincipalTypeMap[options.authSubjectType],
       default: DescribeStrategyOption.NoDefault,
     })
     const originStrategies = list.filter(item => !item.default)

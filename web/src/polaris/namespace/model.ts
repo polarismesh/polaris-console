@@ -1,70 +1,75 @@
-import { getApiRequest, apiRequest, putApiRequest } from "../common/util/apiRequest";
-import { DescribeNamespacesResult } from "../service/model";
-import { Namespace } from "../service/types";
+import { getApiRequest, apiRequest, putApiRequest } from '../common/util/apiRequest'
+import { DescribeNamespacesResult } from '../service/model'
+import { Namespace } from '../service/types'
 
 export interface DescribeNamespaceParams {
-  limit: number;
-  offset: number;
-  name?: string;
-  owners?: string;
+  limit: number
+  offset: number
+  name?: string
+  owners?: string
 }
 
 export interface CreateNamespaceParams {
-  name: string;
-  comment: string;
-  owners: string;
+  name: string
+  comment: string
+  owners?: string
+  userIds?: string[]
+  groupIds?: string[]
 }
 export interface CreateNamespaceResult {
-  namespace: Namespace;
+  namespace: Namespace
 }
 export interface ModifyNamespaceParams {
-  name: string;
-  comment?: string;
-  owners?: string;
-  token: string;
+  name: string
+  comment?: string
+  owners?: string
+  userIds?: string[]
+  groupIds?: string[]
+  removeUserIds?: string[]
+  removeGroupIds?: string[]
 }
 export interface ModifyNamespaceResult {
-  size: number;
+  size: number
 }
 export interface DeleteNamespaceParams {
-  name: string;
-  token: string;
+  name: string
+  token: string
 }
 export interface DeleteNamespaceResult {
-  size: number;
+  size: number
 }
 export async function describeComplicatedNamespaces(params: DescribeNamespaceParams) {
   const res = await getApiRequest<DescribeNamespacesResult>({
-    action: "naming/v1/namespaces",
+    action: 'naming/v1/namespaces',
     data: params,
-  });
+  })
 
-  return res;
+  return res
 }
 
 export async function createNamespace(params: CreateNamespaceParams[]) {
   const res = await apiRequest<CreateNamespaceResult>({
-    action: "naming/v1/namespaces",
+    action: 'naming/v1/namespaces',
     data: params,
-  });
+  })
 
-  return res;
+  return res
 }
 
 export async function modifyNamespace(params: ModifyNamespaceParams[]) {
   const res = await putApiRequest<ModifyNamespaceResult>({
-    action: "naming/v1/namespaces",
+    action: 'naming/v1/namespaces',
     data: params,
-  });
+  })
 
-  return res;
+  return res
 }
 
 export async function deleteNamespace(params: DeleteNamespaceParams[]) {
   const res = await apiRequest<DeleteNamespaceResult>({
-    action: "naming/v1/namespaces/delete",
+    action: 'naming/v1/namespaces/delete',
     data: params,
-  });
+  })
 
-  return res;
+  return res
 }

@@ -1,4 +1,4 @@
-import { apiRequest, APIRequestOption, getAllList, getApiRequest, putApiRequest } from '../common/util/apiRequest'
+import { apiRequest, getApiRequest, putApiRequest } from '../common/util/apiRequest'
 import { Service, Namespace } from './types'
 
 export interface DescribeServicesParams {
@@ -27,6 +27,8 @@ export interface CreateServicesParams {
   metadata: Record<string, string>
   owners: string
   department: string
+  userIds?: string[]
+  groupIds?: string[]
 }
 
 export interface ModifyServicesParams {
@@ -41,6 +43,10 @@ export interface ModifyServicesParams {
   cmdb_mod2: string
   cmdb_mod3: string
   department: string
+  userIds?: string[]
+  groupIds?: string[]
+  removeUserIds?: string[]
+  removeGroupIds?: string[]
 }
 export interface DescribeNamespacesResult {
   amount: number

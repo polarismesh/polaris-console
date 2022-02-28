@@ -9,6 +9,7 @@ import Create from './operation/Create'
 import CreateDuck from './operation/CreateDuck'
 import { put, select } from 'redux-saga/effects'
 import { Modal } from 'tea-component'
+import { checkAuth } from '../auth/model'
 
 export const EmptyCustomFilter = {
   namespace: '',
@@ -60,6 +61,7 @@ export default class ServicePageDuck extends GridPageDuck {
       SET_SELECTION,
       SET_NAMESPACE_LIST,
       SET_EXPANDED_KEYS,
+      SET_AUTH_OPEN,
     }
     return {
       ...super.quickTypes,
@@ -91,6 +93,7 @@ export default class ServicePageDuck extends GridPageDuck {
       selection: reduceFromPayload<string[]>(types.SET_SELECTION, []),
       namespaceList: reduceFromPayload<NamespaceItem[]>(types.SET_NAMESPACE_LIST, []),
       expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
+      authOpen: reduceFromPayload<boolean>(types.SET_AUTH_OPEN, false),
     }
   }
   get creators() {
@@ -144,6 +147,8 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types, creators, selector, ducks } = this
     yield* super.saga()
     yield* this.loadNamespaceList()
+    const authOpen = yield checkAuth({})
+    yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
     yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
       const { list } = action.payload
       const { selection } = selector(yield select())
@@ -151,11 +156,12 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put(creators.setSelection(validSelection))
     })
     yield takeLatest(types.CREATE, function*() {
+      const { authOpen } = selector(yield select())
       const res = yield* resolvePromise(
         new Promise(resolve => {
           showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
-              resolve(yield* duck.execute({}, { isModify: false }))
+              resolve(yield* duck.execute({}, { isModify: false, authOpen }))
             } finally {
               resolve(false)
             }
@@ -172,7 +178,7 @@ export default class ServicePageDuck extends GridPageDuck {
         new Promise(resolve => {
           showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
-              resolve(yield* duck.execute(data, { isModify: true }))
+              resolve(yield* duck.execute(data, { isModify: true, authOpen }))
             } finally {
               resolve(false)
             }

@@ -12,6 +12,7 @@ export interface Service {
   department: string
   business: string
   metadata: Record<string, string>
+  editable: boolean
 }
 
 export interface Namespace {
@@ -21,6 +22,7 @@ export interface Namespace {
   name: string
   owners?: string
   token: string
+  editable: boolean
 }
 
 export const READ_ONLY_NAMESPACE = BuildConfig.readonlyNamespace

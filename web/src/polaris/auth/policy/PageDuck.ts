@@ -136,8 +136,8 @@ export default abstract class PolicyPageDuck extends PageDuck {
       try {
         const { list: authList } = yield getAllList(describeGovernanceStrategies, { listKey: 'content' })({
           name: searchword ? `${searchword}*` : '',
-          principalId,
-          principalType: PrincipalTypeMap[principalType],
+          principal_id: principalId,
+          principal_type: PrincipalTypeMap[principalType],
         })
         yield put({ type: types.SET_AUTH_LIST, payload: authList })
         if (

@@ -37,10 +37,10 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
     render: x => {
       return (
         <React.Fragment>
-          <Action fn={dispatch => dispatch(creators.edit(x))} tip={'编辑'}>
+          <Action fn={dispatch => dispatch(creators.edit(x))} disabled={!x.editable} tip={'编辑'}>
             {'编辑'}
           </Action>
-          <Action fn={dispatch => dispatch(creators.remove(x))} tip={'删除'}>
+          <Action fn={dispatch => dispatch(creators.remove(x))} disabled={!x.editable} tip={'删除'}>
             {'删除'}
           </Action>
         </React.Fragment>

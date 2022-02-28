@@ -1,16 +1,13 @@
-import * as React from "react";
-import { Column } from "@src/polaris/common/ducks/GridPage";
-import { Instance, HEALTH_STATUS_MAP, ISOLATE_STATUS_MAP } from "./types";
-import { DuckCmpProps } from "saga-duck";
-import ServiceInstanceDuck from "./PageDuck";
-import { Text, Icon, Modal, Copy, Button } from "tea-component";
-import Action from "@src/polaris/common/duckComponents/grid/Action";
-import { isReadOnly } from "../../utils";
+import * as React from 'react'
+import { Column } from '@src/polaris/common/ducks/GridPage'
+import { Instance, HEALTH_STATUS_MAP, ISOLATE_STATUS_MAP } from './types'
+import { DuckCmpProps } from 'saga-duck'
+import ServiceInstanceDuck from './PageDuck'
+import { Text, Icon } from 'tea-component'
+import Action from '@src/polaris/common/duckComponents/grid/Action'
+import { isReadOnly } from '../../utils'
 
-export default ({
-  duck: { creators, selector },
-  store,
-}: DuckCmpProps<ServiceInstanceDuck>): Column<Instance>[] => [
+export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceInstanceDuck>): Column<Instance>[] => [
   // {
   //   key: "id",
   //   header: "id",
@@ -26,41 +23,41 @@ export default ({
   //   ),
   // },
   {
-    key: "host",
-    header: "实例IP",
-    render: (x) => <Text overflow>{x.host}</Text>,
+    key: 'host',
+    header: '实例IP',
+    render: x => <Text overflow>{x.host}</Text>,
   },
   {
-    key: "port",
-    header: "端口",
-    render: (x) => (
+    key: 'port',
+    header: '端口',
+    render: x => (
       <Text tooltip={x.port} overflow>
-        {x.port || "-"}
+        {x.port || '-'}
       </Text>
     ),
   },
   {
-    key: "protocol",
-    header: "协议",
-    render: (x) => (
+    key: 'protocol',
+    header: '协议',
+    render: x => (
       <Text tooltip={x.protocol} overflow>
-        {x.protocol || "-"}
+        {x.protocol || '-'}
       </Text>
     ),
   },
   {
-    key: "version",
-    header: "版本",
-    render: (x) => (
+    key: 'version',
+    header: '版本',
+    render: x => (
       <Text tooltip={x.version} overflow>
-        {x.version || "-"}
+        {x.version || '-'}
       </Text>
     ),
   },
   {
-    key: "weight",
-    header: "权重",
-    render: (x) => (
+    key: 'weight',
+    header: '权重',
+    render: x => (
       <Text tooltip={x.weight} overflow>
         {x.weight}
       </Text>
@@ -68,68 +65,60 @@ export default ({
   },
 
   {
-    key: "healthy",
-    header: "健康状态",
-    render: (x) => (
-      <Text theme={HEALTH_STATUS_MAP[x.healthy].theme}>
-        {HEALTH_STATUS_MAP[x.healthy].text}
-      </Text>
-    ),
+    key: 'healthy',
+    header: '健康状态',
+    render: x => <Text theme={HEALTH_STATUS_MAP[x.healthy].theme}>{HEALTH_STATUS_MAP[x.healthy].text}</Text>,
   },
   {
-    key: "isolate",
-    header: "隔离状态",
-    render: (x) => (
-      <Text theme={ISOLATE_STATUS_MAP[x.isolate].theme}>
-        {ISOLATE_STATUS_MAP[x.isolate].text}
-      </Text>
-    ),
+    key: 'isolate',
+    header: '隔离状态',
+    render: x => <Text theme={ISOLATE_STATUS_MAP[x.isolate].theme}>{ISOLATE_STATUS_MAP[x.isolate].text}</Text>,
   },
   {
-    key: "ctime",
-    header: "创建时间",
-    render: (x) => (
+    key: 'ctime',
+    header: '创建时间',
+    render: x => (
       <Text tooltip={x.ctime} overflow>
-        {x.ctime || "-"}
+        {x.ctime || '-'}
       </Text>
     ),
   },
   {
-    key: "mtime",
-    header: "修改时间",
-    render: (x) => (
+    key: 'mtime',
+    header: '修改时间',
+    render: x => (
       <Text tooltip={x.mtime} overflow>
-        {x.mtime || "-"}
+        {x.mtime || '-'}
       </Text>
     ),
   },
   {
-    key: "action",
-    header: "操作",
-    render: (x) => {
+    key: 'action',
+    header: '操作',
+    render: x => {
       const {
         data: { namespace },
-      } = selector(store);
-      const disabled = isReadOnly(namespace);
+      } = selector(store)
+      const disabled = isReadOnly(namespace)
 
       return (
         <React.Fragment>
           <Action
-            fn={(dispatch) => dispatch(creators.edit(x))}
-            disabled={disabled}
-            tip={disabled ? "该命名空间为只读的" : "编辑"}
+            fn={dispatch => dispatch(creators.edit(x))}
+            disabled={disabled || !x.editable}
+            tip={disabled ? '该命名空间为只读的' : !x.editable ? '无权限' : '编辑'}
           >
-            <Icon type={"pencil"}></Icon>
+            <Icon type={'pencil'}></Icon>
           </Action>
           <Action
-            fn={(dispatch) => dispatch(creators.remove([x.id]))}
-            disabled={disabled}
-            tip={disabled ? "该命名空间为只读的" : "删除"}
+            fn={dispatch => dispatch(creators.remove([x.id]))}
+            disabled={disabled || !x.editable}
+            tip={disabled ? '该命名空间为只读的' : !x.editable ? '无权限' : '删除'}
           >
-            <Icon type={"delete"}></Icon>
+            <Icon type={'delete'}></Icon>
           </Action>
         </React.Fragment>
-      );
+      )
     },
   },
-];
+]
