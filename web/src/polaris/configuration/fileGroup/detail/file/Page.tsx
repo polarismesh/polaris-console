@@ -305,7 +305,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
 }
 
 function getFileName(fileName) {
-  const splitArray = fileName.split('.')
+  const splitArray = fileName.split('/')
   return splitArray[splitArray.length - 1]
 }
 
@@ -331,7 +331,7 @@ function renderTree(props, folder, path: string, currPath: string) {
         if (childPath === '__isDir__') return <noscript />
         const obj = node[childPath]
         const showContent = obj.__isDir__ ? childPath : getFileName(obj.name)
-        const nextPath = `${currPath}${currPath ? '.' : ''}${childPath}`
+        const nextPath = `${currPath}${currPath ? '/' : ''}${childPath}`
         const folderIcon = expandedIds.indexOf(obj.name) > -1 ? 'folderopen' : 'folderclose'
         return (
           <TreeNode

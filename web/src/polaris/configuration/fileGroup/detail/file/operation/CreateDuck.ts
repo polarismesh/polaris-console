@@ -57,7 +57,7 @@ export default class CreateDuck extends FormDialog {
     const parsedName = name
       .split('/')
       .filter(item => item !== '')
-      .join('.')
+      .join('/')
 
     if (options.isModify) {
       const { configFile } = yield modifyConfigFile({
@@ -162,7 +162,6 @@ export default class CreateDuck extends FormDialog {
     yield put(
       form.creators.setValues({
         ...data,
-        name: data.name ? data.name.replace(/\./g, '/') : '',
       }),
     )
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel
@@ -202,9 +201,7 @@ class CreateForm extends Form {
 const validator = CreateForm.combineValidators<Values, any>({
   name(v) {
     if (!v) return '请填写文件名'
-    if (v.indexOf('.') > -1) {
-      return '文件名不需包含文件的格式'
-    }
+
     if (v.split('/').filter(item => !item).length > 1) {
       return '文件夹名字不可为空'
     }

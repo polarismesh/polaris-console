@@ -151,7 +151,7 @@ export interface DeleteConfigFileParams {
   deleteBy?: string
 }
 export type DeleteConfigFileResult = {}
-export async function deleteConfigFiles(params: DeleteConfigFileParams[]) {
+export async function deleteConfigFiles(params: DeleteConfigFileParams) {
   const res = await deleteApiRequest<DeleteConfigFileResult>({
     action: 'config/v1/configfiles/batch',
     data: params,

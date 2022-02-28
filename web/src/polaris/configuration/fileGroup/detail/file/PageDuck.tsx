@@ -76,7 +76,7 @@ const generateFileTree = (fileList: ConfigFile[]) => {
   const fileTree = {}
   fileList.forEach(file => {
     let lastFolder = fileTree
-    const splitArray = file.name.split('.').filter(item => item)
+    const splitArray = file.name.split('/').filter(item => item)
     if (splitArray.length === 0) {
       lastFolder[file.name] = file
     } else {
@@ -175,7 +175,7 @@ export default class PageDuck extends Base {
         payload: { composedId, data },
       }),
       add: createToPayload<void>(types.ADD),
-      delete: createToPayload<string[]>(types.DELETE),
+      delete: createToPayload<string>(types.DELETE),
       clickFileItem: createToPayload<string>(types.CLICK_FILE_ITEM),
       setExpandedIds: createToPayload<string[]>(types.SET_EXPANDED_IDS),
       searchPath: createToPayload<string>(types.SEARCH_PATH),
@@ -271,8 +271,8 @@ export default class PageDuck extends Base {
         description: '删除后，无法恢复。',
       })
       if (confirm) {
-        const deleteList = action.payload
-        const result = yield deleteConfigFiles(deleteList.map(item => ({ namespace, group, name: item })))
+        const deleteId = action.payload
+        const result = yield deleteConfigFiles({ namespace, group, name: deleteId })
         if (result) {
           notification.success({ description: '删除成功' })
           yield put({ type: types.FETCH_DATA })
@@ -313,10 +313,10 @@ export default class PageDuck extends Base {
       })
       const hitPath = []
       hitName.forEach(item => {
-        item.split('.').reduce((prev, curr) => {
+        item.split('/').reduce((prev, curr) => {
           let next
           if (!prev) next = curr
-          else next = `${prev}.${curr}`
+          else next = `${prev}/${curr}`
           hitPath.push(next)
           return next
         }, '')
