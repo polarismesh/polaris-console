@@ -185,7 +185,7 @@ export interface DescribeGovernanceUserTokenResult {
 export type ModifyGovernanceServicesResult = {}
 
 /** 修改治理中心鉴权策略 */
-export async function modifyGovernanceStrategy(params: ModifyGovernanceStrategyParams) {
+export async function modifyGovernanceStrategy(params: ModifyGovernanceStrategyParams[]) {
   const result = await putApiRequest<ModifyGovernanceStrategyResult>({
     action: 'core/v1/auth/strategies',
     data: params,
@@ -196,8 +196,20 @@ export async function modifyGovernanceStrategy(params: ModifyGovernanceStrategyP
 
 修改治理中心鉴权策略  */
 export interface ModifyGovernanceStrategyParams {
-  /** 策略修改请求 */
-  strategy: ModifyAuthStrategy[]
+  /** 策略名称 */
+  id: string
+
+  /** 涉及的用户 or 用户组 */
+  principals?: Principal
+
+  /** 资源操作权限 */
+  action?: string
+
+  /** 简单描述 */
+  comment?: string
+
+  /** 策略关联的资源 */
+  resources?: StrategyResource
 }
 /** **ModifyGovernanceStrategy出参**
 
@@ -285,8 +297,23 @@ export async function createGovernanceStrategy(params: CreateGovernanceStrategyP
 
 创建治理中心鉴权策略  */
 export interface CreateGovernanceStrategyParams {
-  /** 策略 */
-  strategy: AuthStrategy
+  /** 策略名称 */
+  name: string
+
+  /** 涉及的用户 or 用户组 */
+  principals?: Principal
+
+  /** 资源操作权限 */
+  action?: string
+
+  /** 简单描述 */
+  comment?: string
+
+  /** 主账户的UIN */
+  owner?: string
+
+  /** 策略关联的资源 */
+  resources?: StrategyResource
 }
 /** **CreateGovernanceStrategy出参**
 

@@ -52,15 +52,13 @@ export default class AuthDuck extends FormDialog {
     }
     const principleName = authSubjectType === AuthSubjectType.USER ? 'users' : 'groups'
     const res = yield* resolvePromise(
-      modifyGovernanceStrategy({
-        strategy: [
-          ...addArray.map(strategyId => ({ add_principals: { [principleName]: [{ id: subjectId }] }, id: strategyId })),
-          ...removeArray.map(strategyId => ({
-            remove_principals: { [principleName]: [{ id: subjectId }] },
-            id: strategyId,
-          })),
-        ],
-      }),
+      modifyGovernanceStrategy([
+        ...addArray.map(strategyId => ({ add_principals: { [principleName]: [{ id: subjectId }] }, id: strategyId })),
+        ...removeArray.map(strategyId => ({
+          remove_principals: { [principleName]: [{ id: subjectId }] },
+          id: strategyId,
+        })),
+      ]),
     )
     return res
   }

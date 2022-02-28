@@ -245,8 +245,6 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 setStep((+step + 1).toString())
               }}
               style={{ marginRight: '15px' }}
-              disabled={ducks.form.selectors.firstInvalid(store)}
-              tooltip={ducks.form.selectors.firstInvalid(store)}
             >
               {'下一步'}
             </Button>

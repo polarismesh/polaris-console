@@ -29,7 +29,7 @@ export default abstract class CreateDuck extends DetailPage {
   ComposedId: ComposedId
 
   get baseUrl() {
-    return `/tse/policy-create`
+    return `/#/policy-create`
   }
   get quickTypes() {
     enum Types {
@@ -157,30 +157,28 @@ export default abstract class CreateDuck extends DetailPage {
         if (isOriginAllService && values.useAllService) {
           removeServices = []
         }
-        const result = yield modifyGovernanceStrategy({
-          strategy: [
-            {
-              id: id,
-              add_principals: {
-                users: addUsers.map(item => ({ id: item })),
-                groups: addGroups.map(item => ({ id: item })),
-              },
-              add_resources: {
-                namespaces: addNamespaces.map(item => ({ id: item })),
-                services: addServices.map(item => ({ id: item })),
-              },
-              remove_principals: {
-                users: removeUsers.map(item => ({ id: item })),
-                groups: removeGroups.map(item => ({ id: item })),
-              },
-              remove_resources: {
-                namespaces: removeNamespaces.map(item => ({ id: item })),
-                services: removeServices.map(item => ({ id: item })),
-              },
-              comment: values.comment,
+        const result = yield modifyGovernanceStrategy([
+          {
+            id: id,
+            add_principals: {
+              users: addUsers.map(item => ({ id: item })),
+              groups: addGroups.map(item => ({ id: item })),
             },
-          ],
-        })
+            add_resources: {
+              namespaces: addNamespaces.map(item => ({ id: item })),
+              services: addServices.map(item => ({ id: item })),
+            },
+            remove_principals: {
+              users: removeUsers.map(item => ({ id: item })),
+              groups: removeGroups.map(item => ({ id: item })),
+            },
+            remove_resources: {
+              namespaces: removeNamespaces.map(item => ({ id: item })),
+              services: removeServices.map(item => ({ id: item })),
+            },
+            comment: values.comment,
+          },
+        ] as any)
         if (result) {
           notification.success({ description: '编辑成功' })
           router.navigate(`/#/policy?authTab=policy`)
@@ -189,20 +187,18 @@ export default abstract class CreateDuck extends DetailPage {
         }
       } else {
         const result = yield createGovernanceStrategy({
-          strategy: {
-            name: values.name,
-            principals: {
-              users: userSelection.map(item => ({ id: item.id })),
-              groups: userGroupSelection.map(item => ({ id: item.id })),
-            },
-            resources: {
-              namespaces: values.useAllNamespace
-                ? [{ id: '*' }]
-                : namespaceSelection.map(item => ({ id: item.name, namespace: item.name })),
-              services: values.useAllService ? [{ id: '*' }] : serviceSelection.map(item => ({ id: item.id })),
-            },
-            comment: values.comment,
+          name: values.name,
+          principals: {
+            users: userSelection.map(item => ({ id: item.id })),
+            groups: userGroupSelection.map(item => ({ id: item.id })),
           },
+          resources: {
+            namespaces: values.useAllNamespace
+              ? [{ id: '*' }]
+              : namespaceSelection.map(item => ({ id: item.name, namespace: item.name })),
+            services: values.useAllService ? [{ id: '*' }] : serviceSelection.map(item => ({ id: item.id })),
+          },
+          comment: values.comment,
         })
         if (result) {
           notification.success({ description: '创建成功' })
@@ -223,6 +219,7 @@ export default abstract class CreateDuck extends DetailPage {
       yield put({ type: types.SET_ORIGIN_POLICY, payload: policy })
       yield put(form.creators.setValue('name', policy.name))
       yield put(form.creators.setValue('comment', policy.comment))
+      yield put(form.creators.setValue('id', policy.id))
       yield put(form.creators.setValue('useAllNamespace', !!policy.resources.namespaces.find(item => item.id === '*')))
       yield put(form.creators.setValue('useAllService', !!policy.resources.services.find(item => item.id === '*')))
       yield put(user.creators.select(policy.principals.users))
@@ -245,6 +242,7 @@ export interface Fvalues {
   useAllNamespace: boolean
   useAllService: boolean
   comment: string
+  id: string
 }
 
 export class CreateFormDuck extends Form {
@@ -299,7 +297,10 @@ export class CreateFormDuck extends Form {
   }
 }
 const validator = CreateFormDuck.combineValidators<Fvalues>({
-  name(v) {
+  name(v, values) {
+    if (values.id) {
+      return
+    }
     if (!v) {
       return '请输入名称'
     }
@@ -328,12 +329,11 @@ export class NamespaceSelectDuck extends SearchableMultiSelect {
 
   async getData(filter) {
     const { keyword } = filter
-    const params = { name: keyword }
 
     const result = await getAllList(describeComplicatedNamespaces, {
       listKey: 'namespaces',
       totalKey: 'amount',
-    })(params)
+    })(keyword ? { name: keyword } : {})
     return result
   }
 }
@@ -354,9 +354,8 @@ export class ServiceSelectDuck extends SearchableMultiSelect {
 
   async getData(filter) {
     const { keyword } = filter
-    const params = { name: keyword }
 
-    const result = await getAllList(describeServices)(params)
+    const result = await getAllList(describeServices)(keyword ? { name: keyword } : {})
     result.list = result.list.map(item => ({ ...item }))
     return result
   }

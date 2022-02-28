@@ -91,6 +91,7 @@ export default abstract class PolicyPageDuck extends PageDuck {
   *saga() {
     yield* super.saga()
     const { types, selector, creators } = this
+
     yield takeLatest(types.LOAD, function*(action) {
       const { composedId } = action.payload
       yield put({ type: types.SET_COMPOSE_ID, payload: composedId })
@@ -103,12 +104,12 @@ export default abstract class PolicyPageDuck extends PageDuck {
       yield put({ type: types.SET_CURRENT_AUTH_ITEM, payload: strategy })
     })
     yield takeLatest(types.CREATE, function*() {
-      router.navigate(`/tse/policy-create`)
+      router.navigate(`/policy-create`)
     })
     yield takeLatest(types.MODIFY, function*(action) {
       const id = action.payload
 
-      router.navigate(`/tse/policy-create?id=${id}`)
+      router.navigate(`/policy-create?id=${id}`)
     })
     yield takeLatest(types.DELETE, function*(action) {
       const id = action.payload
@@ -152,5 +153,6 @@ export default abstract class PolicyPageDuck extends PageDuck {
         yield put({ type: types.SET_LOADING, payload: false })
       }
     })
+    yield put({ type: types.FETCH_DATA, payload: {} })
   }
 }
