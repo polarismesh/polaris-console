@@ -544,14 +544,14 @@ export type CheckAuthParams = {}
 export interface CheckAuthResult {
   /** 执行结果 */
   optionSwitch: {
-    auth: boolean
+    options: { auth: boolean }
   }
 }
 
 /** 检查策略是否已开启 */
 export async function checkAuth(params: CheckAuthParams) {
   const result = await getApiRequest<CheckAuthResult>({ action: 'core/v1/auth/status', data: params })
-  return result.optionSwitch.auth
+  return result.optionSwitch.options.auth
 }
 
 /** **ResetGovernanceGroupToken入参**

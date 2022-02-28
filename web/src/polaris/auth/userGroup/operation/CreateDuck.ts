@@ -144,9 +144,8 @@ export class UserSelectDuck extends SearchableMultiSelect {
 
   async getData(filter) {
     const { keyword } = filter
-    const params = { name: `${keyword ? `${keyword}*` : ''}` }
 
-    const result = await getAllList(describeGovernanceUsers, { listKey: 'content' })(params)
+    const result = await getAllList(describeGovernanceUsers, { listKey: 'content' })(keyword ? { name: keyword } : {})
 
     return result
   }

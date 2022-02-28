@@ -111,7 +111,7 @@ export class UserGroupSelectDuck extends SearchableMultiSelect {
 
   async getData(filter) {
     const { keyword, instanceId } = filter
-    const params = { name: `${keyword ? `${keyword}*` : ''}`, instanceId }
+    const params = { instanceId, ...(keyword ? { name: keyword } : {}) }
 
     const result = await getAllList(describeGovernanceGroups, { listKey: 'content' })(params)
 

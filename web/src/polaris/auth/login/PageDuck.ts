@@ -115,12 +115,15 @@ export class CreateFormDuck extends Form {
         window.localStorage.setItem(LoginRoleKey, loginResponse.role)
         window.localStorage.setItem(LoginUserIdKey, loginResponse.user_id)
         window.localStorage.setItem(LoginUserOwnerIdKey, loginResponse.owner_id)
-        router.navigate(`/service`)
+        window.location.href = '/#/service'
+        window.location.reload()
       } else {
         throw new Error()
       }
     } catch (e) {
+      console.error(e)
       yield put(creators.markInvalid('password', '网络异常或用户名，密码错误'))
+      throw e
     }
   }
   *saga() {

@@ -13,8 +13,8 @@ export interface CreateNamespaceParams {
   name: string
   comment: string
   owners?: string
-  userIds?: string[]
-  groupIds?: string[]
+  user_ids?: string[]
+  group_ids?: string[]
 }
 export interface CreateNamespaceResult {
   namespace: Namespace
@@ -23,10 +23,10 @@ export interface ModifyNamespaceParams {
   name: string
   comment?: string
   owners?: string
-  userIds?: string[]
-  groupIds?: string[]
-  removeUserIds?: string[]
-  removeGroupIds?: string[]
+  user_ids?: string[]
+  group_ids?: string[]
+  remove_user_ids?: string[]
+  remove_group_ids?: string[]
 }
 export interface ModifyNamespaceResult {
   size: number

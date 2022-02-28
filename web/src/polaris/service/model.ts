@@ -27,8 +27,8 @@ export interface CreateServicesParams {
   metadata: Record<string, string>
   owners: string
   department: string
-  userIds?: string[]
-  groupIds?: string[]
+  user_ids?: string[]
+  group_ids?: string[]
 }
 
 export interface ModifyServicesParams {
@@ -43,10 +43,10 @@ export interface ModifyServicesParams {
   cmdb_mod2: string
   cmdb_mod3: string
   department: string
-  userIds?: string[]
-  groupIds?: string[]
-  removeUserIds?: string[]
-  removeGroupIds?: string[]
+  user_ids?: string[]
+  group_ids?: string[]
+  remove_user_ids?: string[]
+  remove_group_ids?: string[]
 }
 export interface DescribeNamespacesResult {
   amount: number

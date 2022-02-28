@@ -57,10 +57,10 @@ export default class CreateDuck extends FormDialog {
           {
             name: values.name,
             comment: values.comment,
-            userIds,
-            groupIds,
-            removeUserIds,
-            removeGroupIds,
+            user_ids: userIds,
+            group_ids: groupIds,
+            remove_user_ids: removeUserIds,
+            remove_group_ids: removeGroupIds,
           },
         ]),
       )
@@ -71,8 +71,8 @@ export default class CreateDuck extends FormDialog {
           {
             name: values.name,
             comment: values.comment,
-            userIds,
-            groupIds,
+            user_ids: userIds,
+            group_ids: groupIds,
           },
         ]),
       )
