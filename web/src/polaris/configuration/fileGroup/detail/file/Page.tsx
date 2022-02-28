@@ -21,6 +21,7 @@ import {
   Dropdown,
   List,
   Icon,
+  Bubble,
 } from 'tea-component'
 import { FileStatusMap } from './constants'
 import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
@@ -176,6 +177,23 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <FormItem label='最后发布时间'>
                               <FormText>{currentNode.releaseTime || '-'}</FormText>
                             </FormItem>
+                            <FormItem label='标签'>
+                              <FormText>
+                                <Bubble
+                                  content={
+                                    <>
+                                      {currentNode.tags?.map(item => (
+                                        <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
+                                      ))}
+                                    </>
+                                  }
+                                >
+                                  <Text overflow>
+                                    {currentNode.tags.map(item => `${item.key}:${item.value}`).join(',') || '-'}
+                                  </Text>
+                                </Bubble>
+                              </FormText>
+                            </FormItem>
                           </Col>
                           <Col span={12}>
                             <FormItem label='最后修改人'>
@@ -186,6 +204,9 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             </FormItem>
                             <FormItem label='备注'>
                               <FormText>{currentNode.comment || '-'}</FormText>
+                            </FormItem>
+                            <FormItem label='格式'>
+                              <FormText>{currentNode.format || '-'}</FormText>
                             </FormItem>
                           </Col>
                         </Row>
