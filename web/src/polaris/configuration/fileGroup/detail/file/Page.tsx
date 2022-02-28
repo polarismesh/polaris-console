@@ -352,7 +352,7 @@ function renderTree(props, folder, path: string, currPath: string) {
                       >
                         编辑
                       </List.Item>
-                      <List.Item onClick={() => handlers.delete([obj.name])}>删除</List.Item>
+                      <List.Item onClick={() => handlers.delete(obj.name)}>删除</List.Item>
                     </List>
                   </Dropdown>
                 </div>
