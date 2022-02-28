@@ -180,6 +180,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <FormItem label='标签'>
                               <FormText>
                                 <Bubble
+                                  placement={'right'}
                                   content={
                                     <>
                                       {currentNode.tags?.map(item => (

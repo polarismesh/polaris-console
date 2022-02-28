@@ -76,7 +76,7 @@ const generateFileTree = (fileList: ConfigFile[]) => {
   const fileTree = {}
   fileList.forEach(file => {
     let lastFolder = fileTree
-    const splitArray = file.name.split('.')
+    const splitArray = file.name.split('.').filter(item => item)
     if (splitArray.length === 0) {
       lastFolder[file.name] = file
     } else {
@@ -238,7 +238,6 @@ export default class PageDuck extends Base {
       }
     })
     yield takeLatest(types.EDIT_FILE_META, function*(action) {
-      const composedId = selectors.composedId(yield select())
       const { fileMap } = selector(yield select())
       const res = yield* resolvePromise(
         new Promise(resolve => {
@@ -255,7 +254,7 @@ export default class PageDuck extends Base {
         yield put({ type: types.FETCH_DATA })
       }
     })
-    yield takeLatest(types.CANCEL, function*(action) {
+    yield takeLatest(types.CANCEL, function*() {
       const currentNode = selectors.currentNode(yield select())
       yield put({ type: types.SET_EDITING, payload: false })
       yield put(creators.setEditContent(currentNode.content))
