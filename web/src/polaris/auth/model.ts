@@ -736,10 +736,10 @@ export interface ModifyUserGroup {
   comment?: string
 
   /** 添加的用户ID列表 */
-  add_relation?: SimpleGroupRelation
+  add_relation?: GroupRelation
 
   /** 移除的用户ID列表 */
-  remove_relation?: SimpleGroupRelation
+  remove_relation?: GroupRelation
 }
 /** 用户 */
 export interface User {
