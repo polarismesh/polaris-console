@@ -51,7 +51,7 @@ export async function describeGovernanceStrategies(params: DescribeGovernanceStr
   })
   return {
     totalCount: result.amount,
-    content: result.authStrategy,
+    content: result.authStrategies,
   }
 }
 /** **DescribeGovernanceStrategies入参**
@@ -87,7 +87,7 @@ export interface DescribeGovernanceStrategiesResult {
   amount: number
 
   /** 策略列表 */
-  authStrategy: AuthStrategy[]
+  authStrategies: AuthStrategy[]
 }
 
 /** 查询治理中心鉴权策略详细 */
@@ -345,7 +345,7 @@ export interface CreateGovernanceUsersResult {
   /** 请求结果 */
   responses: ApiResponse[]
 }
-/** 批量创建治理中心用户组 */
+/** 创建单个治理中心用户组 */
 export async function createGovernanceGroup(params: CreateUserGroup) {
   const result = await apiRequest<CreateGovernanceGroupResult>({ action: 'core/v1/usergroup', data: params })
   return Number(result.code) === SuccessCode
@@ -372,7 +372,7 @@ export interface CreateGovernanceGroupResult {
 }
 /** 修改治理中心用户组信息 */
 export async function modifyGovernanceGroup(params: ModifyGovernanceGroupParams[]) {
-  const result = await putApiRequest<ModifyGovernanceGroupResult>({ action: 'core/v1/usergroup', data: params })
+  const result = await putApiRequest<ModifyGovernanceGroupResult>({ action: 'core/v1/usergroups', data: params })
   return result.responses.every(item => Number(item.code) === SuccessCode)
 }
 /** **ModifyGovernanceGroup入参**
@@ -713,10 +713,10 @@ export interface CreateUserGroup {
 /** 用户-用户组关系 */
 export interface SimpleGroupRelation {
   /** 用户组ID */
-  groupId?: string
+  group_id?: string
 
   /** 用户ID数组 */
-  user_ids?: { id: string }[]
+  users?: { id: string }[]
 }
 
 /** 用户-用户组关系 */
@@ -736,10 +736,10 @@ export interface ModifyUserGroup {
   comment?: string
 
   /** 添加的用户ID列表 */
-  add_relation?: SimpleGroupRelation
+  add_relations?: SimpleGroupRelation
 
   /** 移除的用户ID列表 */
-  remove_relation?: SimpleGroupRelation
+  remove_relations?: SimpleGroupRelation
 }
 /** 用户 */
 export interface User {

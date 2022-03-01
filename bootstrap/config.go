@@ -48,7 +48,8 @@ type WebServer struct {
 	Mode       string `yaml:"mode"`
 	ListenIP   string `yaml:"listenIP"`
 	ListenPort int    `yaml:"listenPort"`
-	RequestURL string `yaml:"requestURL"`
+	NamingURL  string `yaml:"namingURL"`
+	AuthURL    string `yaml:"authURL"`
 	MonitorURL string `yaml:"monitorURL"`
 	WebPath    string `yaml:"webPath"`
 }
