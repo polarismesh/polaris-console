@@ -65,7 +65,7 @@ export default class CreateDuck extends FormDialog {
       const result = yield createGovernanceGroup({
         name,
         comment,
-        relation: { user_ids: selection.map(item => ({ id: item.id })) },
+        relation: { users: selection.map(item => ({ id: item.id })) },
       })
       if (result) {
         notification.success({ description: '创建成功' })

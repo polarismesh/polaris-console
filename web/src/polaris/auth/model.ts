@@ -346,7 +346,7 @@ export interface CreateGovernanceUsersResult {
   responses: ApiResponse[]
 }
 /** 批量创建治理中心用户组 */
-export async function createGovernanceGroup(params: CreateGovernanceGroupParams) {
+export async function createGovernanceGroup(params: CreateUserGroup) {
   const result = await apiRequest<CreateGovernanceGroupResult>({ action: 'core/v1/usergroup', data: params })
   return Number(result.code) === SuccessCode
 }
@@ -707,7 +707,7 @@ export interface CreateUserGroup {
   comment?: string
 
   /** 该用户组下的用户ID列表信息 */
-  relation?: SimpleGroupRelation
+  relation?: GroupRelation
 }
 
 /** 用户-用户组关系 */

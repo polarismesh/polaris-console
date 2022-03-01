@@ -217,16 +217,14 @@ export default class PageDuck extends GridPageDuck {
     })
     yield takeLatest(types.MODIFY, function*(action) {
       const { id: groupId } = action.payload
-      const {
-        group: { relation },
-      } = yield describeGovernanceGroupDetail({ id: groupId })
+      const { userGroup } = yield describeGovernanceGroupDetail({ id: groupId })
       const result = yield* resolvePromise(
         new Promise(resolve => {
           showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
               resolve(
                 yield* duck.execute(action.payload, {
-                  users: relation.users,
+                  users: userGroup?.relation?.users || [],
                   isModify: true,
                   groupId,
                 }),
@@ -245,7 +243,7 @@ export default class PageDuck extends GridPageDuck {
     yield takeLatest(types.SHOW_TOKEN, function*(action) {
       const { id, name } = action.payload
       const {
-        group: { auth_token },
+        userGroup: { auth_token },
       } = yield describeGovernanceGroupToken({ id })
       const { destroy } = Modal.show({
         size: 'xl',
