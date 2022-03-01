@@ -51,7 +51,7 @@ export async function describeGovernanceStrategies(params: DescribeGovernanceStr
   })
   return {
     totalCount: result.amount,
-    content: result.authStrategy,
+    content: result.authStrategies,
   }
 }
 /** **DescribeGovernanceStrategies入参**
@@ -87,7 +87,7 @@ export interface DescribeGovernanceStrategiesResult {
   amount: number
 
   /** 策略列表 */
-  authStrategy: AuthStrategy[]
+  authStrategies: AuthStrategy[]
 }
 
 /** 查询治理中心鉴权策略详细 */
@@ -736,10 +736,10 @@ export interface ModifyUserGroup {
   comment?: string
 
   /** 添加的用户ID列表 */
-  add_relation?: GroupRelation
+  add_relations?: GroupRelation
 
   /** 移除的用户ID列表 */
-  remove_relation?: GroupRelation
+  remove_relations?: GroupRelation
 }
 /** 用户 */
 export interface User {

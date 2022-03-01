@@ -46,13 +46,13 @@ export default class AttachUserGroupDuck extends FormDialog {
       modifyGovernanceGroup([
         ...addArray.map(id => ({
           id,
-          add_relation: { groupId: id, users: [{ id: userId }] },
-          remove_relation: { groupId: id, users: [] },
+          add_relationss: { groupId: id, users: [{ id: userId }] },
+          remove_relationss: { groupId: id, users: [] },
         })),
         ...removeArray.map(id => ({
           id,
-          remove_relation: { groupId: id, users: [{ id: userId }] },
-          add_relation: { groupId: id, users: [] },
+          remove_relationss: { groupId: id, users: [{ id: userId }] },
+          add_relationss: { groupId: id, users: [] },
         })),
       ]),
     )
