@@ -51,8 +51,8 @@ export default class CreateDuck extends FormDialog {
         {
           id: groupId,
           comment,
-          add_relations: { group_id, user_ids: addArray.map(item => ({ id: item })) },
-          remove_relations: { group_id, user_ids: removeArray.map(item => ({ id: item })) },
+          add_relations: { group_id: groupId, users: addArray.map(item => ({ id: item })) },
+          remove_relations: { group_id: groupId, users: removeArray.map(item => ({ id: item })) },
         },
       ])
       if (result) {

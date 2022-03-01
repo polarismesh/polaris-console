@@ -72,8 +72,9 @@ export interface DescribeGovernanceStrategiesParams {
 
   /** 1 为用户，2 为用户组 */
   principal_type?: number
+
   // 是否查询默认策略 1 为不查询
-  default?: number
+  default?: string
 
   res_id?: string
 
@@ -722,7 +723,7 @@ export interface SimpleGroupRelation {
 /** 用户-用户组关系 */
 export interface GroupRelation {
   /** 用户组ID */
-  groupId?: string
+  group_id?: string
 
   /** 用户ID数组 */
   users?: User[]
@@ -736,10 +737,10 @@ export interface ModifyUserGroup {
   comment?: string
 
   /** 添加的用户ID列表 */
-  add_relations?: SimpleGroupRelation
+  add_relations?: GroupRelation
 
   /** 移除的用户ID列表 */
-  remove_relations?: SimpleGroupRelation
+  remove_relations?: GroupRelation
 }
 /** 用户 */
 export interface User {
