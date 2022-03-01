@@ -141,7 +141,7 @@ export default class CreateDuck extends FormDialog {
       const { list: allStrategies } = yield getAllList(describeGovernanceStrategies, { listKey: 'content' })({
         res_id: data.id,
         res_type: 'service',
-        default: 2,
+        default: '1', //only default
         show_detail: true,
       })
       const users = [],

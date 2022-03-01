@@ -72,8 +72,9 @@ export interface DescribeGovernanceStrategiesParams {
 
   /** 1 为用户，2 为用户组 */
   principal_type?: number
+
   // 是否查询默认策略 1 为不查询
-  default?: number
+  default?: string
 
   res_id?: string
 
