@@ -107,7 +107,7 @@ export default class CreateDuck extends FormDialog {
         res_id: data.id,
         res_type: 'namespace',
         default: 2,
-        showDetail: true,
+        show_detail: true,
       })
       const users = [],
         groups = []
