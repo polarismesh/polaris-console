@@ -51,8 +51,8 @@ export default class CreateDuck extends FormDialog {
         {
           id: groupId,
           comment,
-          add_relation: { groupId, user_ids: addArray },
-          remove_relation: { groupId, user_ids: removeArray },
+          add_relation: { groupId, user_ids: addArray.map(item => ({ id: item })) },
+          remove_relation: { groupId, user_ids: removeArray.map(item => ({ id: item })) },
         },
       ])
       if (result) {
@@ -63,7 +63,9 @@ export default class CreateDuck extends FormDialog {
       return result
     } else {
       const result = yield createGovernanceGroup({
-        group: { name, comment, relation: { user_ids: selection.map(item => item.id) } },
+        name,
+        comment,
+        relation: { user_ids: selection.map(item => ({ id: item.id })) },
       })
       if (result) {
         notification.success({ description: '创建成功' })

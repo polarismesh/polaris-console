@@ -96,16 +96,17 @@ export interface Values {
   comment: string
   old_password?: string
   new_password?: string
+  confirmPassword?: string
   id?: string
 }
 class CreateForm extends Form {
   Values: Values
-  Meta: {}
+  Meta: DialogOptions
   validate(v: this['Values'], meta: this['Meta']) {
     return validator(v, meta)
   }
 }
-const validator = CreateForm.combineValidators<Values, {}>({
+const validator = CreateForm.combineValidators<Values, DialogOptions>({
   name(v) {
     if (!v) {
       return '请输入名称'
@@ -130,6 +131,17 @@ const validator = CreateForm.combineValidators<Values, {}>({
   new_password(v, values) {
     if (!v && values.id) {
       return '请输入新密码'
+    }
+  },
+  confirmPassword(v, values, meta) {
+    if (!v) {
+      return '请确认密码'
+    }
+    if (meta.isModify && values.new_password !== v) {
+      return '两次输入密码不一致'
+    }
+    if (meta.isModify && values.password !== v) {
+      return '两次输入密码不一致'
     }
   },
 })

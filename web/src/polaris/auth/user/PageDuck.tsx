@@ -88,6 +88,7 @@ export default class PageDuck extends GridPageDuck {
     return {
       ...super.creators,
       create: createToPayload<void>(types.CREATE),
+      edit: createToPayload<UserItem>(types.CREATE),
       showToken: createToPayload<UserItem>(types.SHOW_TOKEN),
       delete: createToPayload<UserItem[]>(types.DELETE),
       load: (composedId, data) => ({
@@ -250,7 +251,7 @@ export default class PageDuck extends GridPageDuck {
         user: { auth_token },
       } = yield describeGovernanceUserToken({ id })
       const { destroy } = Modal.show({
-        size: 650,
+        size: 'xl',
         caption: `查看${name}的token`,
         children: <ShowToken token={auth_token} name={name}></ShowToken>,
         onClose: () => destroy(),

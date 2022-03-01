@@ -354,8 +354,14 @@ export async function createGovernanceGroup(params: CreateGovernanceGroupParams)
 
 批量创建治理中心用户组  */
 export interface CreateGovernanceGroupParams {
-  /** 用户组列表 */
-  group: CreateUserGroup
+  /** 用户组名称 */
+  name?: string
+
+  /** 简单描述 */
+  comment?: string
+
+  /** 该用户组下的用户ID列表信息 */
+  relation?: SimpleGroupRelation
 }
 /** **CreateGovernanceGroup出参**
 
@@ -571,14 +577,14 @@ export type CheckAuthParams = {}
 export interface CheckAuthResult {
   /** 执行结果 */
   optionSwitch: {
-    options: { auth: boolean }
+    options: { auth: string }
   }
 }
 
 /** 检查策略是否已开启 */
 export async function checkAuth(params: CheckAuthParams) {
   const result = await getApiRequest<CheckAuthResult>({ action: 'core/v1/auth/status', data: params })
-  return result.optionSwitch.options.auth
+  return result.optionSwitch.options.auth === 'true'
 }
 
 /** **ResetGovernanceGroupToken入参**
@@ -710,7 +716,7 @@ export interface SimpleGroupRelation {
   groupId?: string
 
   /** 用户ID数组 */
-  user_ids?: string[]
+  user_ids?: { id: string }[]
 }
 
 /** 用户-用户组关系 */

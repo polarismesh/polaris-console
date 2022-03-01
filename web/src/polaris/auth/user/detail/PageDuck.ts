@@ -18,6 +18,8 @@ import CreateUserDuck from '../operation/CreateUserDuck'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import CreateUser from '../operation/CreateUser'
+import router from '@src/polaris/common/util/router'
+import { userLogout } from '@src/polaris/common/util/common'
 
 interface ComposedId {
   id: string
@@ -37,7 +39,6 @@ export default abstract class CreateDuck extends DetailPage {
       RESET_TOKEN,
       MODIFY_COMMENT,
       MODIFY,
-      MODIFY_PASSWORD,
     }
     return {
       ...super.quickTypes,
@@ -86,7 +87,7 @@ export default abstract class CreateDuck extends DetailPage {
       toggleToken: createToPayload<void>(types.TOGGLE_TOKEN),
       resetToken: createToPayload<void>(types.RESET_TOKEN),
       modifyComment: createToPayload<void>(types.MODIFY_COMMENT),
-      modifyPassword: createToPayload<void>(types.MODIFY_PASSWORD),
+      modifyPassword: createToPayload<void>(types.MODIFY),
     }
   }
   *saga() {
@@ -157,6 +158,7 @@ export default abstract class CreateDuck extends DetailPage {
       const result = yield resetGovernanceUserToken({ id })
       if (result) {
         notification.success({ description: '重置成功' })
+        userLogout()
         yield put(creators.reload())
       } else {
         notification.error({ description: '重置失败' })

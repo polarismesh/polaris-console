@@ -248,7 +248,7 @@ export default class PageDuck extends GridPageDuck {
         group: { auth_token },
       } = yield describeGovernanceGroupToken({ id })
       const { destroy } = Modal.show({
-        size: 'l',
+        size: 'xl',
         caption: `查看${name}的token`,
         children: <ShowToken token={auth_token} name={name}></ShowToken>,
         onClose: () => destroy(),

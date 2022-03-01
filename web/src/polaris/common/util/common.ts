@@ -33,7 +33,8 @@ export function getUin() {
   return window.localStorage.getItem(LoginUserIdKey)
 }
 export function getOwnerUin() {
-  return window.localStorage.getItem(LoginUserOwnerIdKey)
+  const ownerId = window.localStorage.getItem(LoginUserOwnerIdKey)
+  return ownerId === '' ? getUin() : ownerId
 }
 export function getLoginName() {
   return window.localStorage.getItem(LoginUserNameKey)

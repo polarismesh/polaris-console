@@ -19,6 +19,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
   const { data } = selector(store)
   if (!data) return <noscript />
   const { comment, auth_token, token_enable } = data
+  console.log(getOwnerUin(), composedId.id, getOwnerUin().toString() !== composedId.id)
   return (
     <DetailPage
       store={store}
@@ -30,6 +31,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       {/* 内容区域一般使用 Card 组件显示内容 */}
       <Card>
         <Card.Body
+          title={'用户信息'}
           operation={
             <Button
               type={'link'}

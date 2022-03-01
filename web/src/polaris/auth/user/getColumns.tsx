@@ -14,7 +14,7 @@ export default ({ duck: { creators }, dispatch }: DuckCmpProps<Duck>): Column<Us
       render: x => {
         const canRead = isOwner() || getUin().toString() === x.id
         return canRead ? (
-          <a style={{ display: 'block' }} data-event={'nav'} href={`/tse/governance-user-detail?id=${x.id}`}>
+          <a style={{ display: 'block' }} data-event={'nav'} href={`/#/user-detail?id=${x.id}`}>
             <Text>
               {x.name}
               {getUin().toString() === x.id && '（当前登录）'}

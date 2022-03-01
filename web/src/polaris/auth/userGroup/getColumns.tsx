@@ -15,7 +15,7 @@ export default ({ duck: { creators, selector }, store, dispatch }: DuckCmpProps<
       key: 'name',
       header: '用户组名称',
       render: x => (
-        <a style={{ display: 'block' }} data-event={'nav'} href={`/tse/governance-group-detail?id=${x.id}`}>
+        <a style={{ display: 'block' }} data-event={'nav'} href={`/#/usergroup-detail?id=${x.id}`}>
           <Text>{x.name}</Text>
         </a>
       ),

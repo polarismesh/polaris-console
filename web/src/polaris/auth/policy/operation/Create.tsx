@@ -264,7 +264,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
             type={'weak'}
             style={{ marginRight: '15px' }}
             onClick={() => {
-              router.navigate(`/tse/auth&authTab=policy`)
+              router.navigate(`/auth&authTab=policy`)
             }}
           >
             {'取消'}

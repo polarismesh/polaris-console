@@ -10,9 +10,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks, selector } = duck
   const { options } = selector(store)
-  const { name, comment, password, old_password, new_password } = ducks.form
+  const { name, comment, password, old_password, new_password, confirmPassword } = ducks.form
     .getAPI(store, dispatch)
-    .getFields(['name', 'comment', 'password', 'old_password', 'new_password'])
+    .getFields(['name', 'comment', 'password', 'old_password', 'new_password', 'confirmPassword'])
   return (
     <Dialog
       duck={duck}
@@ -32,6 +32,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
             <FormField field={new_password} label={'新密码'}>
               <Input field={new_password} size={'m'} type={'password'} />
             </FormField>
+            <FormField field={confirmPassword} label={'密码'}>
+              <Input field={confirmPassword} size={'m'} type={'password'} />
+            </FormField>
           </>
         ) : (
           <>
@@ -40,6 +43,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
             </FormField>
             <FormField field={password} label={'密码'}>
               <Input field={password} size={'m'} type={'password'} />
+            </FormField>
+            <FormField field={confirmPassword} label={'密码'}>
+              <Input field={confirmPassword} size={'m'} type={'password'} />
             </FormField>
             <FormField field={comment} label={'备注'}>
               <Input field={comment} size={'m'} />

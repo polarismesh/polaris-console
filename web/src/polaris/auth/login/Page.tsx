@@ -3,7 +3,7 @@ import { purify, DuckCmpProps } from 'saga-duck'
 
 import Duck from './PageDuck'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
-import { Row, Col, Card, H2, Text, Form, Button } from 'tea-component'
+import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 insertCSS(
@@ -64,7 +64,16 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   <Input field={userName} size={'full'} />
                 </FormField>
                 <FormField field={password} label={'密码'}>
-                  <Input field={password} size={'full'} />
+                  <TeaInput.Password
+                    value={password.getValue() || ''}
+                    size={'full'}
+                    onChange={v => {
+                      password.setValue(v)
+                      password.setTouched(true)
+                    }}
+                    onPressEnter={() => dispatch(creators.submit())}
+                    rules={false}
+                  />
                 </FormField>
               </Form>
               <Row>
