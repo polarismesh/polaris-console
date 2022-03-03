@@ -5,6 +5,7 @@ import Form from '@src/polaris/common/ducks/Form'
 import { notification } from 'tea-component'
 import { UserSource } from '../../constants'
 import { passwordRuleText } from './CreateUser'
+import { userLogout } from '@src/polaris/common/util/common'
 
 export interface DialogOptions {
   isModify: boolean
@@ -46,6 +47,7 @@ export default class CreateUserDuck extends FormDialog {
         })
         if (result) {
           notification.success({ description: '修改密码成功' })
+          userLogout()
         } else {
           notification.error({ description: '修改密码失败' })
         }
