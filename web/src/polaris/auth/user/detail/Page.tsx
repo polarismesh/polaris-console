@@ -18,8 +18,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
   const [showAuthTabType, setShowAuthTabType] = React.useState(TAB.POLICY)
   const { data } = selector(store)
   if (!data) return <noscript />
-  const { comment, auth_token, token_enable } = data
-  console.log(getOwnerUin(), composedId.id, getOwnerUin().toString() !== composedId.id)
+  const { comment, auth_token, token_enable, email, mobile } = data
   return (
     <DetailPage
       store={store}
@@ -33,17 +32,30 @@ export default purify(function(props: DuckCmpProps<Duck>) {
         <Card.Body
           title={'用户信息'}
           operation={
-            <Button
-              type={'link'}
-              onClick={() => {
-                dispatch(creators.modifyPassword())
-              }}
-            >
-              编辑
-            </Button>
+            <>
+              <Button
+                type={'link'}
+                onClick={() => {
+                  dispatch(creators.modify())
+                }}
+              >
+                编辑
+              </Button>
+              <Button
+                type={'link'}
+                onClick={() => {
+                  dispatch(creators.modifyPassword())
+                }}
+              >
+                修改密码
+              </Button>
+            </>
           }
         >
           <Form>
+            <FormItem label={'账号名'}>
+              <FormText>{data?.name}</FormText>
+            </FormItem>
             <FormItem label={'账号ID'}>
               <FormText>{composedId?.id}</FormText>
             </FormItem>
@@ -58,6 +70,12 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   }}
                 ></Button>
               </FormText>
+            </FormItem>
+            <FormItem label={'手机号'}>
+              <FormText>{mobile || '-'} </FormText>
+            </FormItem>
+            <FormItem label={'邮箱'}>
+              <FormText>{email || '-'} </FormText>
             </FormItem>
             <FormItem label={'Token'}>
               {isOwner() || getUin().toString() === composedId.id ? (

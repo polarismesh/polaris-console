@@ -86,18 +86,20 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
           <section style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%' }}>
             {/* <SearchBox value={searchword} onSearch={handlers.search} onChange={handlers.setSearchword}></SearchBox> */}
             <List type={'option'} style={{ height: '100%', maxHeight: '1000px' }}>
-              {authList.map(item => (
-                <ListItem
-                  key={item.id}
-                  onClick={() => {
-                    handlers.fetchCurrentAuthItem(item.id)
-                  }}
-                  className={'auth-item'}
-                  current={item.id === currentAuthItem.id}
-                >
-                  {item.name}
-                </ListItem>
-              ))}
+              {authList.map(item => {
+                return (
+                  <ListItem
+                    key={item.id}
+                    onClick={() => {
+                      handlers.fetchCurrentAuthItem(item.id)
+                    }}
+                    className={'auth-item'}
+                    current={item.id === currentAuthItem.id}
+                  >
+                    {item.name}
+                  </ListItem>
+                )
+              })}
             </List>
           </section>
         </Col>
@@ -143,7 +145,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                               type='link'
                               onClick={() => {
                                 router.navigate(
-                                  `/#/${AUTH_SUBJECT_TYPE_MAP[showAuthSubjectType].urlKey}-detail?id=${userItem.id}`,
+                                  `/${AUTH_SUBJECT_TYPE_MAP[showAuthSubjectType].urlKey}-detail?id=${userItem.id}`,
                                 )
                               }}
                               key={userItem.id}

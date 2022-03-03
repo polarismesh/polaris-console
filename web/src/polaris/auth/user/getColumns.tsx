@@ -10,7 +10,7 @@ export default ({ duck: { creators }, dispatch }: DuckCmpProps<Duck>): Column<Us
   return [
     {
       key: 'name',
-      header: '腾讯云用户名',
+      header: '用户名',
       render: x => {
         const canRead = isOwner() || getUin().toString() === x.id
         return canRead ? (

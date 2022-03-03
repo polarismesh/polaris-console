@@ -231,7 +231,9 @@ export async function modifyGovernanceUser(params: ModifyGovernanceUserParams) {
 export interface ModifyGovernanceUserParams {
   /** 用户 */
   id: string
-  comment: string
+  mobile?: string
+  email?: string
+  comment?: string
 }
 /** **ModifyGovernanceUser出参**
 
@@ -337,6 +339,8 @@ export interface CreateGovernanceUsersParams {
   name: string
   password: string
   comment: string
+  mobile?: string
+  email?: string
   source: string
 }
 /** **CreateGovernanceUsers出参**
@@ -770,6 +774,10 @@ export interface User {
 
   /** 该账户的最近一次修改时间 */
   mtime?: string
+
+  email?: string
+
+  mobile?: string
 }
 /** 修改鉴权策略 */
 export interface ModifyAuthStrategy {

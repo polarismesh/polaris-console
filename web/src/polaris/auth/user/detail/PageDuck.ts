@@ -18,7 +18,6 @@ import CreateUserDuck from '../operation/CreateUserDuck'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import CreateUser from '../operation/CreateUser'
-import router from '@src/polaris/common/util/router'
 import { userLogout } from '@src/polaris/common/util/common'
 
 interface ComposedId {
@@ -39,6 +38,7 @@ export default abstract class CreateDuck extends DetailPage {
       RESET_TOKEN,
       MODIFY_COMMENT,
       MODIFY,
+      MODIFY_PASSWORD,
     }
     return {
       ...super.quickTypes,
@@ -87,7 +87,8 @@ export default abstract class CreateDuck extends DetailPage {
       toggleToken: createToPayload<void>(types.TOGGLE_TOKEN),
       resetToken: createToPayload<void>(types.RESET_TOKEN),
       modifyComment: createToPayload<void>(types.MODIFY_COMMENT),
-      modifyPassword: createToPayload<void>(types.MODIFY),
+      modifyPassword: createToPayload<void>(types.MODIFY_PASSWORD),
+      modify: createToPayload<void>(types.MODIFY),
     }
   }
   *saga() {
@@ -116,18 +117,37 @@ export default abstract class CreateDuck extends DetailPage {
       }
     })
     yield takeLatest(types.MODIFY, function*() {
-      const { id } = yield select(selectors.composedId)
+      const data = yield select(selectors.data)
       const result = yield* resolvePromise(
         new Promise(resolve => {
           showDialog(CreateUser, CreateUserDuck, function*(duck: CreateUserDuck) {
             try {
               resolve(
-                yield* duck.execute(
-                  { id },
-                  {
-                    isModify: true,
-                  },
-                ),
+                yield* duck.execute(data, {
+                  isModify: true,
+                }),
+              )
+            } finally {
+              resolve(false)
+            }
+          })
+        }),
+      )
+      if (result) {
+        yield put(creators.reload())
+      }
+    })
+    yield takeLatest(types.MODIFY_PASSWORD, function*() {
+      const data = yield select(selectors.data)
+      const result = yield* resolvePromise(
+        new Promise(resolve => {
+          showDialog(CreateUser, CreateUserDuck, function*(duck: CreateUserDuck) {
+            try {
+              resolve(
+                yield* duck.execute(data, {
+                  isModify: true,
+                  isModifyPassword: true,
+                }),
               )
             } finally {
               resolve(false)

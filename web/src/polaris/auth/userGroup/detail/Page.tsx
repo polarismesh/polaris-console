@@ -32,6 +32,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       <Card>
         <Card.Body>
           <Form>
+            <FormItem label={'用户组名'}>
+              <FormText>{data?.name}</FormText>
+            </FormItem>
             <FormItem label={'用户组ID'}>
               <FormText>{composedId?.id}</FormText>
             </FormItem>

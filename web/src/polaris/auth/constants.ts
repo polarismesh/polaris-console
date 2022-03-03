@@ -6,13 +6,14 @@ export enum TAB {
   POLICY = 'policy',
 }
 export const PrincipalTypeMap = {
-  [AuthSubjectType.USER]: 1,
-  [AuthSubjectType.USERGROUP]: 2,
+  [AuthSubjectType.USER]: 'user',
+  [AuthSubjectType.USERGROUP]: 'group',
 }
 
 export enum DescribeStrategyOption {
-  NoDefault = 1,
-  Default = 2,
+  NoDefault = '0',
+  Default = '1',
+  Mix = '',
 }
 const TAB_LABLES_MAP = {
   [TAB.USER]: '用户',

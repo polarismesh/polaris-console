@@ -118,7 +118,7 @@ export class StrategySelectDuck extends SearchableMultiSelect {
 
   async getData(filter) {
     const { keyword, instanceId } = filter
-    const params = { name: `${keyword ? `${keyword}*` : ''}`, instanceId, default: 1 }
+    const params = { name: `${keyword ? `${keyword}*` : ''}`, instanceId, default: DescribeStrategyOption.NoDefault }
 
     const result = await getAllList(describeGovernanceStrategies, { listKey: 'content' })(params)
 

@@ -1,12 +1,14 @@
 import { put, select } from 'redux-saga/effects'
-import { createGovernanceUsers, modifyGovernanceUserPassword } from '../../model'
+import { createGovernanceUsers, modifyGovernanceUserPassword, modifyGovernanceUser } from '../../model'
 import FormDialog from '@src/polaris/common/ducks/FormDialog'
 import Form from '@src/polaris/common/ducks/Form'
 import { notification } from 'tea-component'
 import { UserSource } from '../../constants'
+import { passwordRuleText } from './CreateUser'
 
 export interface DialogOptions {
   isModify: boolean
+  isModifyPassword?: boolean
 }
 
 export default class CreateUserDuck extends FormDialog {
@@ -31,19 +33,33 @@ export default class CreateUserDuck extends FormDialog {
     const options = selectors.options(yield select())
     const {
       form: {
-        values: { name, comment, password, old_password, new_password, id },
+        values: { name, comment, password, old_password, new_password, id, mobile, email },
       },
     } = selector(yield select())
     if (options?.isModify) {
-      const result = yield modifyGovernanceUserPassword({
-        id,
-        old_password,
-        new_password,
-      })
-      if (result) {
-        notification.success({ description: '修改密码成功' })
+      let result
+      if (options?.isModifyPassword) {
+        result = yield modifyGovernanceUserPassword({
+          id,
+          old_password,
+          new_password,
+        })
+        if (result) {
+          notification.success({ description: '修改密码成功' })
+        } else {
+          notification.error({ description: '修改密码失败' })
+        }
       } else {
-        notification.error({ description: '修改密码失败' })
+        result = yield modifyGovernanceUser({
+          id,
+          mobile,
+          email,
+        })
+        if (result) {
+          notification.success({ description: '编辑成功' })
+        } else {
+          notification.error({ description: '编辑失败' })
+        }
       }
       return result
     } else {
@@ -52,6 +68,8 @@ export default class CreateUserDuck extends FormDialog {
           name,
           comment,
           password,
+          mobile,
+          email,
           source: UserSource.Polaris,
         },
       ])
@@ -70,7 +88,7 @@ export default class CreateUserDuck extends FormDialog {
     yield put(form.creators.setAllTouched(true))
     const firstInvalid = yield select(form.selectors.firstInvalid)
     if (firstInvalid) {
-      throw false
+      throw firstInvalid
     }
   }
   *onShow() {
@@ -97,6 +115,8 @@ export interface Values {
   old_password?: string
   new_password?: string
   confirmPassword?: string
+  mobile?: string
+  email?: string
   id?: string
 }
 class CreateForm extends Form {
@@ -107,7 +127,10 @@ class CreateForm extends Form {
   }
 }
 const validator = CreateForm.combineValidators<Values, DialogOptions>({
-  name(v) {
+  name(v, values, meta) {
+    if (meta.isModify) {
+      return
+    }
     if (!v) {
       return '请输入名称'
     }
@@ -118,30 +141,44 @@ const validator = CreateForm.combineValidators<Values, DialogOptions>({
       return '最大长度为64'
     }
   },
-  password(v) {
+  password(v, values) {
+    if (values.id) {
+      return
+    }
     if (!v) {
       return '请输入密码'
     }
+    if (v.length < 6 || v.length > 17) {
+      return passwordRuleText
+    }
   },
-  old_password(v, values) {
+  old_password(v, values, meta) {
+    if (!meta.isModifyPassword) {
+      return
+    }
     if (!v && values.id) {
       return '请输入旧密码'
     }
   },
-  new_password(v, values) {
+  new_password(v, values, meta) {
+    if (!meta.isModifyPassword) {
+      return
+    }
     if (!v && values.id) {
       return '请输入新密码'
     }
   },
   confirmPassword(v, values, meta) {
-    if (!v) {
-      return '请确认密码'
-    }
-    if (meta.isModify && values.new_password !== v) {
-      return '两次输入密码不一致'
-    }
-    if (meta.isModify && values.password !== v) {
-      return '两次输入密码不一致'
+    if (meta.isModifyPassword || !meta.isModify) {
+      if (!v) {
+        return '请确认密码'
+      }
+      if (meta.isModify && values.new_password !== v) {
+        return '两次输入密码不一致'
+      }
+      if (!meta.isModify && values.password !== v) {
+        return '两次输入密码不一致'
+      }
     }
   },
 })

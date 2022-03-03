@@ -43,7 +43,6 @@ export default abstract class PolicyPageDuck extends PageDuck {
       ...Types,
     }
   }
-
   get quickDucks() {
     return {
       ...super.quickDucks,
@@ -91,7 +90,6 @@ export default abstract class PolicyPageDuck extends PageDuck {
   *saga() {
     yield* super.saga()
     const { types, selector, creators } = this
-
     yield takeLatest(types.LOAD, function*(action) {
       const { composedId } = action.payload
       yield put({ type: types.SET_COMPOSE_ID, payload: composedId })
@@ -136,7 +134,7 @@ export default abstract class PolicyPageDuck extends PageDuck {
       yield put({ type: types.SET_LOADING, payload: true })
       try {
         const { list: authList } = yield getAllList(describeGovernanceStrategies, { listKey: 'content' })({
-          name: searchword ? `${searchword}*` : '',
+          ...(searchword ? { name: `${searchword}*` } : {}),
           principal_id: principalId,
           principal_type: PrincipalTypeMap[principalType],
         })

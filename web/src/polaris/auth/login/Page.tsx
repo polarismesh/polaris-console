@@ -31,10 +31,10 @@ export default purify(function(props: DuckCmpProps<Duck>) {
         <Col span={10}>
           <Card style={{ backgroundColor: 'transparent', border: 'none', padding: '5vh 0' }} bordered>
             <Card.Body title={<img src={'/static/img/logo-polaris.png'} style={{ width: '40%' }} />}>
-              <Text parent={'div'} style={{ color: '#fff', fontSize: '28px' }}>
+              <Text parent={'div'} style={{ color: '#fff', fontSize: '24px', width: '550px' }}>
                 注册配置治理中心 PolarisMesh（北极星）
               </Text>
-              <Text parent={'div'} style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+              <Text parent={'div'} style={{ color: 'rgba(255, 255, 255, 0.6)', width: '450px' }}>
                 一个支持多语言、多框架的云原生服务发现、配置管理、治理中心。用于解决分布式或者微服务架构中的服务注册与发现、故障容错、流量控制和安全问题，快速部署、高可用容灾、免运维、一键搭建。
               </Text>
             </Card.Body>
@@ -77,8 +77,8 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 </FormField>
               </Form>
               <Row>
-                <Col span={6}></Col>
-                <Col span={12}>
+                <Col span={8}></Col>
+                <Col span={8}>
                   <Button
                     type={'primary'}
                     style={{ width: '100%', margin: 'auto' }}

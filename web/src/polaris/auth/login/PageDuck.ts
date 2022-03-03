@@ -121,7 +121,6 @@ export class CreateFormDuck extends Form {
         throw new Error()
       }
     } catch (e) {
-      console.error(e)
       yield put(creators.markInvalid('password', '网络异常或用户名，密码错误'))
       throw e
     }

@@ -9,7 +9,7 @@ export interface APIRequestOption {
 }
 export interface ApiResponse {
   code: number
-  message: string
+  info: string
 }
 export const SuccessCode = 200000
 export async function apiRequest<T>(options: APIRequestOption) {
@@ -31,6 +31,9 @@ export async function apiRequest<T>(options: APIRequestOption) {
           })
         }
       })) as AxiosResponse<T & ApiResponse>
+    if (res.data.code > 200000) {
+      throw res.data.info
+    }
     return res.data
   } catch (e) {
     console.error(e)
@@ -42,15 +45,24 @@ export async function getApiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts } = options
   try {
     tips.showLoading({})
-    const res = await axios.get<T & ApiResponse>(action, {
-      params: data,
-      ...opts,
-      headers: {
-        'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-      },
-    })
-    if (res.status >= 400) {
-      throw res
+    const res = (await axios
+      .get<T & ApiResponse>(action, {
+        params: data,
+        ...opts,
+        headers: {
+          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+        },
+      })
+      .catch(function(error) {
+        if (error.response) {
+          notification.error({
+            title: '请求错误',
+            description: error.response?.data?.info,
+          })
+        }
+      })) as AxiosResponse<T & ApiResponse>
+    if (res.data.code > 200000) {
+      throw res.data.info
     }
     return res.data
   } catch (e) {
@@ -64,14 +76,23 @@ export async function putApiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts } = options
   try {
     tips.showLoading({})
-    const res = await axios.put<T & ApiResponse>(action, data, {
-      ...opts,
-      headers: {
-        'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-      },
-    })
-    if (res.status >= 400) {
-      throw res.data
+    const res = (await axios
+      .put<T & ApiResponse>(action, data, {
+        ...opts,
+        headers: {
+          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+        },
+      })
+      .catch(function(error) {
+        if (error.response) {
+          notification.error({
+            title: '请求错误',
+            description: error.response?.data?.info,
+          })
+        }
+      })) as AxiosResponse<T & ApiResponse>
+    if (res.data.code > 200000) {
+      throw res.data.info
     }
     return res.data
   } catch (e) {
@@ -84,15 +105,24 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts } = options
   try {
     tips.showLoading({})
-    const res = await axios.delete<T & ApiResponse>(action, {
-      params: data,
-      ...opts,
-      headers: {
-        'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-      },
-    })
-    if (res.status >= 400) {
-      throw res
+    const res = (await axios
+      .delete<T & ApiResponse>(action, {
+        params: data,
+        ...opts,
+        headers: {
+          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+        },
+      })
+      .catch(function(error) {
+        if (error.response) {
+          notification.error({
+            title: '请求错误',
+            description: error.response?.data?.info,
+          })
+        }
+      })) as AxiosResponse<T & ApiResponse>
+    if (res.data.code > 200000) {
+      throw res.data.info
     }
     return res.data
   } catch (e) {

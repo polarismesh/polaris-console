@@ -16,7 +16,13 @@ export default function Create(props: DuckCmpProps<Duck>) {
   }
   const data = selectors.data(store)
   return (
-    <Dialog duck={duck} store={store} dispatch={dispatch} title={data.name ? '编辑命名空间' : '新建命名空间'}>
+    <Dialog
+      duck={duck}
+      store={store}
+      dispatch={dispatch}
+      size={'xl'}
+      title={data.name ? '编辑命名空间' : '新建命名空间'}
+    >
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
   )
