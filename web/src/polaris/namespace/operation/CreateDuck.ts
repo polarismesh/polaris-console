@@ -10,6 +10,7 @@ import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { UserSelectDuck } from '@src/polaris/auth/userGroup/operation/CreateDuck'
 import { UserGroupSelectDuck } from '@src/polaris/auth/user/operation/AttachUserGroupDuck'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
+import { DescribeStrategyOption } from '@src/polaris/auth/constants'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -106,7 +107,7 @@ export default class CreateDuck extends FormDialog {
       const { list: allStrategies } = yield getAllList(describeGovernanceStrategies, { listKey: 'content' })({
         res_id: data.id,
         res_type: 'namespace',
-        default: '1', //only default
+        default: DescribeStrategyOption.NoDefault, //only default
         show_detail: true,
       })
       const users = [],

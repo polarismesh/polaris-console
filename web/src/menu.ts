@@ -11,6 +11,10 @@ export const MenuConfig = {
       title: '命名空间',
       icon: ['/static/img/namespace.svg', '/static/img/namespace.svg'],
     },
+    alias: {
+      title: '服务别名',
+      icon: ['/static/img/namespace.svg', '/static/img/namespace.svg'],
+    },
   },
   configuration: {
     isGroup: true,

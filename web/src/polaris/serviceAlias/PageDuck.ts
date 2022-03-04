@@ -1,60 +1,45 @@
 import { createToPayload, reduceFromPayload } from 'saga-duck'
-import GridPageDuck, { Filter as BaseFilter } from '../common/ducks/GridPage'
-import { Service, Namespace } from './types'
-import { describeServices, describeNamespaces, deleteService } from './model'
 import { takeLatest } from 'redux-saga-catch'
+import { put, select } from 'redux-saga/effects'
+import CreateDuck from './operation/CreateDuck'
+import Create from './operation/Create'
+import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/GridPage'
+import { GovernanceAlias, deleteGovernanceAliases, describeGovernanceAliases } from './model'
+import { NamespaceItem } from '../service/PageDuck'
+import { ComposedId } from '../service/detail/types'
+import { TagValue, notification, Modal } from 'tea-component'
+import { getAllList } from '../common/util/apiRequest'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '../common/helpers/showDialog'
-import Create from './operation/Create'
-import CreateDuck from './operation/CreateDuck'
-import { put, select } from 'redux-saga/effects'
-import { Modal, TagValue } from 'tea-component'
-import { checkAuth } from '../auth/model'
-import { KeyValuePair } from '../configuration/fileGroup/types'
-import { DefaultServiceTagAttribute, ServiceNameTagKey, MetadataTagKey } from './Page'
-
-export const EmptyCustomFilter = {
-  namespace: '',
-  serviceName: '',
-  instanceIp: '',
-  serviceTag: { key: '', value: '' },
-  searchMethod: 'accurate',
-  department: '',
-  business: '',
+import { describeComplicatedNamespaces } from '../namespace/model'
+const EmptyCustomFilter = {
+  alias: '',
+  service: '',
+  alias_namespace: '',
 }
-
+const AliasTagKey = 'alias'
+export const DefaultAliasTagAttribute = {
+  type: 'input',
+  key: 'alias',
+  name: '服务别名',
+}
 interface Filter extends BaseFilter {
-  namespace: string
-  serviceName: string
-  instanceIp: string
-  serviceTag: KeyValuePair
-  searchMethod?: string
-  department?: string
-  business?: string
+  alias: string
+  service: string
+  alias_namespace: string
 }
 interface CustomFilters {
-  namespace?: string
-  serviceName?: string
-  instanceIp?: string
-  serviceTag?: KeyValuePair
-  searchMethod?: string
-  department?: string
-  business?: string
+  alias: string
+  service: string
+  alias_namespace: string
 }
-
-export interface NamespaceItem extends Namespace {
-  text: string
-  value: string
-}
-export interface ServiceItem extends Service {
+export interface GovernanceAliasItem extends GovernanceAlias {
   id: string
 }
-export default class ServicePageDuck extends GridPageDuck {
+export default class ServiceAliasPageDuck extends GridPageDuck {
   Filter: Filter
-  Item: ServiceItem
-  get baseUrl() {
-    return '/#/service'
-  }
+  Item: GovernanceAliasItem
+  baseUrl = null
   get quickTypes() {
     enum Types {
       SET_CUSTOM_FILTERS,
@@ -64,9 +49,11 @@ export default class ServicePageDuck extends GridPageDuck {
       SET_SELECTION,
       SET_NAMESPACE_LIST,
       SET_EXPANDED_KEYS,
-      SET_AUTH_OPEN,
+      LOAD,
       CHANGE_TAGS,
       SET_TAGS,
+      SET_DATA,
+      SET_COMPOSE_ID,
     }
     return {
       ...super.quickTypes,
@@ -74,13 +61,13 @@ export default class ServicePageDuck extends GridPageDuck {
     }
   }
   get initialFetch() {
-    return false
+    return true
   }
   get recordKey() {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS]
+    return [...super.watchTypes, this.types.SEARCH, this.types.SET_COMPOSE_ID, this.types.SET_CUSTOM_FILTERS]
   }
   get params() {
     return [...super.params]
@@ -98,7 +85,7 @@ export default class ServicePageDuck extends GridPageDuck {
       selection: reduceFromPayload<string[]>(types.SET_SELECTION, []),
       namespaceList: reduceFromPayload<NamespaceItem[]>(types.SET_NAMESPACE_LIST, []),
       expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
-      authOpen: reduceFromPayload<boolean>(types.SET_AUTH_OPEN, false),
+      composedId: reduceFromPayload<ComposedId>(types.SET_COMPOSE_ID, {} as ComposedId),
       tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
     }
   }
@@ -107,11 +94,15 @@ export default class ServicePageDuck extends GridPageDuck {
     return {
       ...super.creators,
       setCustomFilters: createToPayload<CustomFilters>(types.SET_CUSTOM_FILTERS),
-      edit: createToPayload<Service>(types.EDIT),
+      edit: createToPayload<GovernanceAlias>(types.EDIT),
       remove: createToPayload<string[]>(types.REMOVE),
       create: createToPayload<void>(types.CREATE),
       setSelection: createToPayload<string[]>(types.SET_SELECTION),
       setExpandedKeys: createToPayload<string[]>(types.SET_EXPANDED_KEYS),
+      load: (composedId, data) => ({
+        type: types.LOAD,
+        payload: { composedId, data },
+      }),
       changeTags: createToPayload(types.CHANGE_TAGS),
     }
   }
@@ -123,13 +114,9 @@ export default class ServicePageDuck extends GridPageDuck {
         page: state.page,
         count: state.count,
         keyword: state.keyword,
-        namespace: state.customFilters.namespace,
-        serviceName: state.customFilters.serviceName,
-        instanceIp: state.customFilters.instanceIp,
-        serviceTag: state.customFilters.serviceTag,
-        searchMethod: state.customFilters.searchMethod,
-        department: state.customFilters.department,
-        business: state.customFilters.business,
+        alias: state.customFilters.alias,
+        alias_namespace: state.customFilters.alias_namespace,
+        service: state.customFilters.service,
       }),
       customFilters: (state: State) => state.customFilters,
       selection: (state: State) => state.selection,
@@ -137,13 +124,18 @@ export default class ServicePageDuck extends GridPageDuck {
     }
   }
   *loadNamespaceList() {
-    const namespaceList = yield describeNamespaces()
+    const { list: namespaceList } = yield getAllList(describeComplicatedNamespaces, {
+      listKey: 'namespaces',
+      totalKey: 'amount',
+    })({})
     const options = namespaceList.map(item => ({
       ...item,
       text: item.name,
       value: item.name,
       key: item.name,
+      name: item.name,
     }))
+    //options.unshift({ text: '全部', value: '', key: '', name: '全部' })
     yield put({
       type: this.types.SET_NAMESPACE_LIST,
       payload: options,
@@ -152,23 +144,36 @@ export default class ServicePageDuck extends GridPageDuck {
 
   *saga() {
     const { types, creators, selector, ducks } = this
+    const duck = this
     yield* super.saga()
-    yield* this.loadNamespaceList()
-    const authOpen = yield checkAuth({})
-    yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
+    yield takeLatest(types.CHANGE_TAGS, function*(action) {
+      const tags = action.payload
+      const customFilters = { ...EmptyCustomFilter }
+      const validTags = tags.map(item => {
+        if (item.attr) return item
+        else return { ...item, attr: DefaultAliasTagAttribute }
+      })
+      yield put({ type: types.SET_TAGS, payload: validTags })
+      validTags.forEach(tag => {
+        const key = tag?.attr?.key || AliasTagKey
+        if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
+        else customFilters[key] = tag.values[0].key
+      })
+      yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
+    })
     yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
       const { list } = action.payload
       const { selection } = selector(yield select())
       const validSelection = selection.filter(id => !!list.find(item => item.id === id))
       yield put(creators.setSelection(validSelection))
+      yield* duck.loadNamespaceList()
     })
     yield takeLatest(types.CREATE, function*() {
-      const { authOpen } = selector(yield select())
       const res = yield* resolvePromise(
         new Promise(resolve => {
           showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
-              resolve(yield* duck.execute({}, { isModify: false, authOpen }))
+              resolve(yield* duck.execute({}, { isModify: false }))
             } finally {
               resolve(false)
             }
@@ -179,32 +184,13 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.CHANGE_TAGS, function*(action) {
-      const tags = action.payload
-      const customFilters = { ...EmptyCustomFilter }
-      const validTags = tags.map(item => {
-        if (item.attr) return item
-        else return { ...item, attr: DefaultServiceTagAttribute }
-      })
-      yield put({ type: types.SET_TAGS, payload: validTags })
-      validTags.forEach(tag => {
-        const key = tag?.attr?.key || ServiceNameTagKey
-        if (key === MetadataTagKey) {
-          customFilters[key] = tag.values.map(item => ({ key: item.key, value: item.value }))
-        } else {
-          if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
-          else customFilters[key] = tag.values[0].key || tag.values[0].value
-        }
-      })
-      yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
-    })
     yield takeLatest(types.EDIT, function*(action) {
       const data = action.payload
       const res = yield* resolvePromise(
         new Promise(resolve => {
           showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
-              resolve(yield* duck.execute(data, { isModify: true, authOpen }))
+              resolve(yield* duck.execute(data, { isModify: true }))
             } finally {
               resolve(false)
             }
@@ -217,42 +203,38 @@ export default class ServicePageDuck extends GridPageDuck {
     })
     yield takeLatest(types.REMOVE, function*(action) {
       const data = action.payload
-      const params = data.map(item => {
-        const [namespace, name] = item.split('#')
-        return { namespace, name }
+      const aliases = data.map(item => {
+        const [alias_namespace, alias] = item.split('#')
+        return { alias_namespace, alias }
       })
       const confirm = yield Modal.confirm({
-        message: `确认删除服务`,
+        message: `确认删除服务别名`,
         description: '删除后，无法恢复',
+        okText: '删除',
       })
       if (confirm) {
-        yield deleteService(params)
+        const res = yield deleteGovernanceAliases(aliases)
+        if (res) notification.success({ description: '删除成功' })
         yield put(creators.reload())
       }
     })
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, serviceTag, instanceIp, department, business } = filters
-    const { key, value } = serviceTag?.[0] || {}
-    const serviceName = filters.serviceName
-    const result = await describeServices({
+    const { page, count, service, alias, alias_namespace } = filters
+    const result = await describeGovernanceAliases({
       limit: count,
       offset: (page - 1) * count,
-      namespace: namespace || undefined,
-      name: serviceName || undefined,
-      keys: key || undefined,
-      values: value || undefined,
-      host: instanceIp || undefined,
-      department: department || undefined,
-      business: business || undefined,
+      alias: alias || undefined,
+      service: service || undefined,
+      alias_namespace: alias_namespace || undefined,
     })
     return {
       totalCount: result.totalCount,
       list:
-        result.list?.map(item => ({
+        result.content?.map(item => ({
           ...item,
-          id: `${item.namespace}#${item.name}`,
+          id: `${item.alias_namespace}#${item.alias}`,
         })) || [],
     }
   }

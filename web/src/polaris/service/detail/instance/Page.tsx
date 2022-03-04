@@ -7,24 +7,24 @@ import {
   Justify,
   Table,
   Text,
-  Select,
-  Input,
   Dropdown,
   List,
   FormItem,
   Form,
   FormText,
-  InputNumber,
   Copy,
+  TagSearchBox,
 } from 'tea-component'
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
-import { selectable, expandable } from 'tea-component/lib/table/addons'
+import { selectable, expandable, filterable } from 'tea-component/lib/table/addons'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import csvColumns from './csvColumns'
 import { HEALTH_STATUS, HEALTH_STATUS_MAP, ISOLATE_STATUS_MAP, ISOLATE_STATUS, HEALTH_CHECK_METHOD_MAP } from './types'
 import { isReadOnly, showAllLabels } from '../../utils'
+import MetadataSelectPanel from '@src/polaris/common/components/MetadataSelectPanel'
+import { replaceTags } from '@src/polaris/configuration/utils'
 
 insertCSS(
   'service-detail-instance',
@@ -55,36 +55,106 @@ insertCSS(
 `,
 )
 
-const HealthStatusOptions = [
+export const HealthStatusOptions = [
   {
     text: '全部',
-    value: null,
+    value: '__all__',
+    key: '__all__',
+    name: '全部',
   },
   {
     text: HEALTH_STATUS_MAP[HEALTH_STATUS.HEALTH].text,
     value: String(HEALTH_STATUS.HEALTH),
+    key: String(HEALTH_STATUS.HEALTH),
+    name: HEALTH_STATUS_MAP[HEALTH_STATUS.HEALTH].text,
   },
   {
     text: HEALTH_STATUS_MAP[HEALTH_STATUS.ABNORMAL].text,
     value: String(HEALTH_STATUS.ABNORMAL),
+    key: String(HEALTH_STATUS.ABNORMAL),
+    name: HEALTH_STATUS_MAP[HEALTH_STATUS.ABNORMAL].text,
   },
 ]
 
-const IsolateStatusOptions = [
+export const IsolateStatusOptions = [
   {
     text: '全部',
-    value: null,
+    value: '__all__',
+    name: '全部',
+    key: '__all__',
   },
   {
     text: ISOLATE_STATUS_MAP[ISOLATE_STATUS.ISOLATE].text,
     value: String(ISOLATE_STATUS.ISOLATE),
+    name: ISOLATE_STATUS_MAP[ISOLATE_STATUS.ISOLATE].text,
+    key: String(ISOLATE_STATUS.ISOLATE),
   },
   {
     text: ISOLATE_STATUS_MAP[ISOLATE_STATUS.UNISOLATED].text,
     value: String(ISOLATE_STATUS.UNISOLATED),
+    name: ISOLATE_STATUS_MAP[ISOLATE_STATUS.UNISOLATED].text,
+    key: String(ISOLATE_STATUS.UNISOLATED),
   },
 ]
 
+export const HostTagKey = 'host'
+export const MetadataTagKey = 'metadatas'
+export const HealthyTagKey = 'healthy'
+export const IsolateTagKey = 'isolate'
+
+export const DefaultHostTagAttribute = {
+  type: 'input',
+  key: HostTagKey,
+  name: '实例IP',
+}
+function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
+  const { duck, store } = props
+  const { customFilters } = duck.selector(store)
+  return [
+    {
+      type: 'input',
+      key: HostTagKey,
+      name: '实例IP',
+    },
+    {
+      type: 'input',
+      key: 'protocol',
+      name: '协议',
+    },
+    {
+      type: 'input',
+      key: 'instanceVersion',
+      name: '版本',
+    },
+    {
+      type: 'single',
+      key: HealthyTagKey,
+      name: '健康状态',
+      values: HealthStatusOptions,
+    },
+    {
+      type: 'single',
+      key: IsolateTagKey,
+      name: '隔离状态',
+      values: IsolateStatusOptions,
+    },
+    {
+      type: 'render',
+      key: MetadataTagKey,
+      name: '标签键',
+      render: ({ onSelect }) => {
+        return (
+          <MetadataSelectPanel
+            metadata={[customFilters.metadata] || []}
+            onOk={newMetadata => {
+              onSelect(newMetadata)
+            }}
+          ></MetadataSelectPanel>
+        )
+      },
+    },
+  ]
+}
 export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>) {
   const { duck, store, dispatch } = props
   const { creators, selector } = duck
@@ -102,6 +172,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
       modifyWeight: payload => dispatch(creators.modifyWeight(payload)),
       modifyHealthStatus: payload => dispatch(creators.modifyHealthStatus(payload)),
       modifyIsolateStatus: payload => dispatch(creators.modifyIsolateStatus(payload)),
+      changeTags: payload => dispatch(creators.changeTags(payload)),
     }),
     [],
   )
@@ -112,6 +183,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
     expandedKeys,
     grid: { list },
     data: { namespace },
+    tags,
   } = selector(store)
 
   return (
@@ -120,110 +192,6 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
         <Justify
           left={
             <>
-              <Form style={{ marginBottom: '20px' }} layout={'inline'}>
-                <FormItem className='justify-search' label={<Text theme={'strong'}>实例IP</Text>}>
-                  <Input
-                    value={customFilters.host}
-                    onChange={value =>
-                      handlers.setCustomFilters({
-                        ...customFilters,
-                        host: value,
-                      })
-                    }
-                    className='input-style'
-                  ></Input>
-                </FormItem>
-                <FormItem label={<Text theme={'strong'}>端口</Text>} className='justify-search'>
-                  <InputNumber
-                    hideButton
-                    value={customFilters.port}
-                    onChange={value =>
-                      handlers.setCustomFilters({
-                        ...customFilters,
-                        port: value,
-                      })
-                    }
-                    style={{ textAlign: 'left' }}
-                    className={'input-style'}
-                  ></InputNumber>
-                </FormItem>
-                <FormItem label={<Text theme={'strong'}>协议</Text>} className='justify-search'>
-                  <Input
-                    value={customFilters.protocol}
-                    onChange={value =>
-                      handlers.setCustomFilters({
-                        ...customFilters,
-                        protocol: value,
-                      })
-                    }
-                    className={'input-style'}
-                  ></Input>
-                </FormItem>
-                <FormItem label={<Text theme={'strong'}>版本</Text>} className='justify-search'>
-                  <Input
-                    value={customFilters.version}
-                    onChange={value =>
-                      handlers.setCustomFilters({
-                        ...customFilters,
-                        version: value,
-                      })
-                    }
-                    className={'input-style'}
-                  ></Input>
-                </FormItem>
-
-                <FormItem label={<Text theme={'strong'}>健康状态</Text>} className='justify-search'>
-                  <Select
-                    value={String(customFilters.healthy)}
-                    options={HealthStatusOptions}
-                    onChange={value =>
-                      handlers.setCustomFilters({
-                        ...customFilters,
-                        healthy: !value ? '' : value === 'true' ? true : false,
-                      })
-                    }
-                    type='simulate'
-                    appearance='button'
-                    className={'input-style'}
-                    placeholder={'全部'}
-                    style={{ color: 'black !important' }}
-                  ></Select>
-                </FormItem>
-                <FormItem label={<Text theme={'strong'}>隔离状态</Text>} className='justify-search'>
-                  <Select
-                    value={String(customFilters.isolate)}
-                    options={IsolateStatusOptions}
-                    onChange={value =>
-                      handlers.setCustomFilters({
-                        ...customFilters,
-                        isolate: !value ? '' : value === 'true' ? true : false,
-                      })
-                    }
-                    type='simulate'
-                    appearance='button'
-                    className={'input-style'}
-                    placeholder={'全部'}
-                    style={{ color: 'black !important' }}
-                  ></Select>
-                </FormItem>
-              </Form>
-            </>
-          }
-        />
-        <Justify
-          left={
-            <>
-              <Button type={'primary'} className={'justify-button'} onClick={handlers.search}>
-                查询
-              </Button>
-              <Button className={'justify-button'} onClick={handlers.clear}>
-                重置
-              </Button>
-              <span
-                style={{
-                  margin: '0px 20px',
-                }}
-              ></span>
               <Button
                 type={'primary'}
                 onClick={handlers.create}
@@ -306,7 +274,23 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               </Dropdown>
             </>
           }
-          right={<Button type={'icon'} icon={'refresh'} onClick={handlers.reload}></Button>}
+          right={
+            <>
+              <TagSearchBox
+                attributes={getTagAttributes(props) as any}
+                style={{
+                  display: 'inline-block',
+                  verticalAlign: 'middle',
+                  width: '400px',
+                }}
+                value={tags}
+                onChange={value => handlers.changeTags(value)}
+                tips={'请选择条件进行过滤'}
+                hideHelp={true}
+              />
+              <Button type={'icon'} icon={'refresh'} onClick={handlers.reload}></Button>
+            </>
+          }
         />
       </Table.ActionPanel>
       <Card>
@@ -321,6 +305,40 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               value: selection,
               onChange: handlers.select,
               rowSelectable: (rowKey, { record }) => !isReadOnly(namespace) || record.editable,
+            }),
+            filterable({
+              type: 'single',
+              column: 'healthy',
+              value: customFilters.healthy,
+              onChange: value => {
+                const replacedTags = replaceTags(HealthyTagKey, value, tags, HealthStatusOptions, {
+                  type: 'single',
+                  key: 'healthy',
+                  name: '健康状态',
+                  values: HealthStatusOptions,
+                })
+                handlers.changeTags(replacedTags)
+              },
+
+              // 选项列表
+              options: HealthStatusOptions,
+            }),
+            filterable({
+              type: 'single',
+              column: 'isolate',
+              value: customFilters.isolate,
+              onChange: value => {
+                const replacedTags = replaceTags(IsolateTagKey, value, tags, IsolateStatusOptions, {
+                  type: 'single',
+                  key: 'isolate',
+                  name: '隔离状态',
+                  values: IsolateStatusOptions,
+                })
+                handlers.changeTags(replacedTags)
+              },
+
+              // 选项列表
+              options: IsolateStatusOptions,
             }),
             expandable({
               // 已经展开的产品

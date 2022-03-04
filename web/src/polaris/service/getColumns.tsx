@@ -35,6 +35,15 @@ export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<S
     render: x => <Text tooltip={x.business}>{x.business || '-'}</Text>,
   },
   {
+    key: 'health/total',
+    header: '健康实例/总实例数',
+    render: x => (
+      <Text tooltip={`${x.healthy_instance_count}/${x.total_instance_count}`}>
+        {`${x.healthy_instance_count ?? '-'}/${x.total_instance_count ?? '-'}`}
+      </Text>
+    ),
+  },
+  {
     key: 'ctime',
     header: '创建时间',
     render: x => <Text tooltip={x.ctime}>{x.ctime || '-'}</Text>,

@@ -76,6 +76,10 @@ import { userLogout, getUin, getLoginName } from './polaris/common/util/common'
 import router from './polaris/common/util/router'
 const Login = connectWithDuck(LoginPage, LoginPageDuck as any)
 
+import ServiceAliasPage from '@src/polaris/serviceAlias/Page'
+import ServiceAliasPageDuck from '@src/polaris/serviceAlias/PageDuck'
+const ServiceAlias = connectWithDuck(ServiceAliasPage, ServiceAliasPageDuck)
+
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1])
@@ -194,6 +198,7 @@ export default function root() {
             <Route exact path='/usergroup-detail' component={UserGroupDetail} />
             <Route exact path='/policy-create' component={PolicyCreate} />
             <Route exact path='/login' component={Login} />
+            <Route exact path='/alias' component={ServiceAlias} />
           </Switch>
         </Content>
       </Body>
