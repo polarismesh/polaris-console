@@ -1,7 +1,7 @@
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/GridPage'
 import { RuleType, EditType } from './types'
-import { describeRoutes, Routing } from './model'
+import { describeRoutes, Routing, modifyRoutes, createRoutes } from './model'
 import { takeLatest } from 'redux-saga-catch'
 import { DynamicRouteCreateDuck } from './operations/CreateDuck'
 import { put, select, take } from 'redux-saga/effects'
@@ -228,9 +228,11 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put(creators.reload())
     })
     yield takeLatest(types.SUBMIT, function*() {
-      const { originData } = selector(yield select())
+      const { originData, routeData } = selector(yield select())
       if (originData?.ctime) {
+        yield modifyRoutes([routeData])
       } else {
+        yield createRoutes([routeData])
       }
       yield put({
         type: types.SET_EDIT_STATUS,

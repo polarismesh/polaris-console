@@ -302,6 +302,7 @@ export default class ServicePageDuck extends GridPageDuck {
       }
       if (originData?.ctime) {
         const version = new Date().getTime().toString()
+        yield createServiceCircuitBreakerVersion([{ ...params, id: originData.id, version, name: service }])
         const releaseParams = {
           service: {
             name: service,
@@ -318,6 +319,7 @@ export default class ServicePageDuck extends GridPageDuck {
         const createResult = yield createServiceCircuitBreaker([{ ...params, owners: 'Polaris', name: service }])
         if (createResult.code === 200000) {
           const version = new Date().getTime().toString()
+          yield createServiceCircuitBreakerVersion([{ ...params, id: undefined, version, name: service }])
           const releaseParams = {
             service: {
               name: service,
