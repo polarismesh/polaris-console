@@ -168,14 +168,14 @@ export default class PageDuck extends GridPageDuck {
       const {
         composedId: { groupId },
       } = selector(yield select())
-      const { group } = yield describeGovernanceGroupDetail({ id: groupId })
+      const { userGroup } = yield describeGovernanceGroupDetail({ id: groupId })
       const result = yield* resolvePromise(
         new Promise(resolve => {
           showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
               resolve(
-                yield* duck.execute(group, {
-                  users: group.relation.users,
+                yield* duck.execute(userGroup, {
+                  users: userGroup.relation.users,
                   isModify: true,
                   groupId,
                 }),

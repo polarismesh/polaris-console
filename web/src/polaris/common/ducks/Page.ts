@@ -328,7 +328,7 @@ get preSagas(){
     return true
   }
   checkUserLogin() {
-    if (!window.sessionStorage.getItem(PolarisTokenKey)) {
+    if (!window.localStorage.getItem(PolarisTokenKey)) {
       router.navigate('/login')
     } else {
       return true
