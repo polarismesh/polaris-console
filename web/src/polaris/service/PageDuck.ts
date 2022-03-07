@@ -1,55 +1,55 @@
-import { createToPayload, reduceFromPayload } from "saga-duck";
-import GridPageDuck, { Filter as BaseFilter } from "../common/ducks/GridPage";
-import { Service, Namespace } from "./types";
-import { describeServices, describeNamespaces, deleteService } from "./model";
-import { takeLatest } from "redux-saga-catch";
-import { resolvePromise } from "saga-duck/build/helper";
-import { showDialog } from "../common/helpers/showDialog";
-import Create from "./operation/Create";
-import CreateDuck from "./operation/CreateDuck";
-import { put, select } from "redux-saga/effects";
-import { Modal } from "tea-component";
+import { createToPayload, reduceFromPayload } from 'saga-duck'
+import GridPageDuck, { Filter as BaseFilter } from '../common/ducks/GridPage'
+import { Service, Namespace } from './types'
+import { describeServices, describeNamespaces, deleteService } from './model'
+import { takeLatest } from 'redux-saga-catch'
+import { resolvePromise } from 'saga-duck/build/helper'
+import { showDialog } from '../common/helpers/showDialog'
+import Create from './operation/Create'
+import CreateDuck from './operation/CreateDuck'
+import { put, select } from 'redux-saga/effects'
+import { Modal } from 'tea-component'
 
 export const EmptyCustomFilter = {
-  namespace: "",
-  serviceName: "",
-  instanceIp: "",
-  serviceTag: "",
-  searchMethod: "accurate",
-  department: "",
-  business: "",
-};
+  namespace: '',
+  serviceName: '',
+  instanceIp: '',
+  serviceTag: '',
+  searchMethod: 'accurate',
+  department: '',
+  business: '',
+}
 
 interface Filter extends BaseFilter {
-  namespace: string;
-  serviceName: string;
-  instanceIp: string;
-  serviceTag: string;
-  searchMethod?: string;
-  department?: string;
-  business?: string;
+  namespace: string
+  serviceName: string
+  instanceIp: string
+  serviceTag: string
+  searchMethod?: string
+  department?: string
+  business?: string
 }
 interface CustomFilters {
-  namespace?: string;
-  serviceName?: string;
-  instanceIp?: string;
-  serviceTag?: string;
-  searchMethod?: string;
-  department?: string;
-  business?: string;
+  namespace?: string
+  serviceName?: string
+  instanceIp?: string
+  serviceTag?: string
+  searchMethod?: string
+  department?: string
+  business?: string
 }
 export interface NamespaceItem extends Namespace {
-  text: string;
-  value: string;
+  text: string
+  value: string
 }
 export interface ServiceItem extends Service {
-  id: string;
+  id: string
 }
 export default class ServicePageDuck extends GridPageDuck {
-  Filter: Filter;
-  Item: ServiceItem;
+  Filter: Filter
+  Item: ServiceItem
   get baseUrl() {
-    return "/#/service";
+    return '/#/service'
   }
   get quickTypes() {
     enum Types {
@@ -64,57 +64,49 @@ export default class ServicePageDuck extends GridPageDuck {
     return {
       ...super.quickTypes,
       ...Types,
-    };
+    }
   }
   get initialFetch() {
-    return false;
+    return false
   }
   get recordKey() {
-    return "id";
+    return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH];
+    return [...super.watchTypes, this.types.SEARCH]
   }
   get params() {
-    return [...super.params];
+    return [...super.params]
   }
   get quickDucks() {
     return {
       ...super.quickDucks,
-    };
+    }
   }
   get reducers() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.reducers,
-      customFilters: reduceFromPayload<CustomFilters>(
-        types.SET_CUSTOM_FILTERS,
-        EmptyCustomFilter
-      ),
+      customFilters: reduceFromPayload<CustomFilters>(types.SET_CUSTOM_FILTERS, EmptyCustomFilter),
       selection: reduceFromPayload<string[]>(types.SET_SELECTION, []),
-      namespaceList: reduceFromPayload<NamespaceItem[]>(
-        types.SET_NAMESPACE_LIST,
-        []
-      ),
+      namespaceList: reduceFromPayload<NamespaceItem[]>(types.SET_NAMESPACE_LIST, []),
       expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
-    };
+    }
   }
   get creators() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.creators,
-      setCustomFilters: createToPayload<CustomFilters>(
-        types.SET_CUSTOM_FILTERS
-      ),
+      setCustomFilters: createToPayload<CustomFilters>(types.SET_CUSTOM_FILTERS),
       edit: createToPayload<Service>(types.EDIT),
       remove: createToPayload<string[]>(types.REMOVE),
       create: createToPayload<void>(types.CREATE),
       setSelection: createToPayload<string[]>(types.SET_SELECTION),
       setExpandedKeys: createToPayload<string[]>(types.SET_EXPANDED_KEYS),
-    };
+    }
   }
   get rawSelectors() {
-    type State = this["State"];
+    type State = this['State']
     return {
       ...super.rawSelectors,
       filter: (state: State) => ({
@@ -132,103 +124,89 @@ export default class ServicePageDuck extends GridPageDuck {
       customFilters: (state: State) => state.customFilters,
       selection: (state: State) => state.selection,
       namespaceList: (state: State) => state.namespaceList,
-    };
+    }
   }
   *loadNamespaceList() {
-    const namespaceList = yield describeNamespaces();
-    const options = namespaceList.map((item) => ({
+    const namespaceList = yield describeNamespaces()
+    const options = namespaceList.map(item => ({
       ...item,
       text: item.name,
       value: item.name,
-    }));
-    options.unshift({ text: "全部", value: "" });
+    }))
+    options.unshift({ text: '全部', value: '' })
     yield put({
       type: this.types.SET_NAMESPACE_LIST,
       payload: options,
-    });
+    })
   }
 
   *saga() {
-    const { types, creators,selector,ducks } = this;
-    yield* this.sagaInitLoad();
-    yield* super.saga();
-    yield* this.loadNamespaceList();
-    yield takeLatest(ducks.grid.types.FETCH_DONE,function*(action){
-      const {list} = action.payload
-      const {selection} = selector(yield select())
-      const validSelection = selection.filter(id=>!!list.find(item=>item.id===id))
+    const { types, creators, selector, ducks } = this
+    yield* super.saga()
+    yield* this.loadNamespaceList()
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
+      const { list } = action.payload
+      const { selection } = selector(yield select())
+      const validSelection = selection.filter(id => !!list.find(item => item.id === id))
       yield put(creators.setSelection(validSelection))
     })
-    yield takeLatest(types.CREATE, function* () {
+    yield takeLatest(types.CREATE, function*() {
       const res = yield* resolvePromise(
-        new Promise((resolve) => {
-          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
+        new Promise(resolve => {
+          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
-              resolve(yield* duck.execute({}, { isModify: false }));
+              resolve(yield* duck.execute({}, { isModify: false }))
             } finally {
-              resolve(false);
+              resolve(false)
             }
-          });
-        })
-      );
+          })
+        }),
+      )
       if (res) {
-        yield put(creators.reload());
+        yield put(creators.reload())
       }
-    });
-    yield takeLatest(types.EDIT, function* (action) {
-      const data = action.payload;
+    })
+    yield takeLatest(types.EDIT, function*(action) {
+      const data = action.payload
       const res = yield* resolvePromise(
-        new Promise((resolve) => {
-          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
+        new Promise(resolve => {
+          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
-              resolve(yield* duck.execute(data, { isModify: true }));
+              resolve(yield* duck.execute(data, { isModify: true }))
             } finally {
-              resolve(false);
+              resolve(false)
             }
-          });
-        })
-      );
+          })
+        }),
+      )
       if (res) {
-        yield put(creators.reload());
+        yield put(creators.reload())
       }
-    });
-    yield takeLatest(types.REMOVE, function* (action) {
-      const data = action.payload;
-      const params = data.map((item) => {
-        const [namespace, name] = item.split("#");
-        return { namespace, name };
-      });
+    })
+    yield takeLatest(types.REMOVE, function*(action) {
+      const data = action.payload
+      const params = data.map(item => {
+        const [namespace, name] = item.split('#')
+        return { namespace, name }
+      })
       const confirm = yield Modal.confirm({
         message: `确认删除服务`,
-        description: "删除后，无法恢复",
-      });
+        description: '删除后，无法恢复',
+      })
       if (confirm) {
-        const res = yield deleteService(params);
-        yield put(creators.reload());
+        yield deleteService(params)
+        yield put(creators.reload())
       }
-    });
+    })
   }
 
-  *sagaInitLoad() {
-    const { ducks } = this;
-  }
-  async getData(filters: this["Filter"]) {
-    const {
-      page,
-      count,
-      namespace,
-      serviceTag,
-      instanceIp,
-      searchMethod,
-      department,
-      business,
-    } = filters;
-    const [keys, values] = serviceTag.split(":");
-    let serviceName = filters.serviceName;
-    if (searchMethod === "vague" && serviceName) {
-      serviceName = serviceName + "*";
+  async getData(filters: this['Filter']) {
+    const { page, count, namespace, serviceTag, instanceIp, searchMethod, department, business } = filters
+    const [keys, values] = serviceTag.split(':')
+    let serviceName = filters.serviceName
+    if (searchMethod === 'vague' && serviceName) {
+      serviceName = serviceName + '*'
     }
-    console.log(department);
     const result = await describeServices({
       limit: count,
       offset: (page - 1) * count,
@@ -239,14 +217,14 @@ export default class ServicePageDuck extends GridPageDuck {
       host: instanceIp || undefined,
       department: department || undefined,
       business: business || undefined,
-    });
+    })
     return {
       totalCount: result.totalCount,
       list:
-        result.list?.map((item) => ({
+        result.list?.map(item => ({
           ...item,
           id: `${item.namespace}#${item.name}`,
         })) || [],
-    };
+    }
   }
 }
