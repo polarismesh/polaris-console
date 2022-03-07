@@ -102,6 +102,29 @@ func Router(config *bootstrap.Config) {
 	// 解绑熔断规则
 	v1.POST("circuitbreakers/unbind", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
 
+	// 配置中心
+	configV1 := r.Group(config.WebServer.ConfigURL)
+	// 配置文件组
+	configV1.POST("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+	configV1.GET("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+	configV1.DELETE("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+	configV1.PUT("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+
+	// 配置文件
+	configV1.POST("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+	configV1.GET("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+	configV1.GET("configfiles/search", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+	configV1.PUT("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+	configV1.DELETE("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+	configV1.DELETE("configfiles/batchdelete", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+
+	// 配置文件发布
+	configV1.POST("configfiles/release", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+	configV1.GET("configfiles/release", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+
+	// 配置文件发布历史
+	configV1.GET("configfiles/releasehistory", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
+
 	// 监控请求路由组
 	mv1 := r.Group(config.WebServer.MonitorURL)
 	mv1.GET("/query_range", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
