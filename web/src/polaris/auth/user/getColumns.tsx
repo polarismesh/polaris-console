@@ -31,11 +31,7 @@ export default ({ duck: { creators }, dispatch }: DuckCmpProps<Duck>): Column<Us
     {
       key: 'userType',
       header: '用户类型',
-      render: x => (
-        <Text>
-          {x.source === UserSource.QCloud ? 'CAM' : ''}（{getOwnerUin().toString() === x.id ? '主账号' : '子账号'}）
-        </Text>
-      ),
+      render: x => <Text>{getOwnerUin().toString() === x.id ? '主账号' : '子账号'}</Text>,
     },
     {
       key: 'id',

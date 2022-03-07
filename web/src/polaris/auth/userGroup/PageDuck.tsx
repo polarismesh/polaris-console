@@ -142,7 +142,7 @@ export default class PageDuck extends GridPageDuck {
         composedId: { userId },
       } = selector(yield select())
       const { list: originGroupList } = yield getAllList(describeGovernanceGroups, { listKey: 'content' })({
-        userId,
+        user_id: userId,
       })
       const result = yield* resolvePromise(
         new Promise(resolve => {

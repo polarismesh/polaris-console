@@ -1,12 +1,11 @@
 import * as React from 'react'
 import { Column } from '@src/polaris/common/ducks/GridPage'
 import { DuckCmpProps } from 'saga-duck'
-import { Link } from 'react-router-dom'
-import { Text, Icon, Modal, Switch } from 'tea-component'
+import { Text, Icon, Switch } from 'tea-component'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
 import RoutePageDuck from './PageDuck'
-import { RateLimit, LimitRange, LimitType } from './model'
-import { LIMIT_RANGE_MAP, LIMIT_TYPE_OPTIONS, LIMIT_TYPE_MAP } from './types'
+import { RateLimit, LimitRange } from './model'
+import { LIMIT_RANGE_MAP } from './types'
 import { isReadOnly } from '../../utils'
 import { MATCH_TYPE_MAP, MATCH_TYPE } from '../route/types'
 export default ({
@@ -43,10 +42,10 @@ export default ({
     {
       key: 'labels',
       header: '请求标签',
-      render: (x) => (
+      render: x => (
         <Text overflow>
           {Object.keys(x.labels)
-            .map((key) => `${key}:${x.labels[key].value}`)
+            .map(key => `${key}:${x.labels[key].value}`)
             .join(' ; ')}
         </Text>
       ),
@@ -54,7 +53,7 @@ export default ({
     {
       key: 'priority',
       header: '优先级',
-      render: (x) => (
+      render: x => (
         <React.Fragment>
           <Text>{x.priority}</Text>
         </React.Fragment>
@@ -63,7 +62,7 @@ export default ({
     {
       key: 'disable',
       header: '是否启用',
-      render: (x) => {
+      render: x => {
         const {
           data: { namespace },
         } = selector(store)
@@ -81,25 +80,24 @@ export default ({
     {
       key: 'action',
       header: '操作',
-      render: (x) => {
+      render: x => {
         const {
-          data: { namespace },
+          data: { namespace, editable },
         } = selector(store)
-        const disabled = isReadOnly(namespace)
 
         return (
           <React.Fragment>
             <Action
-              fn={(dispatch) => dispatch(creators.edit(x))}
-              disabled={disabled}
-              tip={disabled ? '该命名空间为只读的' : '编辑'}
+              fn={dispatch => dispatch(creators.edit(x))}
+              disabled={isReadOnly(namespace) || !editable}
+              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '编辑'}
             >
               <Icon type={'pencil'}></Icon>
             </Action>
             <Action
-              fn={(dispatch) => dispatch(creators.remove([x.id]))}
-              disabled={disabled}
-              tip={disabled ? '该命名空间为只读的' : '删除'}
+              fn={dispatch => dispatch(creators.remove([x.id]))}
+              disabled={isReadOnly(namespace) || !editable}
+              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '删除'}
             >
               <Icon type={'delete'}></Icon>
             </Action>

@@ -19,6 +19,7 @@ import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import CreateUser from '../operation/CreateUser'
 import { userLogout } from '@src/polaris/common/util/common'
+import { delay } from 'redux-saga'
 
 interface ComposedId {
   id: string
@@ -166,7 +167,8 @@ export default abstract class CreateDuck extends DetailPage {
       } = selector(yield select())
       const result = yield modifyGovernanceUserToken({ id, token_enable: !token_enable })
       if (result) {
-        notification.success({ description: `${token_enable ? '禁用' : '启用'}}成功` })
+        notification.success({ description: `${token_enable ? '禁用' : '启用'}成功` })
+        yield delay(3000) // token refresh has a delay
         yield put(creators.reload())
       } else {
         notification.error({ description: `${token_enable ? '禁用' : '启用'}失败` })

@@ -11,7 +11,6 @@ import {
   LoginUserOwnerIdKey,
   LoginUserNameKey,
 } from '@src/polaris/common/util/common'
-import router from '@src/polaris/common/util/router'
 
 export default abstract class CreateDuck extends Page {
   get baseUrl() {

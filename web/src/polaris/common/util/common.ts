@@ -64,5 +64,9 @@ export function checkIsUserLogin() {
 }
 export function userLogout() {
   window.localStorage.setItem(PolarisTokenKey, '')
+  window.localStorage.setItem(LoginUserNameKey, '')
+  window.localStorage.setItem(LoginRoleKey, '')
+  window.localStorage.setItem(LoginUserIdKey, '')
+  window.localStorage.setItem(LoginUserOwnerIdKey, '')
   router.navigate('/login')
 }

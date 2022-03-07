@@ -70,8 +70,12 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     onChange={v => {
                       password.setValue(v)
                       password.setTouched(true)
+                      password.setError('')
                     }}
-                    onPressEnter={() => dispatch(creators.submit())}
+                    onPressEnter={() => {
+                      password.setError('')
+                      dispatch(creators.submit())
+                    }}
                     rules={false}
                   />
                 </FormField>
@@ -82,7 +86,10 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   <Button
                     type={'primary'}
                     style={{ width: '100%', margin: 'auto' }}
-                    onClick={() => dispatch(creators.submit())}
+                    onClick={() => {
+                      password.setError('')
+                      dispatch(creators.submit())
+                    }}
                   >
                     登录
                   </Button>

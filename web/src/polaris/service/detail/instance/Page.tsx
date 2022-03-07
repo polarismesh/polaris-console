@@ -182,7 +182,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
     selection,
     expandedKeys,
     grid: { list },
-    data: { namespace },
+    data: { namespace, editable },
     tags,
   } = selector(store)
 
@@ -195,19 +195,26 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               <Button
                 type={'primary'}
                 onClick={handlers.create}
-                disabled={isReadOnly(namespace)}
-                tooltip={isReadOnly(namespace) && '该命名空间为只读的'}
+                disabled={isReadOnly(namespace) || !editable}
+                tooltip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '编辑'}
               >
                 新建
               </Button>
-              <Button onClick={() => handlers.remove(selection)} disabled={selection.length === 0}>
+              <Button
+                onClick={() => handlers.remove(selection)}
+                disabled={selection.length === 0 || !editable}
+                tooltip={selection?.length === 0 ? '请选择实例' : !editable ? '无写权限' : ''}
+              >
                 删除
               </Button>
               <Dropdown
                 clickClose={false}
                 style={{ marginRight: 10 }}
                 button={
-                  <Button disabled={selection?.length === 0} tooltip={selection?.length === 0 && '请选择实例'}>
+                  <Button
+                    disabled={selection?.length === 0 || !editable}
+                    tooltip={selection?.length === 0 ? '请选择实例' : !editable ? '无写权限' : ''}
+                  >
                     其他操作
                   </Button>
                 }

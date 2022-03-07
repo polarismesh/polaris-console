@@ -1,13 +1,9 @@
-import DetailPageDuck from "@src/polaris/common/ducks/DetailPage";
-import { reduceFromPayload, createToPayload } from "saga-duck";
-import { takeLatest } from "redux-saga-catch";
-import { select, put } from "redux-saga/effects";
-import Form from "@src/polaris/common/ducks/Form";
-import { format as prettyFormat } from "pretty-format";
+import { reduceFromPayload, createToPayload } from 'saga-duck'
+import { takeLatest } from 'redux-saga-catch'
+import { select, put } from 'redux-saga/effects'
+import Form from '@src/polaris/common/ducks/Form'
 
 import {
-  Destination,
-  Source,
   RuleType,
   DestinationItem,
   SourceItem,
@@ -15,68 +11,59 @@ import {
   MetadataItem,
   getTemplateRouteInbounds,
   getTemplateRouteOutbounds,
-} from "../types";
-import {
-  describeRoutes,
-  DescribeRoutesResult,
-  Routing,
-  createRoutes,
-  modifyRoutes,
-} from "../model";
-import { ComposedId } from "../../types";
-import { EditType } from "./Create";
-import router from "@src/polaris/common/util/router";
-import tips from "@src/polaris/common/util/tips";
-import PageDuck from "@src/polaris/common/ducks/Page";
-import DynamicDuck from "@src/polaris/common/ducks/DynamicDuck";
-import CreateDuck from "@src/polaris/service/operation/CreateDuck";
+} from '../types'
+import { describeRoutes, Routing } from '../model'
+import { ComposedId } from '../../types'
+import { EditType } from './Create'
+import PageDuck from '@src/polaris/common/ducks/Page'
+import DynamicDuck from '@src/polaris/common/ducks/DynamicDuck'
 
-const convertMetadataMapInArray = (o) => {
-  return o.map((item) => {
-    const metadata = item.metadata;
-    const convertedMetadata = Object.keys(metadata).map((key) => {
+const convertMetadataMapInArray = o => {
+  return o.map(item => {
+    const metadata = item.metadata
+    const convertedMetadata = Object.keys(metadata).map(key => {
       return {
         key,
         value: metadata[key].value,
         type: metadata[key].type ? metadata[key].type : MATCH_TYPE.EXACT,
-      };
-    });
+      }
+    })
     return {
       ...item,
       metadata: convertedMetadata,
-    };
-  });
-};
-const convertMetadataArrayToMap = (metadataArray) => {
-  const metadataMap = {};
-  metadataArray.forEach((metadata) => {
-    const { key, value, type } = metadata;
-    metadataMap[key] = { value, type };
-  });
-  return metadataMap;
-};
+    }
+  })
+}
+const convertMetadataArrayToMap = metadataArray => {
+  const metadataMap = {}
+  metadataArray.forEach(metadata => {
+    const { key, value, type } = metadata
+    metadataMap[key] = { value, type }
+  })
+  return metadataMap
+}
 const convertRuleValuesToParams = (ruleValues, namespace, service) => {
-  return ruleValues.map((rule) => {
+  return ruleValues.map(rule => {
     return {
       ...rule,
       metadata: convertMetadataArrayToMap(rule.metadata),
       namespace,
       service,
-    };
-  });
-};
+    }
+  })
+}
 
 interface RuleIndicator {
-  ruleIndex: number;
-  ruleType: RuleType;
-  isEdit: boolean;
+  ruleIndex: number
+  ruleType: RuleType
+  isEdit: boolean
 }
 export default class RouteCreateDuck extends PageDuck {
-  ComposedId: ComposedId;
-  Data: Routing;
+  ComposedId: ComposedId
+  Data: Routing
 
   get baseUrl() {
-    return null;
+    return null
   }
 
   get quickTypes() {
@@ -92,54 +79,50 @@ export default class RouteCreateDuck extends PageDuck {
     return {
       ...super.quickTypes,
       ...Types,
-    };
+    }
   }
   get quickDucks() {
     return {
       ...super.quickDucks,
       form: CreateForm,
-    };
+    }
   }
   get reducers() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.reducers,
       data: reduceFromPayload(types.LOAD, {} as Routing & RuleIndicator),
-    };
+    }
   }
   get creators() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.creators,
       submit: createToPayload<void>(types.SUBMIT),
-      load: createToPayload<this["Data"] & RuleIndicator>(types.LOAD),
-    };
+      load: createToPayload<this['Data'] & RuleIndicator>(types.LOAD),
+    }
   }
   get rawSelectors() {
-    type State = this["State"];
     return {
       ...super.rawSelectors,
-    };
+    }
   }
-  async getData(composedId: this["ComposedId"]) {
-    const { name, namespace } = composedId;
+  async getData(composedId: this['ComposedId']) {
+    const { name, namespace } = composedId
     const result = await describeRoutes({
       namespace,
       service: name,
-    });
-    return result;
+    })
+    return result
   }
   *submit() {
-    const { types, selector, creators, ducks } = this;
-    const { values } = ducks.form.selector(yield select());
-    const { data } = selector(yield select());
-    const { ruleIndex } = data;
-    yield put(ducks.form.creators.setAllTouched(true));
+    const { ducks } = this
+    const { values } = ducks.form.selector(yield select())
+    yield put(ducks.form.creators.setAllTouched(true))
 
-    const firstInvalid = yield select(ducks.form.selectors.firstInvalid);
+    const firstInvalid = yield select(ducks.form.selectors.firstInvalid)
     if (firstInvalid) {
-      console.log(firstInvalid);
-      return false;
+      return false
     }
     const {
       service: currentService,
@@ -156,48 +139,25 @@ export default class RouteCreateDuck extends PageDuck {
       ruleType,
       inboundJsonValue,
       outboundJsonValue,
-    } = values;
-    let params = {
-      service: currentService,
-      namespace: currentNamespace,
-    } as any;
-    let originData = data[0] || {};
+    } = values
     if (ruleType === RuleType.Inbound) {
       const editItem =
         editType === EditType.Json
           ? JSON.parse(inboundJsonValue)
           : {
-              sources: convertRuleValuesToParams(
-                inboundSources,
-                inboundNamespace,
-                inboundService
-              ),
-              destinations: convertRuleValuesToParams(
-                inboundDestinations,
-                currentNamespace,
-                currentService
-              ),
-            };
-      return editItem;
-      let newArray;
+              sources: convertRuleValuesToParams(inboundSources, inboundNamespace, inboundService),
+              destinations: convertRuleValuesToParams(inboundDestinations, currentNamespace, currentService),
+            }
+      return editItem
     } else {
       const editItem =
         editType === EditType.Json
           ? JSON.parse(outboundJsonValue)
           : {
-              sources: convertRuleValuesToParams(
-                outboundSources,
-                currentNamespace,
-                currentService
-              ),
-              destinations: convertRuleValuesToParams(
-                outboundDestinations,
-                outboundNamespace,
-                outboundService
-              ),
-            };
-      return editItem;
-      let newArray;
+              sources: convertRuleValuesToParams(outboundSources, currentNamespace, currentService),
+              destinations: convertRuleValuesToParams(outboundDestinations, outboundNamespace, outboundService),
+            }
+      return editItem
       // if (Number(ruleIndex) === -1) {
       //   newArray = (originData.outbounds || []).concat([editItem]);
       // } else {
@@ -221,14 +181,13 @@ export default class RouteCreateDuck extends PageDuck {
   }
 
   *saga() {
-    const { types, selector, creators, ducks } = this;
-    yield* super.saga();
-    yield takeLatest(types.LOAD, function* (action) {
-      const values = action.payload;
-      console.log(values);
+    const { types, selector, ducks } = this
+    yield* super.saga()
+    yield takeLatest(types.LOAD, function*(action) {
+      const values = action.payload
       const {
         data: { ruleIndex, ruleType, service, namespace, isEdit },
-      } = selector(yield select());
+      } = selector(yield select())
       const emptyRule = {
         service,
         namespace,
@@ -236,129 +195,116 @@ export default class RouteCreateDuck extends PageDuck {
           {
             service,
             namespace,
-            metadata: [{ key: "", value: "", type: MATCH_TYPE.EXACT }],
+            metadata: [{ key: '', value: '', type: MATCH_TYPE.EXACT }],
             priority: 0,
             weight: 100,
-            isolate: true,
+            isolate: false,
           },
         ],
         inboundSources: [
           {
-            service: "",
-            namespace: "",
-            metadata: [{ key: "", value: "", type: MATCH_TYPE.EXACT }],
+            service: '',
+            namespace: '',
+            metadata: [{ key: '', value: '', type: MATCH_TYPE.EXACT }],
           },
         ],
         outboundSources: [
           {
-            service: "",
-            namespace: "",
-            metadata: [{ key: "", value: "", type: MATCH_TYPE.EXACT }],
+            service: '',
+            namespace: '',
+            metadata: [{ key: '', value: '', type: MATCH_TYPE.EXACT }],
           },
         ],
         outboundDestinations: [
           {
             service,
             namespace,
-            metadata: [{ key: "", value: "", type: MATCH_TYPE.EXACT }],
+            metadata: [{ key: '', value: '', type: MATCH_TYPE.EXACT }],
             priority: 0,
             weight: 100,
-            isolate: true,
+            isolate: false,
           },
         ],
-        inboundNamespace: "*",
-        inboundService: "*",
-        outboundService: "*",
-        outboundNamespace: "*",
+        inboundNamespace: '*',
+        inboundService: '*',
+        outboundService: '*',
+        outboundNamespace: '*',
         editType: EditType.Manual,
         ruleType: ruleType,
         inboundJsonValue: getTemplateRouteInbounds(namespace, service),
         outboundJsonValue: getTemplateRouteOutbounds(namespace, service),
-      };
+      }
       if (!isEdit) {
-        yield put(ducks.form.creators.setValues(emptyRule));
+        yield put(ducks.form.creators.setValues(emptyRule))
       } else {
         if (values.ctime) {
-          const routing = values as Routing;
-          const rule = routing[ruleType][ruleIndex];
+          const routing = values as Routing
+          const rule = routing[ruleType][ruleIndex]
           const ruleNamespace =
-            ruleType === RuleType.Inbound
-              ? rule.sources?.[0].namespace
-              : rule.destinations?.[0].namespace;
-          const ruleService =
-            ruleType === RuleType.Inbound
-              ? rule.sources?.[0].service
-              : rule.destinations?.[0].service;
-          const formValueKey =
-            ruleType === RuleType.Inbound ? "inbound" : "outbound";
+            ruleType === RuleType.Inbound ? rule.sources?.[0].namespace : rule.destinations?.[0].namespace
+          const ruleService = ruleType === RuleType.Inbound ? rule.sources?.[0].service : rule.destinations?.[0].service
+          const formValueKey = ruleType === RuleType.Inbound ? 'inbound' : 'outbound'
           return yield put(
             ducks.form.creators.setValues({
               ...emptyRule,
-              [`${formValueKey}Destinations`]: convertMetadataMapInArray(
-                rule.destinations
-              ),
-              [`${formValueKey}Sources`]: convertMetadataMapInArray(
-                rule.sources
-              ),
+              [`${formValueKey}Destinations`]: convertMetadataMapInArray(rule.destinations),
+              [`${formValueKey}Sources`]: convertMetadataMapInArray(rule.sources),
               ruleType,
               [`${formValueKey}Namespace`]: ruleNamespace,
               [`${formValueKey}Service`]: ruleService,
               [`${formValueKey}JsonValue`]: JSON.stringify(rule, null, 4),
-            })
-          );
+            }),
+          )
         }
       }
-    });
+    })
   }
 }
 export interface Values {
-  service: string;
-  namespace: string;
-  inboundDestinations: DestinationItem[];
-  inboundSources: SourceItem[];
-  outboundDestinations: DestinationItem[];
-  outboundSources: SourceItem[];
-  inboundNamespace: string;
-  inboundService: string;
-  outboundService: string;
-  outboundNamespace: string;
-  editType: EditType;
-  ruleType: RuleType;
-  inboundJsonValue?: string;
-  outboundJsonValue?: string;
+  service: string
+  namespace: string
+  inboundDestinations: DestinationItem[]
+  inboundSources: SourceItem[]
+  outboundDestinations: DestinationItem[]
+  outboundSources: SourceItem[]
+  inboundNamespace: string
+  inboundService: string
+  outboundService: string
+  outboundNamespace: string
+  editType: EditType
+  ruleType: RuleType
+  inboundJsonValue?: string
+  outboundJsonValue?: string
 }
 class CreateForm extends Form {
-  Values: Values;
-  Meta: {};
-  validate(v: this["Values"], meta: this["Meta"]) {
-    return validator(v, meta);
+  Values: Values
+  Meta: {}
+  validate(v: this['Values'], meta: this['Meta']) {
+    return validator(v, meta)
   }
 }
 const validator = CreateForm.combineValidators<Values, {}>({
   inboundJsonValue(v, meta) {
     if (meta.editType === EditType.Json && meta.ruleType === RuleType.Inbound) {
       try {
-        JSON.parse(v);
+        JSON.parse(v)
       } catch (e) {
-        return "请输入正确的JSON字符串";
+        return '请输入正确的JSON字符串'
       }
     }
   },
   outboundJsonValue(v, meta) {
-    if (
-      meta.editType === EditType.Json &&
-      meta.ruleType === RuleType.Outbound
-    ) {
+    if (meta.editType === EditType.Json && meta.ruleType === RuleType.Outbound) {
       try {
-        JSON.parse(v);
+        JSON.parse(v)
       } catch (e) {
-        return "请输入正确的JSON字符串";
+        return '请输入正确的JSON字符串'
       }
     }
   },
   inboundSources(v, meta) {
     if (meta.ruleType !== RuleType.Inbound || meta.editType === EditType.Json) {
-      return;
+      return
     }
     const res = Form.combineValidators<SourceItem[]>([
       {
@@ -366,25 +312,22 @@ const validator = CreateForm.combineValidators<Values, {}>({
           const res = Form.combineValidators<MetadataItem[]>([
             {
               key(v) {
-                if (!v) return "标签键不能为空";
+                if (!v) return '标签键不能为空'
               },
               value(v) {
-                if (!v) return "标签值不能为空";
+                if (!v) return '标签值不能为空'
               },
             },
-          ])(v, meta);
-          return res;
+          ])(v, meta)
+          return res
         },
       },
-    ])(v, meta);
-    return res;
+    ])(v, meta)
+    return res
   },
   outboundSources(v, meta) {
-    if (
-      meta.ruleType !== RuleType.Outbound ||
-      meta.editType === EditType.Json
-    ) {
-      return;
+    if (meta.ruleType !== RuleType.Outbound || meta.editType === EditType.Json) {
+      return
     }
     const res = Form.combineValidators<SourceItem[]>([
       {
@@ -392,22 +335,22 @@ const validator = CreateForm.combineValidators<Values, {}>({
           const res = Form.combineValidators<MetadataItem[]>([
             {
               key(v) {
-                if (!v) return "标签键不能为空";
+                if (!v) return '标签键不能为空'
               },
               value(v) {
-                if (!v) return "标签值不能为空";
+                if (!v) return '标签值不能为空'
               },
             },
-          ])(v, meta);
-          return res;
+          ])(v, meta)
+          return res
         },
       },
-    ])(v, meta);
-    return res;
+    ])(v, meta)
+    return res
   },
   inboundDestinations(v, meta) {
     if (meta.ruleType !== RuleType.Inbound || meta.editType === EditType.Json) {
-      return;
+      return
     }
     const res = Form.combineValidators<DestinationItem[]>([
       {
@@ -415,25 +358,22 @@ const validator = CreateForm.combineValidators<Values, {}>({
           const res = Form.combineValidators<MetadataItem[]>([
             {
               key(v) {
-                if (!v) return "标签键不能为空";
+                if (!v) return '标签键不能为空'
               },
               value(v) {
-                if (!v) return "标签值不能为空";
+                if (!v) return '标签值不能为空'
               },
             },
-          ])(v, meta);
-          return res;
+          ])(v, meta)
+          return res
         },
       },
-    ])(v, meta);
-    return res;
+    ])(v, meta)
+    return res
   },
   outboundDestinations(v, meta) {
-    if (
-      meta.ruleType !== RuleType.Outbound ||
-      meta.editType === EditType.Json
-    ) {
-      return;
+    if (meta.ruleType !== RuleType.Outbound || meta.editType === EditType.Json) {
+      return
     }
     const res = Form.combineValidators<DestinationItem[]>([
       {
@@ -441,59 +381,43 @@ const validator = CreateForm.combineValidators<Values, {}>({
           const res = Form.combineValidators<MetadataItem[]>([
             {
               key(v) {
-                if (!v) return "标签键不能为空";
+                if (!v) return '标签键不能为空'
               },
               value(v) {
-                if (!v) return "标签值不能为空";
+                if (!v) return '标签值不能为空'
               },
             },
-          ])(v, meta);
-          return res;
+          ])(v, meta)
+          return res
         },
       },
-    ])(v, meta);
-    return res;
+    ])(v, meta)
+    return res
   },
   inboundNamespace(v, meta) {
-    if (
-      !v &&
-      meta.ruleType === RuleType.Inbound &&
-      meta.editType !== EditType.Json
-    ) {
-      return "请输入命名空间";
+    if (!v && meta.ruleType === RuleType.Inbound && meta.editType !== EditType.Json) {
+      return '请输入命名空间'
     }
   },
   inboundService(v, meta) {
-    if (
-      !v &&
-      meta.ruleType === RuleType.Inbound &&
-      meta.editType !== EditType.Json
-    ) {
-      return "请输入服务名";
+    if (!v && meta.ruleType === RuleType.Inbound && meta.editType !== EditType.Json) {
+      return '请输入服务名'
     }
   },
   outboundNamespace(v, meta) {
-    if (
-      !v &&
-      meta.ruleType === RuleType.Outbound &&
-      meta.editType !== EditType.Json
-    ) {
-      return "请输入命名空间";
+    if (!v && meta.ruleType === RuleType.Outbound && meta.editType !== EditType.Json) {
+      return '请输入命名空间'
     }
   },
   outboundService(v, meta) {
-    if (
-      !v &&
-      meta.ruleType === RuleType.Outbound &&
-      meta.editType !== EditType.Json
-    ) {
-      return "请输入服务名";
+    if (!v && meta.ruleType === RuleType.Outbound && meta.editType !== EditType.Json) {
+      return '请输入服务名'
     }
   },
-});
+})
 
 export class DynamicRouteCreateDuck extends DynamicDuck {
   get ProtoDuck() {
-    return RouteCreateDuck;
+    return RouteCreateDuck
   }
 }

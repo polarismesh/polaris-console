@@ -16,10 +16,10 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
           {
             key: 'sourceNamespace',
             header: '命名空间',
-            render: (x) => (
+            render: x => (
               <React.Fragment>
                 <Text>
-                  {x.sources.map((source) => (source.namespace === '*' ? '全部' : source.namespace)).join(',') || '-'}
+                  {x.sources.map(source => (source.namespace === '*' ? '全部' : source.namespace)).join(',') || '-'}
                 </Text>
               </React.Fragment>
             ),
@@ -27,9 +27,9 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
           {
             key: 'sourceService',
             header: '服务名',
-            render: (x) => (
+            render: x => (
               <Text>
-                {x.sources.map((source) => (source.service === '*' ? '全部' : source.service)).join(',') || '-'}
+                {x.sources.map(source => (source.service === '*' ? '全部' : source.service)).join(',') || '-'}
               </Text>
             ),
           },
@@ -40,11 +40,11 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
           {
             key: 'desNamespace',
             header: '命名空间',
-            render: (x) => (
+            render: x => (
               <React.Fragment>
                 <Text>
                   {x.destinations
-                    .map((destination) => (destination.namespace === '*' ? '全部' : destination.namespace))
+                    .map(destination => (destination.namespace === '*' ? '全部' : destination.namespace))
                     .join(',') || '-'}
                 </Text>
               </React.Fragment>
@@ -53,10 +53,10 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
           {
             key: 'desService',
             header: '服务名',
-            render: (x) => (
+            render: x => (
               <Text>
                 {x.destinations
-                  .map((destination) => (destination.service === '*' ? '全部' : destination.service))
+                  .map(destination => (destination.service === '*' ? '全部' : destination.service))
                   .join(',') || '-'}
               </Text>
             ),
@@ -66,36 +66,35 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
     {
       key: 'sourceMethod',
       header: '接口名',
-      render: (x) => <Text>{x.destinations.map((destination) => destination.method?.value).join(',') || '-'}</Text>,
+      render: x => <Text>{x.destinations.map(destination => destination.method?.value).join(',') || '-'}</Text>,
     },
     {
       key: 'action',
       header: '操作',
-      render: (x) => {
+      render: x => {
         const {
-          data: { namespace },
+          data: { namespace, editable },
         } = selector(store)
-        const disabled = isReadOnly(namespace)
         return (
           <React.Fragment>
             <Action
-              fn={(dispatch) => dispatch(creators.edit(x.id))}
-              disabled={disabled}
-              tip={disabled ? '该命名空间为只读的' : '编辑'}
+              fn={dispatch => dispatch(creators.edit(x.id))}
+              disabled={isReadOnly(namespace) || !editable}
+              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '编辑'}
             >
               <Icon type={'pencil'}></Icon>
             </Action>
             <Action
-              fn={(dispatch) => dispatch(creators.remove(x.id))}
-              disabled={disabled}
-              tip={disabled ? '该命名空间为只读的' : '删除'}
+              fn={dispatch => dispatch(creators.remove(x.id))}
+              disabled={isReadOnly(namespace) || !editable}
+              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '删除'}
             >
               <Icon type={'delete'}></Icon>
             </Action>
             <Action
-              fn={(dispatch) => dispatch(creators.create(x.id))}
-              disabled={disabled}
-              tip={disabled ? '该命名空间为只读的' : '在该规则前新建规则'}
+              fn={dispatch => dispatch(creators.create(x.id))}
+              disabled={isReadOnly(namespace) || !editable}
+              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '在该规则前新建规则'}
             >
               <Icon type={'plus'}></Icon>
             </Action>

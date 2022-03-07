@@ -69,7 +69,7 @@ export default class AttachUserGroupDuck extends FormDialog {
     const data = selectors.data(yield select())
     const { regionId, instanceId, userId } = options
     const { list: originGroupList } = yield getAllList(describeGovernanceGroups, { listKey: 'content' })({
-      id: userId,
+      user_id: userId,
     })
     yield put({
       type: types.SET_OPTIONS,
@@ -110,8 +110,8 @@ export class UserGroupSelectDuck extends SearchableMultiSelect {
   }
 
   async getData(filter) {
-    const { keyword, instanceId } = filter
-    const params = { instanceId, ...(keyword ? { name: keyword } : {}) }
+    const { keyword } = filter
+    const params = { ...(keyword ? { name: keyword } : {}) }
 
     const result = await getAllList(describeGovernanceGroups, { listKey: 'content' })(params)
 

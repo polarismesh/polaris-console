@@ -252,7 +252,7 @@ export default class ServicePageDuck extends GridPageDuck {
       list:
         result.list?.map(item => ({
           ...item,
-          id: `${item.namespace}#${item.name}`,
+          id: item.id || `${item.namespace}#${item.name}`,
         })) || [],
     }
   }

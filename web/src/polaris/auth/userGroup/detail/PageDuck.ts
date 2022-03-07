@@ -17,6 +17,7 @@ import ModifyCommentDuck, { ModifyCommentFormDuck } from '../../user/operation/M
 import ModifyComment from '../../user/operation/ModifyComment'
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import { notification } from 'tea-component'
+import { delay } from 'redux-saga'
 
 interface ComposedId {
   id: string
@@ -118,6 +119,7 @@ export default abstract class CreateDuck extends DetailPage {
       const result = yield modifyGovernanceGroupToken({ id, token_enable: !token_enable })
       if (result) {
         notification.success({ description: `${token_enable ? '禁用' : '启用'}成功` })
+        yield delay(3000) // token refresh has a delay
         yield put(creators.reload())
       } else {
         notification.error({ description: `${token_enable ? '禁用' : '启用'}失败` })
