@@ -114,7 +114,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
         return
       }
       const subDuck = ducks[tab]
-      yield put(subDuck.creators.load({ ...composedId }))
+      yield put(subDuck.creators.load({ ...composedId, ...data }))
     })
   }
 }

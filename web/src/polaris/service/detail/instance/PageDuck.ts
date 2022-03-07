@@ -13,6 +13,7 @@ import Create from './operations/Create'
 import { Modal, TagValue } from 'tea-component'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
 import { MetadataTagKey, HealthyTagKey, DefaultHostTagAttribute, HostTagKey, HealthStatusOptions } from './Page'
+import { Service } from '../../types'
 
 export const EmptyCustomFilter = {
   host: '',
@@ -38,6 +39,7 @@ interface Filter extends BaseFilter {
   healthy?: boolean
   isolate?: boolean
   customFilters: CustomFilters
+  editable?: boolean
 }
 interface CustomFilters {
   host?: string
@@ -102,7 +104,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types } = this
     return {
       ...super.reducers,
-      data: reduceFromPayload<ComposedId>(types.LOAD, {} as any),
+      data: reduceFromPayload<ComposedId & Service>(types.LOAD, {} as any),
       customFilters: reduceFromPayload<CustomFilters>(types.SET_CUSTOM_FILTERS, EmptyCustomFilter),
       selection: reduceFromPayload<string[]>(types.SET_SELECTION, []),
       lastSearchParams: reduceFromPayload<string>(types.SET_LAST_SEARCH_PARAMS, ''),
@@ -151,6 +153,7 @@ export default class ServicePageDuck extends GridPageDuck {
         service: state.data.name,
         namespace: state.data.namespace,
         customFilters: state.customFilters,
+        editable: state.data.editable,
       }),
       customFilters: (state: State) => state.customFilters,
       selection: (state: State) => state.selection,
@@ -287,6 +290,7 @@ export default class ServicePageDuck extends GridPageDuck {
       count,
       namespace,
       service,
+      editable,
       customFilters: { host, port, weight, protocol, version, healthy, isolate, metadata },
     } = filters
     const { key, value } = metadata?.[0] || {}
@@ -308,7 +312,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const result = await describeInstances(searchParams)
     return {
       totalCount: result.totalCount,
-      list: result.list || [],
+      list: result.list.map(item => ({ ...item, editable })) || [],
       searchParams,
     }
   }
