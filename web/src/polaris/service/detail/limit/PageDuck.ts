@@ -13,6 +13,7 @@ interface Filter extends BaseFilter {
   namespace: string
   service: string
   limitRange: LimitRange
+  editable: boolean
 }
 
 interface ComposedId {
@@ -111,6 +112,7 @@ export default class ServicePageDuck extends GridPageDuck {
         service: state.data.name,
         namespace: state.data.namespace,
         limitRange: state.limitRange,
+        editable: state.data.editable,
       }),
     }
   }
@@ -220,7 +222,7 @@ export default class ServicePageDuck extends GridPageDuck {
 
   *sagaInitLoad() {}
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, service } = filters
+    const { page, count, namespace, service, editable } = filters
     const result = await describeLimitRules({
       namespace,
       service,
@@ -231,6 +233,7 @@ export default class ServicePageDuck extends GridPageDuck {
       ...item,
       //太怪了，这里如果没有disable字段，代表是启用状态，我晕了
       disable: item.disable === true ? true : false,
+      editable,
     }))
     return result
   }

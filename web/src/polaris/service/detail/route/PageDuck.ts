@@ -13,6 +13,7 @@ interface Filter extends BaseFilter {
   service: string
   ruleType: RuleType
   routeData: Routing
+  editable: boolean
 }
 
 interface ComposedId {
@@ -126,6 +127,7 @@ export default class ServicePageDuck extends GridPageDuck {
         namespace: state.data.namespace,
         ruleType: state.ruleType,
         routeData: state.routeData,
+        editable: state.data.editable,
       }),
     }
   }
@@ -315,7 +317,7 @@ export default class ServicePageDuck extends GridPageDuck {
 
   *sagaInitLoad() {}
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, service, ruleType } = filters
+    const { page, count, namespace, service, ruleType, editable } = filters
     let routeData = filters.routeData
     let originData
     if (!routeData) {
@@ -340,6 +342,7 @@ export default class ServicePageDuck extends GridPageDuck {
       list: listSlice.map((item, index) => ({
         ...item,
         id: (offset + index).toString(),
+        editable,
       })),
       routeData,
       originData,
