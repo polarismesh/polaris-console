@@ -55,9 +55,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         <FormField field={comment} label={'描述'}>
           <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
         </FormField>
-        <FormField field={owners} label={'负责人'}>
-          <Input field={owners} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
-        </FormField>
+
         {options.authOpen && (
           <>
             <Button type={'link'} onClick={() => setShowAdvance(!showAdvance)} style={{ cursor: 'pointer' }}>

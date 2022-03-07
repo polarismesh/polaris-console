@@ -20,7 +20,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
       .post<T & ApiResponse>(action, data, {
         ...opts,
         headers: {
-          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+          'X-Polaris-Token': window.sessionStorage.getItem('polaris_token'),
         },
       })
       .catch(function(error) {
@@ -50,7 +50,7 @@ export async function getApiRequest<T>(options: APIRequestOption) {
         params: data,
         ...opts,
         headers: {
-          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+          'X-Polaris-Token': window.sessionStorage.getItem('polaris_token'),
         },
       })
       .catch(function(error) {
@@ -80,7 +80,7 @@ export async function putApiRequest<T>(options: APIRequestOption) {
       .put<T & ApiResponse>(action, data, {
         ...opts,
         headers: {
-          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+          'X-Polaris-Token': window.sessionStorage.getItem('polaris_token'),
         },
       })
       .catch(function(error) {
@@ -110,7 +110,7 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
         params: data,
         ...opts,
         headers: {
-          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+          'X-Polaris-Token': window.sessionStorage.getItem('polaris_token'),
         },
       })
       .catch(function(error) {

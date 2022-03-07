@@ -109,11 +109,11 @@ export class CreateFormDuck extends Form {
       const values = yield select(selectors.values)
       const { loginResponse } = yield loginUser({ name: values.userName, password: values.password })
       if (loginResponse.token) {
-        window.localStorage.setItem(PolarisTokenKey, loginResponse.token)
-        window.localStorage.setItem(LoginUserNameKey, loginResponse.name)
-        window.localStorage.setItem(LoginRoleKey, loginResponse.role)
-        window.localStorage.setItem(LoginUserIdKey, loginResponse.user_id)
-        window.localStorage.setItem(LoginUserOwnerIdKey, loginResponse.owner_id)
+        window.sessionStorage.setItem(PolarisTokenKey, loginResponse.token)
+        window.sessionStorage.setItem(LoginUserNameKey, loginResponse.name)
+        window.sessionStorage.setItem(LoginRoleKey, loginResponse.role)
+        window.sessionStorage.setItem(LoginUserIdKey, loginResponse.user_id)
+        window.sessionStorage.setItem(LoginUserOwnerIdKey, loginResponse.owner_id)
         window.location.href = '/#/service'
         window.location.reload()
       } else {

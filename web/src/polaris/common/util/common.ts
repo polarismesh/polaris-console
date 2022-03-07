@@ -27,17 +27,17 @@ export function getClosest(element: any, selector: string) {
 }
 
 export function isOwner() {
-  return window.localStorage.getItem(LoginRoleKey) === 'admin'
+  return window.sessionStorage.getItem(LoginRoleKey) === 'admin'
 }
 export function getUin() {
-  return window.localStorage.getItem(LoginUserIdKey)
+  return window.sessionStorage.getItem(LoginUserIdKey)
 }
 export function getOwnerUin() {
-  const ownerId = window.localStorage.getItem(LoginUserOwnerIdKey)
+  const ownerId = window.sessionStorage.getItem(LoginUserOwnerIdKey)
   return ownerId === '' ? getUin() : ownerId
 }
 export function getLoginName() {
-  return window.localStorage.getItem(LoginUserNameKey)
+  return window.sessionStorage.getItem(LoginUserNameKey)
 }
 export const diffAddRemoveArray = (originArray: string[] = [], currentArray: string[] = []) => {
   const addArray = [...currentArray],
@@ -60,13 +60,13 @@ export const LoginUserOwnerIdKey = 'login-owner-id'
 export const LoginUserNameKey = 'login-name'
 
 export function checkIsUserLogin() {
-  return !!window.localStorage.getItem(PolarisTokenKey)
+  return !!window.sessionStorage.getItem(PolarisTokenKey)
 }
 export function userLogout() {
-  window.localStorage.setItem(PolarisTokenKey, '')
-  window.localStorage.setItem(LoginUserNameKey, '')
-  window.localStorage.setItem(LoginRoleKey, '')
-  window.localStorage.setItem(LoginUserIdKey, '')
-  window.localStorage.setItem(LoginUserOwnerIdKey, '')
+  window.sessionStorage.setItem(PolarisTokenKey, '')
+  window.sessionStorage.setItem(LoginUserNameKey, '')
+  window.sessionStorage.setItem(LoginRoleKey, '')
+  window.sessionStorage.setItem(LoginUserIdKey, '')
+  window.sessionStorage.setItem(LoginUserOwnerIdKey, '')
   router.navigate('/login')
 }
