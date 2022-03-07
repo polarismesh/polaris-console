@@ -50,6 +50,7 @@ type WebServer struct {
 	ListenPort int    `yaml:"listenPort"`
 	RequestURL string `yaml:"requestURL"`
 	MonitorURL string `yaml:"monitorURL"`
+	ConfigURL  string `yaml:"configURL"`
 	WebPath    string `yaml:"webPath"`
 }
 
