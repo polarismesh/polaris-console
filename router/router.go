@@ -128,6 +128,7 @@ func Router(config *bootstrap.Config) {
 	// 监控请求路由组
 	mv1 := r.Group(config.WebServer.MonitorURL)
 	mv1.GET("/query_range", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
+	mv1.GET("/label/:resource/values", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
 
 	address := fmt.Sprintf("%v:%v", config.WebServer.ListenIP, config.WebServer.ListenPort)
 	r.Run(address)
