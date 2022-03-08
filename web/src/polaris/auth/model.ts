@@ -257,7 +257,7 @@ export async function modifyGovernanceUserPassword(params: ModifyGovernanceUserP
 export interface ModifyGovernanceUserPasswordParams {
   /** 用户 */
   id: string
-  old_password: string
+  old_password?: string
   new_password: string
 }
 /** **ModifyGovernanceUser出参**

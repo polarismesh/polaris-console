@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { notification } from 'tea-component'
 import tips from './tips'
+import router from './router'
 
 export interface APIRequestOption {
   action: string
@@ -12,6 +13,7 @@ export interface ApiResponse {
   info: string
 }
 export const SuccessCode = 200000
+export const TokenNotExistCode = 401004
 export async function apiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts } = options
   try {
@@ -54,6 +56,13 @@ export async function getApiRequest<T>(options: APIRequestOption) {
         },
       })
       .catch(function(error) {
+        if (error.response.data.code === TokenNotExistCode) {
+          notification.error({
+            title: 'Token不存在',
+            description: '您当前使用的Token不存在，可能已被重置，请重新登录。',
+          })
+          router.navigate('/login')
+        }
         if (error.response) {
           notification.error({
             title: '请求错误',

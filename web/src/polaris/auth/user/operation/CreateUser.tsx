@@ -5,6 +5,7 @@ import { Form } from 'tea-component'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
+import { isOwner } from '@src/polaris/common/util/common'
 export const passwordRuleText = '请输入6至17位的密码'
 export default purify(function(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -27,9 +28,11 @@ export default purify(function(props: DuckCmpProps<Duck>) {
         {options?.isModify ? (
           options?.isModifyPassword ? (
             <>
-              <FormField field={old_password} label={'旧密码'} required>
-                <Input field={old_password} size={'m'} type={'password'} />
-              </FormField>
+              {!isOwner() && (
+                <FormField field={old_password} label={'旧密码'} required>
+                  <Input field={old_password} size={'m'} type={'password'} />
+                </FormField>
+              )}
               <FormField field={new_password} label={'新密码'} required>
                 <Input field={new_password} size={'m'} type={'password'} />
               </FormField>

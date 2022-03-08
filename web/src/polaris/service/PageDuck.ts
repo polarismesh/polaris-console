@@ -12,6 +12,8 @@ import { Modal, TagValue } from 'tea-component'
 import { checkAuth } from '../auth/model'
 import { KeyValuePair } from '../configuration/fileGroup/types'
 import { DefaultServiceTagAttribute, ServiceNameTagKey, MetadataTagKey } from './Page'
+import { PolarisTokenKey } from '../common/util/common'
+import router from '../common/util/router'
 
 export const EmptyCustomFilter = {
   namespace: '',
@@ -153,9 +155,14 @@ export default class ServicePageDuck extends GridPageDuck {
   *saga() {
     const { types, creators, selector, ducks } = this
     yield* super.saga()
-    yield* this.loadNamespaceList()
     const authOpen = yield checkAuth({})
     yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
+    if (authOpen) {
+      if (window.localStorage.getItem(PolarisTokenKey)) yield* this.loadNamespaceList()
+      else router.navigate('/login')
+    } else {
+      yield* this.loadNamespaceList()
+    }
     yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
       const { list } = action.payload
       const { selection } = selector(yield select())

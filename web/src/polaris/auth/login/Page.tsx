@@ -40,8 +40,8 @@ export default purify(function(props: DuckCmpProps<Duck>) {
             </Card.Body>
           </Card>
         </Col>
-        <Col span={6}>
-          <Card style={{ height: '100%' }}>
+        <Col span={6} style={{ padding: '5vh 0' }}>
+          <Card>
             <Card.Body>
               <Row>
                 <Col>

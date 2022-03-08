@@ -5,8 +5,10 @@ import { takeEvery, takeLatest, runAndTakeLatest } from 'redux-saga-catch'
 import RouteDuck, { Param } from '../ducks/Route'
 import { createElement, ReactElement, ReactChild } from 'react'
 import { Alert } from 'tea-component'
-import { PolarisTokenKey } from '../util/common'
+import { PolarisTokenKey, getUin } from '../util/common'
 import router from '../util/router'
+import { checkAuth, describeGovernanceUserToken } from '@src/polaris/auth/model'
+import { once, ttl } from '../helpers/cacheable'
 
 type SELECTOR<T> = (globalState: any) => T
 type CREATOR<T> = (value: T) => any
@@ -327,9 +329,12 @@ get preSagas(){
   ready(duck): any {
     return true
   }
-  checkUserLogin() {
-    if (!window.localStorage.getItem(PolarisTokenKey)) {
-      router.navigate('/login')
+  *checkUserLogin() {
+    const authOpen = yield once(checkAuth, ttl(60 * 60 * 1000))({})
+    if (authOpen) {
+      if (!window.localStorage.getItem(PolarisTokenKey)) {
+        router.navigate('/login')
+      }
     } else {
       return true
     }

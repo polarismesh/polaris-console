@@ -49,7 +49,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
       <Form>
         <FormField field={namespace} label='命名空间' required>
           <Select
-            disabled={name ? true : false}
+            disabled={options.isModify}
             value={namespace.getValue()}
             options={options.namespaceList}
             onChange={value => namespace.setValue(value)}
@@ -60,7 +60,13 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         </FormField>
 
         <FormField field={name} label={'服务名'} required>
-          <Input disabled={name ? true : false} field={name} maxLength={128} placeholder={'允许数字、英文字母、.、-、_，限制128个字符'} size={'l'} />
+          <Input
+            disabled={options.isModify}
+            field={name}
+            maxLength={128}
+            placeholder={'允许数字、英文字母、.、-、_，限制128个字符'}
+            size={'l'}
+          />
         </FormField>
         <FormField field={department} label={'部门'}>
           <Input field={department} size={'l'} />

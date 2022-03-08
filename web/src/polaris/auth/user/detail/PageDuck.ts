@@ -18,7 +18,7 @@ import CreateUserDuck from '../operation/CreateUserDuck'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import CreateUser from '../operation/CreateUser'
-import { userLogout } from '@src/polaris/common/util/common'
+import { userLogout, getUin } from '@src/polaris/common/util/common'
 import { delay } from 'redux-saga'
 
 interface ComposedId {
@@ -180,7 +180,11 @@ export default abstract class CreateDuck extends DetailPage {
       const result = yield resetGovernanceUserToken({ id })
       if (result) {
         notification.success({ description: '重置成功' })
-        userLogout()
+        if (id === getUin()) {
+          notification.warning({ description: '您已成功重置Token，请重新登录。' })
+          yield delay(3000)
+          userLogout()
+        }
         yield put(creators.reload())
       } else {
         notification.error({ description: '重置失败' })

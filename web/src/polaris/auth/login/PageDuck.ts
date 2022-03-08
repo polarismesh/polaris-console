@@ -1,4 +1,4 @@
-import { select, put } from 'redux-saga/effects'
+import { select, put, call } from 'redux-saga/effects'
 import { takeLatest } from 'redux-saga-catch'
 import { createToPayload } from 'saga-duck'
 import Page from '@src/polaris/common/ducks/Page'
@@ -15,6 +15,9 @@ import {
 export default abstract class CreateDuck extends Page {
   get baseUrl() {
     return `/#/login`
+  }
+  get preEffects() {
+    return [call([this, this.ready], this)]
   }
   get quickTypes() {
     enum Types {

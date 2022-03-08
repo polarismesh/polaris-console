@@ -5,7 +5,8 @@ import Form from '@src/polaris/common/ducks/Form'
 import { notification } from 'tea-component'
 import { UserSource } from '../../constants'
 import { passwordRuleText } from './CreateUser'
-import { userLogout } from '@src/polaris/common/util/common'
+import { userLogout, getUin, isOwner } from '@src/polaris/common/util/common'
+import { delay } from 'redux-saga'
 
 export interface DialogOptions {
   isModify: boolean
@@ -42,12 +43,16 @@ export default class CreateUserDuck extends FormDialog {
       if (options?.isModifyPassword) {
         result = yield modifyGovernanceUserPassword({
           id,
-          old_password,
+          ...(isOwner() ? {} : { old_password }),
           new_password,
         })
         if (result) {
           notification.success({ description: '修改密码成功' })
-          userLogout()
+          if (id === getUin()) {
+            notification.warning({ description: '您已成功重置密码，请重新登录。' })
+            yield delay(3000)
+            userLogout()
+          }
         } else {
           notification.error({ description: '修改密码失败' })
         }
@@ -156,6 +161,9 @@ const validator = CreateForm.combineValidators<Values, DialogOptions>({
   },
   old_password(v, values, meta) {
     if (!meta.isModifyPassword) {
+      return
+    }
+    if (isOwner()) {
       return
     }
     if (!v && values.id) {
