@@ -1,4 +1,5 @@
 import { apiRequest, getApiRequest, putApiRequest, SuccessCode, ApiResponse } from '../common/util/apiRequest'
+import { ttl, once } from '../common/helpers/cacheable'
 
 /** 删除治理中心鉴权策略 */
 export async function deleteGovernanceStrategies(params: DeleteGovernanceStrategiesParams) {
@@ -591,6 +592,8 @@ export async function checkAuth(params: CheckAuthParams) {
   const result = await getApiRequest<CheckAuthResult>({ action: 'core/v1/auth/status', data: params })
   return result.optionSwitch.options.auth === 'true'
 }
+
+export const cacheCheckAuth = once(checkAuth, ttl(30 * 60 * 1000))
 
 /** **ResetGovernanceGroupToken入参**
 

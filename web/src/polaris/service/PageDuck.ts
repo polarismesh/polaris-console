@@ -110,7 +110,7 @@ export default class ServicePageDuck extends GridPageDuck {
       ...super.creators,
       setCustomFilters: createToPayload<CustomFilters>(types.SET_CUSTOM_FILTERS),
       edit: createToPayload<Service>(types.EDIT),
-      remove: createToPayload<string[]>(types.REMOVE),
+      remove: createToPayload<Service[]>(types.REMOVE),
       create: createToPayload<void>(types.CREATE),
       setSelection: createToPayload<string[]>(types.SET_SELECTION),
       setExpandedKeys: createToPayload<string[]>(types.SET_EXPANDED_KEYS),
@@ -224,10 +224,15 @@ export default class ServicePageDuck extends GridPageDuck {
     })
     yield takeLatest(types.REMOVE, function*(action) {
       const data = action.payload
-      const params = data.map(item => {
-        const [namespace, name] = item.split('#')
-        return { namespace, name }
-      })
+      const params = data
+        .map(item => {
+          if (!item) {
+            return
+          }
+          const { namespace, name } = item
+          return { namespace, name }
+        })
+        .filter(item => item)
       const confirm = yield Modal.confirm({
         message: `确认删除服务`,
         description: '删除后，无法恢复',

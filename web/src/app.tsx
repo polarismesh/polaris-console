@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Layout, NavMenu, Menu, List } from 'tea-component'
 import { Switch, Route, useHistory } from 'react-router-dom'
 const { Header, Body, Sider, Content } = Layout
@@ -78,6 +78,7 @@ const Login = connectWithDuck(LoginPage, LoginPageDuck as any)
 
 import ServiceAliasPage from '@src/polaris/serviceAlias/Page'
 import ServiceAliasPageDuck from '@src/polaris/serviceAlias/PageDuck'
+import { checkAuth, cacheCheckAuth } from './polaris/auth/model'
 const ServiceAlias = connectWithDuck(ServiceAliasPage, ServiceAliasPageDuck)
 
 export default function root() {
@@ -90,6 +91,14 @@ export default function root() {
       history.push(`/${id}`)
     },
   })
+  const [authOpen, setAuthOpen] = React.useState(null)
+  const fetchAuth = useCallback(async () => {
+    const authOpen = await cacheCheckAuth({})
+    setAuthOpen(authOpen)
+  }, [])
+  React.useEffect(() => {
+    fetchAuth()
+  }, [fetchAuth])
   const isLogin = history.location.pathname === '/login'
   return isLogin ? (
     <Route exact path='/login' component={Login} />
@@ -163,7 +172,9 @@ export default function root() {
                       if (typeof menuConfig !== 'object') {
                         return null
                       }
-
+                      if (menuConfig.title === '策略' && !authOpen) {
+                        return <noscript />
+                      }
                       return <Menu.Item key={menuConfig.title} {...menuConfig} {...getMenuItemProps(item)} />
                     })}
                   </Menu.Group>

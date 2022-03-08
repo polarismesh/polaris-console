@@ -101,7 +101,14 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
     [],
   )
   const columns = React.useMemo(() => getColumns(props), [])
-  const { customFilters, selection, namespaceList, expandedKeys, tags } = selector(store)
+  const {
+    customFilters,
+    selection,
+    namespaceList,
+    expandedKeys,
+    tags,
+    grid: { list },
+  } = selector(store)
   return (
     <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
@@ -111,7 +118,10 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               <Button type={'primary'} onClick={handlers.create}>
                 新建
               </Button>
-              <Button onClick={() => handlers.remove(selection)} disabled={selection.length === 0}>
+              <Button
+                onClick={() => handlers.remove(selection.map(id => list.find(service => id === service.id)))}
+                disabled={selection.length === 0}
+              >
                 删除
               </Button>
             </>

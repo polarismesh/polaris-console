@@ -330,11 +330,8 @@ get preSagas(){
     return true
   }
   *checkUserLogin() {
-    const authOpen = yield once(checkAuth, ttl(60 * 60 * 1000))({})
-    if (authOpen) {
-      if (!window.localStorage.getItem(PolarisTokenKey)) {
-        router.navigate('/login')
-      }
+    if (!window.localStorage.getItem(PolarisTokenKey)) {
+      router.navigate('/login')
     } else {
       return true
     }

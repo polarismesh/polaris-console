@@ -97,22 +97,22 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceIns
     header: '操作',
     render: x => {
       const {
-        data: { namespace, editable },
+        data: { namespace },
       } = selector(store)
 
       return (
         <React.Fragment>
           <Action
             fn={dispatch => dispatch(creators.edit(x))}
-            disabled={isReadOnly(namespace) || !editable}
-            tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '编辑'}
+            disabled={isReadOnly(namespace) || !x.editable}
+            tip={isReadOnly(namespace) ? '该命名空间为只读的' : !x.editable ? '无写权限' : '编辑'}
           >
             <Icon type={'pencil'}></Icon>
           </Action>
           <Action
             fn={dispatch => dispatch(creators.remove([x.id]))}
-            disabled={isReadOnly(namespace) || !editable}
-            tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '删除'}
+            disabled={isReadOnly(namespace) || !x.editable}
+            tip={isReadOnly(namespace) ? '该命名空间为只读的' : !x.editable ? '无写权限' : '删除'}
           >
             <Icon type={'delete'}></Icon>
           </Action>
