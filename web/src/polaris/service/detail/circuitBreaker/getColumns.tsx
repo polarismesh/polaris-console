@@ -1,15 +1,13 @@
 import * as React from 'react'
 import { Column } from '@src/polaris/common/ducks/GridPage'
 import { DuckCmpProps } from 'saga-duck'
-import { Link } from 'react-router-dom'
-import { Text, Icon, Modal } from 'tea-component'
+import { Text, Icon } from 'tea-component'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
 import RoutePageDuck from './PageDuck'
 import { RuleType } from './types'
 import { isReadOnly } from '../../utils'
 export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageDuck>): Column<any>[] => {
   const { ruleType } = selector(store)
-  console.log(ruleType)
   return [
     ...(ruleType === RuleType.Inbound
       ? [

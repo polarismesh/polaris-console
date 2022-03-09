@@ -64,15 +64,14 @@ export default ({
       header: '是否启用',
       render: x => {
         const {
-          data: { namespace },
+          data: { namespace, editable },
         } = selector(store)
-        const disabled = isReadOnly(namespace)
         return (
           <Switch
             value={!x.disable}
             onChange={() => dispatch(creators.toggleStatus(x))}
-            disabled={disabled}
-            tooltip={disabled && '该命名空间为只读的'}
+            disabled={isReadOnly(namespace) || !editable}
+            tooltip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '删除'}
           ></Switch>
         )
       },

@@ -290,7 +290,6 @@ export default class ServicePageDuck extends GridPageDuck {
       count,
       namespace,
       service,
-      editable,
       customFilters: { host, port, weight, protocol, version, healthy, isolate, metadata },
     } = filters
     const { key, value } = metadata?.[0] || {}
@@ -312,7 +311,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const result = await describeInstances(searchParams)
     return {
       totalCount: result.totalCount,
-      list: result.list.map(item => ({ ...item, editable })) || [],
+      list: result.list || [],
       searchParams,
     }
   }

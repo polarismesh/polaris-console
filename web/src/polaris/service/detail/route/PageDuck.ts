@@ -1,7 +1,7 @@
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/GridPage'
 import { RuleType, EditType } from './types'
-import { describeRoutes, Routing, modifyRoutes, createRoutes } from './model'
+import { describeRoutes, Routing, modifyRoutes, createRoutes, deleteRoutes } from './model'
 import { takeLatest } from 'redux-saga-catch'
 import { DynamicRouteCreateDuck } from './operations/CreateDuck'
 import { put, select, take } from 'redux-saga/effects'
@@ -13,7 +13,6 @@ interface Filter extends BaseFilter {
   service: string
   ruleType: RuleType
   routeData: Routing
-  editable: boolean
 }
 
 interface ComposedId {
@@ -127,7 +126,6 @@ export default class ServicePageDuck extends GridPageDuck {
         namespace: state.data.namespace,
         ruleType: state.ruleType,
         routeData: state.routeData,
-        editable: state.data.editable,
       }),
     }
   }
@@ -228,9 +226,16 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put(creators.reload())
     })
     yield takeLatest(types.SUBMIT, function*() {
-      const { originData, routeData } = selector(yield select())
+      const {
+        originData,
+        routeData,
+        data: { name, namespace },
+      } = selector(yield select())
       if (originData?.ctime) {
         yield modifyRoutes([routeData])
+        if (routeData.inbounds.length === 0 && routeData.outbounds.length === 0) {
+          yield deleteRoutes([{ service: name, namespace }])
+        }
       } else {
         yield createRoutes([routeData])
       }
@@ -319,7 +324,7 @@ export default class ServicePageDuck extends GridPageDuck {
 
   *sagaInitLoad() {}
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, service, ruleType, editable } = filters
+    const { page, count, namespace, service, ruleType } = filters
     let routeData = filters.routeData
     let originData
     if (!routeData) {
@@ -344,7 +349,6 @@ export default class ServicePageDuck extends GridPageDuck {
       list: listSlice.map((item, index) => ({
         ...item,
         id: (offset + index).toString(),
-        editable,
       })),
       routeData,
       originData,

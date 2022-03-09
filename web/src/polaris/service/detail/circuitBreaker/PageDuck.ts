@@ -19,7 +19,6 @@ interface Filter extends BaseFilter {
   service: string
   ruleType: RuleType
   circuitBreaker: CircuitBreaker
-  editable: boolean
 }
 
 interface ComposedId {
@@ -127,7 +126,6 @@ export default class ServicePageDuck extends GridPageDuck {
         namespace: state.data.namespace,
         ruleType: state.ruleType,
         circuitBreaker: state.circuitBreaker,
-        editable: state.data.editable,
       }),
     }
   }
@@ -149,7 +147,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: '新建熔断规则',
+          title: '新建规则',
           visible: true,
           createId,
           ruleIndex,
@@ -182,7 +180,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: '编辑路由规则',
+          title: '编辑规则',
           visible: true,
           createId,
           ruleIndex,
@@ -204,7 +202,7 @@ export default class ServicePageDuck extends GridPageDuck {
     })
     yield takeLatest(types.REMOVE, function*(action) {
       const confirm = yield Modal.confirm({
-        message: `确认删除路由规则`,
+        message: `确认删除规则`,
         description: '删除后，无法恢复',
       })
       if (confirm) {
@@ -348,7 +346,7 @@ export default class ServicePageDuck extends GridPageDuck {
 
   *sagaInitLoad() {}
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, service, ruleType, editable } = filters
+    const { page, count, namespace, service, ruleType } = filters
     let circuitBreaker = filters.circuitBreaker
     let originData
     if (!circuitBreaker) {
@@ -372,7 +370,6 @@ export default class ServicePageDuck extends GridPageDuck {
       list: listSlice.map((item, index) => ({
         ...item,
         id: (offset + index).toString(),
-        editable,
       })),
       circuitBreaker: circuitBreaker,
       originData: originData,

@@ -185,6 +185,7 @@ export default class RouteCreateDuck extends PageDuck {
     yield* super.saga()
     yield takeLatest(types.LOAD, function*(action) {
       const values = action.payload
+      console.log(values)
       const {
         data: { ruleIndex, ruleType, service, namespace, isEdit },
       } = selector(yield select())
@@ -237,7 +238,7 @@ export default class RouteCreateDuck extends PageDuck {
       if (!isEdit) {
         yield put(ducks.form.creators.setValues(emptyRule))
       } else {
-        if (values.ctime) {
+        if (values.inbounds || values.outbounds) {
           const routing = values as Routing
           const rule = routing[ruleType][ruleIndex]
           const ruleNamespace =

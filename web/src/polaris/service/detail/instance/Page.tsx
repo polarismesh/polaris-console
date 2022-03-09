@@ -176,7 +176,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
     }),
     [],
   )
-  const columns = React.useMemo(() => getColumns(props), [])
+  const columns = getColumns(props)
   const {
     customFilters,
     selection,
