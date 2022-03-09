@@ -51,6 +51,7 @@ type WebServer struct {
 	NamingURL  string `yaml:"namingURL"`
 	AuthURL    string `yaml:"authURL"`
 	MonitorURL string `yaml:"monitorURL"`
+	ConfigURL  string `yaml:"configURL"`
 	WebPath    string `yaml:"webPath"`
 }
 

@@ -55,8 +55,21 @@ export default class CreateDuck extends FormDialog {
     const { name, comment, namespace, group, format, tags } = form.selectors.values(yield select())
     const options = selectors.options(yield select())
     const data = selectors.data(yield select())
+    const parsedName = name
+      .split('/')
+      .filter(item => item !== '')
+      .join('/')
+
     if (options.isModify) {
-      const { configFile } = yield modifyConfigFile({ name, comment, namespace, group, format, tags, content: '' })
+      const { configFile } = yield modifyConfigFile({
+        ...data,
+        name: parsedName,
+        comment,
+        namespace,
+        group,
+        format,
+        tags,
+      })
       if (configFile?.name) {
         notification.success({ description: '编辑成功' })
         return true
@@ -65,7 +78,15 @@ export default class CreateDuck extends FormDialog {
         return false
       }
     } else {
-      const { configFile } = yield createConfigFile({ name, comment, namespace, group, format, tags, content: '' })
+      const { configFile } = yield createConfigFile({
+        name: parsedName,
+        comment,
+        namespace,
+        group,
+        format,
+        tags,
+        content: '',
+      })
       if (configFile?.name) {
         notification.success({ description: '创建成功' })
         return true
@@ -181,6 +202,10 @@ class CreateForm extends Form {
 const validator = CreateForm.combineValidators<Values, any>({
   name(v) {
     if (!v) return '请填写文件名'
+
+    if (v.split('/').filter(item => !item).length > 1) {
+      return '文件夹名字不可为空'
+    }
   },
   namespace(v) {
     if (!v) return '请选择命名空间'

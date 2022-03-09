@@ -27,7 +27,6 @@ export const DefaultGroupTagAttribute = {
   key: GroupNameTagKey,
   name: '分组名',
 }
-console.log(React)
 function getTagAttributes() {
   return [
     {
@@ -55,7 +54,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
   const { selector } = duck
   const columns = React.useMemo(() => getColumns(props), [])
   const handlers = getHandlers(props)
-  const { tags, namespaceList, namespace } = selector(store)
+  const { namespaceList, namespace } = selector(store)
   const namespaceOptions = namespaceList.map(item => ({ text: item.name, value: item.name }))
   namespaceOptions.unshift({ text: '全部命名空间', value: '' })
   return (

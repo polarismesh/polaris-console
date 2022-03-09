@@ -85,7 +85,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
     return {
       ...super.creators,
       edit: createToPayload<ConfigFileGroupItem>(types.EDIT),
-      remove: createToPayload<string>(types.REMOVE),
+      remove: createToPayload<ConfigFileGroupItem>(types.REMOVE),
       create: createToPayload<void>(types.CREATE),
       load: (composedId, data) => ({
         type: types.LOAD,
@@ -176,7 +176,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       yield* duck.loadNamespaceList()
     })
     yield takeLatest(types.REMOVE, function*(action) {
-      const { group, namespace } = action.payload
+      const { name, namespace } = action.payload
 
       const confirm = yield Modal.confirm({
         message: `确认删除配置组`,
@@ -184,7 +184,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
         okText: '删除',
       })
       if (confirm) {
-        const res = yield deleteConfigFileGroups({ group, namespace })
+        const res = yield deleteConfigFileGroups({ group: name, namespace })
         if (res) notification.success({ description: '删除成功' })
         yield put(creators.reload())
       }

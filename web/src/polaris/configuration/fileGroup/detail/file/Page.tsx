@@ -21,6 +21,7 @@ import {
   Dropdown,
   List,
   Icon,
+  Bubble,
 } from 'tea-component'
 import { FileStatusMap } from './constants'
 import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
@@ -91,7 +92,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
         />
       </Table.ActionPanel>
       <Card>
-        <Card.Body style={{ height: 660 }}>
+        <Card.Body>
           <Row showSplitLine gap={40}>
             <div style={{ width: '450px', height: 600, overflowY: 'hidden', margin: '15px 20px' }}>
               <SearchBox
@@ -176,6 +177,24 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <FormItem label='最后发布时间'>
                               <FormText>{currentNode.releaseTime || '-'}</FormText>
                             </FormItem>
+                            <FormItem label='标签'>
+                              <FormText>
+                                <Bubble
+                                  placement={'right'}
+                                  content={
+                                    <>
+                                      {currentNode.tags?.map(item => (
+                                        <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
+                                      ))}
+                                    </>
+                                  }
+                                >
+                                  <Text overflow>
+                                    {currentNode.tags.map(item => `${item.key}:${item.value}`).join(',') || '-'}
+                                  </Text>
+                                </Bubble>
+                              </FormText>
+                            </FormItem>
                           </Col>
                           <Col span={12}>
                             <FormItem label='最后修改人'>
@@ -186,6 +205,9 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             </FormItem>
                             <FormItem label='备注'>
                               <FormText>{currentNode.comment || '-'}</FormText>
+                            </FormItem>
+                            <FormItem label='格式'>
+                              <FormText>{currentNode.format || '-'}</FormText>
                             </FormItem>
                           </Col>
                         </Row>
@@ -283,7 +305,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
 }
 
 function getFileName(fileName) {
-  const splitArray = fileName.split('.')
+  const splitArray = fileName.split('/')
   return splitArray[splitArray.length - 1]
 }
 
@@ -309,7 +331,7 @@ function renderTree(props, folder, path: string, currPath: string) {
         if (childPath === '__isDir__') return <noscript />
         const obj = node[childPath]
         const showContent = obj.__isDir__ ? childPath : getFileName(obj.name)
-        const nextPath = `${currPath}${currPath ? '.' : ''}${childPath}`
+        const nextPath = `${currPath}${currPath ? '/' : ''}${childPath}`
         const folderIcon = expandedIds.indexOf(obj.name) > -1 ? 'folderopen' : 'folderclose'
         return (
           <TreeNode
@@ -330,7 +352,7 @@ function renderTree(props, folder, path: string, currPath: string) {
                       >
                         编辑
                       </List.Item>
-                      <List.Item onClick={() => handlers.delete([obj.name])}>删除</List.Item>
+                      <List.Item onClick={() => handlers.delete(obj.name)}>删除</List.Item>
                     </List>
                   </Dropdown>
                 </div>

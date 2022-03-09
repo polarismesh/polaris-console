@@ -42,7 +42,6 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   const {
     ducks: { form },
     selectors,
-    selector,
   } = duck
 
   const formApi = form.getAPI(store, dispatch)
@@ -88,7 +87,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             disabled={options.isModify}
           ></Select>
         </FormField>
-        <FormField field={name} label={'配置文件名'} required>
+        <FormField field={name} label={'配置文件名'} required message={'可通过/创建文件夹，如：application/group'}>
           <Input
             field={name}
             disabled={options.isModify}

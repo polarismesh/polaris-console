@@ -76,7 +76,7 @@ const generateFileTree = (fileList: ConfigFile[]) => {
   const fileTree = {}
   fileList.forEach(file => {
     let lastFolder = fileTree
-    const splitArray = file.name.split('.')
+    const splitArray = file.name.split('/').filter(item => item)
     if (splitArray.length === 0) {
       lastFolder[file.name] = file
     } else {
@@ -175,7 +175,7 @@ export default class PageDuck extends Base {
         payload: { composedId, data },
       }),
       add: createToPayload<void>(types.ADD),
-      delete: createToPayload<string[]>(types.DELETE),
+      delete: createToPayload<string>(types.DELETE),
       clickFileItem: createToPayload<string>(types.CLICK_FILE_ITEM),
       setExpandedIds: createToPayload<string[]>(types.SET_EXPANDED_IDS),
       searchPath: createToPayload<string>(types.SEARCH_PATH),
@@ -238,7 +238,6 @@ export default class PageDuck extends Base {
       }
     })
     yield takeLatest(types.EDIT_FILE_META, function*(action) {
-      const composedId = selectors.composedId(yield select())
       const { fileMap } = selector(yield select())
       const res = yield* resolvePromise(
         new Promise(resolve => {
@@ -255,7 +254,7 @@ export default class PageDuck extends Base {
         yield put({ type: types.FETCH_DATA })
       }
     })
-    yield takeLatest(types.CANCEL, function*(action) {
+    yield takeLatest(types.CANCEL, function*() {
       const currentNode = selectors.currentNode(yield select())
       yield put({ type: types.SET_EDITING, payload: false })
       yield put(creators.setEditContent(currentNode.content))
@@ -272,8 +271,8 @@ export default class PageDuck extends Base {
         description: '删除后，无法恢复。',
       })
       if (confirm) {
-        const deleteList = action.payload
-        const result = yield deleteConfigFiles(deleteList.map(item => ({ namespace, group, name: item })))
+        const deleteId = action.payload
+        const result = yield deleteConfigFiles({ namespace, group, name: deleteId })
         if (result) {
           notification.success({ description: '删除成功' })
           yield put({ type: types.FETCH_DATA })
@@ -314,10 +313,10 @@ export default class PageDuck extends Base {
       })
       const hitPath = []
       hitName.forEach(item => {
-        item.split('.').reduce((prev, curr) => {
+        item.split('/').reduce((prev, curr) => {
           let next
           if (!prev) next = curr
-          else next = `${prev}.${curr}`
+          else next = `${prev}/${curr}`
           hitPath.push(next)
           return next
         }, '')
@@ -382,7 +381,13 @@ export default class PageDuck extends Base {
         currentNode,
         composedId: { namespace, group },
       } = selector(yield select())
-      const result = yield modifyConfigFile({ namespace, group, content: editContent, name: currentNode.name })
+      const result = yield modifyConfigFile({
+        ...currentNode,
+        namespace,
+        group,
+        content: editContent,
+        name: currentNode.name,
+      })
       if (result) {
         notification.success({ description: '保存成功' })
         yield put({ type: types.FETCH_DATA })
