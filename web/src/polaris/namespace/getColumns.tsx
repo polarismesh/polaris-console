@@ -17,9 +17,18 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
     render: x => <Text tooltip={x.comment}>{x.comment || '-'}</Text>,
   },
   {
-    key: 'owners',
-    header: '负责人',
-    render: x => <Text>{x.owners ?? '-'}</Text>,
+    key: 'totalSerivce',
+    header: '服务数',
+    render: x => <Text>{x.total_service_count ?? '-'}</Text>,
+  },
+  {
+    key: 'health/total',
+    header: '健康实例/总实例数',
+    render: x => (
+      <Text
+        tooltip={`${x.total_health_instance_count}/${x.total_instance_count}`}
+      >{`${x.total_health_instance_count}/${x.total_instance_count}`}</Text>
+    ),
   },
   {
     key: 'ctime',
@@ -37,10 +46,10 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
     render: x => {
       return (
         <React.Fragment>
-          <Action fn={dispatch => dispatch(creators.edit(x))} tip={'编辑'}>
+          <Action fn={dispatch => dispatch(creators.edit(x))} disabled={!x.editable} tip={'编辑'}>
             {'编辑'}
           </Action>
-          <Action fn={dispatch => dispatch(creators.remove(x))} tip={'删除'}>
+          <Action fn={dispatch => dispatch(creators.remove(x))} disabled={!x.editable} tip={'删除'}>
             {'删除'}
           </Action>
         </React.Fragment>

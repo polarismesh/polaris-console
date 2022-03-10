@@ -1,4 +1,3 @@
-import BasicLayout from '@src/polaris/common/components/BaseLayout'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import RuleLimitPageDuck from './PageDuck'
@@ -6,13 +5,12 @@ import { Button, Card, Justify, Table, Segment, Form, FormText, FormItem, Text, 
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
-import { filterable, selectable, expandable } from 'tea-component/lib/table/addons'
+import { selectable, expandable } from 'tea-component/lib/table/addons'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import csvColumns from './csvColumns'
-import { LimitResource, LimitType, LimitRange } from './model'
+import { LimitType, LimitRange } from './model'
 import { LIMIT_TYPE_MAP, LIMIT_THRESHOLD_MAP, LimitThresholdMode } from './types'
-import { MATCH_TYPE_MAP } from '../circuitBreaker/types'
-import { MATCH_TYPE, EDIT_TYPE_OPTION, EditType } from '../route/types'
+import { EDIT_TYPE_OPTION, EditType } from '../route/types'
 import { isReadOnly } from '../../utils'
 import Create from './operations/Create'
 insertCSS(
@@ -29,18 +27,18 @@ insertCSS(
 
 export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
   const { duck, store, dispatch } = props
-  const { creators, selectors, selector, ducks } = duck
+  const { creators, selector, ducks } = duck
   const handlers = React.useMemo(
     () => ({
       reload: () => dispatch(creators.reload()),
       export: () => dispatch(creators.export(csvColumns, 'service-list')),
       search: () => dispatch(creators.search('')),
       create: () => dispatch(creators.create()),
-      remove: (payload) => dispatch(creators.remove(payload)),
-      setExpandedKeys: (payload) => dispatch(creators.setExpandedKeys(payload)),
-      setLimitRange: (payload) => dispatch(creators.setLimitRange(payload)),
-      select: (payload) => dispatch(creators.setSelection(payload)),
-      setDrawerStatus: (payload) => dispatch(creators.setDrawerStatus(payload)),
+      remove: payload => dispatch(creators.remove(payload)),
+      setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
+      setLimitRange: payload => dispatch(creators.setLimitRange(payload)),
+      select: payload => dispatch(creators.setSelection(payload)),
+      setDrawerStatus: payload => dispatch(creators.setDrawerStatus(payload)),
       drawerSubmit: () => dispatch(creators.drawerSubmit()),
     }),
     [],
@@ -48,10 +46,8 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
   const columns = React.useMemo(() => getColumns(props), [])
   const {
     expandedKeys,
-    grid: { list },
     selection,
-    limitRange,
-    data: { namespace },
+    data: { namespace, editable },
     drawerStatus,
   } = selector(store)
   let createDuck
@@ -72,15 +68,16 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
               <Button
                 type={'primary'}
                 onClick={handlers.create}
-                disabled={isReadOnly(namespace)}
-                tooltip={isReadOnly(namespace) && '该命名空间为只读的'}
+                disabled={isReadOnly(namespace) || !editable}
+                tooltip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : ''}
                 style={{ marginTop: '20px' }}
               >
                 新建
               </Button>
               <Button
                 onClick={() => handlers.remove(selection)}
-                disabled={!selection || selection?.length <= 0}
+                disabled={!selection || selection?.length <= 0 || !editable}
+                tooltip={!editable ? '无写权限' : ''}
                 style={{ marginTop: '20px' }}
               >
                 删除
@@ -104,15 +101,14 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
               all: true,
               value: selection,
               onChange: handlers.select,
-              rowSelectable: (rowKey, { record }) => !isReadOnly(namespace),
+              rowSelectable: () => !isReadOnly(namespace),
             }),
             expandable({
               // 已经展开的产品
               expandedKeys,
               // 发生展开行为时，回调更新展开键值
-              onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
-              render: (record) => {
-                const method = record.labels?.['method'] || {}
+              onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
+              render: record => {
                 return (
                   <>
                     <Form>
@@ -121,9 +117,9 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
                     <Form style={{ marginTop: '15px' }}>
                       <FormItem label='限流条件'>
                         <FormText>
-                          {record.amounts.map((amount) => {
+                          {record.amounts.map((amount, index) => {
                             return (
-                              <Text parent='p'>
+                              <Text parent='p' key={index}>
                                 当{amount.validDuration}
                                 内，收到符合条件的请求超过
                                 {amount.maxAmount}个，将会进行

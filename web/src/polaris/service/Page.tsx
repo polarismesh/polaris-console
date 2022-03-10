@@ -2,27 +2,17 @@ import BasicLayout from '../common/components/BaseLayout'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import ServicePageDuck, { EmptyCustomFilter } from './PageDuck'
-import {
-  Button,
-  Card,
-  Justify,
-  Table,
-  Text,
-  Select,
-  Input,
-  InputAdornment,
-  FormItem,
-  Form,
-  FormText,
-} from 'tea-component'
+import { Button, Card, Justify, Table, FormItem, Form, FormText, TagSearchBox } from 'tea-component'
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
-import { selectable, expandable } from 'tea-component/lib/table/addons'
+import { selectable, expandable, filterable } from 'tea-component/lib/table/addons'
 import insertCSS from '../common/helpers/insertCSS'
 import csvColumns from './csvColumns'
 import { enableNearbyString } from './operation/CreateDuck'
 import { isReadOnly, showAllLabels } from './utils'
+import MetadataSelectPanel from '../common/components/MetadataSelectPanel'
+import { replaceTags } from '../configuration/utils'
 
 insertCSS(
   'service',
@@ -36,11 +26,62 @@ insertCSS(
 `,
 )
 
-const SEARCH_METHOD_OPTIONS = [
-  { text: '精确', value: 'accurate' },
-  { text: '模糊', value: 'vague' },
-]
+export const DefaultServiceTagAttribute = {
+  type: 'input',
+  key: 'serviceName',
+  name: '服务名',
+}
+export const NamespaceTagKey = 'namespace'
+export const ServiceNameTagKey = 'serviceName'
+export const MetadataTagKey = 'serviceTag'
 
+function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
+  const { duck, store } = props
+  const { namespaceList, customFilters } = duck.selector(store)
+  return [
+    {
+      type: 'single',
+      key: NamespaceTagKey,
+      name: '命名空间',
+      values: namespaceList,
+    },
+    {
+      type: 'input',
+      key: ServiceNameTagKey,
+      name: '服务名',
+    },
+    {
+      type: 'input',
+      key: 'department',
+      name: '部门',
+    },
+    {
+      type: 'input',
+      key: 'business',
+      name: '业务',
+    },
+    {
+      type: 'input',
+      key: 'host',
+      name: '实例IP',
+    },
+    {
+      type: 'render',
+      key: MetadataTagKey,
+      name: '标签键',
+      render: ({ onSelect }) => {
+        return (
+          <MetadataSelectPanel
+            metadata={[customFilters.serviceTag] || []}
+            onOk={newMetadata => {
+              onSelect(newMetadata)
+            }}
+          ></MetadataSelectPanel>
+        )
+      },
+    },
+  ]
+}
 export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
   const { duck, store, dispatch } = props
   const { creators, selector } = duck
@@ -55,185 +96,50 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
       select: payload => dispatch(creators.setSelection(payload)),
       remove: payload => dispatch(creators.remove(payload)),
       setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
+      changeTags: payload => dispatch(creators.changeTags(payload)),
     }),
     [],
   )
   const columns = React.useMemo(() => getColumns(props), [])
-  const { customFilters, selection, namespaceList, expandedKeys } = selector(store)
+  const {
+    customFilters,
+    selection,
+    namespaceList,
+    expandedKeys,
+    tags,
+    grid: { list },
+  } = selector(store)
   return (
     <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
         <Justify
           left={
-            <Form style={{ marginBottom: '20px' }} layout={'inline'}>
-              <FormItem label={<Text theme={'strong'}>命名空间</Text>} className='justify-search'>
-                <Select
-                  value={customFilters.namespace}
-                  options={namespaceList}
-                  onChange={value =>
-                    handlers.setCustomFilters({
-                      ...customFilters,
-                      namespace: value,
-                    })
-                  }
-                  type='simulate'
-                  appearance='button'
-                  style={{ width: '200px', color: 'black' }}
-                ></Select>
-              </FormItem>
-              <FormItem label={<Text theme={'strong'}>服务名</Text>} className='justify-search'>
-                <InputAdornment
-                  before={
-                    <Select
-                      options={SEARCH_METHOD_OPTIONS}
-                      value={customFilters.searchMethod}
-                      onChange={value =>
-                        handlers.setCustomFilters({
-                          ...customFilters,
-                          searchMethod: value,
-                        })
-                      }
-                      style={{ width: 'auto', marginRight: '0px' }}
-                    />
-                  }
-                >
-                  <Input
-                    value={customFilters.serviceName}
-                    onChange={value =>
-                      handlers.setCustomFilters({
-                        ...customFilters,
-                        serviceName: value,
-                      })
-                    }
-                    style={{ width: '128px' }}
-                  ></Input>
-                </InputAdornment>
-              </FormItem>
-              <FormItem label={<Text theme={'strong'}>部门</Text>} className='justify-search'>
-                <Input
-                  value={customFilters.department}
-                  onChange={value =>
-                    handlers.setCustomFilters({
-                      ...customFilters,
-                      department: value,
-                    })
-                  }
-                ></Input>
-              </FormItem>
-              <FormItem label={<Text theme={'strong'}>业务</Text>} className='justify-search'>
-                <InputAdornment
-                  before={
-                    <Select
-                      options={SEARCH_METHOD_OPTIONS.filter(item => item.value === 'vague')}
-                      value={'vague'}
-                      style={{ width: 'auto', marginRight: '0px' }}
-                    />
-                  }
-                >
-                  <Input
-                    value={customFilters.business}
-                    onChange={value =>
-                      handlers.setCustomFilters({
-                        ...customFilters,
-                        business: value,
-                      })
-                    }
-                    style={{ width: '128px' }}
-                  ></Input>
-                </InputAdornment>
-              </FormItem>
-              <FormItem label={<Text theme={'strong'}>服务标签</Text>} className='justify-search'>
-                <Input
-                  value={customFilters.serviceTag}
-                  onChange={value => {
-                    handlers.setCustomFilters({
-                      ...customFilters,
-                      serviceTag: value,
-                    })
-                  }}
-                  placeholder={'示例：Key:Value'}
-                ></Input>
-              </FormItem>
-              <FormItem label={<Text theme={'strong'}>实例IP</Text>} className='justify-search'>
-                <Input
-                  value={customFilters.instanceIp}
-                  onChange={value =>
-                    handlers.setCustomFilters({
-                      ...customFilters,
-                      instanceIp: value,
-                    })
-                  }
-                ></Input>
-              </FormItem>
-            </Form>
-          }
-        />
-        <Justify
-          left={
             <>
-              <Button type={'primary'} className={'justify-button'} onClick={handlers.search}>
-                查询
-              </Button>
-              <Button className={'justify-button'} onClick={handlers.clear}>
-                重置
-              </Button>
-              <span
-                style={{
-                  margin: '0px 20px',
-                }}
-              ></span>
               <Button type={'primary'} onClick={handlers.create}>
                 新建
               </Button>
-              <Button onClick={() => handlers.remove(selection)} disabled={selection.length === 0}>
+              <Button
+                onClick={() => handlers.remove(selection.map(id => list.find(service => id === service.id)))}
+                disabled={selection.length === 0}
+              >
                 删除
               </Button>
-
-              {/* <Dropdown
-                clickClose={false}
-                style={{ marginRight: 10 }}
-                button={<Button type="icon" icon="more" />}
-                appearance="pure"
-              >
-                {(close) => (
-                  <List type="option">
-                    {selection?.length === 0 ? (
-                      <List.Item
-                        onClick={() => {
-                          close();
-                        }}
-                        disabled={selection?.length === 0}
-                        tooltip={selection?.length === 0 && "请选择实例"}
-                      >
-                        复制服务名
-                      </List.Item>
-                    ) : (
-                      <Copy
-                        text={selection
-                          .map((id) => {
-                            const item = list.find((item) => id === item.id);
-                            return item?.name;
-                          })
-                          .join(";")}
-                      >
-                        <List.Item
-                          onClick={() => {
-                            close();
-                          }}
-                          disabled={selection?.length === 0}
-                          tooltip={selection?.length === 0 && "请选择实例"}
-                        >
-                          复制服务名
-                        </List.Item>
-                      </Copy>
-                    )}
-                  </List>
-                )}
-              </Dropdown> */}
             </>
           }
           right={
             <>
+              <TagSearchBox
+                attributes={getTagAttributes(props) as any}
+                style={{
+                  display: 'inline-block',
+                  verticalAlign: 'middle',
+                  width: '400px',
+                }}
+                value={tags}
+                onChange={value => handlers.changeTags(value)}
+                tips={'请选择条件进行过滤'}
+                hideHelp={true}
+              />
               <Button type={'icon'} icon={'refresh'} onClick={handlers.reload}></Button>
             </>
           }
@@ -250,7 +156,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               all: true,
               value: selection,
               onChange: handlers.select,
-              rowSelectable: (rowKey, { record }) => !isReadOnly(record.namespace),
+              rowSelectable: (rowKey, { record }) => !isReadOnly(record.namespace) && record.editable,
             }),
             expandable({
               // 已经展开的产品
@@ -266,7 +172,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                         {labelList
                           .slice(0, 5)
                           .map(item => `${item}:${record.metadata[item]}`)
-                          .join(' ; ') || '-'}
+                          .join(' ; ' || '-')}
                         {labelList.length > 5 && '...'}
                         {labelList.length > 5 && (
                           <Button onClick={() => showAllLabels(record.metadata)} type='link'>
@@ -284,6 +190,26 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                   </Form>
                 )
               },
+            }),
+            filterable({
+              type: 'single',
+              column: 'namespace',
+              value: customFilters.namespace,
+              onChange: value => {
+                const replacedTags = replaceTags(NamespaceTagKey, value, tags, namespaceList, {
+                  type: 'single',
+                  key: NamespaceTagKey,
+                  name: '命名空间',
+                  values: namespaceList,
+                })
+                handlers.changeTags(replacedTags)
+              },
+              all: {
+                text: '全部',
+                value: '',
+              },
+              // 选项列表
+              options: namespaceList,
             }),
           ]}
         />

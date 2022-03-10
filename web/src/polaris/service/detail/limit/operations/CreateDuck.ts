@@ -22,8 +22,8 @@ import { ComposedId, LimitThresholdMode, getTemplateRatelimit } from '../types'
 import tips from '@src/polaris/common/util/tips'
 import DynamicDuck from '@src/polaris/common/ducks/DynamicDuck'
 
-const convertMetadataMapInArray = (metadata) => {
-  const convertedMetadata = Object.keys(metadata).map((key) => {
+const convertMetadataMapInArray = metadata => {
+  const convertedMetadata = Object.keys(metadata).map(key => {
     return {
       key,
       value: metadata[key].value,
@@ -33,16 +33,16 @@ const convertMetadataMapInArray = (metadata) => {
   return convertedMetadata
 }
 
-const convertMetadataArrayToMap = (metadataArray) => {
+const convertMetadataArrayToMap = metadataArray => {
   const metadataMap = {}
-  metadataArray.forEach((metadata) => {
+  metadataArray.forEach(metadata => {
     const { key, value, type } = metadata
     metadataMap[key] = { value, type }
   })
   return metadataMap
 }
-const convertRuleValuesToParams = (ruleValues) => {
-  return ruleValues.map((rule) => {
+const convertRuleValuesToParams = ruleValues => {
+  return ruleValues.map(rule => {
     return {
       ...rule,
       metadata: convertMetadataArrayToMap(rule.metadata),
@@ -135,7 +135,7 @@ export default class LimitCreateDuck extends DetailPageDuck {
       offset: 0,
       limit: 100,
     })
-    let item = result.list.find((item) => item.id === ruleId)
+    let item = result.list.find(item => item.id === ruleId)
     if (item) {
       item = {
         ...item,
@@ -178,7 +178,7 @@ export default class LimitCreateDuck extends DetailPageDuck {
       namespace: currentNamespace,
       action: behavior,
       resource,
-      amounts: amounts.map((item) => ({
+      amounts: amounts.map(item => ({
         ...item,
         validDuration: item.validDuration.toString() + 's',
       })),
@@ -205,9 +205,8 @@ export default class LimitCreateDuck extends DetailPageDuck {
   *saga() {
     const { types, selector, creators, ducks } = this
     yield* super.saga()
-    yield takeLatest(types.LOAD, function* (action) {
+    yield takeLatest(types.LOAD, function*(action) {
       const { namespace, service, rule } = action.payload
-      console.log(rule)
       if (!rule) {
         const item = {
           service,
@@ -261,7 +260,7 @@ export default class LimitCreateDuck extends DetailPageDuck {
             labels: convertMetadataMapInArray(labels),
             editType: EditType.Manual,
             jsonValue,
-            amounts: item.amounts.map((item) => ({
+            amounts: item.amounts.map(item => ({
               ...item,
               validDuration: Number(item.validDuration.replace('s', '')),
             })),

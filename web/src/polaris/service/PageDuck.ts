@@ -8,13 +8,18 @@ import { showDialog } from '../common/helpers/showDialog'
 import Create from './operation/Create'
 import CreateDuck from './operation/CreateDuck'
 import { put, select } from 'redux-saga/effects'
-import { Modal } from 'tea-component'
+import { Modal, TagValue } from 'tea-component'
+import { checkAuth } from '../auth/model'
+import { KeyValuePair } from '../configuration/fileGroup/types'
+import { DefaultServiceTagAttribute, ServiceNameTagKey, MetadataTagKey } from './Page'
+import { PolarisTokenKey } from '../common/util/common'
+import router from '../common/util/router'
 
 export const EmptyCustomFilter = {
   namespace: '',
   serviceName: '',
   instanceIp: '',
-  serviceTag: '',
+  serviceTag: { key: '', value: '' },
   searchMethod: 'accurate',
   department: '',
   business: '',
@@ -24,7 +29,7 @@ interface Filter extends BaseFilter {
   namespace: string
   serviceName: string
   instanceIp: string
-  serviceTag: string
+  serviceTag: KeyValuePair
   searchMethod?: string
   department?: string
   business?: string
@@ -33,11 +38,12 @@ interface CustomFilters {
   namespace?: string
   serviceName?: string
   instanceIp?: string
-  serviceTag?: string
+  serviceTag?: KeyValuePair
   searchMethod?: string
   department?: string
   business?: string
 }
+
 export interface NamespaceItem extends Namespace {
   text: string
   value: string
@@ -60,6 +66,9 @@ export default class ServicePageDuck extends GridPageDuck {
       SET_SELECTION,
       SET_NAMESPACE_LIST,
       SET_EXPANDED_KEYS,
+      SET_AUTH_OPEN,
+      CHANGE_TAGS,
+      SET_TAGS,
     }
     return {
       ...super.quickTypes,
@@ -73,7 +82,7 @@ export default class ServicePageDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH]
+    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS]
   }
   get params() {
     return [...super.params]
@@ -91,6 +100,8 @@ export default class ServicePageDuck extends GridPageDuck {
       selection: reduceFromPayload<string[]>(types.SET_SELECTION, []),
       namespaceList: reduceFromPayload<NamespaceItem[]>(types.SET_NAMESPACE_LIST, []),
       expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
+      authOpen: reduceFromPayload<boolean>(types.SET_AUTH_OPEN, false),
+      tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
     }
   }
   get creators() {
@@ -99,10 +110,11 @@ export default class ServicePageDuck extends GridPageDuck {
       ...super.creators,
       setCustomFilters: createToPayload<CustomFilters>(types.SET_CUSTOM_FILTERS),
       edit: createToPayload<Service>(types.EDIT),
-      remove: createToPayload<string[]>(types.REMOVE),
+      remove: createToPayload<Service[]>(types.REMOVE),
       create: createToPayload<void>(types.CREATE),
       setSelection: createToPayload<string[]>(types.SET_SELECTION),
       setExpandedKeys: createToPayload<string[]>(types.SET_EXPANDED_KEYS),
+      changeTags: createToPayload(types.CHANGE_TAGS),
     }
   }
   get rawSelectors() {
@@ -132,8 +144,8 @@ export default class ServicePageDuck extends GridPageDuck {
       ...item,
       text: item.name,
       value: item.name,
+      key: item.name,
     }))
-    options.unshift({ text: '全部', value: '' })
     yield put({
       type: this.types.SET_NAMESPACE_LIST,
       payload: options,
@@ -143,7 +155,14 @@ export default class ServicePageDuck extends GridPageDuck {
   *saga() {
     const { types, creators, selector, ducks } = this
     yield* super.saga()
-    yield* this.loadNamespaceList()
+    const authOpen = yield checkAuth({})
+    yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
+    if (authOpen) {
+      if (window.localStorage.getItem(PolarisTokenKey)) yield* this.loadNamespaceList()
+      else router.navigate('/login')
+    } else {
+      yield* this.loadNamespaceList()
+    }
     yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
       const { list } = action.payload
       const { selection } = selector(yield select())
@@ -151,11 +170,12 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put(creators.setSelection(validSelection))
     })
     yield takeLatest(types.CREATE, function*() {
+      const { authOpen } = selector(yield select())
       const res = yield* resolvePromise(
         new Promise(resolve => {
           showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
-              resolve(yield* duck.execute({}, { isModify: false }))
+              resolve(yield* duck.execute({}, { isModify: false, authOpen }))
             } finally {
               resolve(false)
             }
@@ -166,13 +186,32 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
+    yield takeLatest(types.CHANGE_TAGS, function*(action) {
+      const tags = action.payload
+      const customFilters = { ...EmptyCustomFilter }
+      const validTags = tags.map(item => {
+        if (item.attr) return item
+        else return { ...item, attr: DefaultServiceTagAttribute }
+      })
+      yield put({ type: types.SET_TAGS, payload: validTags })
+      validTags.forEach(tag => {
+        const key = tag?.attr?.key || ServiceNameTagKey
+        if (key === MetadataTagKey) {
+          customFilters[key] = tag.values.map(item => ({ key: item.key, value: item.value }))
+        } else {
+          if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
+          else customFilters[key] = tag.values[0].key || tag.values[0].value
+        }
+      })
+      yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
+    })
     yield takeLatest(types.EDIT, function*(action) {
       const data = action.payload
       const res = yield* resolvePromise(
         new Promise(resolve => {
           showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
-              resolve(yield* duck.execute(data, { isModify: true }))
+              resolve(yield* duck.execute(data, { isModify: true, authOpen }))
             } finally {
               resolve(false)
             }
@@ -185,10 +224,15 @@ export default class ServicePageDuck extends GridPageDuck {
     })
     yield takeLatest(types.REMOVE, function*(action) {
       const data = action.payload
-      const params = data.map(item => {
-        const [namespace, name] = item.split('#')
-        return { namespace, name }
-      })
+      const params = data
+        .map(item => {
+          if (!item) {
+            return
+          }
+          const { namespace, name } = item
+          return { namespace, name }
+        })
+        .filter(item => item)
       const confirm = yield Modal.confirm({
         message: `确认删除服务`,
         description: '删除后，无法恢复',
@@ -201,19 +245,16 @@ export default class ServicePageDuck extends GridPageDuck {
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, serviceTag, instanceIp, searchMethod, department, business } = filters
-    const [keys, values] = serviceTag.split(':')
-    let serviceName = filters.serviceName
-    if (searchMethod === 'vague' && serviceName) {
-      serviceName = serviceName + '*'
-    }
+    const { page, count, namespace, serviceTag, instanceIp, department, business } = filters
+    const { key, value } = serviceTag?.[0] || {}
+    const serviceName = filters.serviceName
     const result = await describeServices({
       limit: count,
       offset: (page - 1) * count,
       namespace: namespace || undefined,
       name: serviceName || undefined,
-      keys: keys || undefined,
-      values: values || undefined,
+      keys: key || undefined,
+      values: value || undefined,
       host: instanceIp || undefined,
       department: department || undefined,
       business: business || undefined,
@@ -223,7 +264,7 @@ export default class ServicePageDuck extends GridPageDuck {
       list:
         result.list?.map(item => ({
           ...item,
-          id: `${item.namespace}#${item.name}`,
+          id: item.id || `${item.namespace}#${item.name}`,
         })) || [],
     }
   }

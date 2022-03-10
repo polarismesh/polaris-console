@@ -1,7 +1,6 @@
-import BasicLayout from "@src/polaris/common/components/BaseLayout";
-import React, { useRef } from "react";
-import { DuckCmpProps } from "saga-duck";
-import ServicePageDuck from "./PageDuck";
+import React, { useRef } from 'react'
+import { DuckCmpProps } from 'saga-duck'
+import ServicePageDuck from './PageDuck'
 import {
   Button,
   Card,
@@ -14,31 +13,21 @@ import {
   Drawer,
   Text,
   MonacoEditor,
-  Alert,
   H3,
   Row,
   Col,
-} from "tea-component";
-import GridPageGrid from "@src/polaris/common/duckComponents/GridPageGrid";
-import GridPagePagination from "@src/polaris/common/duckComponents/GridPagePagination";
-import getColumns from "./getColumns";
-import {
-  filterable,
-  selectable,
-  expandable,
-} from "tea-component/lib/table/addons";
-import insertCSS from "@src/polaris/common/helpers/insertCSS";
-import {
-  RULE_TYPE_OPTIONS,
-  EDIT_TYPE_OPTION,
-  EditType,
-  RuleType,
-} from "./types";
-import { isReadOnly } from "../../utils";
-import Create from "./operations/Create";
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+} from 'tea-component'
+import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
+import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
+import getColumns from './getColumns'
+import { expandable } from 'tea-component/lib/table/addons'
+import insertCSS from '@src/polaris/common/helpers/insertCSS'
+import { RULE_TYPE_OPTIONS, EDIT_TYPE_OPTION, EditType, RuleType } from './types'
+import { isReadOnly } from '../../utils'
+import Create from './operations/Create'
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 insertCSS(
-  "service-detail-instance",
+  'service-detail-instance',
   `
 .justify-search{
   margin-right:20px
@@ -46,124 +35,105 @@ insertCSS(
 .justify-button{
   vertical-align: bottom
 }
-`
-);
+`,
+)
 
-export default function ServiceInstancePage(
-  props: DuckCmpProps<ServicePageDuck>
-) {
-  const { duck, store, dispatch } = props;
-  const { creators, selectors, selector, ducks } = duck;
+export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>) {
+  const { duck, store, dispatch } = props
+  const { creators, selector, ducks } = duck
   const handlers = React.useMemo(
     () => ({
       reload: () => dispatch(creators.reload()),
-      search: () => dispatch(creators.search("")),
+      search: () => dispatch(creators.search('')),
       create: (payload = 0) => dispatch(creators.create(payload)),
-      remove: (payload) => dispatch(creators.remove(payload)),
+      remove: payload => dispatch(creators.remove(payload)),
       drawerSubmit: () => dispatch(creators.drawerSubmit()),
       submit: () => dispatch(creators.submit()),
       reset: () => dispatch(creators.reset()),
-      setDrawerStatus: (payload) => dispatch(creators.setDrawerStatus(payload)),
-      setExpandedKeys: (payload) => dispatch(creators.setExpandedKeys(payload)),
-      setRuleType: (payload) => dispatch(creators.setRuleType(payload)),
-      setEditType: (payload) => dispatch(creators.setEditType(payload)),
-      setJsonValue: (payload) => dispatch(creators.setJsonValue(payload)),
+      setDrawerStatus: payload => dispatch(creators.setDrawerStatus(payload)),
+      setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
+      setRuleType: payload => dispatch(creators.setRuleType(payload)),
+      setEditType: payload => dispatch(creators.setEditType(payload)),
+      setJsonValue: payload => dispatch(creators.setJsonValue(payload)),
     }),
-    []
-  );
-  const columns = getColumns(props);
+    [],
+  )
+  const columns = getColumns(props)
   const {
     expandedKeys,
-    grid: { list },
     ruleType,
     data: { namespace },
     drawerStatus,
     edited,
     jsonValue,
     editType,
-  } = selector(store);
-  let createDuck;
+    data: { editable },
+  } = selector(store)
+  let createDuck
   if (drawerStatus.visible) {
-    createDuck = ducks.dynamicCreateDuck.getDuck(drawerStatus.createId);
+    createDuck = ducks.dynamicCreateDuck.getDuck(drawerStatus.createId)
   }
-  const ref = useRef(null);
+  const ref = useRef(null)
 
   return (
     <>
       <Table.ActionPanel>
-        <Form layout="inline">
-          <FormItem label={"编辑格式"}>
-            <Segment
-              options={EDIT_TYPE_OPTION}
-              value={editType}
-              onChange={handlers.setEditType}
-            ></Segment>
+        <Form layout='inline'>
+          <FormItem label={'编辑格式'}>
+            <Segment options={EDIT_TYPE_OPTION} value={editType} onChange={handlers.setEditType}></Segment>
           </FormItem>
         </Form>
-        <Form layout="inline">
-          <FormItem label={"规则类型"}>
-            <Segment
-              options={RULE_TYPE_OPTIONS}
-              value={ruleType}
-              onChange={handlers.setRuleType}
-            ></Segment>
+        <Form layout='inline'>
+          <FormItem label={'规则类型'}>
+            <Segment options={RULE_TYPE_OPTIONS} value={ruleType} onChange={handlers.setRuleType}></Segment>
           </FormItem>
         </Form>
         <Justify
           left={
             <>
               <Button
-                type={"primary"}
+                type={'primary'}
+                onClick={() => handlers.create()}
+                disabled={isReadOnly(namespace) || !editable || drawerStatus.visible}
+                tooltip={!editable ? '无写权限' : '新建一条规则'}
+                style={{ marginTop: '20px' }}
+              >
+                新建
+              </Button>
+              <Button
+                type={'primary'}
                 onClick={() => handlers.submit()}
-                disabled={
-                  isReadOnly(namespace) || drawerStatus.visible || !edited
-                }
+                disabled={isReadOnly(namespace) || drawerStatus.visible || !edited || !editable}
                 tooltip={
                   isReadOnly(namespace)
-                    ? "该命名空间为只读的"
+                    ? '该命名空间为只读的'
                     : !edited
-                    ? "未更改"
-                    : "向服务器端提交变更"
+                    ? '未更改'
+                    : !editable
+                    ? '无写权限'
+                    : '向服务器端提交变更'
                 }
-                style={{ marginTop: "20px" }}
+                style={{ marginTop: '20px' }}
               >
                 提交
               </Button>
               {edited && (
-                <Button
-                  onClick={() => handlers.reset()}
-                  style={{ marginTop: "20px" }}
-                >
+                <Button onClick={() => handlers.reset()} style={{ marginTop: '20px' }}>
                   取消
                 </Button>
               )}
-              <Button
-                type={"primary"}
-                onClick={() => handlers.create()}
-                disabled={isReadOnly(namespace) || drawerStatus.visible}
-                tooltip={"新建一条规则"}
-                style={{ marginTop: "20px" }}
-              >
-                新建
-              </Button>
             </>
           }
-          right={
-            <Button
-              type={"icon"}
-              icon={"refresh"}
-              onClick={handlers.reload}
-            ></Button>
-          }
+          right={<Button type={'icon'} icon={'refresh'} onClick={handlers.reload}></Button>}
         />
       </Table.ActionPanel>
       {editType === EditType.Table ? (
         <Card>
           <Card.Header>
-            <H3 style={{ padding: "10px", color: "black" }}>
+            <H3 style={{ padding: '10px', color: 'black' }}>
               {ruleType === RuleType.Inbound
-                ? "当以下服务调用本服务时，遵守下列路由规则"
-                : "当本服务调用以下服务时，遵守以下路由规则"}
+                ? '当以下服务调用本服务时，遵守下列路由规则'
+                : '当本服务调用以下服务时，遵守以下路由规则'}
             </H3>
           </Card.Header>
           <GridPageGrid
@@ -176,66 +146,50 @@ export default function ServiceInstancePage(
                 // 已经展开的产品
                 expandedKeys,
                 // 发生展开行为时，回调更新展开键值
-                onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
-                render: (record) => {
-                  const requestFrom =
-                    (ruleType === RuleType.Inbound
-                      ? record.sources
-                      : record.destinations) || [];
+                onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
+                render: record => {
                   return (
                     <>
-                      <Form style={{ marginBottom: "20px" }}>
-                        <FormItem
-                          label={
-                            "如果请求标签匹配，按权重和优先级路由到以下实例分组"
-                          }
-                        ></FormItem>
+                      <Form style={{ marginBottom: '20px' }}>
+                        <FormItem label={'如果请求标签匹配，按权重和优先级路由到以下实例分组'}></FormItem>
                       </Form>
                       {record.destinations.map((destination, index) => {
                         return (
-                          <Row>
-                            <Col span={2} style={{ paddingTop: "0" }}>
-                              <Text
-                                style={{ lineHeight: "30px" }}
-                                theme={"label"}
-                              >{`实例分组${index + 1}`}</Text>
+                          <Row key={index}>
+                            <Col span={2} style={{ paddingTop: '0' }}>
+                              <Text style={{ lineHeight: '30px' }} theme={'label'}>{`实例分组${index + 1}`}</Text>
                             </Col>
-                            <Col span={22} style={{ paddingTop: "0" }}>
-                              <Form layout="inline">
-                                <FormItem label="命名空间">
+                            <Col span={22} style={{ paddingTop: '0' }}>
+                              <Form layout='inline'>
+                                <FormItem label='命名空间'>
                                   <FormText>{destination.namespace}</FormText>
                                 </FormItem>
-                                <FormItem label="服务">
+                                <FormItem label='服务'>
                                   <FormText>{destination.service}</FormText>
                                 </FormItem>
-                                <FormItem label="实例标签">
+                                <FormItem label='实例标签'>
                                   <FormText>
                                     {Object.keys(destination.metadata)
-                                      .map(
-                                        (key) =>
-                                          `${key}:${destination.metadata[key].value}`
-                                      )
-                                      .join(" ; ")}
+                                      .map(key => `${key}:${destination.metadata[key].value}`)
+                                      .join(' ; ')}
                                   </FormText>
                                 </FormItem>
-                                <FormItem label="权重">
+                                <FormItem label='权重'>
                                   <FormText>{destination.weight}</FormText>
                                 </FormItem>
-                                <FormItem label="优先级">
+                                <FormItem label='优先级'>
                                   <FormText>{destination.priority}</FormText>
                                 </FormItem>
-                                <FormItem label="是否隔离">
-                                  <FormText>
-                                    {destination.isolate ? "隔离" : "不隔离"}
-                                  </FormText>
+                                <FormItem label='是否隔离'>
+                                  <FormText>{destination.isolate ? '隔离' : '不隔离'}</FormText>
                                 </FormItem>
                               </Form>
                             </Col>
                           </Row>
-                        );
+                        )
                       })}
                     </>
-                  );
+                  )
                 },
               }),
             ]}
@@ -245,15 +199,15 @@ export default function ServiceInstancePage(
       ) : (
         <Card>
           <Card.Body>
-            <section style={{ border: "1px solid #ebebeb" }}>
+            <section style={{ border: '1px solid #ebebeb' }}>
               <MonacoEditor
                 ref={ref}
                 monaco={monaco}
                 height={800}
-                language="json"
+                language='json'
                 value={jsonValue}
-                onChange={(value) => {
-                  handlers.setJsonValue(value);
+                onChange={value => {
+                  handlers.setJsonValue(value)
                 }}
               />
             </section>
@@ -266,33 +220,27 @@ export default function ServiceInstancePage(
         disableCloseIcon={true}
         visible={drawerStatus.visible}
         onClose={() => {}}
-        style={{ width: "1000px" }}
+        style={{ width: '1000px' }}
         footer={
           <>
             <Button
-              type={"primary"}
+              type={'primary'}
               onClick={createDuck ? () => handlers.drawerSubmit() : undefined}
-              style={{ margin: "0 10px" }}
+              style={{ margin: '0 10px' }}
             >
               确定
             </Button>
             <Button
-              onClick={
-                createDuck
-                  ? () => handlers.setDrawerStatus({ visible: false })
-                  : undefined
-              }
-              style={{ margin: "0 10px" }}
+              onClick={createDuck ? () => handlers.setDrawerStatus({ visible: false }) : undefined}
+              style={{ margin: '0 10px' }}
             >
               取消
             </Button>
           </>
         }
       >
-        {createDuck && (
-          <Create duck={createDuck} store={store} dispatch={dispatch}></Create>
-        )}
+        {createDuck && <Create duck={createDuck} store={store} dispatch={dispatch}></Create>}
       </Drawer>
     </>
-  );
+  )
 }

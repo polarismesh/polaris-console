@@ -45,7 +45,7 @@ func Router(config *bootstrap.Config) {
 	r.POST("/log/search/elasticsearch", handlers.ReverseProxyForLogRecord(&config.ZhiYan))
 
 	// 后端server路由组
-	v1 := r.Group(config.WebServer.RequestURL)
+	v1 := r.Group(config.WebServer.NamingURL)
 	// 创建命名空间
 	v1.POST("/namespaces", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
 	// 创建服务
@@ -129,6 +129,8 @@ func Router(config *bootstrap.Config) {
 	mv1 := r.Group(config.WebServer.MonitorURL)
 	mv1.GET("/query_range", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
 	mv1.GET("/label/:resource/values", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
+
+	AuthRouter(r, config)
 
 	address := fmt.Sprintf("%v:%v", config.WebServer.ListenIP, config.WebServer.ListenPort)
 	r.Run(address)

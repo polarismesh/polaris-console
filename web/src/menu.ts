@@ -11,6 +11,10 @@ export const MenuConfig = {
       title: '命名空间',
       icon: ['/static/img/namespace.svg', '/static/img/namespace.svg'],
     },
+    alias: {
+      title: '服务别名',
+      icon: ['/static/img/namespace.svg', '/static/img/namespace.svg'],
+    },
   },
   configuration: {
     isGroup: true,
@@ -21,6 +25,22 @@ export const MenuConfig = {
     },
     'file-release-history': {
       title: '发布历史',
+      icon: ['/static/img/circuit-monitor.svg', '/static/img/circuit-monitor.svg'],
+    },
+  },
+  auth: {
+    isGroup: true,
+    title: '权限控制',
+    user: {
+      title: '用户',
+      icon: ['/static/img/route-monitor.svg', '/static/img/route-monitor.svg'],
+    },
+    usergroup: {
+      title: '用户组',
+      icon: ['/static/img/circuit-monitor.svg', '/static/img/circuit-monitor.svg'],
+    },
+    policy: {
+      title: '策略',
       icon: ['/static/img/circuit-monitor.svg', '/static/img/circuit-monitor.svg'],
     },
   },
