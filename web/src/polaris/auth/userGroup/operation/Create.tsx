@@ -5,7 +5,7 @@ import { Form, Text, FormItem, FormText } from 'tea-component'
 import { User } from '../../model'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
-import { isOwner } from '@src/polaris/common/util/common'
+import { getOwnerUin, isOwner } from '@src/polaris/common/util/common'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import SearchableTransfer from '@src/polaris/common/duckComponents/SearchableTransfer'
 
@@ -39,7 +39,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
             store={store}
             dispatch={dispatch}
             itemDisabled={(record: User) =>
-              options.isModify && !isOwner() && !!options.users.find(item => item.id === record.id)
+              options.isModify && record.id === getOwnerUin() && !!options.users.find(item => item.id === record.id)
             }
             itemRenderer={(record: User) => (
               <Text overflow>

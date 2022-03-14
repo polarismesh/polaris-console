@@ -35,102 +35,28 @@ func Router(config *bootstrap.Config) {
 
 	// 加载界面
 	r.LoadHTMLGlob(config.WebServer.WebPath + "index.html")
-	r.GET("/", handlers.PolarisPage(&config.OAAuthority))
+	r.GET("/", handlers.PolarisPage(config))
 
 	// 获取部门数据
-	r.GET("/HRFoundation-Unit", handlers.GetDepartment(&config.HRData, &config.OAAuthority))
+	r.GET("/HRFoundation-Unit", handlers.GetDepartment(config))
 	// 通过企业微信名获取部门数据
-	r.GET("/getStaffDept", handlers.ReverseProxyForDepartment(&config.HRData, &config.OAAuthority))
+	r.GET("/getStaffDept", handlers.ReverseProxyForDepartment(&config.HRData, config))
 	// 查询路由/限流/熔断日志记录
 	r.POST("/log/search/elasticsearch", handlers.ReverseProxyForLogRecord(&config.ZhiYan))
-
-	// 后端server路由组
-	v1 := r.Group(config.WebServer.NamingURL)
-	// 创建命名空间
-	v1.POST("/namespaces", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	// 创建服务
-	v1.POST("/services", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	// 创建服务别名
-	v1.POST("/service/alias", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 创建服务实例
-	v1.POST("/instances", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 创建路由
-	v1.POST("/routings", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 创建限流规则
-	v1.POST("/ratelimits", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 创建熔断规则
-	v1.POST("/circuitbreakers", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	// 创建熔断规则版本
-	v1.POST("/circuitbreakers/version", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 发布熔断规则（已经在前端对负责人信息进行校验）
-	v1.POST("/circuitbreakers/release", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-
-	// 查看资源
-	v1.GET("/:resource", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	// 查看服务绑定的熔断规则
-	v1.GET("/:resource/circuitbreaker", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	// 查看master版本的规则
-	v1.GET("/:resource/master", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	// 查看已发布的规则
-	v1.GET("/:resource/release", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	// 查看规则的所有版本
-	v1.GET("/:resource/versions", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	// 查看服务和实例个数
-	v1.GET("/:resource/count", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	// 查看服务别名
-	v1.GET("/:resource/aliases", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	// 查看Token，需要鉴权
-	v1.GET("/:resource/token", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-
-	// 修改资源
-	v1.PUT("/:resource", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 修改Token
-	v1.PUT("/:resource/token", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-
-	// 删除命名空间
-	v1.POST("/namespaces/delete", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 删除服务或服务别名
-	v1.POST("/services/delete", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 删除服务实例
-	v1.POST("/instances/delete", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 删除路由
-	v1.POST("/routings/delete", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 删除限流规则
-	v1.POST("ratelimits/delete", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 删除熔断规则
-	v1.POST("circuitbreakers/delete", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-	// 解绑熔断规则
-	v1.POST("circuitbreakers/unbind", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, true))
-
-	// 配置中心
-	configV1 := r.Group(config.WebServer.ConfigURL)
-	// 配置文件组
-	configV1.POST("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	configV1.GET("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	configV1.DELETE("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	configV1.PUT("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-
-	// 配置文件
-	configV1.POST("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	configV1.GET("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	configV1.GET("configfiles/search", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	configV1.PUT("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	configV1.DELETE("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	configV1.DELETE("configfiles/batchdelete", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-
-	// 配置文件发布
-	configV1.POST("configfiles/release", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-	configV1.GET("configfiles/release", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
-
-	// 配置文件发布历史
-	configV1.GET("configfiles/releasehistory", handlers.ReverseProxyForServer(&config.PolarisServer, &config.OAAuthority, false))
 
 	// 监控请求路由组
 	mv1 := r.Group(config.WebServer.MonitorURL)
 	mv1.GET("/query_range", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
 	mv1.GET("/label/:resource/values", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
 
+	// 鉴权请求
 	AuthRouter(r, config)
+
+	// 服务请求
+	DiscoveryRouter(r, config)
+
+	// 配置请求
+	ConfigRouter(r, config)
 
 	address := fmt.Sprintf("%v:%v", config.WebServer.ListenIP, config.WebServer.ListenPort)
 	r.Run(address)
