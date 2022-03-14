@@ -23,10 +23,59 @@ import (
 	"os"
 
 	"github.com/polarismesh/polaris-console/common/log"
-	"github.com/polarismesh/polaris-console/handlers"
 
 	"gopkg.in/yaml.v2"
 )
+
+
+/**
+ * @brief OA鉴权
+ */
+ type OAAuthority struct {
+	EnableOAAuth bool   `yaml:"enableOAAuth"`
+	OAToken      string `yaml:"oaToken"`
+}
+
+/**
+ * 回复请求
+ */
+ type StaffDepartment struct {
+	Name       string `json:"ChnName"`
+	Department string `json:"DeptNameString"`
+}
+
+
+/**
+ * @brief polaris server配置
+ */
+ type PolarisServer struct {
+	Address      string `yaml:"address"`
+	PolarisToken string `yaml:"polarisToken"`
+}
+
+type MonitorServer struct {
+	Address string `yaml:"address"`
+}
+
+/**
+ * @brief 查询部门名称的地址
+ */
+type HRData struct {
+	EnableHRData  bool   `yaml:"enableHrData"`
+	UnitAddress   string `yaml:"unitAddress"`
+	DepartmentURL string `yaml:"departmentURL"`
+	StaffURL      string `yaml:"staffURL"`
+	HRToken       string `yaml:"hrToken"`
+}
+
+/**
+ * @brief 智研系统相关配置
+ */
+type ZhiYan struct {
+	Host        string `yaml:"host"`
+	Token       string `yaml:"token"`
+	ProjectName string `yaml:"projectName"`
+}
 
 /**
  * @brief 配置
@@ -34,11 +83,11 @@ import (
 type Config struct {
 	Logger        log.Options            `yaml:"logger"`
 	WebServer     WebServer              `yaml:"webServer"`
-	PolarisServer handlers.PolarisServer `yaml:"polarisServer"`
-	MonitorServer handlers.MonitorServer `yaml:"monitorServer"`
-	OAAuthority   handlers.OAAuthority   `yaml:"oaAuthority"`
-	HRData        handlers.HRData        `yaml:"hrData"`
-	ZhiYan        handlers.ZhiYan        `yaml:"zhiYan"`
+	PolarisServer PolarisServer `yaml:"polarisServer"`
+	MonitorServer MonitorServer `yaml:"monitorServer"`
+	OAAuthority   OAAuthority   `yaml:"oaAuthority"`
+	HRData        HRData        `yaml:"hrData"`
+	ZhiYan        ZhiYan        `yaml:"zhiYan"`
 }
 
 /**

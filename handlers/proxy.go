@@ -23,40 +23,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/polarismesh/polaris-console/bootstrap"
 	"github.com/polarismesh/polaris-console/common/log"
 )
-
-/**
- * @brief polaris server配置
- */
-type PolarisServer struct {
-	Address      string `yaml:"address"`
-	PolarisToken string `yaml:"polarisToken"`
-}
-
-type MonitorServer struct {
-	Address string `yaml:"address"`
-}
-
-/**
- * @brief 查询部门名称的地址
- */
-type HRData struct {
-	EnableHRData  bool   `yaml:"enableHrData"`
-	UnitAddress   string `yaml:"unitAddress"`
-	DepartmentURL string `yaml:"departmentURL"`
-	StaffURL      string `yaml:"staffURL"`
-	HRToken       string `yaml:"hrToken"`
-}
-
-/**
- * @brief 智研系统相关配置
- */
-type ZhiYan struct {
-	Host        string `yaml:"host"`
-	Token       string `yaml:"token"`
-	ProjectName string `yaml:"projectName"`
-}
 
 /**
  * @brief 服务(规则)负责人信息
@@ -70,13 +39,13 @@ type ServiceOwner struct {
 /**
  * @brief 反向代理
  */
-func ReverseProxyForServer(polarisServer *PolarisServer, oaAuthority *OAAuthority, check bool) gin.HandlerFunc {
+func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config, check bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if ok := authority(c, oaAuthority); !ok {
+		if ok := authority(c, conf); !ok {
 			return
 		}
 
-		if oaAuthority != nil && oaAuthority.EnableOAAuth && check {
+		if &conf.OAAuthority != nil && !conf.OAAuthority.EnableOAAuth && check {
 			// 检查负责人
 			if ok := checkOwner(c); !ok {
 				return
@@ -96,7 +65,42 @@ func ReverseProxyForServer(polarisServer *PolarisServer, oaAuthority *OAAuthorit
 	}
 }
 
-func ReverseProxyForMonitorServer(monitorServer *MonitorServer) gin.HandlerFunc {
+/**
+ * @brief 反向代理
+ */
+func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config, check bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if ok := authority(c, conf); !ok {
+			c.Status(http.StatusProxyAuthRequired)
+			return
+		}
+
+		if ok := checkAuthoration(c, conf); !ok {
+			c.Status(http.StatusProxyAuthRequired)
+			return
+		}
+
+		if &conf.OAAuthority != nil && conf.OAAuthority.EnableOAAuth && check {
+			// 检查负责人
+			if ok := checkOwner(c); !ok {
+				return
+			}
+		}
+
+		c.Request.Header.Add("Polaris-Token", polarisServer.PolarisToken)
+		c.Request.Header.Del("Cookie")
+
+		director := func(req *http.Request) {
+			req.URL.Scheme = "http"
+			req.URL.Host = polarisServer.Address
+			req.Host = polarisServer.Address
+		}
+		proxy := &httputil.ReverseProxy{Director: director}
+		proxy.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+func ReverseProxyForMonitorServer(monitorServer *bootstrap.MonitorServer) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		director := func(req *http.Request) {
@@ -171,9 +175,9 @@ func convertServiceOwners(headerOwner string) []*ServiceOwner {
 /**
  * @brief department的反向代理
  */
-func ReverseProxyForDepartment(hrData *HRData, oaAuthority *OAAuthority) gin.HandlerFunc {
+func ReverseProxyForDepartment(hrData *bootstrap.HRData, conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if ok := authority(c, oaAuthority); !ok {
+		if ok := authority(c, conf); !ok {
 			return
 		}
 
@@ -184,7 +188,7 @@ func ReverseProxyForDepartment(hrData *HRData, oaAuthority *OAAuthority) gin.Han
 /**
  * @brief 熔断记录查询的反向代理
  */
-func ReverseProxyForLogRecord(zhiyan *ZhiYan) gin.HandlerFunc {
+func ReverseProxyForLogRecord(zhiyan *bootstrap.ZhiYan) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		director := func(req *http.Request) {
 			req.URL.Scheme = "http"

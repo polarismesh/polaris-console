@@ -558,6 +558,7 @@ export interface LoginUserParams {
   /** 用户组ID */
   name: string
   password: string
+  owner: string
 }
 /** **DescribeGovernanceGroupDetail出参**
 
