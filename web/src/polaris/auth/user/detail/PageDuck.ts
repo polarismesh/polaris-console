@@ -20,6 +20,7 @@ import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import CreateUser from '../operation/CreateUser'
 import { userLogout, getUin } from '@src/polaris/common/util/common'
 import { delay } from 'redux-saga'
+import UseableResourceFetcher from '../../common/UseableResourceFetcher'
 
 interface ComposedId {
   id: string
@@ -40,6 +41,7 @@ export default abstract class CreateDuck extends DetailPage {
       MODIFY_COMMENT,
       MODIFY,
       MODIFY_PASSWORD,
+      FETCH_USEABLE_RESOURCE,
     }
     return {
       ...super.quickTypes,
@@ -62,6 +64,7 @@ export default abstract class CreateDuck extends DetailPage {
       ...super.quickDucks,
       policy: PolicyPageDuck,
       userGroup: UserGroupDuck,
+      useableResource: UseableResourceFetcher,
     }
   }
   get reducers() {
@@ -95,7 +98,7 @@ export default abstract class CreateDuck extends DetailPage {
   *saga() {
     yield* super.saga()
     const {
-      ducks: { policy, userGroup },
+      ducks: { policy, userGroup, useableResource },
       types,
       selectors,
       selector,
@@ -105,6 +108,7 @@ export default abstract class CreateDuck extends DetailPage {
       const { id } = selectors.composedId(yield select())
       yield put(policy.creators.load({ principalId: id, principalType: AuthSubjectType.USER }))
       yield put(userGroup.creators.load({ userId: id }, {}))
+      yield put(useableResource.creators.fetch({ principal_id: id, principal_type: AuthSubjectType.USER }))
     })
     yield takeLatest(types.MODIFY_COMMENT, function*() {
       const { id } = yield select(selectors.composedId)

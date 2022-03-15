@@ -520,6 +520,34 @@ export interface DescribeGovernanceGroupsResult {
   /** 用户组列表 */
   userGroups: UserGroup[]
 }
+/** 查询治理中心用户组列表 */
+export async function describePrincipalResources(params: DescribePrincipalResourcesParams) {
+  const result = await getApiRequest<DescribePrincipalResourcesResult>({
+    action: 'core/v1/auth/principal/resources',
+    data: params,
+  })
+  return result
+}
+/** **DescribeGovernanceGroups入参**
+
+查询治理中心用户组列表  */
+export interface DescribePrincipalResourcesParams {
+  principal_id?: string
+  /** 用户名称，模糊搜索最后加上 * 字符 */
+  principal_type?: string
+}
+/** **DescribeGovernanceGroups出参**
+
+查询治理中心用户组列表 */
+export interface DescribePrincipalResourcesResult {
+  resources: {
+    /** 命名空间ID列表 */
+    namespaces?: StrategyResourceEntry[]
+
+    /** 服务ID列表 */
+    services?: StrategyResourceEntry[]
+  }
+}
 /** 重置治理中心用户Token */
 export async function resetGovernanceUserToken(params: ResetGovernanceUserTokenParams) {
   const result = await putApiRequest<ResetGovernanceUserTokenResult>({

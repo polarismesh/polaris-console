@@ -3,6 +3,7 @@ import { AuthSubjectType } from './policy/Page'
 export enum TAB {
   USER = 'user',
   USERGROUP = 'usergroup',
+  USEABLE_RESOURCE = 'resource',
   POLICY = 'policy',
 }
 export const PrincipalTypeMap = {
@@ -19,6 +20,7 @@ const TAB_LABLES_MAP = {
   [TAB.USER]: '用户',
   [TAB.USERGROUP]: '用户组',
   [TAB.POLICY]: '权限策略',
+  [TAB.USEABLE_RESOURCE]: '可操作资源',
 }
 export const AuthTabs = Object.keys(TAB_LABLES_MAP).map(id => ({
   id,

@@ -2,12 +2,27 @@ import * as React from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
 import Duck from './PageDuck'
 
-import { Card, List, Text, Row, Col, ListItem, Button, Tabs, Table, Justify } from 'tea-component'
+import {
+  Card,
+  List,
+  Text,
+  Row,
+  Col,
+  ListItem,
+  Button,
+  Tabs,
+  Table,
+  Justify,
+  Icon,
+  Dropdown,
+  SearchBox,
+} from 'tea-component'
 import { autotip, scrollable } from 'tea-component/lib/table/addons'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { isOwner } from '@src/polaris/common/util/common'
 import router from '@src/polaris/common/util/router'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
+import { AuthStrategy } from '../model'
 
 export enum AuthSubjectType {
   USER = 'users',
@@ -48,7 +63,7 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   create: () => dispatch(creators.create()),
   fetchCurrentAuthItem: v => dispatch(creators.fetchCurrentAuthItem(v)),
   modify: v => dispatch(creators.modify(v)),
-  search: () => dispatch(creators.search()),
+  search: v => dispatch(creators.search(v)),
   setSearchword: v => dispatch(creators.setSearchword(v)),
   delete: v => dispatch(creators.delete(v)),
   reload: () => dispatch(creators.reload()),
@@ -56,17 +71,54 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
 export default function AuthPage(props: DuckCmpProps<Duck>) {
   const { duck, store } = props
   const { selector } = duck
-  const { authList, currentAuthItem, composedId } = selector(store)
+  const { authList, currentAuthItem, composedId, searchword } = selector(store)
   const [showAuthSubjectType, setShowAuthSubjectType] = React.useState(AuthSubjectType.USER)
   const [showAuthResourceType, setShowAuthResourceType] = React.useState(AuthResourceType.NAMESPACE)
+  const [collapseDefault, setCollapseDefault] = React.useState(true)
+  const [collapseCustom, setCollapseCustom] = React.useState(true)
+
   const handlers = getHandlers(props)
   const isInDetailpage = !!composedId?.principalId
   const countedAuthSubjectTabs = AuthSubjectTabs.map(item => ({
     ...item,
     label: `${item.label}(${currentAuthItem?.principals?.[item.id]?.length ?? 0})`,
   }))
-  return (
-    <BasicLayout title={'策略'} store={store} selectors={duck.selectors} header={<></>}>
+  const defaultList = authList.filter(item => item.default_strategy)
+  const customList = authList.filter(item => !item.default_strategy)
+  const renderListItem = (item: AuthStrategy) => {
+    return (
+      <ListItem
+        key={item.id}
+        onClick={() => {
+          handlers.fetchCurrentAuthItem(item.id)
+        }}
+        className={'auth-item'}
+        current={item.id === currentAuthItem.id}
+      >
+        <Justify
+          left={
+            <Text overflow tooltip={item.name} reset>
+              {item.name}
+            </Text>
+          }
+          right={
+            <Dropdown button={<Button type='icon' icon='more' />} appearance='pure'>
+              <List type='option'>
+                <ListItem onClick={() => handlers.modify(item.id)}>
+                  <Text> {'编辑'}</Text>
+                </ListItem>
+                <ListItem onClick={() => handlers.delete(item.id)} disabled={item.default_strategy}>
+                  {'删除'}
+                </ListItem>
+              </List>
+            </Dropdown>
+          }
+        ></Justify>
+      </ListItem>
+    )
+  }
+  const contentElement = (
+    <>
       <Table.ActionPanel>
         <Justify
           left={
@@ -83,23 +135,40 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
       </Table.ActionPanel>
       <Row>
         <Col span={6}>
-          <section style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%' }}>
-            {/* <SearchBox value={searchword} onSearch={handlers.search} onChange={handlers.setSearchword}></SearchBox> */}
-            <List type={'option'} style={{ height: '100%', maxHeight: '1000px' }}>
-              {authList.map(item => {
-                return (
-                  <ListItem
-                    key={item.id}
-                    onClick={() => {
-                      handlers.fetchCurrentAuthItem(item.id)
-                    }}
-                    className={'auth-item'}
-                    current={item.id === currentAuthItem.id}
-                  >
-                    {item.name}
-                  </ListItem>
-                )
-              })}
+          <section style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%', maxHeight: '1000px' }}>
+            <SearchBox
+              value={searchword}
+              onSearch={handlers.search}
+              onClear={() => handlers.search('')}
+              onChange={handlers.setSearchword}
+            ></SearchBox>
+            <List type={'option'} style={{ maxHeight: '50%' }}>
+              <ListItem
+                key={'collapse-button'}
+                onClick={() => {
+                  setCollapseDefault(!collapseDefault)
+                }}
+                className={'auth-item'}
+                current={false}
+              >
+                <Icon type={collapseDefault ? 'arrowdown' : 'arrowup'} />
+                默认策略（{defaultList.length}）
+              </ListItem>
+              {defaultList.filter(() => collapseDefault).map(renderListItem)}
+            </List>
+            <List type={'option'} style={{ maxHeight: '50%' }}>
+              <ListItem
+                key={'collapse-button'}
+                onClick={() => {
+                  setCollapseCustom(!collapseCustom)
+                }}
+                className={'auth-item'}
+                current={false}
+              >
+                <Icon type={collapseCustom ? 'arrowdown' : 'arrowup'} />
+                自定义策略（{customList.length}）
+              </ListItem>
+              {customList.filter(() => collapseCustom).map(renderListItem)}
             </List>
           </section>
         </Col>
@@ -206,6 +275,13 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
           </Card>
         </Col>
       </Row>
+    </>
+  )
+  return isInDetailpage ? (
+    contentElement
+  ) : (
+    <BasicLayout title={'策略'} store={store} selectors={duck.selectors} header={<></>}>
+      {contentElement}
     </BasicLayout>
   )
 }

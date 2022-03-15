@@ -9,13 +9,14 @@ import UserGroup from '../../userGroup/Page'
 import Policy from '../../policy/Page'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { isOwner, getUin, getOwnerUin } from '@src/polaris/common/util/common'
+import UseableResource from '../../common/UseableResource'
 
 export default purify(function(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { selectors, selector, creators, ducks } = duck
   const composedId = selectors.composedId(store)
   const [tokenVisible, setTokenVisible] = React.useState(false)
-  const [showAuthTabType, setShowAuthTabType] = React.useState(TAB.POLICY)
+  const [showAuthTabType, setShowAuthTabType] = React.useState(TAB.USERGROUP)
   const { data } = selector(store)
   if (!data) return <noscript />
   const { comment, auth_token, token_enable, email, mobile } = data
@@ -152,6 +153,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
           >
             <TabPanel id={TAB.USERGROUP}>
               <UserGroup duck={ducks.userGroup} store={store} dispatch={dispatch} />
+            </TabPanel>
+            <TabPanel id={TAB.USEABLE_RESOURCE}>
+              <UseableResource duck={ducks.useableResource} store={store} dispatch={dispatch} />
             </TabPanel>
             <TabPanel id={TAB.POLICY}>
               <Policy duck={ducks.policy} store={store} dispatch={dispatch} />

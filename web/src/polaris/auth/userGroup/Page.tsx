@@ -34,8 +34,8 @@ export default function ServicePage(props: DuckCmpProps<Duck>) {
   const handlers = getHandlers(props)
   const { composedId } = duck.selector(store)
   const isInDetailpage = !!composedId?.userId
-  return (
-    <BasicLayout title={'用户组'} store={store} selectors={duck.selectors} header={<></>}>
+  const contentElement = (
+    <>
       <Table.ActionPanel>
         <Justify
           left={
@@ -63,6 +63,13 @@ export default function ServicePage(props: DuckCmpProps<Duck>) {
         <GridPageGrid duck={duck} dispatch={dispatch} store={store} columns={columns} />
         <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
       </Card>
+    </>
+  )
+  return isInDetailpage ? (
+    contentElement
+  ) : (
+    <BasicLayout title={'用户组'} store={store} selectors={duck.selectors} header={<></>}>
+      {contentElement}
     </BasicLayout>
   )
 }

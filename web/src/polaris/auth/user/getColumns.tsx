@@ -4,7 +4,6 @@ import Duck, { UserItem } from './PageDuck'
 import { Text, Button, Dropdown, List, ListItem } from 'tea-component'
 import { Column } from '@src/polaris/common/ducks/GridPage'
 import { isOwner, getUin, getOwnerUin } from '@src/polaris/common/util/common'
-import { UserSource } from '../constants'
 
 export default ({ duck: { creators }, dispatch }: DuckCmpProps<Duck>): Column<UserItem>[] => {
   return [
