@@ -44,19 +44,15 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
         <TabPanel id={TAB.Instance}>
           <Instance duck={ducks[TAB.Instance]} store={store} dispatch={dispatch} />
         </TabPanel>
-        {buildConfig.observabiliy && (
-          <>
-            <TabPanel id={TAB.Route}>
-              <Route duck={ducks[TAB.Route]} store={store} dispatch={dispatch} />
-            </TabPanel>
-            <TabPanel id={TAB.RateLimit}>
-              <RateLimit duck={ducks[TAB.RateLimit]} store={store} dispatch={dispatch} />
-            </TabPanel>
-            <TabPanel id={TAB.CircuitBreaker}>
-              <CircuitBreaker duck={ducks[TAB.CircuitBreaker]} store={store} dispatch={dispatch} />
-            </TabPanel>
-          </>
-        )}
+        <TabPanel id={TAB.Route}>
+          <Route duck={ducks[TAB.Route]} store={store} dispatch={dispatch} />
+        </TabPanel>
+        <TabPanel id={TAB.RateLimit}>
+          <RateLimit duck={ducks[TAB.RateLimit]} store={store} dispatch={dispatch} />
+        </TabPanel>
+        <TabPanel id={TAB.CircuitBreaker}>
+          <CircuitBreaker duck={ducks[TAB.CircuitBreaker]} store={store} dispatch={dispatch} />
+        </TabPanel>
       </Tabs>
     </DetailPage>
   )
