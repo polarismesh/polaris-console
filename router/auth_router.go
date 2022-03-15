@@ -75,7 +75,9 @@ func AuthRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	v1.POST("/auth/strategies/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
 	// 获取鉴权策略列表
 	v1.GET("/auth/strategies", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
+	// 查看用户/用户组所能操作的所有资源列表数据
+	v1.GET("/auth/principal/resources", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
 
 	// 获取鉴权开关状态信息
-	v1.GET("auth/status", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
+	v1.GET("/auth/status", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
 }
