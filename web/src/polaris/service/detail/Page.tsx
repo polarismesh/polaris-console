@@ -16,6 +16,10 @@ const tabs: Array<Tab> = [TAB.Instance, TAB.Route, TAB.CircuitBreaker, TAB.RateL
   label: TAB_LABLES[id],
 }))
 
+const noObservabilityTab: Array<Tab> = [TAB.Instance, TAB.Info].map(id => ({
+  id,
+  label: TAB_LABLES[id],
+}))
 export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDuck>) {
   const { duck, store, dispatch } = props
   const { selector, creators, ducks } = duck
@@ -28,7 +32,12 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
   )
   return (
     <DetailPage store={store} duck={duck} dispatch={dispatch} title={`${name}(${namespace})`} backRoute={'/#/service'}>
-      <Tabs ceiling tabs={tabs} activeId={tab} onActive={handlers.switch}>
+      <Tabs
+        ceiling
+        tabs={buildConfig.observabiliy ? tabs : noObservabilityTab}
+        activeId={tab}
+        onActive={handlers.switch}
+      >
         <TabPanel id={TAB.Info}>
           <BaseInfo duck={ducks[TAB.Info]} store={store} dispatch={dispatch} />
         </TabPanel>
