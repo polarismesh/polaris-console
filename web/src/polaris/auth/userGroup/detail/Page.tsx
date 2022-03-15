@@ -22,6 +22,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
   const { comment, auth_token, token_enable } = data
   const isUserInGroup = !!data?.relation?.users?.find(item => item.id === getUin().toString())
   const canReadToken = isUserInGroup || isOwner()
+  const resourceData = ducks.useableResource.selectors.data(store)
   return (
     <DetailPage
       store={store}
@@ -127,7 +128,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
               <User duck={ducks.user} store={store} dispatch={dispatch} />
             </TabPanel>
             <TabPanel id={TAB.USEABLE_RESOURCE}>
-              <UseableResource duck={ducks.useableResource} store={store} dispatch={dispatch} />
+              <UseableResource resources={resourceData} />
             </TabPanel>
             <TabPanel id={TAB.POLICY}>
               <Policy duck={ducks.policy} store={store} dispatch={dispatch} />

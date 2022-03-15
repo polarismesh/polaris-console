@@ -1,22 +1,25 @@
 import * as React from 'react'
-import { purify, DuckCmpProps } from 'saga-duck'
+import { purify } from 'saga-duck'
 import { Table, Justify, Segment, SearchBox } from 'tea-component'
 import { Link } from 'react-router-dom'
-
-import Duck from './UseableResourceFetcher'
 import { autotip } from 'tea-component/lib/table/addons'
+import { StrategyResourceEntry } from '../model'
 
 const ResourceOptions = [
   { text: '命名空间', value: 'namespaces' },
   { text: '服务', value: 'services' },
 ]
 
-export default purify(function(props: DuckCmpProps<Duck>) {
-  const { duck, store } = props
-  const { selectors } = duck
+interface Props {
+  resources: {
+    namespaces: StrategyResourceEntry[]
+    services: StrategyResourceEntry[]
+  }
+}
+export default purify(function(props: Props) {
+  const { resources } = props
   const [filterResourceType, setFilterResourceType] = React.useState('namespaces')
   const [keyword, setKeyword] = React.useState('')
-  const resources = selectors.data(store)?.resources || { namespaces: [], services: [] }
   return (
     <>
       <Table.ActionPanel>

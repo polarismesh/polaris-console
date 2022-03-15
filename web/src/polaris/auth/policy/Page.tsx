@@ -16,6 +16,9 @@ import {
   Icon,
   Dropdown,
   SearchBox,
+  Form,
+  FormItem,
+  FormText,
 } from 'tea-component'
 import { autotip, scrollable } from 'tea-component/lib/table/addons'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
@@ -23,6 +26,7 @@ import { isOwner } from '@src/polaris/common/util/common'
 import router from '@src/polaris/common/util/router'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
 import { AuthStrategy } from '../model'
+import UseableResource from '../common/UseableResource'
 
 export enum AuthSubjectType {
   USER = 'users',
@@ -195,79 +199,98 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                   )
                 }
               >
-                <Card bordered>
+                <Card bordered style={{ border: 'none' }}>
                   <Card.Body>
-                    <Text>{currentAuthItem.comment || '无备注'}</Text>
+                    <Form>
+                      <FormItem label={'备注'}>
+                        <FormText>{currentAuthItem.comment || '无备注'}</FormText>
+                      </FormItem>
+                    </Form>
                   </Card.Body>
                 </Card>
-                <Card bordered>
-                  <Card.Body title={'用户｜用户组'}>
-                    <Tabs
-                      tabs={countedAuthSubjectTabs}
-                      activeId={showAuthSubjectType}
-                      onActive={tab => setShowAuthSubjectType(tab.id as AuthSubjectType)}
-                    >
-                      {currentAuthItem.principals[showAuthSubjectType]?.length > 0 ? (
-                        currentAuthItem.principals[showAuthSubjectType].map(userItem => {
-                          return isOwner() ? (
-                            <Button
-                              type='link'
-                              onClick={() => {
-                                router.navigate(
-                                  `/${AUTH_SUBJECT_TYPE_MAP[showAuthSubjectType].urlKey}-detail?id=${userItem.id}`,
-                                )
-                              }}
-                              key={userItem.id}
-                              style={{ margin: '20px 10px' }}
-                            >
-                              {userItem.name}({userItem.id})
-                            </Button>
+                {isInDetailpage ? (
+                  <Card bordered style={{ border: 'none' }}>
+                    <Card.Body title={'可操作资源'}>
+                      <UseableResource
+                        resources={{
+                          namespaces: currentAuthItem?.resources?.['namespaces'],
+                          services: currentAuthItem?.resources?.['services'],
+                        }}
+                      />
+                    </Card.Body>
+                  </Card>
+                ) : (
+                  <>
+                    <Card bordered>
+                      <Card.Body title={'用户｜用户组'}>
+                        <Tabs
+                          tabs={countedAuthSubjectTabs}
+                          activeId={showAuthSubjectType}
+                          onActive={tab => setShowAuthSubjectType(tab.id as AuthSubjectType)}
+                        >
+                          {currentAuthItem.principals[showAuthSubjectType]?.length > 0 ? (
+                            currentAuthItem.principals[showAuthSubjectType].map(userItem => {
+                              return isOwner() ? (
+                                <Button
+                                  type='link'
+                                  onClick={() => {
+                                    router.navigate(
+                                      `/${AUTH_SUBJECT_TYPE_MAP[showAuthSubjectType].urlKey}-detail?id=${userItem.id}`,
+                                    )
+                                  }}
+                                  key={userItem.id}
+                                  style={{ margin: '20px 10px' }}
+                                >
+                                  {userItem.name}({userItem.id})
+                                </Button>
+                              ) : (
+                                <Text key={userItem.id} style={{ margin: '20px 10px', display: 'inline-block' }}>
+                                  {userItem.name}({userItem.id})
+                                </Text>
+                              )
+                            })
                           ) : (
-                            <Text key={userItem.id} style={{ margin: '20px 10px', display: 'inline-block' }}>
-                              {userItem.name}({userItem.id})
+                            <Text style={{ margin: '20px 10px' }} parent={'p'}>
+                              {'暂无对应授权对象'}
                             </Text>
-                          )
-                        })
-                      ) : (
-                        <Text style={{ margin: '20px 10px' }} parent={'p'}>
-                          {'暂无对应授权对象'}
-                        </Text>
-                      )}
-                    </Tabs>
-                  </Card.Body>
-                </Card>
-                <Card bordered>
-                  <Card.Body title={'资源'}>
-                    <Tabs
-                      tabs={AuthResourceTabs}
-                      activeId={showAuthResourceType}
-                      onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
-                      style={{ marginBottom: '20px' }}
-                    >
-                      {currentAuthItem.resources[showAuthResourceType].length === 1 &&
-                      currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
-                        <section style={{ margin: '20px 10px' }}>
-                          {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
-                        </section>
-                      ) : (
-                        <Table
-                          bordered
-                          records={currentAuthItem.resources[showAuthResourceType]}
-                          columns={[
-                            {
-                              key: 'name',
-                              header: '名称',
-                              render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
-                            },
-                            { key: 'auth', header: '权限', render: () => '读｜写' },
-                          ]}
-                          addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
-                          style={{ marginTop: '20px' }}
-                        />
-                      )}
-                    </Tabs>
-                  </Card.Body>
-                </Card>
+                          )}
+                        </Tabs>
+                      </Card.Body>
+                    </Card>
+                    <Card bordered>
+                      <Card.Body title={'资源'}>
+                        <Tabs
+                          tabs={AuthResourceTabs}
+                          activeId={showAuthResourceType}
+                          onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
+                          style={{ marginBottom: '20px' }}
+                        >
+                          {currentAuthItem.resources[showAuthResourceType].length === 1 &&
+                          currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
+                            <section style={{ margin: '20px 10px' }}>
+                              {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
+                            </section>
+                          ) : (
+                            <Table
+                              bordered
+                              records={currentAuthItem.resources[showAuthResourceType]}
+                              columns={[
+                                {
+                                  key: 'name',
+                                  header: '名称',
+                                  render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
+                                },
+                                { key: 'auth', header: '权限', render: () => '读｜写' },
+                              ]}
+                              addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
+                              style={{ marginTop: '20px' }}
+                            />
+                          )}
+                        </Tabs>
+                      </Card.Body>
+                    </Card>
+                  </>
+                )}
               </Card.Body>
             ) : (
               <Card.Body title={'暂无选中策略'}></Card.Body>
