@@ -232,9 +232,10 @@ export default class ServicePageDuck extends GridPageDuck {
         data: { name, namespace },
       } = selector(yield select())
       if (originData?.ctime) {
-        yield modifyRoutes([routeData])
         if (routeData.inbounds.length === 0 && routeData.outbounds.length === 0) {
           yield deleteRoutes([{ service: name, namespace }])
+        } else {
+          yield modifyRoutes([routeData])
         }
       } else {
         yield createRoutes([routeData])

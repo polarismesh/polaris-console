@@ -14,4 +14,7 @@ export default class BuildConfig {
   get monitoring() {
     return true
   }
+  get configuration() {
+    return true
+  }
 }

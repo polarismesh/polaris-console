@@ -15,4 +15,7 @@ export default class BuildConfig extends BaseConfig {
   get monitoring() {
     return false
   }
+  get configuration() {
+    return false
+  }
 }

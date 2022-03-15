@@ -18,18 +18,22 @@ export const MenuConfig = {
       icon: ['/static/img/namespace.svg', '/static/img/namespace.svg'],
     },
   },
-  configuration: {
-    isGroup: true,
-    title: '配置中心',
-    filegroup: {
-      title: '配置分组',
-      icon: ['/static/img/route-monitor.svg', '/static/img/route-monitor.svg'],
-    },
-    'file-release-history': {
-      title: '发布历史',
-      icon: ['/static/img/circuit-monitor.svg', '/static/img/circuit-monitor.svg'],
-    },
-  },
+  ...(buildConfig.configuration
+    ? {
+        configuration: {
+          isGroup: true,
+          title: '配置中心',
+          filegroup: {
+            title: '配置分组',
+            icon: ['/static/img/route-monitor.svg', '/static/img/route-monitor.svg'],
+          },
+          'file-release-history': {
+            title: '发布历史',
+            icon: ['/static/img/circuit-monitor.svg', '/static/img/circuit-monitor.svg'],
+          },
+        },
+      }
+    : {}),
   auth: {
     isGroup: true,
     title: '权限控制',
