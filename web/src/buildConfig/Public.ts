@@ -1,4 +1,5 @@
-export default class BuildConfig {
+import BaseConfig from './Base'
+export default class BuildConfig extends BaseConfig {
   get readonlyNamespace() {
     return []
   }
@@ -9,9 +10,9 @@ export default class BuildConfig {
     return '119.91.66.54:9090'
   }
   get observabiliy() {
-    return true
+    return false
   }
   get monitoring() {
-    return true
+    return false
   }
 }

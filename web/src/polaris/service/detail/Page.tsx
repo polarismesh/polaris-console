@@ -9,6 +9,7 @@ import Instance from './instance/Page'
 import Route from './route/Page'
 import RateLimit from './limit/Page'
 import CircuitBreaker from './circuitBreaker/Page'
+import buildConfig from '@src/buildConfig'
 
 const tabs: Array<Tab> = [TAB.Instance, TAB.Route, TAB.CircuitBreaker, TAB.RateLimit, TAB.Info].map(id => ({
   id,
@@ -34,15 +35,19 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
         <TabPanel id={TAB.Instance}>
           <Instance duck={ducks[TAB.Instance]} store={store} dispatch={dispatch} />
         </TabPanel>
-        <TabPanel id={TAB.Route}>
-          <Route duck={ducks[TAB.Route]} store={store} dispatch={dispatch} />
-        </TabPanel>
-        <TabPanel id={TAB.RateLimit}>
-          <RateLimit duck={ducks[TAB.RateLimit]} store={store} dispatch={dispatch} />
-        </TabPanel>
-        <TabPanel id={TAB.CircuitBreaker}>
-          <CircuitBreaker duck={ducks[TAB.CircuitBreaker]} store={store} dispatch={dispatch} />
-        </TabPanel>
+        {buildConfig.observabiliy && (
+          <>
+            <TabPanel id={TAB.Route}>
+              <Route duck={ducks[TAB.Route]} store={store} dispatch={dispatch} />
+            </TabPanel>
+            <TabPanel id={TAB.RateLimit}>
+              <RateLimit duck={ducks[TAB.RateLimit]} store={store} dispatch={dispatch} />
+            </TabPanel>
+            <TabPanel id={TAB.CircuitBreaker}>
+              <CircuitBreaker duck={ducks[TAB.CircuitBreaker]} store={store} dispatch={dispatch} />
+            </TabPanel>
+          </>
+        )}
       </Tabs>
     </DetailPage>
   )

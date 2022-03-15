@@ -74,7 +74,8 @@ module.exports = {
       filename: `./static/css/polaris-console.css`,
     }),
     new webpack.DefinePlugin({
-      [`process.env.NODE_ENV`]: JSON.stringify(process.env.NODE_ENV),
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+      "process.env.BUILD_TYPE": JSON.stringify(process.env.BUILD_TYPE),
     }),
   ],
 };
