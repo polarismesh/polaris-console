@@ -72,6 +72,7 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   delete: v => dispatch(creators.delete(v)),
   reload: () => dispatch(creators.reload()),
 }))
+
 export default function AuthPage(props: DuckCmpProps<Duck>) {
   const { duck, store } = props
   const { selector } = duck
@@ -90,6 +91,8 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
   const defaultList = authList.filter(item => item.default_strategy)
   const customList = authList.filter(item => !item.default_strategy)
   const renderListItem = (item: AuthStrategy) => {
+    const principalType = item.name.indexOf('用户') > -1 ? AuthSubjectType.USER : AuthSubjectType.USERGROUP
+    const isActive = item.id === currentAuthItem.id
     return (
       <ListItem
         key={item.id}
@@ -97,12 +100,27 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
           handlers.fetchCurrentAuthItem(item.id)
         }}
         className={'auth-item'}
-        current={item.id === currentAuthItem.id}
+        current={isActive}
       >
         <Justify
           left={
-            <Text overflow tooltip={item.name} reset>
+            <Text overflow tooltip={item.name} reset theme={isActive ? 'primary' : 'text'}>
               {item.name}
+              {item.default_strategy && (
+                <>
+                  {principalType === AuthSubjectType.USER ? (
+                    <img
+                      style={{ verticalAlign: 'top' }}
+                      src={isActive ? '/static/img/user-icon-active.svg' : '/static/img/user-icon.svg'}
+                    />
+                  ) : (
+                    <img
+                      style={{ verticalAlign: 'top' }}
+                      src={isActive ? '/static/img/usergroup-icon-active.svg' : '/static/img/usergroup-icon.svg'}
+                    />
+                  )}
+                </>
+              )}
             </Text>
           }
           right={
