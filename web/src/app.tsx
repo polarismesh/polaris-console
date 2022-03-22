@@ -72,13 +72,13 @@ const PolicyCreate = connectWithDuck(PolicyCreatePage, PolicyCreatePageDuck as a
 
 import LoginPage from '@src/polaris/auth/login/Page'
 import LoginPageDuck from '@src/polaris/auth/login/PageDuck'
-import { userLogout, getUin, getLoginName } from './polaris/common/util/common'
+import { userLogout, getUin, getLoginName, PolarisTokenKey } from './polaris/common/util/common'
 import router from './polaris/common/util/router'
 const Login = connectWithDuck(LoginPage, LoginPageDuck as any)
 
 import ServiceAliasPage from '@src/polaris/serviceAlias/Page'
 import ServiceAliasPageDuck from '@src/polaris/serviceAlias/PageDuck'
-import { checkAuth, cacheCheckAuth } from './polaris/auth/model'
+import { cacheCheckAuth } from './polaris/auth/model'
 const ServiceAlias = connectWithDuck(ServiceAliasPage, ServiceAliasPageDuck)
 
 export default function root() {
@@ -93,6 +93,9 @@ export default function root() {
   })
   const [authOpen, setAuthOpen] = React.useState(null)
   const fetchAuth = useCallback(async () => {
+    if (!window.localStorage.getItem(PolarisTokenKey)) {
+      return
+    }
     const authOpen = await cacheCheckAuth({})
     setAuthOpen(authOpen)
   }, [])

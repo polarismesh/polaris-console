@@ -29,7 +29,12 @@ export default purify(function(props: DuckCmpProps<Duck>) {
           options?.isModifyPassword ? (
             <>
               {!isOwner() && (
-                <FormField field={old_password} label={'旧密码'} required>
+                <FormField
+                  field={old_password}
+                  label={'旧密码'}
+                  required
+                  message={'如果您忘记了您的旧密码，可以联系您的主账号来重置密码'}
+                >
                   <Input field={old_password} size={'m'} type={'password'} />
                 </FormField>
               )}
