@@ -9,18 +9,20 @@ import Policy from '../../policy/Page'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { getUin, isOwner } from '@src/polaris/common/util/common'
 import CopyableText from '@src/polaris/common/components/CopyableText'
+import UseableResource from '../../common/UseableResource'
 
 export default purify(function(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { selectors, selector, creators, ducks } = duck
   const composedId = selectors.composedId(store)
   const [tokenVisible, setTokenVisible] = React.useState(false)
-  const [showAuthTabType, setShowAuthTabType] = React.useState(TAB.POLICY)
+  const [showAuthTabType, setShowAuthTabType] = React.useState(TAB.USER)
   const { data } = selector(store)
   if (!data) return <noscript />
   const { comment, auth_token, token_enable } = data
   const isUserInGroup = !!data?.relation?.users?.find(item => item.id === getUin().toString())
   const canReadToken = isUserInGroup || isOwner()
+  const resourceData = ducks.useableResource.selectors.data(store)
   return (
     <DetailPage
       store={store}
@@ -124,6 +126,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
           >
             <TabPanel id={TAB.USER}>
               <User duck={ducks.user} store={store} dispatch={dispatch} />
+            </TabPanel>
+            <TabPanel id={TAB.USEABLE_RESOURCE}>
+              <UseableResource resources={resourceData} />
             </TabPanel>
             <TabPanel id={TAB.POLICY}>
               <Policy duck={ducks.policy} store={store} dispatch={dispatch} />

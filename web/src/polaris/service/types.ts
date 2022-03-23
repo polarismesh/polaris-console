@@ -1,4 +1,4 @@
-import { BuildConfig } from '@src/buildConfig/Base'
+import BuildConfig from '@src/buildConfig/index'
 
 export interface Service {
   id: string

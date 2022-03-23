@@ -2,12 +2,31 @@ import * as React from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
 import Duck from './PageDuck'
 
-import { Card, List, Text, Row, Col, ListItem, Button, Tabs, Table, Justify } from 'tea-component'
+import {
+  Card,
+  List,
+  Text,
+  Row,
+  Col,
+  ListItem,
+  Button,
+  Tabs,
+  Table,
+  Justify,
+  Icon,
+  Dropdown,
+  SearchBox,
+  Form,
+  FormItem,
+  FormText,
+} from 'tea-component'
 import { autotip, scrollable } from 'tea-component/lib/table/addons'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { isOwner } from '@src/polaris/common/util/common'
 import router from '@src/polaris/common/util/router'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
+import { AuthStrategy } from '../model'
+import UseableResource from '../common/UseableResource'
 
 export enum AuthSubjectType {
   USER = 'users',
@@ -48,25 +67,80 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   create: () => dispatch(creators.create()),
   fetchCurrentAuthItem: v => dispatch(creators.fetchCurrentAuthItem(v)),
   modify: v => dispatch(creators.modify(v)),
-  search: () => dispatch(creators.search()),
+  search: v => dispatch(creators.search(v)),
   setSearchword: v => dispatch(creators.setSearchword(v)),
   delete: v => dispatch(creators.delete(v)),
   reload: () => dispatch(creators.reload()),
 }))
+
 export default function AuthPage(props: DuckCmpProps<Duck>) {
   const { duck, store } = props
   const { selector } = duck
-  const { authList, currentAuthItem, composedId } = selector(store)
+  const { authList, currentAuthItem, composedId, searchword } = selector(store)
   const [showAuthSubjectType, setShowAuthSubjectType] = React.useState(AuthSubjectType.USER)
   const [showAuthResourceType, setShowAuthResourceType] = React.useState(AuthResourceType.NAMESPACE)
+  const [collapseDefault, setCollapseDefault] = React.useState(true)
+  const [collapseCustom, setCollapseCustom] = React.useState(true)
+
   const handlers = getHandlers(props)
   const isInDetailpage = !!composedId?.principalId
   const countedAuthSubjectTabs = AuthSubjectTabs.map(item => ({
     ...item,
     label: `${item.label}(${currentAuthItem?.principals?.[item.id]?.length ?? 0})`,
   }))
-  return (
-    <BasicLayout title={'策略'} store={store} selectors={duck.selectors} header={<></>}>
+  const defaultList = authList.filter(item => item.default_strategy)
+  const customList = authList.filter(item => !item.default_strategy)
+  const renderListItem = (item: AuthStrategy) => {
+    const principalType = item.name.indexOf('用户') > -1 ? AuthSubjectType.USER : AuthSubjectType.USERGROUP
+    const isActive = item.id === currentAuthItem.id
+    return (
+      <ListItem
+        key={item.id}
+        onClick={() => {
+          handlers.fetchCurrentAuthItem(item.id)
+        }}
+        className={'auth-item'}
+        current={isActive}
+      >
+        <Justify
+          left={
+            <Text overflow tooltip={item.name} reset theme={isActive ? 'primary' : 'text'}>
+              {item.name}
+              {item.default_strategy && (
+                <>
+                  {principalType === AuthSubjectType.USER ? (
+                    <img
+                      style={{ verticalAlign: 'top' }}
+                      src={isActive ? '/static/img/user-icon-active.svg' : '/static/img/user-icon.svg'}
+                    />
+                  ) : (
+                    <img
+                      style={{ verticalAlign: 'top' }}
+                      src={isActive ? '/static/img/usergroup-icon-active.svg' : '/static/img/usergroup-icon.svg'}
+                    />
+                  )}
+                </>
+              )}
+            </Text>
+          }
+          right={
+            <Dropdown button={<Button type='icon' icon='more' />} appearance='pure'>
+              <List type='option'>
+                <ListItem onClick={() => handlers.modify(item.id)}>
+                  <Text> {'编辑'}</Text>
+                </ListItem>
+                <ListItem onClick={() => handlers.delete(item.id)} disabled={item.default_strategy}>
+                  {'删除'}
+                </ListItem>
+              </List>
+            </Dropdown>
+          }
+        ></Justify>
+      </ListItem>
+    )
+  }
+  const contentElement = (
+    <>
       <Table.ActionPanel>
         <Justify
           left={
@@ -83,23 +157,40 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
       </Table.ActionPanel>
       <Row>
         <Col span={6}>
-          <section style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%' }}>
-            {/* <SearchBox value={searchword} onSearch={handlers.search} onChange={handlers.setSearchword}></SearchBox> */}
-            <List type={'option'} style={{ height: '100%', maxHeight: '1000px' }}>
-              {authList.map(item => {
-                return (
-                  <ListItem
-                    key={item.id}
-                    onClick={() => {
-                      handlers.fetchCurrentAuthItem(item.id)
-                    }}
-                    className={'auth-item'}
-                    current={item.id === currentAuthItem.id}
-                  >
-                    {item.name}
-                  </ListItem>
-                )
-              })}
+          <section style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%', maxHeight: '1000px' }}>
+            <SearchBox
+              value={searchword}
+              onSearch={handlers.search}
+              onClear={() => handlers.search('')}
+              onChange={handlers.setSearchword}
+            ></SearchBox>
+            <List type={'option'} style={{ maxHeight: '50%' }}>
+              <ListItem
+                key={'collapse-button'}
+                onClick={() => {
+                  setCollapseDefault(!collapseDefault)
+                }}
+                className={'auth-item'}
+                current={false}
+              >
+                <Icon type={collapseDefault ? 'arrowdown' : 'arrowup'} />
+                默认策略（{defaultList.length}）
+              </ListItem>
+              {defaultList.filter(() => collapseDefault).map(renderListItem)}
+            </List>
+            <List type={'option'} style={{ maxHeight: '50%' }}>
+              <ListItem
+                key={'collapse-button'}
+                onClick={() => {
+                  setCollapseCustom(!collapseCustom)
+                }}
+                className={'auth-item'}
+                current={false}
+              >
+                <Icon type={collapseCustom ? 'arrowdown' : 'arrowup'} />
+                自定义策略（{customList.length}）
+              </ListItem>
+              {customList.filter(() => collapseCustom).map(renderListItem)}
             </List>
           </section>
         </Col>
@@ -126,79 +217,98 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                   )
                 }
               >
-                <Card bordered>
+                <Card bordered style={{ border: 'none' }}>
                   <Card.Body>
-                    <Text>{currentAuthItem.comment || '无备注'}</Text>
+                    <Form>
+                      <FormItem label={'备注'}>
+                        <FormText>{currentAuthItem.comment || '无备注'}</FormText>
+                      </FormItem>
+                    </Form>
                   </Card.Body>
                 </Card>
-                <Card bordered>
-                  <Card.Body title={'用户｜用户组'}>
-                    <Tabs
-                      tabs={countedAuthSubjectTabs}
-                      activeId={showAuthSubjectType}
-                      onActive={tab => setShowAuthSubjectType(tab.id as AuthSubjectType)}
-                    >
-                      {currentAuthItem.principals[showAuthSubjectType]?.length > 0 ? (
-                        currentAuthItem.principals[showAuthSubjectType].map(userItem => {
-                          return isOwner() ? (
-                            <Button
-                              type='link'
-                              onClick={() => {
-                                router.navigate(
-                                  `/${AUTH_SUBJECT_TYPE_MAP[showAuthSubjectType].urlKey}-detail?id=${userItem.id}`,
-                                )
-                              }}
-                              key={userItem.id}
-                              style={{ margin: '20px 10px' }}
-                            >
-                              {userItem.name}({userItem.id})
-                            </Button>
+                {isInDetailpage ? (
+                  <Card bordered style={{ border: 'none' }}>
+                    <Card.Body title={'可操作资源'}>
+                      <UseableResource
+                        resources={{
+                          namespaces: currentAuthItem?.resources?.['namespaces'],
+                          services: currentAuthItem?.resources?.['services'],
+                        }}
+                      />
+                    </Card.Body>
+                  </Card>
+                ) : (
+                  <>
+                    <Card bordered>
+                      <Card.Body title={'用户｜用户组'}>
+                        <Tabs
+                          tabs={countedAuthSubjectTabs}
+                          activeId={showAuthSubjectType}
+                          onActive={tab => setShowAuthSubjectType(tab.id as AuthSubjectType)}
+                        >
+                          {currentAuthItem.principals[showAuthSubjectType]?.length > 0 ? (
+                            currentAuthItem.principals[showAuthSubjectType].map(userItem => {
+                              return isOwner() ? (
+                                <Button
+                                  type='link'
+                                  onClick={() => {
+                                    router.navigate(
+                                      `/${AUTH_SUBJECT_TYPE_MAP[showAuthSubjectType].urlKey}-detail?id=${userItem.id}`,
+                                    )
+                                  }}
+                                  key={userItem.id}
+                                  style={{ margin: '20px 10px' }}
+                                >
+                                  {userItem.name}({userItem.id})
+                                </Button>
+                              ) : (
+                                <Text key={userItem.id} style={{ margin: '20px 10px', display: 'inline-block' }}>
+                                  {userItem.name}({userItem.id})
+                                </Text>
+                              )
+                            })
                           ) : (
-                            <Text key={userItem.id} style={{ margin: '20px 10px', display: 'inline-block' }}>
-                              {userItem.name}({userItem.id})
+                            <Text style={{ margin: '20px 10px' }} parent={'p'}>
+                              {'暂无对应授权对象'}
                             </Text>
-                          )
-                        })
-                      ) : (
-                        <Text style={{ margin: '20px 10px' }} parent={'p'}>
-                          {'暂无对应授权对象'}
-                        </Text>
-                      )}
-                    </Tabs>
-                  </Card.Body>
-                </Card>
-                <Card bordered>
-                  <Card.Body title={'资源'}>
-                    <Tabs
-                      tabs={AuthResourceTabs}
-                      activeId={showAuthResourceType}
-                      onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
-                      style={{ marginBottom: '20px' }}
-                    >
-                      {currentAuthItem.resources[showAuthResourceType].length === 1 &&
-                      currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
-                        <section style={{ margin: '20px 10px' }}>
-                          {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
-                        </section>
-                      ) : (
-                        <Table
-                          bordered
-                          records={currentAuthItem.resources[showAuthResourceType]}
-                          columns={[
-                            {
-                              key: 'name',
-                              header: '名称',
-                              render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
-                            },
-                            { key: 'auth', header: '权限', render: () => '读｜写' },
-                          ]}
-                          addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
-                          style={{ marginTop: '20px' }}
-                        />
-                      )}
-                    </Tabs>
-                  </Card.Body>
-                </Card>
+                          )}
+                        </Tabs>
+                      </Card.Body>
+                    </Card>
+                    <Card bordered>
+                      <Card.Body title={'资源'}>
+                        <Tabs
+                          tabs={AuthResourceTabs}
+                          activeId={showAuthResourceType}
+                          onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
+                          style={{ marginBottom: '20px' }}
+                        >
+                          {currentAuthItem.resources[showAuthResourceType].length === 1 &&
+                          currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
+                            <section style={{ margin: '20px 10px' }}>
+                              {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
+                            </section>
+                          ) : (
+                            <Table
+                              bordered
+                              records={currentAuthItem.resources[showAuthResourceType]}
+                              columns={[
+                                {
+                                  key: 'name',
+                                  header: '名称',
+                                  render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
+                                },
+                                { key: 'auth', header: '权限', render: () => '读｜写' },
+                              ]}
+                              addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
+                              style={{ marginTop: '20px' }}
+                            />
+                          )}
+                        </Tabs>
+                      </Card.Body>
+                    </Card>
+                  </>
+                )}
               </Card.Body>
             ) : (
               <Card.Body title={'暂无选中策略'}></Card.Body>
@@ -206,6 +316,13 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
           </Card>
         </Col>
       </Row>
+    </>
+  )
+  return isInDetailpage ? (
+    contentElement
+  ) : (
+    <BasicLayout title={'策略'} store={store} selectors={duck.selectors} header={<></>}>
+      {contentElement}
     </BasicLayout>
   )
 }

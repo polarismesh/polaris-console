@@ -27,8 +27,9 @@ export function getClosest(element: any, selector: string) {
 }
 
 export function isOwner() {
-  return window.localStorage.getItem(LoginRoleKey) === 'admin'
+  return window.localStorage.getItem(LoginRoleKey) === 'main'
 }
+
 export function getUin() {
   return window.localStorage.getItem(LoginUserIdKey)
 }

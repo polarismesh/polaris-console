@@ -6,6 +6,7 @@ import {
   describeGovernanceUserToken,
   modifyGovernanceUserToken,
   resetGovernanceUserToken,
+  checkAuth,
 } from '../../model'
 import { select, put } from 'redux-saga/effects'
 import PolicyPageDuck from '../../policy/PageDuck'
@@ -20,6 +21,7 @@ import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import CreateUser from '../operation/CreateUser'
 import { userLogout, getUin } from '@src/polaris/common/util/common'
 import { delay } from 'redux-saga'
+import UseableResourceFetcher from '../../common/UseableResourceFetcher'
 
 interface ComposedId {
   id: string
@@ -40,6 +42,8 @@ export default abstract class CreateDuck extends DetailPage {
       MODIFY_COMMENT,
       MODIFY,
       MODIFY_PASSWORD,
+      FETCH_USEABLE_RESOURCE,
+      SET_AUTH_OPEN,
     }
     return {
       ...super.quickTypes,
@@ -62,6 +66,7 @@ export default abstract class CreateDuck extends DetailPage {
       ...super.quickDucks,
       policy: PolicyPageDuck,
       userGroup: UserGroupDuck,
+      useableResource: UseableResourceFetcher,
     }
   }
   get reducers() {
@@ -69,6 +74,7 @@ export default abstract class CreateDuck extends DetailPage {
     return {
       ...super.reducers,
       instanceId: reduceFromPayload(types.SET_INSTANCE_ID, ''),
+      authOpen: reduceFromPayload(types.SET_AUTH_OPEN, false),
     }
   }
 
@@ -95,16 +101,19 @@ export default abstract class CreateDuck extends DetailPage {
   *saga() {
     yield* super.saga()
     const {
-      ducks: { policy, userGroup },
+      ducks: { policy, userGroup, useableResource },
       types,
       selectors,
       selector,
       creators,
     } = this
+    const authOpen = yield checkAuth({})
+    yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
     yield takeLatest(types.FETCH_DONE, function*() {
       const { id } = selectors.composedId(yield select())
       yield put(policy.creators.load({ principalId: id, principalType: AuthSubjectType.USER }))
       yield put(userGroup.creators.load({ userId: id }, {}))
+      yield put(useableResource.creators.fetch({ principal_id: id, principal_type: AuthSubjectType.USER }))
     })
     yield takeLatest(types.MODIFY_COMMENT, function*() {
       const { id } = yield select(selectors.composedId)

@@ -21,14 +21,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/polarismesh/polaris-console/bootstrap"
 )
 
 /**
  * @brief polaris页面
  */
-func PolarisPage(oaAuthority *OAAuthority) gin.HandlerFunc {
+func PolarisPage(conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if ok := authority(c, oaAuthority); !ok {
+		if ok := authority(c, conf); !ok {
 			return
 		}
 

@@ -185,7 +185,6 @@ export default class RouteCreateDuck extends PageDuck {
     yield* super.saga()
     yield takeLatest(types.LOAD, function*(action) {
       const values = action.payload
-      console.log(values)
       const {
         data: { ruleIndex, ruleType, service, namespace, isEdit },
       } = selector(yield select())
@@ -320,6 +319,10 @@ const validator = CreateForm.combineValidators<Values, {}>({
               },
             },
           ])(v, meta)
+          const distinctArray = [...new Set(v?.map(item => item.key))]
+          if (distinctArray?.length !== v?.length) {
+            return '标签键不能一致'
+          }
           return res
         },
       },
@@ -343,6 +346,10 @@ const validator = CreateForm.combineValidators<Values, {}>({
               },
             },
           ])(v, meta)
+          const distinctArray = [...new Set(v?.map(item => item.key))]
+          if (distinctArray?.length !== v?.length) {
+            return res.map(item => ({ ...item, key: '标签键不能一致' }))
+          }
           return res
         },
       },
@@ -366,6 +373,10 @@ const validator = CreateForm.combineValidators<Values, {}>({
               },
             },
           ])(v, meta)
+          const distinctArray = [...new Set(v?.map(item => item.key))]
+          if (distinctArray?.length !== v?.length) {
+            return '标签键不能一致'
+          }
           return res
         },
       },
@@ -389,6 +400,10 @@ const validator = CreateForm.combineValidators<Values, {}>({
               },
             },
           ])(v, meta)
+          const distinctArray = [...new Set(v?.map(item => item.key))]
+          if (distinctArray?.length !== v?.length) {
+            return '标签键不能一致'
+          }
           return res
         },
       },

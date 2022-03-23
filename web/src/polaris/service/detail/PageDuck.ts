@@ -7,7 +7,6 @@ import InstanceDuck from './instance/PageDuck'
 import RouteDuck from './route/PageDuck'
 import RateLimitDuck from './limit/PageDuck'
 import CircuitBreakerDuck from './circuitBreaker/PageDuck'
-import MonitorDuck from '../../monitor/PageDuck'
 
 import { Service } from '../types'
 import { describeServices } from '../model'

@@ -110,7 +110,7 @@ export class CreateFormDuck extends Form {
     if (firstInvalid) throw firstInvalid
     try {
       const values = yield select(selectors.values)
-      const { loginResponse } = yield loginUser({ name: values.userName, password: values.password })
+      const { loginResponse } = yield loginUser({ name: values.userName, password: values.password, owner: "polaris" })
       if (loginResponse.token) {
         window.localStorage.setItem(PolarisTokenKey, loginResponse.token)
         window.localStorage.setItem(LoginUserNameKey, loginResponse.name)
