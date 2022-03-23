@@ -6,6 +6,7 @@ import {
   describeGovernanceUserToken,
   modifyGovernanceUserToken,
   resetGovernanceUserToken,
+  checkAuth,
 } from '../../model'
 import { select, put } from 'redux-saga/effects'
 import PolicyPageDuck from '../../policy/PageDuck'
@@ -42,6 +43,7 @@ export default abstract class CreateDuck extends DetailPage {
       MODIFY,
       MODIFY_PASSWORD,
       FETCH_USEABLE_RESOURCE,
+      SET_AUTH_OPEN,
     }
     return {
       ...super.quickTypes,
@@ -72,6 +74,7 @@ export default abstract class CreateDuck extends DetailPage {
     return {
       ...super.reducers,
       instanceId: reduceFromPayload(types.SET_INSTANCE_ID, ''),
+      authOpen: reduceFromPayload(types.SET_AUTH_OPEN, false),
     }
   }
 
@@ -104,6 +107,8 @@ export default abstract class CreateDuck extends DetailPage {
       selector,
       creators,
     } = this
+    const authOpen = yield checkAuth({})
+    yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
     yield takeLatest(types.FETCH_DONE, function*() {
       const { id } = selectors.composedId(yield select())
       yield put(policy.creators.load({ principalId: id, principalType: AuthSubjectType.USER }))

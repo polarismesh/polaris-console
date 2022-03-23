@@ -17,7 +17,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
   const composedId = selectors.composedId(store)
   const [tokenVisible, setTokenVisible] = React.useState(false)
   const [showAuthTabType, setShowAuthTabType] = React.useState(TAB.USERGROUP)
-  const { data } = selector(store)
+  const { data, authOpen } = selector(store)
   if (!data) return <noscript />
   const { comment, auth_token, token_enable, email, mobile } = data
   const resourceData = ducks.useableResource.selectors.data(store)
@@ -145,25 +145,27 @@ export default purify(function(props: DuckCmpProps<Duck>) {
           </Form>
         </Card.Body>
       </Card>
-      <Card>
-        <Card.Body>
-          <Tabs
-            tabs={AuthTabs.filter(item => item.id !== TAB.USER)}
-            activeId={showAuthTabType}
-            onActive={tab => setShowAuthTabType(tab.id as TAB)}
-          >
-            <TabPanel id={TAB.USERGROUP}>
-              <UserGroup duck={ducks.userGroup} store={store} dispatch={dispatch} />
-            </TabPanel>
-            <TabPanel id={TAB.USEABLE_RESOURCE}>
-              <UseableResource resources={resourceData} />
-            </TabPanel>
-            <TabPanel id={TAB.POLICY}>
-              <Policy duck={ducks.policy} store={store} dispatch={dispatch} />
-            </TabPanel>
-          </Tabs>
-        </Card.Body>
-      </Card>
+      {authOpen && (
+        <Card>
+          <Card.Body>
+            <Tabs
+              tabs={AuthTabs.filter(item => item.id !== TAB.USER)}
+              activeId={showAuthTabType}
+              onActive={tab => setShowAuthTabType(tab.id as TAB)}
+            >
+              <TabPanel id={TAB.USERGROUP}>
+                <UserGroup duck={ducks.userGroup} store={store} dispatch={dispatch} />
+              </TabPanel>
+              <TabPanel id={TAB.USEABLE_RESOURCE}>
+                <UseableResource resources={resourceData} />
+              </TabPanel>
+              <TabPanel id={TAB.POLICY}>
+                <Policy duck={ducks.policy} store={store} dispatch={dispatch} />
+              </TabPanel>
+            </Tabs>
+          </Card.Body>
+        </Card>
+      )}
     </DetailPage>
   )
 })
