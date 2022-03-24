@@ -19,6 +19,7 @@ import {
   Form,
   FormItem,
   FormText,
+  Bubble,
 } from 'tea-component'
 import { autotip, scrollable } from 'tea-component/lib/table/addons'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
@@ -60,9 +61,20 @@ insertCSS(
   `.app-tse-list>.auth-item{
   padding: 15px 10px 15px 10px;
 }
-
 `,
 )
+
+const formatPolicyName = (name: string) => {
+  let trimName = name
+  if (name.indexOf('(用户组)') === 0) {
+    trimName = name.replace('(用户组)', '')
+  }
+  if (name.indexOf('(用户)') === 0) {
+    trimName = name.replace('(用户)', '')
+  }
+  return trimName
+}
+
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   create: () => dispatch(creators.create()),
   fetchCurrentAuthItem: v => dispatch(creators.fetchCurrentAuthItem(v)),
@@ -91,7 +103,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
   const defaultList = authList.filter(item => item.default_strategy)
   const customList = authList.filter(item => !item.default_strategy)
   const renderListItem = (item: AuthStrategy) => {
-    const principalType = item.name.indexOf('用户') > -1 ? AuthSubjectType.USER : AuthSubjectType.USERGROUP
+    const principalType = item.name.indexOf('用户组') > -1 ? AuthSubjectType.USERGROUP : AuthSubjectType.USER
     const isActive = item.id === currentAuthItem.id
     return (
       <ListItem
@@ -102,40 +114,42 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
         className={'auth-item'}
         current={isActive}
       >
-        <Justify
-          left={
-            <Text overflow tooltip={item.name} reset theme={isActive ? 'primary' : 'text'}>
-              {item.name}
-              {item.default_strategy && (
-                <>
-                  {principalType === AuthSubjectType.USER ? (
-                    <img
-                      style={{ verticalAlign: 'top' }}
-                      src={isActive ? '/static/img/user-icon-active.svg' : '/static/img/user-icon.svg'}
-                    />
-                  ) : (
-                    <img
-                      style={{ verticalAlign: 'top' }}
-                      src={isActive ? '/static/img/usergroup-icon-active.svg' : '/static/img/usergroup-icon.svg'}
-                    />
-                  )}
-                </>
+        <Text
+          tooltip={formatPolicyName(item.name)}
+          reset
+          parent={'div'}
+          theme={isActive ? 'primary' : 'text'}
+          style={{ width: 'calc(100% - 32px)', display: 'inline-block' }}
+        >
+          <Text overflow style={{ maxWidth: 'calc(100% - 32px)' }}>
+            {formatPolicyName(item.name)}
+          </Text>
+          {item.default_strategy && (
+            <Bubble content={principalType === AuthSubjectType.USER ? '用户' : '用户组'}>
+              {principalType === AuthSubjectType.USER ? (
+                <img
+                  style={{ verticalAlign: 'middle' }}
+                  src={isActive ? '/static/img/user-icon-active.svg' : '/static/img/user-icon.svg'}
+                />
+              ) : (
+                <img
+                  style={{ verticalAlign: 'middle' }}
+                  src={isActive ? '/static/img/usergroup-icon-active.svg' : '/static/img/usergroup-icon.svg'}
+                />
               )}
-            </Text>
-          }
-          right={
-            <Dropdown button={<Button type='icon' icon='more' />} appearance='pure'>
-              <List type='option'>
-                <ListItem onClick={() => handlers.modify(item.id)}>
-                  <Text> {'编辑'}</Text>
-                </ListItem>
-                <ListItem onClick={() => handlers.delete(item.id)} disabled={item.default_strategy}>
-                  {'删除'}
-                </ListItem>
-              </List>
-            </Dropdown>
-          }
-        ></Justify>
+            </Bubble>
+          )}
+        </Text>
+        <Dropdown button={<Button type='icon' icon='more' />} appearance='pure'>
+          <List type='option'>
+            <ListItem onClick={() => handlers.modify(item.id)}>
+              <Text> {'编辑'}</Text>
+            </ListItem>
+            <ListItem onClick={() => handlers.delete(item.id)} disabled={item.default_strategy}>
+              {'删除'}
+            </ListItem>
+          </List>
+        </Dropdown>
       </ListItem>
     )
   }
@@ -198,7 +212,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
           <Card bordered style={{ height: '100%', maxHeight: '1000px' }}>
             {currentAuthItem.id ? (
               <Card.Body
-                title={currentAuthItem.name}
+                title={formatPolicyName(currentAuthItem.name)}
                 operation={
                   !isInDetailpage &&
                   isOwner() && (
@@ -218,14 +232,13 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                 }
               >
                 <Card bordered style={{ border: 'none' }}>
-                  <Card.Body>
-                    <Form>
-                      <FormItem label={'备注'}>
-                        <FormText>{currentAuthItem.comment || '无备注'}</FormText>
-                      </FormItem>
-                    </Form>
-                  </Card.Body>
+                  <Form>
+                    <FormItem label={'备注'}>
+                      <FormText>{currentAuthItem.comment || '无备注'}</FormText>
+                    </FormItem>
+                  </Form>
                 </Card>
+                <section style={{ borderTop: '1px solid #cfd5de', margin: '20px 0' }}></section>
                 {isInDetailpage ? (
                   <Card bordered style={{ border: 'none' }}>
                     <Card.Body title={'可操作资源'}>

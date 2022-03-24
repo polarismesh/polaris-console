@@ -181,7 +181,7 @@ export default abstract class CreateDuck extends DetailPage {
         ] as any)
         if (result) {
           notification.success({ description: '编辑成功' })
-          router.navigate(`/#/policy?authTab=policy`)
+          router.navigate(`/policy?authTab=policy`)
         } else {
           notification.error({ description: '编辑失败' })
         }
@@ -202,7 +202,7 @@ export default abstract class CreateDuck extends DetailPage {
         })
         if (result) {
           notification.success({ description: '创建成功' })
-          router.navigate(`/#/policy?authTab=policy`)
+          router.navigate(`/policy?authTab=policy`)
         } else {
           notification.error({ description: '创建失败' })
         }

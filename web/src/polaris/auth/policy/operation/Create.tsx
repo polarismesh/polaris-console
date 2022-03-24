@@ -121,12 +121,14 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       onChange={value => {
                         useAllNamespace.setValue(value === 'all')
                       }}
+                      style={{ marginTop: '10px' }}
                     >
                       <Radio name={'all'}>{'全部命名空间（含后续新增）'}</Radio>
                       <Radio name={'partial'}>{'指定命名空间'}</Radio>
                     </RadioGroup>
                     {!useAllNamespace.getValue() && (
                       <SearchableTransfer
+                        style={{ marginTop: '10px' }}
                         title={'请选择命名空间'}
                         duck={ducks.namespace}
                         store={store}
@@ -141,12 +143,14 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       onChange={value => {
                         useAllService.setValue(value === 'all')
                       }}
+                      style={{ marginTop: '10px' }}
                     >
                       <Radio name={'all'}>{'全部服务（含后续新增）'}</Radio>
                       <Radio name={'partial'}>{'指定服务'}</Radio>
                     </RadioGroup>
                     {!useAllService.getValue() && (
                       <SearchableTransfer
+                        style={{ marginTop: '10px' }}
                         title={'请选择服务'}
                         duck={ducks.service}
                         store={store}
