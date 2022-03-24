@@ -24,7 +24,7 @@ export default ({ duck: { creators } }: DuckCmpProps<ServiceAliasPageDuck>): Col
       header: '指向服务',
       render: x => (
         <>
-          <a href={`/tse/service-detail?name=${x.service}&namespace=${x.namespace}`} target={'_blank'} rel='noreferrer'>
+          <a href={`/#/service-detail?name=${x.service}&namespace=${x.namespace}`} target={'_blank'} rel='noreferrer'>
             {x.service}
           </a>
           <Tag style={{ verticalAlign: 'bottom', margin: '0 5px' }}>{x.namespace}</Tag>
