@@ -268,7 +268,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
             type={'weak'}
             style={{ marginRight: '15px' }}
             onClick={() => {
-              router.navigate(`/auth&authTab=policy`)
+              router.navigate(`/policy?authTab=policy`)
             }}
           >
             {'取消'}
