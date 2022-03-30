@@ -27,7 +27,7 @@ export interface DeleteGovernanceStrategiesResult {
 }
 
 /** 删除治理中心的用户 */
-export async function deleteGovernanceUsers(params: DeleteGovernanceUsersParams) {
+export async function deleteGovernanceUsers(params: DeleteGovernanceUsersParams[]) {
   const result = await apiRequest<DeleteGovernanceUsersResult>({ action: 'core/v1/users/delete', data: params })
   return result.responses.every(item => Number(item.code) === SuccessCode)
 }
@@ -419,7 +419,7 @@ export interface ModifyGovernanceGroupTokenResult {
   result: boolean
 }
 /** 删除治理中心的用户组 */
-export async function deleteGovernanceGroups(params: DeleteGovernanceGroupsParams) {
+export async function deleteGovernanceGroups(params: DeleteGovernanceGroupsParams[]) {
   const result = await apiRequest<DeleteGovernanceGroupsResult>({ action: 'core/v1/usergroup/delete', data: params })
   return Number(result.code) === SuccessCode
 }
