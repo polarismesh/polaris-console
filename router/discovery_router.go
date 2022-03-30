@@ -69,11 +69,15 @@ func DiscoveryRouter(r *gin.Engine, config *bootstrap.Config) {
 	v1.PUT("/:resource", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
 	// 修改Token
 	v1.PUT("/:resource/token", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
+	// 修改服务别名
+	v1.PUT("/:resource/alias", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
 
 	// 删除命名空间
 	v1.POST("/namespaces/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
-	// 删除服务或服务别名
+	// 删除服务
 	v1.POST("/services/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
+	// 删除服务别名
+	v1.POST("/service/aliases/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
 	// 删除服务实例
 	v1.POST("/instances/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
 	// 删除路由
