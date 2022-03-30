@@ -17,4 +17,7 @@ export default class BuildConfig {
   get configuration() {
     return true
   }
+  get useDefaultPwd() {
+    return true
+  }
 }

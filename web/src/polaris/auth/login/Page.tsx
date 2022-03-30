@@ -3,9 +3,10 @@ import { purify, DuckCmpProps } from 'saga-duck'
 
 import Duck from './PageDuck'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
-import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput } from 'tea-component'
+import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, ExternalLink } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
+import buildConfig from '@src/buildConfig'
 insertCSS(
   'login',
   `.login-background{
@@ -24,7 +25,10 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       style={{ background: 'url(/static/img/login-background.png)', backgroundSize: '100% 100%' }}
       className={'login-background'}
     >
-      {/* <img src={'/static/img/login-background.png'} className={'login-background'} /> */}
+      <img
+        src={'/static/img/logo-polaris.png'}
+        style={{ width: '200px', position: 'absolute', top: 0, left: 0, padding: '15px' }}
+      />
       <Row style={{ margin: '30vh 0 30vh 0', height: '40vh' }}>
         <Col span={4}></Col>
 
@@ -39,7 +43,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 }}
                 bordered
               >
-                <Card.Body title={<img src={'/static/img/logo-polaris.png'} style={{ width: '40%' }} />}>
+                <Card.Body>
                   <Text parent={'div'} style={{ color: '#fff', fontSize: '24px', width: '550px' }}>
                     北极星服务治理中心
                   </Text>
@@ -69,7 +73,24 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     </Col>
                   </Row>
                   <Form style={{ padding: '20px 0px' }}>
-                    <FormField field={userName} label={'用户名'}>
+                    <FormField
+                      field={userName}
+                      label={'用户名'}
+                      tips={
+                        buildConfig.useDefaultPwd ? (
+                          <ExternalLink
+                            href={
+                              'https://polarismesh.cn/zh/doc/%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/%E9%89%B4%E6%9D%83%E6%8E%A7%E5%88%B6/%E6%A6%82%E8%BF%B0.html#%E6%A6%82%E8%BF%B0'
+                            }
+                            target={'_blank'}
+                          >
+                            默认账号信息
+                          </ExternalLink>
+                        ) : (
+                          undefined
+                        )
+                      }
+                    >
                       <Input field={userName} size={'full'} />
                     </FormField>
                     <FormField field={password} label={'密码'}>
