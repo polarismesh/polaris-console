@@ -419,8 +419,8 @@ export interface ModifyGovernanceGroupTokenResult {
   result: boolean
 }
 /** 删除治理中心的用户组 */
-export async function deleteGovernanceGroups(params: DeleteGovernanceGroupsParams) {
-  const result = await apiRequest<DeleteGovernanceGroupsResult>({ action: 'core/v1/usergroup/delete', data: params })
+export async function deleteGovernanceGroups(params: DeleteGovernanceGroupsParams[]) {
+  const result = await apiRequest<DeleteGovernanceGroupsResult>({ action: 'core/v1/usergroups/delete', data: params })
   return Number(result.code) === SuccessCode
 }
 /** **DeleteGovernanceGroups入参**
