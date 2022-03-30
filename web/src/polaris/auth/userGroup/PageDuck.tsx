@@ -179,7 +179,7 @@ export default class PageDuck extends GridPageDuck {
         ),
       })
       if (confirm) {
-        const result = yield deleteGovernanceGroups({ id: group.id })
+        const result = yield deleteGovernanceGroups([{ id: group.id }])
         if (result) {
           notification.success({ description: '删除成功' })
           yield put(creators.reload())
