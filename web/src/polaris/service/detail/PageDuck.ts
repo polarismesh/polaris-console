@@ -1,45 +1,44 @@
-import DetailPageDuck from "@src/polaris/common/ducks/DetailPage";
-import { reduceFromPayload, createToPayload } from "saga-duck";
-import { select, put, takeLatest } from "redux-saga/effects";
-import { TAB, ComposedId } from "./types";
-import InfoDuck from "./info/PageDuck";
-import InstanceDuck from "./instance/PageDuck";
-import RouteDuck from "./route/PageDuck";
-import RateLimitDuck from "./limit/PageDuck";
-import CircuitBreakerDuck from "./circuitBreaker/PageDuck";
-import MonitorDuck from "../../monitor/PageDuck";
+import DetailPageDuck from '@src/polaris/common/ducks/DetailPage'
+import { reduceFromPayload, createToPayload } from 'saga-duck'
+import { select, put, takeLatest } from 'redux-saga/effects'
+import { TAB, ComposedId } from './types'
+import InfoDuck from './info/PageDuck'
+import InstanceDuck from './instance/PageDuck'
+import RouteDuck from './route/PageDuck'
+import RateLimitDuck from './limit/PageDuck'
+import CircuitBreakerDuck from './circuitBreaker/PageDuck'
 
-import { Service } from "../types";
-import { describeServices } from "../model";
+import { Service } from '../types'
+import { describeServices } from '../model'
 
 export default class RegistryDetailDuck extends DetailPageDuck {
-  ComposedId: ComposedId;
-  Data: Service;
+  ComposedId: ComposedId
+  Data: Service
 
   get baseUrl() {
-    return "/#/service-detail";
+    return '/#/service-detail'
   }
 
   get params() {
-    const { types } = this;
+    const { types } = this
     return [
       ...super.params,
       {
-        key: "namespace",
+        key: 'namespace',
         type: types.SET_NAMESPACE,
-        defaults: "",
+        defaults: '',
       },
       {
-        key: "name",
+        key: 'name',
         type: types.SET_SERVICE_NAME,
-        defaults: "",
+        defaults: '',
       },
       {
-        key: "tab",
+        key: 'tab',
         type: types.SWITCH,
         defaults: TAB.Instance,
       },
-    ];
+    ]
   }
   get quickTypes() {
     enum Types {
@@ -50,7 +49,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
     return {
       ...super.quickTypes,
       ...Types,
-    };
+    }
   }
   get quickDucks() {
     return {
@@ -60,26 +59,26 @@ export default class RegistryDetailDuck extends DetailPageDuck {
       [TAB.Route]: RouteDuck,
       [TAB.RateLimit]: RateLimitDuck,
       [TAB.CircuitBreaker]: CircuitBreakerDuck,
-    };
+    }
   }
   get reducers() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.reducers,
       tab: reduceFromPayload(types.SWITCH, TAB.Instance),
-      namespace: reduceFromPayload(types.SET_NAMESPACE, ""),
-      name: reduceFromPayload(types.SET_SERVICE_NAME, ""),
-    };
+      namespace: reduceFromPayload(types.SET_NAMESPACE, ''),
+      name: reduceFromPayload(types.SET_SERVICE_NAME, ''),
+    }
   }
   get creators() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.creators,
       switch: createToPayload<string>(types.SWITCH),
-    };
+    }
   }
   get rawSelectors() {
-    type State = this["State"];
+    type State = this['State']
     return {
       ...super.rawSelectors,
       composedId: (state: State) => ({
@@ -87,34 +86,34 @@ export default class RegistryDetailDuck extends DetailPageDuck {
         namespace: state.namespace,
       }),
       tab: (state: State) => state.tab,
-    };
+    }
   }
-  async getData(composedId: this["ComposedId"]) {
-    const { name, namespace } = composedId;
+  async getData(composedId: this['ComposedId']) {
+    const { name, namespace } = composedId
     const result = await describeServices({
       namespace,
       name,
       offset: 0,
       limit: 10,
-    });
-    return result.list?.[0];
+    })
+    return result.list?.[0]
   }
   *saga() {
-    yield* super.saga();
-    yield* this.watchTabs();
+    yield* super.saga()
+    yield* this.watchTabs()
   }
   *watchTabs() {
-    const duck = this;
-    const { types, ducks, selectors } = duck;
-    yield takeLatest([types.SWITCH, types.FETCH_DONE], function* () {
-      const composedId = selectors.composedId(yield select());
-      const tab = selectors.tab(yield select());
-      const data = selectors.data(yield select());
+    const duck = this
+    const { types, ducks, selectors } = duck
+    yield takeLatest([types.SWITCH, types.FETCH_DONE], function*() {
+      const composedId = selectors.composedId(yield select())
+      const tab = selectors.tab(yield select())
+      const data = selectors.data(yield select())
       if (!composedId || !data) {
-        return;
+        return
       }
-      const subDuck = ducks[tab];
-      yield put(subDuck.creators.load({ ...composedId }));
-    });
+      const subDuck = ducks[tab]
+      yield put(subDuck.creators.load({ ...composedId, ...data }))
+    })
   }
 }

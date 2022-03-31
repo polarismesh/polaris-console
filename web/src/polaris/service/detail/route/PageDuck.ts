@@ -1,22 +1,12 @@
-import { createToPayload, reduceFromPayload, connectWithDuck } from 'saga-duck'
+import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/GridPage'
-import { RuleType, Destination, Source, InboundItem, OutboundItem, EditType } from './types'
-import {
-  describeRoutes,
-  DescribeRoutesResult,
-  DescribeRoutesParams,
-  modifyRoutes,
-  Routing,
-  createRoutes,
-} from './model'
+import { RuleType, EditType } from './types'
+import { describeRoutes, Routing, modifyRoutes, createRoutes, deleteRoutes } from './model'
 import { takeLatest } from 'redux-saga-catch'
-import { resolvePromise } from 'saga-duck/build/helper'
-import { showDialog } from '@src/polaris/common/helpers/showDialog'
-import Create from './operations/Create'
-import CreateDuck, { DynamicRouteCreateDuck } from './operations/CreateDuck'
+import { DynamicRouteCreateDuck } from './operations/CreateDuck'
 import { put, select, take } from 'redux-saga/effects'
 import { Modal } from 'tea-component'
-import router from '@src/polaris/common/util/router'
+import { Service } from '../../types'
 
 interface Filter extends BaseFilter {
   namespace: string
@@ -90,7 +80,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types } = this
     return {
       ...super.reducers,
-      data: reduceFromPayload<ComposedId>(types.LOAD, {} as any),
+      data: reduceFromPayload<Service>(types.LOAD, {} as Service),
       expandedKeys: reduceFromPayload<string[]>(
         types.SET_EXPANDED_KEYS,
         [...new Array(100)].map((i, index) => index.toString()),
@@ -144,7 +134,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types, creators, selector, ducks } = this
     yield* this.sagaInitLoad()
     yield* super.saga()
-    yield takeLatest(types.CREATE, function* (action) {
+    yield takeLatest(types.CREATE, function*(action) {
       const {
         data: { name, namespace },
         routeData,
@@ -177,7 +167,7 @@ export default class ServicePageDuck extends GridPageDuck {
         }),
       )
     })
-    yield takeLatest(types.EDIT, function* (action) {
+    yield takeLatest(types.EDIT, function*(action) {
       const {
         data: { name, namespace },
         ruleType,
@@ -221,12 +211,12 @@ export default class ServicePageDuck extends GridPageDuck {
     //   }
     //   yield put(creators.reload());
     // });
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
       const { routeData, originData } = action.payload
       yield put({ type: types.SET_ROUTE_DATA, payload: routeData })
       if (originData) yield put({ type: types.SET_ORIGIN_DATA, payload: originData })
     })
-    yield takeLatest(types.RESET_DATA, function* (action) {
+    yield takeLatest(types.RESET_DATA, function*() {
       const { originData } = selector(yield select())
       yield put({ type: types.SET_ROUTE_DATA, payload: originData })
       yield put({
@@ -235,13 +225,20 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(types.SUBMIT, function* () {
-      const { originData, routeData } = selector(yield select())
-      console.log(originData)
+    yield takeLatest(types.SUBMIT, function*() {
+      const {
+        originData,
+        routeData,
+        data: { name, namespace },
+      } = selector(yield select())
       if (originData?.ctime) {
-        const result = yield modifyRoutes([routeData])
+        if (routeData.inbounds.length === 0 && routeData.outbounds.length === 0) {
+          yield deleteRoutes([{ service: name, namespace }])
+        } else {
+          yield modifyRoutes([routeData])
+        }
       } else {
-        const result = yield createRoutes([routeData])
+        yield createRoutes([routeData])
       }
       yield put({
         type: types.SET_EDIT_STATUS,
@@ -253,7 +250,7 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(types.DRAWER_SUBMIT, function* (action) {
+    yield takeLatest(types.DRAWER_SUBMIT, function*() {
       const {
         drawerStatus: { createId, ruleType, ruleIndex, isEdit },
         routeData,
@@ -261,10 +258,10 @@ export default class ServicePageDuck extends GridPageDuck {
       } = selector(yield select())
       const formValue = yield* ducks.dynamicCreateDuck.getDuck(createId).submit()
       if (!formValue) return
-      let originData = routeData || ({ service: name, namespace, inbounds: [], outbounds: [] } as Routing)
+      const originData = routeData || ({ service: name, namespace, inbounds: [], outbounds: [] } as Routing)
       if (ruleType === RuleType.Inbound) {
         let newArray
-        let tempArray = [...originData.inbounds] || []
+        const tempArray = [...originData.inbounds] || []
         tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue)
         newArray = tempArray
         yield put({
@@ -277,7 +274,7 @@ export default class ServicePageDuck extends GridPageDuck {
         })
       } else {
         let newArray
-        let tempArray = [...originData?.outbounds] || []
+        const tempArray = [...originData?.outbounds] || []
         tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue)
         newArray = tempArray
         yield put({
@@ -301,7 +298,7 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(types.REMOVE, function* (action) {
+    yield takeLatest(types.REMOVE, function*(action) {
       const confirm = yield Modal.confirm({
         message: `确认删除路由规则`,
         description: '删除后，无法恢复',
@@ -326,9 +323,7 @@ export default class ServicePageDuck extends GridPageDuck {
     })
   }
 
-  *sagaInitLoad() {
-    const { ducks } = this
-  }
+  *sagaInitLoad() {}
   async getData(filters: this['Filter']) {
     const { page, count, namespace, service, ruleType } = filters
     let routeData = filters.routeData

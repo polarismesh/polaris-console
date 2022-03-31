@@ -1,23 +1,13 @@
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/GridPage'
-import {
-  describeLimitRules,
-  LimitRange,
-  RateLimit,
-  LimitResource,
-  LimitType,
-  deleteRateLimit,
-  modifyRateLimit,
-} from './model'
+import { describeLimitRules, LimitRange, RateLimit, deleteRateLimit, modifyRateLimit } from './model'
 import { takeLatest } from 'redux-saga-catch'
-import { resolvePromise } from 'saga-duck/build/helper'
-import { showDialog } from '@src/polaris/common/helpers/showDialog'
 // import Create from "./operations/Create";
 // import CreateDuck from "./operations/CreateDuck";
 import { put, select, take } from 'redux-saga/effects'
 import { Modal } from 'tea-component'
-import router from '@src/polaris/common/util/router'
 import { DynamicRateLimitCreateDuck } from './operations/CreateDuck'
+import { Service } from '../../types'
 
 interface Filter extends BaseFilter {
   namespace: string
@@ -85,7 +75,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types } = this
     return {
       ...super.reducers,
-      data: reduceFromPayload<ComposedId>(types.LOAD, {} as any),
+      data: reduceFromPayload<Service>(types.LOAD, {} as Service),
       expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
       limitRange: reduceFromPayload<LimitRange>(types.SET_LIMIT_RANGE, LimitRange.LOCAL),
       selection: reduceFromPayload<string[]>(types.SET_SELECTION, []),
@@ -129,7 +119,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types, creators, selector, ducks } = this
     yield* this.sagaInitLoad()
     yield* super.saga()
-    yield takeLatest(types.CREATE, function* (action) {
+    yield takeLatest(types.CREATE, function*() {
       const {
         data: { name, namespace },
       } = selector(yield select())
@@ -139,7 +129,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: '新建熔断规则',
+          title: '新建路由规则',
           visible: true,
           createId,
           isEdit: false,
@@ -154,17 +144,16 @@ export default class ServicePageDuck extends GridPageDuck {
         }),
       )
     })
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
       const { list } = action.payload
-      const expandedKeys = list.map((item) => item.id)
+      const expandedKeys = list.map(item => item.id)
       yield put(creators.setExpandedKeys(expandedKeys))
     })
-    yield takeLatest(types.EDIT, function* (action) {
+    yield takeLatest(types.EDIT, function*(action) {
       const {
         data: { name, namespace },
       } = selector(yield select())
       const rule = action.payload
-      console.log(rule)
       const createId = Math.round(Math.random() * 1000000).toString()
       yield put(ducks.dynamicCreateDuck.creators.createDuck(createId))
       const createDuck = ducks.dynamicCreateDuck.getDuck(createId)
@@ -188,7 +177,7 @@ export default class ServicePageDuck extends GridPageDuck {
         }),
       )
     })
-    yield takeLatest(types.DRAWER_SUBMIT, function* (action) {
+    yield takeLatest(types.DRAWER_SUBMIT, function*() {
       const {
         drawerStatus: { createId },
       } = selector(yield select())
@@ -202,7 +191,7 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(types.REMOVE, function* (action) {
+    yield takeLatest(types.REMOVE, function*(action) {
       const deleteList = action.payload
 
       const confirm = yield Modal.confirm({
@@ -210,11 +199,11 @@ export default class ServicePageDuck extends GridPageDuck {
         description: '删除后，无法恢复',
       })
       if (confirm) {
-        yield deleteRateLimit(deleteList.map((id) => ({ id })))
+        yield deleteRateLimit(deleteList.map(id => ({ id })))
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.TOGGLE_STATUS, function* (action) {
+    yield takeLatest(types.TOGGLE_STATUS, function*(action) {
       const item = action.payload
       const param = {
         ...item,
@@ -229,9 +218,7 @@ export default class ServicePageDuck extends GridPageDuck {
     })
   }
 
-  *sagaInitLoad() {
-    const { ducks } = this
-  }
+  *sagaInitLoad() {}
   async getData(filters: this['Filter']) {
     const { page, count, namespace, service } = filters
     const result = await describeLimitRules({
@@ -240,7 +227,7 @@ export default class ServicePageDuck extends GridPageDuck {
       offset: (page - 1) * count,
       limit: count,
     })
-    result.list = result.list.map((item) => ({
+    result.list = result.list.map(item => ({
       ...item,
       //太怪了，这里如果没有disable字段，代表是启用状态，我晕了
       disable: item.disable === true ? true : false,

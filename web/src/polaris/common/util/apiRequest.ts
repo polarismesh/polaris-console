@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { notification } from 'tea-component'
 import tips from './tips'
+import router from './router'
 
 export interface APIRequestOption {
   action: string
@@ -9,9 +10,10 @@ export interface APIRequestOption {
 }
 export interface ApiResponse {
   code: number
-  message: string
+  info: string
 }
-
+export const SuccessCode = 200000
+export const TokenNotExistCode = 401004
 export async function apiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts } = options
   try {
@@ -19,8 +21,12 @@ export async function apiRequest<T>(options: APIRequestOption) {
     const res = (await axios
       .post<T & ApiResponse>(action, data, {
         ...opts,
+        headers: {
+          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+          'X-Polaris-User': window.localStorage.getItem('login-user-id')
+        },
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           notification.error({
             title: '请求错误',
@@ -28,6 +34,9 @@ export async function apiRequest<T>(options: APIRequestOption) {
           })
         }
       })) as AxiosResponse<T & ApiResponse>
+    if (res.data.code > 200000) {
+      throw res.data.info
+    }
     return res.data
   } catch (e) {
     console.error(e)
@@ -39,12 +48,32 @@ export async function getApiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts } = options
   try {
     tips.showLoading({})
-    const res = await axios.get<T & ApiResponse>(action, {
-      params: data,
-      ...opts,
-    })
-    if (res.status >= 400) {
-      throw res
+    const res = (await axios
+      .get<T & ApiResponse>(action, {
+        params: data,
+        ...opts,
+        headers: {
+          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+          'X-Polaris-User': window.localStorage.getItem('login-user-id')
+        },
+      })
+      .catch(function (error) {
+        if (error.response.data.code === TokenNotExistCode) {
+          notification.error({
+            title: 'Token不存在',
+            description: '您当前使用的Token不存在，可能已被重置，请重新登录。',
+          })
+          router.navigate('/login')
+        }
+        if (error.response) {
+          notification.error({
+            title: '请求错误',
+            description: error.response?.data?.info,
+          })
+        }
+      })) as AxiosResponse<T & ApiResponse>
+    if (res.data.code > 200000) {
+      throw res.data.info
     }
     return res.data
   } catch (e) {
@@ -58,11 +87,24 @@ export async function putApiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts } = options
   try {
     tips.showLoading({})
-    const res = await axios.put<T & ApiResponse>(action, data, {
-      ...opts,
-    })
-    if (res.status >= 400) {
-      throw res.data
+    const res = (await axios
+      .put<T & ApiResponse>(action, data, {
+        ...opts,
+        headers: {
+          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+          'X-Polaris-User': window.localStorage.getItem('login-user-id')
+        },
+      })
+      .catch(function (error) {
+        if (error.response) {
+          notification.error({
+            title: '请求错误',
+            description: error.response?.data?.info,
+          })
+        }
+      })) as AxiosResponse<T & ApiResponse>
+    if (res.data.code > 200000) {
+      throw res.data.info
     }
     return res.data
   } catch (e) {
@@ -75,12 +117,25 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts } = options
   try {
     tips.showLoading({})
-    const res = await axios.delete<T & ApiResponse>(action, {
-      params: data,
-      ...opts,
-    })
-    if (res.status >= 400) {
-      throw res
+    const res = (await axios
+      .delete<T & ApiResponse>(action, {
+        params: data,
+        ...opts,
+        headers: {
+          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+          'X-Polaris-User': window.localStorage.getItem('login-user-id')
+        },
+      })
+      .catch(function (error) {
+        if (error.response) {
+          notification.error({
+            title: '请求错误',
+            description: error.response?.data?.info,
+          })
+        }
+      })) as AxiosResponse<T & ApiResponse>
+    if (res.data.code > 200000) {
+      throw res.data.info
     }
     return res.data
   } catch (e) {
@@ -108,7 +163,7 @@ const DefaultOptions = {
  * @param listKey 返回结果中列表的键名称 默认list
  */
 export function getAllList(fetchFun: (params?: any) => Promise<any>, options: FetchAllOptions = {}) {
-  return async function(params: any) {
+  return async function (params: any) {
     const fetchOptions = { ...DefaultOptions, ...options }
     let allList = [],
       pageNo = 0

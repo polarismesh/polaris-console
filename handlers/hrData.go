@@ -28,35 +28,28 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/polarismesh/polaris-console/bootstrap"
 	"github.com/polarismesh/polaris-console/common/log"
 )
-
-/**
- * 回复请求
- */
-type StaffDepartment struct {
-	Name       string `json:"ChnName"`
-	Department string `json:"DeptNameString"`
-}
 
 var departments string
 
 /**
  * @brief 获取部门数据
  */
-func GetDepartment(hrData *HRData, oaAuthority *OAAuthority) gin.HandlerFunc {
+func GetDepartment(conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if ok := authority(c, oaAuthority); !ok {
+		if ok := authority(c, conf); !ok {
 			return
 		}
-		getDepartment(hrData, c)
+		getDepartment(&conf.HRData, c)
 	}
 }
 
 /**
  * @brief 获取部门数据
  */
-func getDepartment(hrData *HRData, c *gin.Context) {
+func getDepartment(hrData *bootstrap.HRData, c *gin.Context) {
 	if departments != "" {
 		c.JSON(http.StatusOK, departments)
 	} else if hrData == nil || !hrData.EnableHRData {
@@ -94,10 +87,10 @@ func SetDepartment() {
 /**
  * 获取员工的组织架构信息
  */
-func getStaffDepartment(hrData *HRData, c *gin.Context) {
+func getStaffDepartment(hrData *bootstrap.HRData, c *gin.Context) {
 	// 不获取员工组织架构信息
 	if hrData == nil || !hrData.EnableHRData {
-		c.JSON(http.StatusOK, &StaffDepartment{})
+		c.JSON(http.StatusOK, &bootstrap.StaffDepartment{})
 		return
 	}
 	timestamp := fmt.Sprintf("%d", time.Now().Unix())
@@ -135,7 +128,7 @@ func getStaffDepartment(hrData *HRData, c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, "读取员工组织架构应答出错")
 		return
 	}
-	staffDepartment := &StaffDepartment{}
+	staffDepartment := &bootstrap.StaffDepartment{}
 	err = json.Unmarshal([]byte(responseBody), &staffDepartment)
 	if err != nil {
 		log.Errorf("parse staff department response[%s] err:%v", responseBody, err)
