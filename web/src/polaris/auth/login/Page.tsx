@@ -3,7 +3,20 @@ import { purify, DuckCmpProps } from 'saga-duck'
 
 import Duck from './PageDuck'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
-import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, ExternalLink } from 'tea-component'
+import {
+  Row,
+  Col,
+  Card,
+  H2,
+  Text,
+  Form,
+  Button,
+  Input as TeaInput,
+  ExternalLink,
+  FormItem,
+  Copy,
+  FormText,
+} from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import buildConfig from '@src/buildConfig'
@@ -73,24 +86,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     </Col>
                   </Row>
                   <Form style={{ padding: '20px 0px' }}>
-                    <FormField
-                      field={userName}
-                      label={'用户名'}
-                      tips={
-                        buildConfig.useDefaultPwd ? (
-                          <ExternalLink
-                            href={
-                              'https://polarismesh.cn/zh/doc/%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/%E9%89%B4%E6%9D%83%E6%8E%A7%E5%88%B6/%E6%A6%82%E8%BF%B0.html#%E6%A6%82%E8%BF%B0'
-                            }
-                            target={'_blank'}
-                          >
-                            默认账号信息
-                          </ExternalLink>
-                        ) : (
-                          undefined
-                        )
-                      }
-                    >
+                    <FormField field={userName} label={'用户名'}>
                       <Input field={userName} size={'full'} />
                     </FormField>
                     <FormField field={password} label={'密码'}>
@@ -109,6 +105,20 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                         rules={false}
                       />
                     </FormField>
+                    {buildConfig.useDefaultPwd && (
+                      <>
+                        <FormItem label={'默认账号'}>
+                          <FormText>
+                            <Copy text={'polaris'}>polaris</Copy>
+                          </FormText>
+                        </FormItem>
+                        <FormItem label={'默认密码'}>
+                          <FormText>
+                            <Copy text={'polarismesh@2021'}>polarismesh@2021</Copy>
+                          </FormText>
+                        </FormItem>
+                      </>
+                    )}
                   </Form>
                   <Row>
                     <Col span={8}></Col>
