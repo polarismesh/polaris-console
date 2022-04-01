@@ -20,4 +20,7 @@ export default class BuildConfig {
   get useDefaultPwd() {
     return true
   }
+  get useCmdbDetail() {
+    return true
+  }
 }

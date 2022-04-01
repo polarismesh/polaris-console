@@ -21,4 +21,7 @@ export default class BuildConfig extends BaseConfig {
   get useDefaultPwd() {
     return false
   }
+  get useCmdbDetail() {
+    return false
+  }
 }
