@@ -38,7 +38,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   <Input field={old_password} size={'m'} type={'password'} />
                 </FormField>
               )}
-              <FormField field={new_password} label={'新密码'} required>
+              <FormField field={new_password} label={'新密码'} required message={passwordRuleText}>
                 <Input field={new_password} size={'m'} type={'password'} />
               </FormField>
               <FormField field={confirmPassword} label={'确认密码'} required>
