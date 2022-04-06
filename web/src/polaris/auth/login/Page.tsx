@@ -3,9 +3,23 @@ import { purify, DuckCmpProps } from 'saga-duck'
 
 import Duck from './PageDuck'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
-import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput } from 'tea-component'
+import {
+  Row,
+  Col,
+  Card,
+  H2,
+  Text,
+  Form,
+  Button,
+  Input as TeaInput,
+  ExternalLink,
+  FormItem,
+  Copy,
+  FormText,
+} from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
+import buildConfig from '@src/buildConfig'
 insertCSS(
   'login',
   `.login-background{
@@ -24,7 +38,10 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       style={{ background: 'url(/static/img/login-background.png)', backgroundSize: '100% 100%' }}
       className={'login-background'}
     >
-      {/* <img src={'/static/img/login-background.png'} className={'login-background'} /> */}
+      <img
+        src={'/static/img/logo-polaris.png'}
+        style={{ width: '200px', position: 'absolute', top: 0, left: 0, padding: '15px' }}
+      />
       <Row style={{ margin: '30vh 0 30vh 0', height: '40vh' }}>
         <Col span={4}></Col>
 
@@ -39,7 +56,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 }}
                 bordered
               >
-                <Card.Body title={<img src={'/static/img/logo-polaris.png'} style={{ width: '40%' }} />}>
+                <Card.Body>
                   <Text parent={'div'} style={{ color: '#fff', fontSize: '24px', width: '550px' }}>
                     北极星服务治理中心
                   </Text>
@@ -88,6 +105,20 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                         rules={false}
                       />
                     </FormField>
+                    {buildConfig.useDefaultPwd && (
+                      <>
+                        <FormItem label={'默认账号'}>
+                          <FormText>
+                            <Copy text={'polaris'}>polaris</Copy>
+                          </FormText>
+                        </FormItem>
+                        <FormItem label={'默认密码'}>
+                          <FormText>
+                            <Copy text={'polarismesh@2021'}>polarismesh@2021</Copy>
+                          </FormText>
+                        </FormItem>
+                      </>
+                    )}
                   </Form>
                   <Row>
                     <Col span={8}></Col>

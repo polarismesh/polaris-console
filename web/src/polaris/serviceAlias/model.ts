@@ -137,7 +137,7 @@ export interface ModifyGovernanceAliasResult {
 
 /** 删除治理中心服务别名 */
 export function deleteGovernanceAliases(params: DeleteGovernanceAliasesParams) {
-  return apiRequest<DeleteGovernanceAliasesResult>({ action: 'naming/v1/service/alias/delete', data: params })
+  return apiRequest<DeleteGovernanceAliasesResult>({ action: 'naming/v1/service/aliases/delete', data: params })
 }
 /** **DeleteGovernanceAliases入参**
   

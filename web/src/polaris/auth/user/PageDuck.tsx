@@ -123,11 +123,10 @@ export default class PageDuck extends GridPageDuck {
     yield takeLatest(types.DELETE, function*(action) {
       const users = action.payload
       const confirm = yield Modal.confirm({
-        message: '确认删除如下用户？',
+        message: '确认删除用户？',
         description: (
           <>
             <Text>{'删除后，用户不可用且无法恢复'}</Text>
-            <Text>{users.map(item => item.name)}</Text>
           </>
         ),
       })

@@ -62,13 +62,13 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
     },
     {
       type: 'input',
-      key: 'host',
+      key: 'instanceIp',
       name: '实例IP',
     },
     {
       type: 'render',
       key: MetadataTagKey,
-      name: '标签键',
+      name: '标签',
       render: ({ onSelect }) => {
         return (
           <MetadataSelectPanel

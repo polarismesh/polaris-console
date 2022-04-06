@@ -27,7 +27,7 @@ export interface DeleteGovernanceStrategiesResult {
 }
 
 /** 删除治理中心的用户 */
-export async function deleteGovernanceUsers(params: DeleteGovernanceUsersParams) {
+export async function deleteGovernanceUsers(params: DeleteGovernanceUsersParams[]) {
   const result = await apiRequest<DeleteGovernanceUsersResult>({ action: 'core/v1/users/delete', data: params })
   return result.responses.every(item => Number(item.code) === SuccessCode)
 }

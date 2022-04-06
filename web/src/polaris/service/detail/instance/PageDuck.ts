@@ -25,6 +25,7 @@ export const EmptyCustomFilter = {
   values: '',
   healthy: 'true',
   isolate: null,
+  metadata: { key: '', value: '' },
 }
 
 interface Filter extends BaseFilter {
@@ -50,6 +51,7 @@ interface CustomFilters {
   metadata?: KeyValuePair
   healthy?: any
   isolate?: any
+  keys?: string
 }
 interface ComposedId {
   name: string
@@ -90,7 +92,7 @@ export default class ServicePageDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.LOAD, this.types.CHANGE_TAGS]
+    return [...super.watchTypes, this.types.SEARCH, this.types.LOAD, this.types.SET_CUSTOM_FILTERS]
   }
   get params() {
     return [...super.params]
@@ -219,7 +221,7 @@ export default class ServicePageDuck extends GridPageDuck {
       validTags.forEach(tag => {
         const key = tag?.attr?.key || HostTagKey
         if (key === MetadataTagKey) {
-          customFilters[key] = tag.values.map(item => ({ key: item.key, value: item.value }))
+          customFilters[key] = tag.values.map(item => ({ key: item.key, value: item.value || '' }))?.[0]
         } else {
           if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
           else customFilters[key] = tag.values[0].key
@@ -292,7 +294,7 @@ export default class ServicePageDuck extends GridPageDuck {
       service,
       customFilters: { host, port, weight, protocol, version, healthy, isolate, metadata },
     } = filters
-    const { key, value } = metadata?.[0] || {}
+    const { key, value } = metadata || {}
     const searchParams = {
       limit: count,
       offset: (page - 1) * count,

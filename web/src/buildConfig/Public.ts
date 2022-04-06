@@ -18,4 +18,7 @@ export default class BuildConfig extends BaseConfig {
   get configuration() {
     return false
   }
+  get useDefaultPwd() {
+    return false
+  }
 }

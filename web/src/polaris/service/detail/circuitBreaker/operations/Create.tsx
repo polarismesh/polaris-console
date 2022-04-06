@@ -161,11 +161,16 @@ const renderInboundRule = props => {
         <Form style={{ width: '850px', paddingLeft: '20px' }} layout={'inline'}>
           {[...destinations.asArray()].map((field, index) => {
             const { method } = field.getFields(['method'])
-            const { value: methodValue } = method.getFields(['value'])
+            const { value: methodValue, type: methodType } = method.getFields(['value', 'type'])
             return (
-              <FormField showStatusIcon={false} field={methodValue} label={'接口'}>
-                <Input field={methodValue} />
-              </FormField>
+              <>
+                <FormField showStatusIcon={false} field={methodValue} label={'接口'}>
+                  <Input field={methodValue} />
+                </FormField>
+                <FormField field={methodType} label={'匹配方式'}>
+                  <Select size='s' options={MATCH_TYPE_OPTIONS} field={methodType} />
+                </FormField>
+              </>
             )
           })}
         </Form>

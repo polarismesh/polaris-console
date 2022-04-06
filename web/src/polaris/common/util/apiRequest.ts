@@ -23,10 +23,10 @@ export async function apiRequest<T>(options: APIRequestOption) {
         ...opts,
         headers: {
           'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-          'X-Polaris-User': window.localStorage.getItem('login-user-id')
+          'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response) {
           notification.error({
             title: '请求错误',
@@ -54,10 +54,10 @@ export async function getApiRequest<T>(options: APIRequestOption) {
         ...opts,
         headers: {
           'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-          'X-Polaris-User': window.localStorage.getItem('login-user-id')
+          'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response.data.code === TokenNotExistCode) {
           notification.error({
             title: 'Token不存在',
@@ -92,10 +92,10 @@ export async function putApiRequest<T>(options: APIRequestOption) {
         ...opts,
         headers: {
           'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-          'X-Polaris-User': window.localStorage.getItem('login-user-id')
+          'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response) {
           notification.error({
             title: '请求错误',
@@ -123,10 +123,10 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
         ...opts,
         headers: {
           'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-          'X-Polaris-User': window.localStorage.getItem('login-user-id')
+          'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response) {
           notification.error({
             title: '请求错误',
@@ -163,11 +163,11 @@ const DefaultOptions = {
  * @param listKey 返回结果中列表的键名称 默认list
  */
 export function getAllList(fetchFun: (params?: any) => Promise<any>, options: FetchAllOptions = {}) {
-  return async function (params: any) {
+  return async function(params: any) {
     const fetchOptions = { ...DefaultOptions, ...options }
     let allList = [],
       pageNo = 0
-    const pageSize = 50
+    const pageSize = 1
     while (true) {
       // 每次获取获取50条
       params = { ...params }
@@ -179,6 +179,7 @@ export function getAllList(fetchFun: (params?: any) => Promise<any>, options: Fe
       } as any)
 
       allList = allList.concat(result[fetchOptions.listKey])
+      console.log(allList.length, result[fetchOptions.totalKey])
 
       if (allList.length >= result[fetchOptions.totalKey]) {
         // 返回
@@ -186,7 +187,6 @@ export function getAllList(fetchFun: (params?: any) => Promise<any>, options: Fe
       } else {
         pageNo++
       }
-      break
     }
     return {
       list: allList,

@@ -177,6 +177,9 @@ const validator = CreateForm.combineValidators<Values, DialogOptions>({
     if (!v && values.id) {
       return '请输入新密码'
     }
+    if (v.length < 6 || v.length > 17) {
+      return passwordRuleText
+    }
   },
   confirmPassword(v, values, meta) {
     if (meta.isModifyPassword || !meta.isModify) {

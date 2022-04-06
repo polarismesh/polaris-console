@@ -98,7 +98,7 @@ export const IsolateStatusOptions = [
 ]
 
 export const HostTagKey = 'host'
-export const MetadataTagKey = 'metadatas'
+export const MetadataTagKey = 'metadata'
 export const HealthyTagKey = 'healthy'
 export const IsolateTagKey = 'isolate'
 
@@ -123,7 +123,7 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
     },
     {
       type: 'input',
-      key: 'instanceVersion',
+      key: 'version',
       name: '版本',
     },
     {
@@ -141,7 +141,7 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
     {
       type: 'render',
       key: MetadataTagKey,
-      name: '标签键',
+      name: '标签',
       render: ({ onSelect }) => {
         return (
           <MetadataSelectPanel
