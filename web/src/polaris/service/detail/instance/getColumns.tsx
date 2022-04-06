@@ -79,15 +79,23 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceIns
     ? [
         {
           key: 'cmdb',
-          header: '地域-可用区-IDC',
-          render: x => <Text>{`${x.cmdb_region ?? '/'}-${x.cmdb_zone ?? '/'}-${x.cmdb_idc ?? '/'}`}</Text>,
+          header: '地区-地域-可用区',
+          render: x => (
+            <Text tooltip={`${x.location?.region ?? '/'}-${x.location?.zone ?? '/'}-${x.location?.campus ?? '/'}`}>
+              {`${x.location?.region ?? '/'}-${x.location?.zone ?? '/'}-${x.location?.campus ?? '/'}`}
+            </Text>
+          ),
         },
       ]
     : [
         {
           key: 'cmdb',
           header: '地域-可用区',
-          render: x => <Text>{`${x.cmdb_region ?? '/'}-${x.cmdb_zone ?? '/'}`}</Text>,
+          render: x => (
+            <Text tooltip={`${x.location?.zone ?? '/'}-${x.location?.campus ?? '/'}`}>
+              {`${x.location?.zone ?? '/'}-${x.location?.campus ?? '/'}`}
+            </Text>
+          ),
         },
       ]),
   {

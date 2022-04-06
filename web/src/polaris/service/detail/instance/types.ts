@@ -16,9 +16,11 @@ export interface Instance {
   vpc_id: string
   weight: number
   editable: boolean
-  cmdb_region: string
-  cmdb_zone: string
-  cmdb_idc: string
+  location: {
+    region: string
+    zone: string
+    campus: string
+  }
 }
 export enum HEALTH_STATUS {
   HEALTH = 'true',
