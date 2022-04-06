@@ -34,8 +34,8 @@ import { MetadataItem } from '../../route/types'
 import tips from '@src/polaris/common/util/tips'
 import DynamicDuck from '@src/polaris/common/ducks/DynamicDuck'
 
-const convertMetadataMapToArray = (metadata) => {
-  return Object.keys(metadata).map((key) => {
+const convertMetadataMapToArray = metadata => {
+  return Object.keys(metadata).map(key => {
     return {
       key,
       value: metadata[key].value,
@@ -43,17 +43,17 @@ const convertMetadataMapToArray = (metadata) => {
     }
   })
 }
-const convertMetadataArrayToMap = (metadataArray) => {
+const convertMetadataArrayToMap = metadataArray => {
   const metadataMap = {}
-  metadataArray.forEach((metadata) => {
+  metadataArray.forEach(metadata => {
     const { key, value, type } = metadata
     metadataMap[key] = { value, type }
   })
   return metadataMap
 }
-const convertPolicyArrayToMap = (policyArray) => {
+const convertPolicyArrayToMap = policyArray => {
   const metadataMap = {}
-  policyArray.forEach((policy) => {
+  policyArray.forEach(policy => {
     const {
       policyName,
       errorRateToOpen,
@@ -76,10 +76,12 @@ const convertPolicyArrayToMap = (policyArray) => {
   })
   return metadataMap
 }
-const convertPolicyMapToArray = (policy) => {
-  const policyArray = Object.keys(policy).filter(key => policy[key]).map((key) => {
-    return { policyName: key, ...policy[key] }
-  })
+const convertPolicyMapToArray = policy => {
+  const policyArray = Object.keys(policy)
+    .filter(key => policy[key])
+    .map(key => {
+      return { policyName: key, ...policy[key] }
+    })
   return policyArray
 }
 export default class CircuitBreakerCreate extends DetailPageDuck {
@@ -206,7 +208,7 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
       inboundJsonValue,
       outboundJsonValue,
     } = values
-    let params = {
+    const params = {
       service: currentService,
       namespace: currentNamespace,
     } as any
@@ -216,14 +218,14 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
         editType === EditType.Json
           ? JSON.parse(inboundJsonValue)
           : {
-              sources: inboundSources.map((source) => {
+              sources: inboundSources.map(source => {
                 return {
                   ...source,
                   namespace: inboundNamespace,
                   service: inboundService,
                 }
               }),
-              destinations: inboundDestinations.map((destination) => {
+              destinations: inboundDestinations.map(destination => {
                 return {
                   ...destination,
                   policy: convertPolicyArrayToMap(destination.policy),
@@ -239,14 +241,14 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
         editType === EditType.Json
           ? JSON.parse(outboundJsonValue)
           : {
-              sources: outboundSources.map((source) => {
+              sources: outboundSources.map(source => {
                 return {
                   ...source,
                   namespace: undefined,
                   service: undefined,
                 }
               }),
-              destinations: outboundDestinations.map((destination) => {
+              destinations: outboundDestinations.map(destination => {
                 return {
                   ...destination,
                   namespace: outboundNamespace,
@@ -302,7 +304,7 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
   *saga() {
     const { types, selector, creators, ducks } = this
     yield* super.saga()
-    yield takeLatest(types.LOAD, function* (action) {
+    yield takeLatest(types.LOAD, function*(action) {
       const { values, ruleIndex, ruleType, service, namespace, isEdit } = action.payload
       console.log(values)
       const emptyRule = {
@@ -329,6 +331,7 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
             resource: BREAK_RESOURCE_TYPE.INSTANCE,
             method: {
               value: '',
+              type: MATCH_TYPE.EXACT,
             },
           },
         ],
@@ -365,6 +368,7 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
             resource: BREAK_RESOURCE_TYPE.INSTANCE,
             method: {
               value: '',
+              type: MATCH_TYPE.EXACT,
             },
           },
         ],
@@ -389,7 +393,7 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
         return yield put(
           ducks.form.creators.setValues({
             ...emptyRule,
-            [`${formValueKey}Destinations`]: rule.destinations.map((item) => ({
+            [`${formValueKey}Destinations`]: rule.destinations.map(item => ({
               ...item,
               policy: convertPolicyMapToArray(item.policy),
               resource: item.resource ? item.resource : BREAK_RESOURCE_TYPE.INSTANCE,
@@ -400,7 +404,7 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
                   : OutlierDetectWhen.NEVER,
               },
             })),
-            [`${formValueKey}Sources`]: rule.sources.map((item) => ({
+            [`${formValueKey}Sources`]: rule.sources.map(item => ({
               ...item,
             })),
             ruleType,

@@ -4,8 +4,9 @@ import { DuckCmpProps } from 'saga-duck'
 import { Text, Icon } from 'tea-component'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
 import RoutePageDuck from './PageDuck'
-import { RuleType } from './types'
+import { RuleType, MATCH_TYPE_MAP } from './types'
 import { isReadOnly } from '../../utils'
+import { MATCH_TYPE } from '../route/types'
 export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageDuck>): Column<any>[] => {
   const { ruleType } = selector(store)
   return [
@@ -64,7 +65,18 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
     {
       key: 'sourceMethod',
       header: '接口名',
-      render: x => <Text>{x.destinations.map(destination => destination.method?.value).join(',') || '-'}</Text>,
+      render: x => (
+        <Text>
+          {x.destinations
+            .map(
+              destination =>
+                `${destination.method?.value}（${
+                  MATCH_TYPE_MAP[destination.method?.type || MATCH_TYPE.EXACT].text
+                }匹配）`,
+            )
+            .join(',') || '-'}
+        </Text>
+      ),
     },
     {
       key: 'action',
