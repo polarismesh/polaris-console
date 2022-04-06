@@ -65,10 +65,8 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
             key: 'labels',
             header: '请求标签',
             render: x => {
-              const result = x.destionations
-                ?.map(destination =>
-                  Object.keys(destination.metadata || {}).map(key => `${key}:${destination.metadata[key]?.value}`),
-                )
+              const result = x.sources
+                ?.map(source => Object.keys(source.metadata || {}).map(key => `${key}:${source.metadata[key]?.value}`))
                 .join(' ; ')
               return <React.Fragment>{result || '-'}</React.Fragment>
             },
