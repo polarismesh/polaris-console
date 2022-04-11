@@ -79,10 +79,10 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceIns
     ? [
         {
           key: 'cmdb',
-          header: '地区-地域-可用区',
+          header: '地区/地域/可用区',
           render: x => (
-            <Text tooltip={`${x.location?.region ?? '/'}-${x.location?.zone ?? '/'}-${x.location?.campus ?? '/'}`}>
-              {`${x.location?.region ?? '/'}-${x.location?.zone ?? '/'}-${x.location?.campus ?? '/'}`}
+            <Text tooltip={`${x.location?.region ?? '-'}/${x.location?.zone ?? '-'}/${x.location?.campus ?? '-'}`}>
+              {`${x.location?.region ?? '-'}/${x.location?.zone ?? '-'}/${x.location?.campus ?? '-'}`}
             </Text>
           ),
         },
@@ -90,10 +90,10 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceIns
     : [
         {
           key: 'cmdb',
-          header: '地域-可用区',
+          header: '地域/可用区',
           render: x => (
-            <Text tooltip={`${x.location?.zone ?? '/'}-${x.location?.campus ?? '/'}`}>
-              {`${x.location?.zone ?? '/'}-${x.location?.campus ?? '/'}`}
+            <Text tooltip={`${x.location?.zone ?? '-'}/${x.location?.campus ?? '-'}`}>
+              {`${x.location?.zone ?? '-'}/${x.location?.campus ?? '-'}`}
             </Text>
           ),
         },
