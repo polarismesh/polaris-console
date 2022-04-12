@@ -116,7 +116,7 @@ export default abstract class PolicyPageDuck extends PageDuck {
         description: '删除后，策略不可用且无法恢复',
       })
       if (confirm) {
-        const result = yield deleteGovernanceStrategies({ ids: [id] })
+        const result = yield deleteGovernanceStrategies([{ id }])
         if (result) {
           notification.success({ description: '删除成功' })
           yield put(creators.reload())
