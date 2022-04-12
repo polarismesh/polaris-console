@@ -112,7 +112,7 @@ export default abstract class PolicyPageDuck extends PageDuck {
     yield takeLatest(types.DELETE, function*(action) {
       const id = action.payload
       const confirm = yield Modal.confirm({
-        message: '确认删除如下用户？',
+        message: '确认删除如下策略？',
         description: '删除后，策略不可用且无法恢复',
       })
       if (confirm) {

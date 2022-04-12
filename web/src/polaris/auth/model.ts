@@ -6,7 +6,7 @@ import { PolarisTokenKey } from '../common/util/common'
 /** 删除治理中心鉴权策略 */
 export async function deleteGovernanceStrategies(params: DeleteGovernanceStrategiesParams[]) {
   const result = await apiRequest<DeleteGovernanceStrategiesResult>({
-    action: 'core/v1/auth/strategy/delete',
+    action: 'core/v1/auth/strategies/delete',
     data: params,
   })
   return Number(result.code) === SuccessCode
