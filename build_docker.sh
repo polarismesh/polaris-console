@@ -15,7 +15,7 @@ echo "docker repository : polarismesh/polaris-console, tag : ${docker_tag}"
 bash build.sh
 
 if [ $? != 0 ]; then
-  echo "build polaris-server failed"
+  echo "build polaris-console failed"
   exit 1
 fi
 
