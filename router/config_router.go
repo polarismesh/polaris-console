@@ -23,11 +23,8 @@ import (
 	"github.com/polarismesh/polaris-console/handlers"
 )
 
-/**
- * @brief 路由请求
- */
+// ConfigRouter 路由请求
 func ConfigRouter(r *gin.Engine, config *bootstrap.Config) {
-
 	// 配置中心
 	configV1 := r.Group(config.WebServer.ConfigURL)
 	// 配置文件组
