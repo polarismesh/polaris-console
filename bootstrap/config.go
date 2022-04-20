@@ -23,32 +23,23 @@ import (
 	"os"
 
 	"github.com/polarismesh/polaris-console/common/log"
-
 	"gopkg.in/yaml.v2"
 )
 
-
-/**
- * @brief OA鉴权
- */
- type OAAuthority struct {
+// OAAuthority OA鉴权
+type OAAuthority struct {
 	EnableOAAuth bool   `yaml:"enableOAAuth"`
 	OAToken      string `yaml:"oaToken"`
 }
 
-/**
- * 回复请求
- */
- type StaffDepartment struct {
+// StaffDepartment 回复请求
+type StaffDepartment struct {
 	Name       string `json:"ChnName"`
 	Department string `json:"DeptNameString"`
 }
 
-
-/**
- * @brief polaris server配置
- */
- type PolarisServer struct {
+// PolarisServer polaris server配置
+type PolarisServer struct {
 	Address      string `yaml:"address"`
 	PolarisToken string `yaml:"polarisToken"`
 }
@@ -57,9 +48,7 @@ type MonitorServer struct {
 	Address string `yaml:"address"`
 }
 
-/**
- * @brief 查询部门名称的地址
- */
+// HRData 查询部门名称的地址
 type HRData struct {
 	EnableHRData  bool   `yaml:"enableHrData"`
 	UnitAddress   string `yaml:"unitAddress"`
@@ -68,21 +57,17 @@ type HRData struct {
 	HRToken       string `yaml:"hrToken"`
 }
 
-/**
- * @brief 智研系统相关配置
- */
+// ZhiYan 智研系统相关配置
 type ZhiYan struct {
 	Host        string `yaml:"host"`
 	Token       string `yaml:"token"`
 	ProjectName string `yaml:"projectName"`
 }
 
-/**
- * @brief 配置
- */
+// Config 配置
 type Config struct {
-	Logger        log.Options            `yaml:"logger"`
-	WebServer     WebServer              `yaml:"webServer"`
+	Logger        log.Options   `yaml:"logger"`
+	WebServer     WebServer     `yaml:"webServer"`
 	PolarisServer PolarisServer `yaml:"polarisServer"`
 	MonitorServer MonitorServer `yaml:"monitorServer"`
 	OAAuthority   OAAuthority   `yaml:"oaAuthority"`
@@ -90,9 +75,7 @@ type Config struct {
 	ZhiYan        ZhiYan        `yaml:"zhiYan"`
 }
 
-/**
- * @brief web server配置
- */
+// WebServer web server配置
 type WebServer struct {
 	Mode       string `yaml:"mode"`
 	ListenIP   string `yaml:"listenIP"`
@@ -104,9 +87,7 @@ type WebServer struct {
 	WebPath    string `yaml:"webPath"`
 }
 
-/**
- * @brief 加载配置文件
- */
+// LoadConfig 加载配置文件
 func LoadConfig(filePath string) (*Config, error) {
 	if filePath == "" {
 		err := errors.New("invalid config file path")

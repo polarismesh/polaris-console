@@ -25,9 +25,7 @@ import (
 	"github.com/polarismesh/polaris-console/handlers"
 )
 
-/**
- * @brief 路由请求
- */
+// Router 路由请求
 func Router(config *bootstrap.Config) {
 	r := gin.Default()
 	// 加载静态资源

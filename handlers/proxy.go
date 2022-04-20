@@ -27,18 +27,14 @@ import (
 	"github.com/polarismesh/polaris-console/common/log"
 )
 
-/**
- * @brief 服务(规则)负责人信息
- */
+// ServiceOwner 服务(规则)负责人信息
 type ServiceOwner struct {
 	Namespace string
 	Name      string
 	Owners    map[string]bool
 }
 
-/**
- * @brief 反向代理
- */
+// ReverseProxyForLogin 反向代理
 func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config, check bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if ok := authority(c, conf); !ok {
@@ -65,9 +61,7 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 	}
 }
 
-/**
- * @brief 反向代理
- */
+// ReverseProxyForServer 反向代理
 func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config, check bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if ok := authority(c, conf); !ok {
@@ -113,9 +107,7 @@ func ReverseProxyForMonitorServer(monitorServer *bootstrap.MonitorServer) gin.Ha
 	}
 }
 
-/**
- * @brief 检查负责人
- */
+// checkOwner 检查负责人
 func checkOwner(c *gin.Context) bool {
 	serviceOwners := convertServiceOwners(c.Request.Header.Get("owners"))
 	if serviceOwners == nil {
@@ -139,9 +131,7 @@ func checkOwner(c *gin.Context) bool {
 	return true
 }
 
-/**
- * @brief 处理头部owner字段
- */
+// convertServiceOwners 处理头部owner字段
 func convertServiceOwners(headerOwner string) []*ServiceOwner {
 	var serviceOwners []*ServiceOwner
 	// 分割服务
@@ -172,9 +162,7 @@ func convertServiceOwners(headerOwner string) []*ServiceOwner {
 	return serviceOwners
 }
 
-/**
- * @brief department的反向代理
- */
+// ReverseProxyForDepartment department的反向代理
 func ReverseProxyForDepartment(hrData *bootstrap.HRData, conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if ok := authority(c, conf); !ok {
@@ -185,9 +173,7 @@ func ReverseProxyForDepartment(hrData *bootstrap.HRData, conf *bootstrap.Config)
 	}
 }
 
-/**
- * @brief 熔断记录查询的反向代理
- */
+// ReverseProxyForLogRecord 熔断记录查询的反向代理
 func ReverseProxyForLogRecord(zhiyan *bootstrap.ZhiYan) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		director := func(req *http.Request) {

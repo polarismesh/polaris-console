@@ -81,10 +81,20 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   <Row>
                     <Col>
                       <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
-                        公网访问建议开启访问策略控制
+                        外网访问建议设置访问控制策略
                       </Text>
                     </Col>
                   </Row>
+                  {buildConfig.useDefaultPwd && (
+                    <Row>
+                      <Col>
+                        <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
+                          初始用户名和密码为<Copy text={'polaris'}>polaris</Copy>/
+                          <Copy text={'polarismesh@2021'}>polarismesh@2021</Copy>
+                        </Text>
+                      </Col>
+                    </Row>
+                  )}
                   <Form style={{ padding: '20px 0px' }}>
                     <FormField field={userName} label={'用户名'}>
                       <Input field={userName} size={'full'} />
@@ -105,20 +115,6 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                         rules={false}
                       />
                     </FormField>
-                    {buildConfig.useDefaultPwd && (
-                      <>
-                        <FormItem label={'默认账号'}>
-                          <FormText>
-                            <Copy text={'polaris'}>polaris</Copy>
-                          </FormText>
-                        </FormItem>
-                        <FormItem label={'默认密码'}>
-                          <FormText>
-                            <Copy text={'polarismesh@2021'}>polarismesh@2021</Copy>
-                          </FormText>
-                        </FormItem>
-                      </>
-                    )}
                   </Form>
                   <Row>
                     <Col span={8}></Col>

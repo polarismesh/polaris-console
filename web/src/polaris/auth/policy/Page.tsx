@@ -30,8 +30,8 @@ import { AuthStrategy } from '../model'
 import UseableResource from '../common/UseableResource'
 
 export enum AuthSubjectType {
-  USER = 'users',
-  USERGROUP = 'groups',
+  USER = 'user',
+  USERGROUP = 'group',
 }
 export enum AuthResourceType {
   NAMESPACE = 'namespaces',

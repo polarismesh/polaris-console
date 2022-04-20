@@ -214,7 +214,7 @@ export default class ServicePageDuck extends GridPageDuck {
     yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
       const { routeData, originData } = action.payload
       yield put({ type: types.SET_ROUTE_DATA, payload: routeData })
-      if (originData) yield put({ type: types.SET_ORIGIN_DATA, payload: originData })
+      yield put({ type: types.SET_ORIGIN_DATA, payload: originData })
     })
     yield takeLatest(types.RESET_DATA, function*() {
       const { originData } = selector(yield select())
@@ -337,6 +337,8 @@ export default class ServicePageDuck extends GridPageDuck {
         return {
           totalCount: 0,
           list: [],
+          originData: null,
+          routeData: null,
         }
       }
       routeData = result[0]
