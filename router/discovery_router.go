@@ -23,9 +23,7 @@ import (
 	"github.com/polarismesh/polaris-console/handlers"
 )
 
-/**
- * @brief 路由请求
- */
+// DiscoveryRouter 路由请求
 func DiscoveryRouter(r *gin.Engine, config *bootstrap.Config) {
 	// 后端server路由组
 	v1 := r.Group(config.WebServer.NamingURL)

@@ -36,9 +36,7 @@ import (
 	"go.uber.org/zap"
 )
 
-/**
- * @brief 鉴权
- */
+// authority 鉴权
 func authority(c *gin.Context, conf *bootstrap.Config) bool {
 
 	// 如果不开启OA鉴权，那么默认设置一个staffName
@@ -77,9 +75,7 @@ func authority(c *gin.Context, conf *bootstrap.Config) bool {
 	return true
 }
 
-/**
- * @brief 检查时间戳
- */
+// checkValidTimestamp 检查时间戳
 func checkValidTimestamp(timeStr string) bool {
 	now := time.Now().Unix()
 	timestamp, err := strconv.ParseInt(timeStr, 10, 64)
@@ -97,9 +93,7 @@ func checkValidTimestamp(timeStr string) bool {
 	return true
 }
 
-/**
- *@brief 计算签名
- */
+// calcSignature 计算签名
 func calcSignature(timestamp, token, xRioReq, staffID, staffName, xExtData string) string {
 	h := sha256.New()
 	str := timestamp + token + xRioReq + "," + staffID + "," + staffName + "," + xExtData + timestamp
@@ -119,7 +113,7 @@ type GetUserTokenResponse struct {
 	User *User  `json:"user"`
 }
 
-// 检查访问 token 是否合法
+// checkAuthoration 检查访问 token 是否合法
 func checkAuthoration(ctx *gin.Context, conf *bootstrap.Config) bool {
 	userId := ctx.Request.Header.Get("x-polaris-user")
 	accessToken := ctx.Request.Header.Get("x-polaris-token")

@@ -24,9 +24,7 @@ import (
 	"github.com/polarismesh/polaris-console/common/log"
 )
 
-/**
- * @brief 日志初始化
- */
+// InitializeLog 日志初始化
 func InitializeLog(config *Config) {
 	err := config.Logger.SetOutputLevel(log.DefaultScopeName, config.Logger.Level)
 	if err != nil {
@@ -45,9 +43,7 @@ func InitializeLog(config *Config) {
 	}
 }
 
-/**
- * @brief 设置模式
- */
+// SetMode 设置模式
 func SetMode(config *Config) {
 	// 判断模式
 	mode := config.WebServer.Mode
