@@ -26,20 +26,20 @@ export const LIMIT_TYPE_OPTIONS = [
     text: LIMIT_TYPE_MAP[LimitType.REJECT].text,
     value: LimitType.REJECT,
   },
-  // {
-  //   text: LIMIT_TYPE_MAP[LimitType.UNIRATE].text,
-  //   value: LimitType.UNIRATE,
-  // },
+  {
+     text: LIMIT_TYPE_MAP[LimitType.UNIRATE].text,
+     value: LimitType.UNIRATE,
+  },
 ]
 export const LIMIT_RANGE_OPTIONS = [
   {
     text: LIMIT_RANGE_MAP[LimitRange.LOCAL].text,
     value: LimitRange.LOCAL,
   },
-  // {
-  //   text: LIMIT_RANGE_MAP[LimitRange.GLOBAL].text,
-  //   value: LimitRange.GLOBAL,
-  // },
+  {
+    text: LIMIT_RANGE_MAP[LimitRange.GLOBAL].text,
+    value: LimitRange.GLOBAL,
+  },
 ]
 
 export enum LimitThresholdMode {
