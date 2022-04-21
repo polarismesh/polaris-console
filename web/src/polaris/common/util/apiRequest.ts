@@ -167,7 +167,7 @@ export function getAllList(fetchFun: (params?: any) => Promise<any>, options: Fe
     const fetchOptions = { ...DefaultOptions, ...options }
     let allList = [],
       pageNo = 0
-    const pageSize = 1
+    const pageSize = 50
     while (true) {
       // 每次获取获取50条
       params = { ...params }
@@ -179,7 +179,6 @@ export function getAllList(fetchFun: (params?: any) => Promise<any>, options: Fe
       } as any)
 
       allList = allList.concat(result[fetchOptions.listKey])
-      console.log(allList.length, result[fetchOptions.totalKey])
 
       if (allList.length >= result[fetchOptions.totalKey]) {
         // 返回
