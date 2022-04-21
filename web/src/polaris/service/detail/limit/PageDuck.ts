@@ -129,7 +129,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: '新建路由规则',
+          title: '新建限流规则',
           visible: true,
           createId,
           isEdit: false,
