@@ -34,9 +34,7 @@ import (
 
 var departments string
 
-/**
- * @brief 获取部门数据
- */
+// GetDepartment 获取部门数据
 func GetDepartment(conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if ok := authority(c, conf); !ok {
@@ -46,9 +44,7 @@ func GetDepartment(conf *bootstrap.Config) gin.HandlerFunc {
 	}
 }
 
-/**
- * @brief 获取部门数据
- */
+// getDepartment 获取部门数据
 func getDepartment(hrData *bootstrap.HRData, c *gin.Context) {
 	if departments != "" {
 		c.JSON(http.StatusOK, departments)
@@ -59,9 +55,7 @@ func getDepartment(hrData *bootstrap.HRData, c *gin.Context) {
 	}
 }
 
-/**
- * @brief 获取部门数据
- */
+// SetDepartment 获取部门数据
 func SetDepartment() {
 	file, err := os.Open("department.txt")
 	if err != nil {
@@ -84,9 +78,7 @@ func SetDepartment() {
 	log.Infof("get departments data successfully")
 }
 
-/**
- * 获取员工的组织架构信息
- */
+// getStaffDepartment 获取员工的组织架构信息
 func getStaffDepartment(hrData *bootstrap.HRData, c *gin.Context) {
 	// 不获取员工组织架构信息
 	if hrData == nil || !hrData.EnableHRData {

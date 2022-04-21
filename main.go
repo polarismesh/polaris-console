@@ -20,15 +20,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/polarismesh/polaris-console/handlers"
-
 	"github.com/polarismesh/polaris-console/bootstrap"
+	"github.com/polarismesh/polaris-console/handlers"
 	"github.com/polarismesh/polaris-console/router"
 )
 
-/**
- * @brief 主函数
- */
 func main() {
 	// 加载配置
 	configFilePath := "polaris-console.yaml"

@@ -23,9 +23,7 @@ import (
 	"github.com/polarismesh/polaris-console/handlers"
 )
 
-/**
- * @brief 路由请求
- */
+// AuthRouter 路由请求
 func AuthRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	// 后端server路由组
 	v1 := webSvr.Group(config.WebServer.AuthURL)
