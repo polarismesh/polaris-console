@@ -6,6 +6,7 @@ import ServiceInstanceDuck from './PageDuck'
 import { Text, Icon } from 'tea-component'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
 import { isReadOnly } from '../../utils'
+import buildConfig from '@src/buildConfig'
 
 export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceInstanceDuck>): Column<Instance>[] => [
   // {
@@ -74,6 +75,29 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceIns
     header: '隔离状态',
     render: x => <Text theme={ISOLATE_STATUS_MAP[x.isolate].theme}>{ISOLATE_STATUS_MAP[x.isolate].text}</Text>,
   },
+  ...(buildConfig.useCmdbDetail
+    ? [
+        {
+          key: 'cmdb',
+          header: '地区/地域/可用区',
+          render: x => (
+            <Text tooltip={`${x.location?.region ?? '-'}/${x.location?.zone ?? '-'}/${x.location?.campus ?? '-'}`}>
+              {`${x.location?.region ?? '-'}/${x.location?.zone ?? '-'}/${x.location?.campus ?? '-'}`}
+            </Text>
+          ),
+        },
+      ]
+    : [
+        {
+          key: 'cmdb',
+          header: '地域/可用区',
+          render: x => (
+            <Text tooltip={`${x.location?.zone ?? '-'}/${x.location?.campus ?? '-'}`}>
+              {`${x.location?.zone ?? '-'}/${x.location?.campus ?? '-'}`}
+            </Text>
+          ),
+        },
+      ]),
   {
     key: 'ctime',
     header: '创建时间',
