@@ -90,7 +90,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       <Col>
                         <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
                           初始用户名和密码为<Copy text={'polaris'}>polaris</Copy>/
-                          <Copy text={'polarismesh@2021'}>polarismesh@2021</Copy>
+                          <Copy text={'polaris'}>polaris</Copy>
                         </Text>
                       </Col>
                     </Row>

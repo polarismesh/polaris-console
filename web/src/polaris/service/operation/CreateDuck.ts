@@ -4,7 +4,7 @@ import { put, select } from 'redux-saga/effects'
 import { createService, modifyServices, describeNamespaces } from '../model'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { NamespaceItem } from '../PageDuck'
-import { isReadOnly } from '../utils'
+import { isReadOnly, isReadOnlyNamespace } from '../utils'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeGovernanceStrategies, AuthStrategy } from '@src/polaris/auth/model'
 import { UserSelectDuck } from '@src/polaris/auth/userGroup/operation/CreateDuck'
@@ -163,7 +163,7 @@ export default class CreateDuck extends FormDialog {
       payload: {
         ...options,
         namespaceList: namespaceList.map(item => {
-          const disabled = isReadOnly(item.name)
+          const disabled = isReadOnlyNamespace(item)
           return {
             ...item,
             value: item.name,
