@@ -14,9 +14,3 @@ Preparing environment:
 ```
 ./build.sh
 ```
-
-将 Go 依赖包复制到 vendor
-
-```
-go mod vendor
-```
