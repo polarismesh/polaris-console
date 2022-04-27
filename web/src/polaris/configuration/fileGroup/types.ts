@@ -1,4 +1,5 @@
 export interface ConfigFileGroup {
+  id: string
   name: string
   namespace: string
   comment: string
