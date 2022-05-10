@@ -23,8 +23,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -56,27 +54,6 @@ func getDepartment(hrData *bootstrap.HRData, c *gin.Context) {
 }
 
 // SetDepartment 获取部门数据
-func SetDepartment() {
-	file, err := os.Open("department.txt")
-	if err != nil {
-		log.Errorf("read department.txt err: %v", err)
-		return
-	}
-	defer file.Close()
-
-	content, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Errorf("read content err: %v", err)
-		return
-	}
-	departments = strings.TrimSpace(string(content))
-	if len([]rune(departments)) == 0 || strings.Contains(departments, "signature invalid") {
-		departments = ""
-		log.Fatalf("departments is %v", departments)
-		return
-	}
-	log.Infof("get departments data successfully")
-}
 
 // getStaffDepartment 获取员工的组织架构信息
 func getStaffDepartment(hrData *bootstrap.HRData, c *gin.Context) {
