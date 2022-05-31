@@ -17,9 +17,9 @@ export const LIMIT_TYPE_MAP = {
   [LimitType.REJECT]: {
     text: '快速失败',
   },
-  [LimitType.UNIRATE]: {
-    text: '匀速排队',
-  },
+  // [LimitType.UNIRATE]: {
+  //   text: '匀速排队',
+  // },
 }
 export const LIMIT_TYPE_OPTIONS = [
   {
@@ -27,8 +27,8 @@ export const LIMIT_TYPE_OPTIONS = [
     value: LimitType.REJECT,
   },
   {
-     text: LIMIT_TYPE_MAP[LimitType.UNIRATE].text,
-     value: LimitType.UNIRATE,
+    text: LIMIT_TYPE_MAP[LimitType.UNIRATE].text,
+    value: LimitType.UNIRATE,
   },
 ]
 export const LIMIT_RANGE_OPTIONS = [
