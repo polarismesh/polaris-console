@@ -21,15 +21,16 @@ export const LIMIT_TYPE_MAP = {
     text: '匀速排队',
   },
 }
-export const LIMIT_TYPE_OPTIONS = [
+export const LIMIT_TYPE_OPTIONS = (type: string) => [
   {
     text: LIMIT_TYPE_MAP[LimitType.REJECT].text,
     value: LimitType.REJECT,
   },
-  // {
-  //   text: LIMIT_TYPE_MAP[LimitType.UNIRATE].text,
-  //   value: LimitType.UNIRATE,
-  // },
+  {
+    text: LIMIT_TYPE_MAP[LimitType.UNIRATE].text,
+    value: LimitType.UNIRATE,
+    disabled: type === LimitRange.GLOBAL,
+  },
 ]
 export const LIMIT_RANGE_OPTIONS = [
   {

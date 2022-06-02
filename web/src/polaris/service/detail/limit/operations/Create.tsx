@@ -10,7 +10,7 @@ import Select from '@src/polaris/common/duckComponents/form/Select'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { MATCH_TYPE_OPTIONS, MATCH_TYPE } from '../../route/types'
-import { LimitRange } from '../model'
+import { LimitRange, LimitType } from '../model'
 
 export const REGEX_STAR_TIPS = '正则模式下，使用*代表选择所有'
 
@@ -29,7 +29,7 @@ const EditTypeOptions = [
   },
 ]
 
-const addMetadata = (field) => {
+const addMetadata = field => {
   field.setValue([...field.getValue(), { key: '', value: '', type: MATCH_TYPE.EXACT }])
 }
 const removeArrayFieldValue = (field, index) => {
@@ -37,7 +37,7 @@ const removeArrayFieldValue = (field, index) => {
   newValue.splice(index, 1)
   field.setValue([...newValue])
 }
-const addAmount = (field) => {
+const addAmount = field => {
   field.setValue([
     ...field.getValue(),
     {
@@ -46,7 +46,7 @@ const addAmount = (field) => {
     },
   ])
 }
-const getMetadataForm = (field) => {
+const getMetadataForm = field => {
   return [...field.asArray()].map((metadataField, index) => {
     const { key, value, type } = metadataField.getFields(['key', 'value', 'type'])
     const isRegex = type.getValue() === MATCH_TYPE.REGEX
@@ -70,7 +70,7 @@ const getMetadataForm = (field) => {
   })
 }
 
-const renderLimitRule = (props) => {
+const renderLimitRule = props => {
   const { duck, store, dispatch } = props
   const {
     selector,
@@ -98,6 +98,11 @@ const renderLimitRule = (props) => {
     'method',
   ])
   const { value: methodValue, type: methodType } = method.getFields(['value', 'type'])
+  React.useEffect(() => {
+    if (type.getValue() === LimitRange.GLOBAL && action.getValue() === LimitType.UNIRATE) {
+      action.setValue(LimitType.REJECT)
+    }
+  }, [type.getValue()])
   return (
     <>
       <FormItem label={<H3 style={{ margin: '10px 0' }}>本服务的以下接口被调用时</H3>}></FormItem>
@@ -149,9 +154,9 @@ const renderLimitRule = (props) => {
       <Form style={{ marginTop: '20px' }}>
         <FormItem label={'限流效果'}>
           <Segment
-            options={LIMIT_TYPE_OPTIONS}
+            options={LIMIT_TYPE_OPTIONS(type.getValue())}
             value={action.getValue()}
-            onChange={(value) => action.setValue(value)}
+            onChange={value => action.setValue(value)}
           ></Segment>
         </FormItem>
 
@@ -161,7 +166,7 @@ const renderLimitRule = (props) => {
               <Segment
                 options={LIMIT_THRESHOLD_OPTIONS}
                 value={amountMode.getValue()}
-                onChange={(value) => amountMode.setValue(value)}
+                onChange={value => amountMode.setValue(value)}
               ></Segment>
             </FormItem>
           </>
@@ -172,7 +177,7 @@ const renderLimitRule = (props) => {
         <FormItem label={'是否启用'}>
           <Switch
             value={!disable.getValue()}
-            onChange={(value) => {
+            onChange={value => {
               disable.setValue(!value)
             }}
           ></Switch>
@@ -219,7 +224,7 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
           <Segment
             options={LIMIT_RANGE_OPTIONS}
             value={type.getValue()}
-            onChange={(value) => type.setValue(value as any)}
+            onChange={value => type.setValue(value as any)}
           ></Segment>
         </FormItem>
         {editType.getValue() === EditType.Json && (
@@ -235,7 +240,7 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
                 width={1000}
                 language='json'
                 value={jsonValue.getValue()}
-                onChange={(value) => {
+                onChange={value => {
                   jsonValue.setTouched(true)
                   jsonValue.setValue(value)
                 }}
