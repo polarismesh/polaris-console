@@ -13,7 +13,14 @@ export interface ApiResponse {
   info: string
 }
 export const SuccessCode = 200000
-export const TokenNotExistCode = 401004
+export const TokenNotExistCode = 407
+const handleTokenNotExist = () => {
+  notification.error({
+    title: 'Token不存在',
+    description: '您当前使用的Token不存在，可能已被重置，请重新登录。',
+  })
+  router.navigate('/login')
+}
 export async function apiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts } = options
   try {
@@ -27,6 +34,10 @@ export async function apiRequest<T>(options: APIRequestOption) {
         },
       })
       .catch(function(error) {
+        if (error.response.status === TokenNotExistCode) {
+          handleTokenNotExist()
+          return
+        }
         if (error.response) {
           notification.error({
             title: '请求错误',
@@ -34,6 +45,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
           })
         }
       })) as AxiosResponse<T & ApiResponse>
+
     if (res.data.code > 200000) {
       throw res.data.info
     }
@@ -58,12 +70,9 @@ export async function getApiRequest<T>(options: APIRequestOption) {
         },
       })
       .catch(function(error) {
-        if (error.response.data.code === TokenNotExistCode) {
-          notification.error({
-            title: 'Token不存在',
-            description: '您当前使用的Token不存在，可能已被重置，请重新登录。',
-          })
-          router.navigate('/login')
+        if (error.response.status === TokenNotExistCode) {
+          handleTokenNotExist()
+          return
         }
         if (error.response) {
           notification.error({
@@ -77,7 +86,6 @@ export async function getApiRequest<T>(options: APIRequestOption) {
     }
     return res.data
   } catch (e) {
-    notification.error(e)
     console.error(e)
   } finally {
     tips.hideLoading()
@@ -96,6 +104,10 @@ export async function putApiRequest<T>(options: APIRequestOption) {
         },
       })
       .catch(function(error) {
+        if (error.response.status === TokenNotExistCode) {
+          handleTokenNotExist()
+          return
+        }
         if (error.response) {
           notification.error({
             title: '请求错误',
@@ -127,6 +139,10 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
         },
       })
       .catch(function(error) {
+        if (error.response.status === TokenNotExistCode) {
+          handleTokenNotExist()
+          return
+        }
         if (error.response) {
           notification.error({
             title: '请求错误',
@@ -139,7 +155,6 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
     }
     return res.data
   } catch (e) {
-    notification.error(e)
     console.error(e)
   } finally {
     tips.hideLoading()

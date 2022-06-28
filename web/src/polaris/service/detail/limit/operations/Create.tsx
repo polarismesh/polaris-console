@@ -84,7 +84,18 @@ const renderLimitRule = props => {
     ruleIndex,
   } = selector(store)
   const formApi = form.getAPI(store, dispatch)
-  const { action, resource, amounts, disable, priority, labels, amountMode, type, method } = formApi.getFields([
+  const {
+    action,
+    resource,
+    amounts,
+    disable,
+    priority,
+    labels,
+    amountMode,
+    type,
+    method,
+    regexCombine,
+  } = formApi.getFields([
     'service',
     'namespace',
     'type',
@@ -96,6 +107,7 @@ const renderLimitRule = props => {
     'labels',
     'amountMode',
     'method',
+    'regexCombine',
   ])
   const { value: methodValue, type: methodType } = method.getFields(['value', 'type'])
   React.useEffect(() => {
@@ -118,8 +130,20 @@ const renderLimitRule = props => {
           <FormField field={methodType} label={'匹配方式'}>
             <Select size='s' options={MATCH_TYPE_OPTIONS} field={methodType} />
           </FormField>
+          {methodType.getValue() === MATCH_TYPE.REGEX && (
+            <Form style={{ width: '100%', padding: 0, margin: 0 }} layout='inline'>
+              <FormField
+                field={regexCombine}
+                label={'合并计算阈值'}
+                tips={'正则方式时可选择，对于匹配到正则的多个不同的请求，合并计算配额'}
+              >
+                <Switch value={regexCombine.getValue()} onChange={v => regexCombine.setValue(v)} />
+              </FormField>
+            </Form>
+          )}
         </Form>
       </Form>
+
       <>
         <FormItem label={<H3 style={{ margin: '10px 0' }}>对带有以下标签的请求</H3>}></FormItem>
         <Form style={{ width: '850px' }}>

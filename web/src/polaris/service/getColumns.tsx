@@ -13,9 +13,7 @@ export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<S
     header: '服务名',
     render: x => (
       <React.Fragment>
-        <Link to={`/service-detail?name=${x.name}&namespace=${x.namespace}`} target={'_blank'}>
-          {x.name}
-        </Link>
+        <Link to={`/service-detail?name=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
       </React.Fragment>
     ),
   },

@@ -172,6 +172,7 @@ export default class LimitCreateDuck extends DetailPageDuck {
       amountMode,
       method,
       id: ruleId,
+      regexCombine,
     } = values
     let params = {
       service: currentService,
@@ -189,6 +190,7 @@ export default class LimitCreateDuck extends DetailPageDuck {
       type,
       amountMode: type === LimitRange.GLOBAL ? amountMode : undefined,
       method,
+      regexCombine,
     } as any
     if (editType === EditType.Json) {
       params = JSON.parse(jsonValue)
@@ -228,6 +230,7 @@ export default class LimitCreateDuck extends DetailPageDuck {
             value: '*',
             type: MATCH_TYPE.REGEX,
           },
+          regexCombine: false,
         }
         const jsonValue = getTemplateRatelimit(namespace, service)
         yield put(
@@ -294,6 +297,7 @@ export interface Values {
     type: MATCH_TYPE
   }
   id?: string
+  regexCombine?: boolean
 }
 class CreateForm extends Form {
   Values: Values
