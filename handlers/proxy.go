@@ -65,12 +65,18 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config, check bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if ok := authority(c, conf); !ok {
-			c.Status(http.StatusProxyAuthRequired)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": http.StatusProxyAuthRequired,
+				"info": "Proxy Authentication Required",
+			})
 			return
 		}
 
 		if ok := checkAuthoration(c, conf); !ok {
-			c.Status(http.StatusProxyAuthRequired)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": http.StatusProxyAuthRequired,
+				"info": "Proxy Authentication Required",
+			})
 			return
 		}
 
