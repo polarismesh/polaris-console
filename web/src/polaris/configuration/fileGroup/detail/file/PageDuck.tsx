@@ -15,7 +15,7 @@ import FileDiff from './FileDiff'
 import {
   modifyConfigFile,
   deleteConfigFiles,
-  describeConfigFiles,
+  describeConfigFilesByGroup,
   describeLastReleaseConfigFile,
   releaseConfigFile,
 } from '../../model'
@@ -286,7 +286,7 @@ export default class PageDuck extends Base {
       const searchKeyword = selectors.searchKeyword(yield select())
       const currentNode = selectors.currentNode(yield select())
       const { namespace, group } = composedId
-      const fileResult = yield getAllList(describeConfigFiles)({ namespace, group, name: searchKeyword || undefined })
+      const fileResult = yield getAllList(describeConfigFilesByGroup)({ namespace, group, name: searchKeyword || undefined })
       const fileList = fileResult.list as ConfigFile[]
       const fileMap = fileList.reduce((prev, curr) => {
         prev[curr.name] = curr
