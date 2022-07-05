@@ -36,6 +36,7 @@ func ConfigRouter(r *gin.Engine, config *bootstrap.Config) {
 	// 配置文件
 	configV1.POST("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
 	configV1.GET("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
+	configV1.GET("configfiles/by-group", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
 	configV1.GET("configfiles/search", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
 	configV1.PUT("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
 	configV1.DELETE("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
