@@ -3,20 +3,7 @@ import { purify, DuckCmpProps } from 'saga-duck'
 
 import Duck from './PageDuck'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
-import {
-  Row,
-  Col,
-  Card,
-  H2,
-  Text,
-  Form,
-  Button,
-  Input as TeaInput,
-  ExternalLink,
-  FormItem,
-  Copy,
-  FormText,
-} from 'tea-component'
+import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, Copy } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import buildConfig from '@src/buildConfig'
@@ -89,8 +76,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     <Row>
                       <Col>
                         <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
-                          初始用户名和密码为<Copy text={'polaris'}>polaris</Copy>/
-                          <Copy text={'polaris'}>polaris</Copy>
+                          初始用户名和密码为<Copy text={'polaris'}>polaris</Copy>/<Copy text={'polaris'}>polaris</Copy>
                         </Text>
                       </Col>
                     </Row>

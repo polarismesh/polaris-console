@@ -101,119 +101,116 @@ export default function root() {
   }, [fetchAuth])
   return (
     <>
-      <Route exact path='/login' component={Login} />
-      <Route default>
-        <Layout>
-          <Header>
-            <NavMenu
-              left={
-                <>
-                  <NavMenu.Item type='logo' style={{ width: '185px' }}>
-                    <img src={'/static/img/logo-polaris.png'} alt='logo' style={{ height: '27px' }} />
-                  </NavMenu.Item>
-                  <NavMenu.Item></NavMenu.Item>
-                </>
-              }
-              right={
-                <>
-                  <NavMenu.Item type='default'>
-                    <a
-                      href={
-                        'https://polarismesh.cn/zh/doc/%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88/%E7%AE%80%E4%BB%8B.html'
-                      }
-                      target={'_blank'}
-                      rel='noreferrer'
-                    >
-                      文档
-                    </a>
-                  </NavMenu.Item>
-                  <NavMenu.Item
-                    type='dropdown'
-                    overlay={close => (
-                      <List type='option'>
-                        <List.Item
-                          onClick={() => {
-                            router.navigate(`/user-detail?id=${getUin()}`)
-                            close()
-                          }}
-                        >
-                          账号信息
-                        </List.Item>
-                        <List.Item
-                          onClick={() => {
-                            userLogout()
-                            close()
-                          }}
-                        >
-                          退出
-                        </List.Item>
-                      </List>
-                    )}
+      <Layout>
+        <Header>
+          <NavMenu
+            left={
+              <>
+                <NavMenu.Item type='logo' style={{ width: '185px' }}>
+                  <img src={'/static/img/logo-polaris.png'} alt='logo' style={{ height: '27px' }} />
+                </NavMenu.Item>
+                <NavMenu.Item></NavMenu.Item>
+              </>
+            }
+            right={
+              <>
+                <NavMenu.Item type='default'>
+                  <a
+                    href={
+                      'https://polarismesh.cn/zh/doc/%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88/%E7%AE%80%E4%BB%8B.html'
+                    }
+                    target={'_blank'}
+                    rel='noreferrer'
                   >
-                    {getLoginName()}
-                  </NavMenu.Item>
-                </>
-              }
-            />
-          </Header>
-          <Body>
-            <Sider>
-              <Menu collapsable theme='dark' title={MenuConfig.title}>
-                {Object.keys(MenuConfig).map(item => {
-                  // return <Menu.Item title={"服务列表"} />;
+                    文档
+                  </a>
+                </NavMenu.Item>
+                <NavMenu.Item
+                  type='dropdown'
+                  overlay={close => (
+                    <List type='option'>
+                      <List.Item
+                        onClick={() => {
+                          router.navigate(`/user-detail?id=${getUin()}`)
+                          close()
+                        }}
+                      >
+                        账号信息
+                      </List.Item>
+                      <List.Item
+                        onClick={() => {
+                          userLogout()
+                          close()
+                        }}
+                      >
+                        退出
+                      </List.Item>
+                    </List>
+                  )}
+                >
+                  {getLoginName()}
+                </NavMenu.Item>
+              </>
+            }
+          />
+        </Header>
+        <Body>
+          <Sider>
+            <Menu collapsable theme='dark' title={MenuConfig.title}>
+              {Object.keys(MenuConfig).map(item => {
+                // return <Menu.Item title={"服务列表"} />;
 
-                  if (MenuConfig[item].isGroup) {
-                    const subMenuConfig = { ...MenuConfig[item] }
-                    return (
-                      <Menu.Group title={MenuConfig[item].title}>
-                        {Object.keys(subMenuConfig).map(item => {
-                          const menuConfig = subMenuConfig[item]
+                if (MenuConfig[item].isGroup) {
+                  const subMenuConfig = { ...MenuConfig[item] }
+                  return (
+                    <Menu.Group title={MenuConfig[item].title}>
+                      {Object.keys(subMenuConfig).map(item => {
+                        const menuConfig = subMenuConfig[item]
 
-                          if (typeof menuConfig !== 'object') {
-                            return null
-                          }
-                          if (menuConfig.title === '策略' && !authOpen) {
-                            return <noscript />
-                          }
-                          return <Menu.Item key={menuConfig.title} {...menuConfig} {...getMenuItemProps(item)} />
-                        })}
-                      </Menu.Group>
-                    )
-                  }
-                  if (typeof MenuConfig[item] !== 'object') {
-                    return
-                  }
-                  return <Menu.Item key={MenuConfig.title} {...MenuConfig[item]} {...getMenuItemProps(item)} />
-                })}
-              </Menu>
-            </Sider>
-            <Content>
-              <Switch>
-                <Route exact path='/' component={Service} />
-                <Route exact path='/namespace' component={Namespace} />
-                <Route exact path='/service' component={Service} />
-                <Route exact path='/service-detail' component={ServiceDetail} />
-                <Route exact path='/route-create' component={RouteCreate} />
-                <Route exact path='/ratelimit-create' component={RateLimit} />
-                <Route exact path='/circuitBreaker-create' component={CircuitBreaker} />
-                <Route exact path='/circuitBreaker-monitor' component={CircuitBreakerMonitor} />
-                <Route exact path='/route-monitor' component={RouteMonitor} />
-                <Route exact path='/ratelimit-monitor' component={RatelimitMonitor} />
-                <Route exact path='/filegroup' component={FileGroup} />
-                <Route exact path='/filegroup-detail' component={FileGroupDetail} />
-                <Route exact path='/file-release-history' component={FileRelease} />
-                <Route exact path='/user' component={User} />
-                <Route exact path='/usergroup' component={UserGroup} />
-                <Route exact path='/policy' component={Policy} />
-                <Route exact path='/user-detail' component={UserDetail} />
-                <Route exact path='/usergroup-detail' component={UserGroupDetail} />
-                <Route exact path='/policy-create' component={PolicyCreate} />
-                <Route exact path='/alias' component={ServiceAlias} />
-              </Switch>
-            </Content>
-          </Body>
-        </Layout>
-      </Route>
+                        if (typeof menuConfig !== 'object') {
+                          return null
+                        }
+                        if (menuConfig.title === '策略' && !authOpen) {
+                          return <noscript />
+                        }
+                        return <Menu.Item key={menuConfig.title} {...menuConfig} {...getMenuItemProps(item)} />
+                      })}
+                    </Menu.Group>
+                  )
+                }
+                if (typeof MenuConfig[item] !== 'object') {
+                  return
+                }
+                return <Menu.Item key={MenuConfig.title} {...MenuConfig[item]} {...getMenuItemProps(item)} />
+              })}
+            </Menu>
+          </Sider>
+          <Content>
+            <Switch>
+              <Route exact path='/' component={Service} />
+              <Route exact path='/namespace' component={Namespace} />
+              <Route exact path='/service' component={Service} />
+              <Route exact path='/service-detail' component={ServiceDetail} />
+              <Route exact path='/route-create' component={RouteCreate} />
+              <Route exact path='/ratelimit-create' component={RateLimit} />
+              <Route exact path='/circuitBreaker-create' component={CircuitBreaker} />
+              <Route exact path='/circuitBreaker-monitor' component={CircuitBreakerMonitor} />
+              <Route exact path='/route-monitor' component={RouteMonitor} />
+              <Route exact path='/ratelimit-monitor' component={RatelimitMonitor} />
+              <Route exact path='/filegroup' component={FileGroup} />
+              <Route exact path='/filegroup-detail' component={FileGroupDetail} />
+              <Route exact path='/file-release-history' component={FileRelease} />
+              <Route exact path='/user' component={User} />
+              <Route exact path='/usergroup' component={UserGroup} />
+              <Route exact path='/policy' component={Policy} />
+              <Route exact path='/user-detail' component={UserDetail} />
+              <Route exact path='/usergroup-detail' component={UserGroupDetail} />
+              <Route exact path='/policy-create' component={PolicyCreate} />
+              <Route exact path='/alias' component={ServiceAlias} />
+            </Switch>
+          </Content>
+        </Body>
+      </Layout>
     </>
   )
 }
