@@ -94,7 +94,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
       <Card>
         <Card.Body>
           <Row showSplitLine gap={40}>
-            <div style={{ width: '450px', height: 600, overflowY: 'hidden', margin: '15px 20px' }}>
+            <div style={{ width: '450px', height: 1000, overflowY: 'hidden', margin: '15px 20px' }}>
               <SearchBox
                 value={searchKeyword}
                 onChange={handlers.setSearchKeyword}
@@ -126,14 +126,14 @@ export default function Page(props: DuckCmpProps<Duck>) {
                   handlers.setExpandedIds(expandedIds)
                 }}
                 fullExpandable
-                height={600}
+                height={900}
                 style={{ width: '500px' }}
-                // onSelect={v => {
-                //   handlers.select(v)
-                // }}
-                // selectable
-                // selectedIds={selection}
-                // selectValueMode={'onlyLeaf'}
+              // onSelect={v => {
+              //   handlers.select(v)
+              // }}
+              // selectable
+              // selectedIds={selection}
+              // selectValueMode={'onlyLeaf'}
               >
                 {renderTree(props, fileTree, '', '')}
               </Tree>
@@ -281,7 +281,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             language={currentNode?.format}
                             value={editing ? editContent : currentNode?.content}
                             options={{ readOnly: !editing }}
-                            height={400}
+                            height={700}
                             width={'100%'}
                             onChange={v => {
                               handlers.setEditContent(v)
