@@ -92,6 +92,15 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             field={name}
             disabled={options.isModify}
             maxLength={128}
+            onChange={(val, ctx) => {
+              const suffix = val.substring(val.lastIndexOf(".") + 1);
+              console.log(suffix)
+              FileFormatOptions.forEach((item) => {
+                if (suffix == item.text) {
+                  format.setValue(suffix)
+                }
+              })
+            }}
             placeholder={'允许数字、英文字母、.、-、_，限制128个字符'}
             size={'l'}
           />
