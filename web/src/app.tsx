@@ -70,11 +70,8 @@ import PolicyCreatePage from '@src/polaris/auth/policy/operation/Create'
 import PolicyCreatePageDuck from '@src/polaris/auth/policy/operation/CreateDuck'
 const PolicyCreate = connectWithDuck(PolicyCreatePage, PolicyCreatePageDuck as any)
 
-import LoginPage from '@src/polaris/auth/login/Page'
-import LoginPageDuck from '@src/polaris/auth/login/PageDuck'
 import { userLogout, getUin, getLoginName } from './polaris/common/util/common'
 import router from './polaris/common/util/router'
-const Login = connectWithDuck(LoginPage, LoginPageDuck as any)
 
 import ServiceAliasPage from '@src/polaris/serviceAlias/Page'
 import ServiceAliasPageDuck from '@src/polaris/serviceAlias/PageDuck'

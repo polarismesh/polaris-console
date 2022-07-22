@@ -46,6 +46,7 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   showReleaseHistory: v => dispatch(creators.showReleaseHistory(v)),
   select: v => dispatch(creators.select(v)),
   cancel: () => dispatch(creators.cancel()),
+  getTemplate: v => dispatch(creators.getTemplate(v)),
 }))
 
 insertCSS(
@@ -218,6 +219,9 @@ export default function Page(props: DuckCmpProps<Duck>) {
                           <>
                             <Button type={'primary'} disabled={editing} onClick={() => handlers.releaseCurrentFile()}>
                               发布
+                            </Button>
+                            <Button type={'primary'} onClick={() => handlers.getTemplate(currentNode)}>
+                              应用模板
                             </Button>
                             {editing ? (
                               <Button type={'weak'} onClick={() => handlers.save()}>
