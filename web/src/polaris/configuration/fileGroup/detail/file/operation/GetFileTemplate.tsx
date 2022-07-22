@@ -16,7 +16,7 @@ export default function GetFileTemplate(props: DuckCmpProps<Duck>) {
     return <noscript />
   }
   return (
-    <Dialog duck={duck} store={store} dispatch={dispatch} size={'l'} title={'应用模板'}>
+    <Dialog duck={duck} store={store} dispatch={dispatch} size={'l'} title={'应用模板'} defaultSubmitText={'应用'}>
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
   )
@@ -31,7 +31,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
 
   const formApi = form.getAPI(store, dispatch)
   const { currentTemplateId } = formApi.getFields(['currentTemplateId'])
-  const { templateList } = selector(store)
+  const { templateList, options } = selector(store)
   const currentTemplate = templateList.find(item => item.id === currentTemplateId.getValue()) as ConfigFileTemplate
   return (
     <>
@@ -41,6 +41,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           label={'模板'}
           required
           tips={'提供常用的配置文件模板，以方便进行快速配置'}
+          message={currentTemplate?.format !== options?.file?.format && '当前选择的模板与配置文件格式不符'}
         >
           <Select
             searchable

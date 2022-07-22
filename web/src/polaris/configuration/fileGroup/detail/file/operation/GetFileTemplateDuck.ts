@@ -96,7 +96,7 @@ export default class GetFileTemplateDuck extends FormDialog {
       ...item,
       text: `${item.name}(${item.format})`,
       value: item.id,
-      disabled: item.format !== options.file.format,
+      //disabled: item.format !== options.file.format,
     }))
     yield put({
       type: types.SET_TEMPLATE_LIST,

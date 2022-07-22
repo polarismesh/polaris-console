@@ -220,13 +220,16 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <Button type={'primary'} disabled={editing} onClick={() => handlers.releaseCurrentFile()}>
                               发布
                             </Button>
-                            <Button type={'primary'} onClick={() => handlers.getTemplate(currentNode)}>
-                              应用模板
-                            </Button>
+
                             {editing ? (
-                              <Button type={'weak'} onClick={() => handlers.save()}>
-                                保存
-                              </Button>
+                              <>
+                                <Button type={'weak'} onClick={() => handlers.getTemplate(currentNode)}>
+                                  应用模板
+                                </Button>
+                                <Button type={'weak'} onClick={() => handlers.save()}>
+                                  保存
+                                </Button>
+                              </>
                             ) : (
                               <Button type={'weak'} onClick={() => handlers.editCurrentNode()}>
                                 编辑
