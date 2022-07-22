@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import { Layout, NavMenu, Menu, List } from 'tea-component'
 import { Switch, Route, useHistory } from 'react-router-dom'
 const { Header, Body, Sider, Content } = Layout
-import { MenuConfig } from './menu'
+import { MenuConfig, MenuItemConfig } from './menu'
 import { connectWithDuck } from './polaris/common/helpers'
 import MonitorPage from '@src/polaris/monitor/Page'
 import { CircuitBreakerMonitorDuck, RouteMonitorDuck, RatelimitMonitorDuck } from '@src/polaris/monitor/PageDuck'
@@ -70,16 +70,15 @@ import PolicyCreatePage from '@src/polaris/auth/policy/operation/Create'
 import PolicyCreatePageDuck from '@src/polaris/auth/policy/operation/CreateDuck'
 const PolicyCreate = connectWithDuck(PolicyCreatePage, PolicyCreatePageDuck as any)
 
-import LoginPage from '@src/polaris/auth/login/Page'
-import LoginPageDuck from '@src/polaris/auth/login/PageDuck'
 import { userLogout, getUin, getLoginName } from './polaris/common/util/common'
 import router from './polaris/common/util/router'
-const Login = connectWithDuck(LoginPage, LoginPageDuck as any)
 
 import ServiceAliasPage from '@src/polaris/serviceAlias/Page'
 import ServiceAliasPageDuck from '@src/polaris/serviceAlias/PageDuck'
 import { cacheCheckAuth } from './polaris/auth/model'
 const ServiceAlias = connectWithDuck(ServiceAliasPage, ServiceAliasPageDuck)
+
+import TestEnvRoutePage from '@src/polaris/administration/dynamicRoute/testEnvRoute/Page'
 
 export default function root() {
   const history = useHistory()
@@ -99,6 +98,29 @@ export default function root() {
   React.useEffect(() => {
     fetchAuth()
   }, [fetchAuth])
+
+  function recursiveRenderMenuItem(menuItem: MenuItemConfig) {
+    if (!menuItem) {
+      return <noscript />
+    }
+
+    if (menuItem.id === 'policy' && !authOpen) {
+      return <noscript />
+    }
+
+    return menuItem.subMenus ? (
+      <Menu.SubMenu title={menuItem.title} icon={menuItem.icon} key={menuItem.id}>
+        {menuItem.subMenus.map(o => recursiveRenderMenuItem(o))}
+      </Menu.SubMenu>
+    ) : (
+      <Menu.Item
+        title={menuItem.title}
+        icon={menuItem.icon}
+        {...getMenuItemProps(menuItem.id)}
+        key={menuItem.id}
+      ></Menu.Item>
+    )
+  }
   return (
     <>
       <Layout>
@@ -157,31 +179,16 @@ export default function root() {
         <Body>
           <Sider>
             <Menu collapsable theme='dark' title={MenuConfig.title}>
-              {Object.keys(MenuConfig).map(item => {
-                // return <Menu.Item title={"服务列表"} />;
-
-                if (MenuConfig[item].isGroup) {
-                  const subMenuConfig = { ...MenuConfig[item] }
+              {MenuConfig.subMenus.map(o => {
+                if (o.subMenus) {
                   return (
-                    <Menu.Group title={MenuConfig[item].title}>
-                      {Object.keys(subMenuConfig).map(item => {
-                        const menuConfig = subMenuConfig[item]
-
-                        if (typeof menuConfig !== 'object') {
-                          return null
-                        }
-                        if (menuConfig.title === '策略' && !authOpen) {
-                          return <noscript />
-                        }
-                        return <Menu.Item key={menuConfig.title} {...menuConfig} {...getMenuItemProps(item)} />
-                      })}
+                    <Menu.Group key={o.id} title={o.title}>
+                      {o.subMenus.map(item => recursiveRenderMenuItem(item))}
                     </Menu.Group>
                   )
+                } else {
+                  return <Menu.Item title={o.title} icon={o.icon} {...getMenuItemProps(o.id)} key={o.id}></Menu.Item>
                 }
-                if (typeof MenuConfig[item] !== 'object') {
-                  return
-                }
-                return <Menu.Item key={MenuConfig.title} {...MenuConfig[item]} {...getMenuItemProps(item)} />
               })}
             </Menu>
           </Sider>
@@ -207,6 +214,7 @@ export default function root() {
               <Route exact path='/usergroup-detail' component={UserGroupDetail} />
               <Route exact path='/policy-create' component={PolicyCreate} />
               <Route exact path='/alias' component={ServiceAlias} />
+              <Route exact path='/test-env-route' component={TestEnvRoutePage} />
             </Switch>
           </Content>
         </Body>
