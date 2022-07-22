@@ -95,7 +95,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
       <Card>
         <Card.Body>
           <Row showSplitLine gap={40}>
-            <div style={{ width: '450px', height: 600, overflowY: 'hidden', margin: '15px 20px' }}>
+            <div style={{ width: '450px', height: 650, overflowY: 'hidden', margin: '15px 20px' }}>
               <SearchBox
                 value={searchKeyword}
                 onChange={handlers.setSearchKeyword}
@@ -103,41 +103,43 @@ export default function Page(props: DuckCmpProps<Duck>) {
                 onSearch={handlers.searchPath}
                 style={{ width: '420px' }}
               />
-              <Tree
-                activable
-                onActive={(activeIds, { nodeId }) => {
-                  // if (!fileMap[nodeId]) {
-                  //   const index = expandedIds.findIndex(item => item === nodeId)
-                  //   if (index === -1) {
-                  //     expandedIds.push(nodeId)
-                  //     handlers.setExpandedIds([...expandedIds])
-                  //   } else {
-                  //     const newArray = [...expandedIds]
-                  //     newArray.splice(index, 1)
-                  //     handlers.setExpandedIds(newArray)
-                  //   }
-                  // } else {
-                  //   handlers.clickFileItem(nodeId)
-                  // }
-                  handlers.clickFileItem(nodeId)
-                }}
-                activeIds={currentNode ? [currentNode?.name] : []}
-                expandedIds={expandedIds}
-                onExpand={expandedIds => {
-                  handlers.setExpandedIds(expandedIds)
-                }}
-                fullExpandable
-                height={600}
-                style={{ width: '500px' }}
-                // onSelect={v => {
-                //   handlers.select(v)
-                // }}
-                // selectable
-                // selectedIds={selection}
-                // selectValueMode={'onlyLeaf'}
-              >
-                {renderTree(props, fileTree, '', '')}
-              </Tree>
+              <div style={{ height: 610, overflowY: 'scroll' }}>
+                <Tree
+                  activable
+                  onActive={(activeIds, { nodeId }) => {
+                    // if (!fileMap[nodeId]) {
+                    //   const index = expandedIds.findIndex(item => item === nodeId)
+                    //   if (index === -1) {
+                    //     expandedIds.push(nodeId)
+                    //     handlers.setExpandedIds([...expandedIds])
+                    //   } else {
+                    //     const newArray = [...expandedIds]
+                    //     newArray.splice(index, 1)
+                    //     handlers.setExpandedIds(newArray)
+                    //   }
+                    // } else {
+                    //   handlers.clickFileItem(nodeId)
+                    // }
+                    handlers.clickFileItem(nodeId)
+                  }}
+                  activeIds={currentNode ? [currentNode?.name] : []}
+                  expandedIds={expandedIds}
+                  onExpand={expandedIds => {
+                    handlers.setExpandedIds(expandedIds)
+                  }}
+                  fullExpandable
+                  height={600}
+                  style={{ width: '500px' }}
+                  // onSelect={v => {
+                  //   handlers.select(v)
+                  // }}
+                  // selectable
+                  // selectedIds={selection}
+                  // selectValueMode={'onlyLeaf'}
+                >
+                  {renderTree(props, fileTree, '', '')}
+                </Tree>
+              </div>
             </div>
             <div style={{ width: 'calc(100% - 540px)', margin: '15px 20px' }}>
               {currentNode?.name &&
