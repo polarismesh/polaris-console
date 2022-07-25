@@ -14,7 +14,7 @@ insertCSS(
     left: 29.8%;
     width: 4.1%;
     height: 2%;
-    background-color: red;
+    background-color: none;
     cursor: pointer;
     z-index: 10;
   }
@@ -26,7 +26,7 @@ insertCSS(
     left: 29.8%;
     width: 4.1%;
     height: 2%;
-    background-color: green;
+    background-color: none;
     cursor: pointer;
     z-index: 10;
   }
@@ -38,7 +38,7 @@ insertCSS(
     left: 11.8%;
     width: 4.1%;
     height: 2%;
-    background-color: orange;
+    background-color: none;
     cursor: pointer;
     z-index: 10;
   }
@@ -50,7 +50,7 @@ insertCSS(
     left: 15.8%;
     width: 4.1%;
     height: 2%;
-    background-color: orange;
+    background-color: none;
     cursor: pointer;
     z-index: 10;
   }
@@ -77,7 +77,7 @@ export default function TestEnvRoutePage() {
     <Layout>
       <Body>
         <Content>
-          <Content.Header title='路由规则' />
+          <Content.Header title='测试环境路由规则' />
           <Content.Body>
             <Tabs tabs={tabs} ceiling>
               {tabs.map(tab => {
