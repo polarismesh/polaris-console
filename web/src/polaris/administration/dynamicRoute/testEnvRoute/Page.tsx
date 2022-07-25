@@ -77,7 +77,7 @@ export default function TestEnvRoutePage() {
     <Layout>
       <Body>
         <Content>
-          <Content.Header title='测试环境路由规则' />
+          <Content.Header title='测试环境路由' />
           <Content.Body>
             <Tabs tabs={tabs} ceiling>
               {tabs.map(tab => {
