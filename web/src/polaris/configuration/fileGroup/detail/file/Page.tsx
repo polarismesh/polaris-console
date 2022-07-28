@@ -101,7 +101,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                 onChange={handlers.setSearchKeyword}
                 placeholder={'请输入文件名搜索'}
                 onSearch={handlers.searchPath}
-                style={{ width: '420px' }}
+                style={{ width: '100%' }}
               />
               <div style={{ height: 610, overflowY: 'scroll' }}>
                 <Tree
