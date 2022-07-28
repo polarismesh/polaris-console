@@ -11,16 +11,12 @@ import { once, ttl } from '../helpers/cacheable'
 import { describeLicenseStatus, LicenseStatus } from '../util/license'
 import buildConfig from '@src/buildConfig'
 import insertCSS from '../helpers/insertCSS'
-import React from 'react'
 
 insertCSS(
   `license-notification`,
   `
   .license-notification-hide-btn .tea-icon-close{
     display: none;
-  }
-  .tea-notification-wrap{
-    z-index: 999;
   }
 `,
 )
@@ -298,7 +294,7 @@ get preSagas(){
    * ```
    */
   get preEffects(): Effect[] {
-    return [call([this, this.ready], this), call([this, this.checkLicense], this), call([this, this.checkUserLogin])]
+    return [call([this, this.ready], this), call([this, this.checkUserLogin]), call([this, this.checkLicense], this)]
   }
   /** preEffects类型定义 */
   get PreEffects(): Effect[] {
@@ -362,7 +358,6 @@ get preSagas(){
         case LicenseStatus.LICENSE_LEFT_30_DAY:
           if (!window.sessionStorage.getItem(`license_status_closed${licenseResult.code}`)) {
             notification.warning({
-              title: '请注意License即将到期',
               description: licenseResult.warnMsg,
               duration: 0,
               unique: true,
@@ -374,7 +369,6 @@ get preSagas(){
           return true
         case LicenseStatus.LICENSE_EXPIRE_30_DAY:
           notification.error({
-            title: '请注意License已过期',
             description: licenseResult.warnMsg,
             duration: 0,
             unique: true,
@@ -386,13 +380,12 @@ get preSagas(){
             userLogout()
           }
           notification.error({
-            title: 'License已超过最大过期时间',
             description: licenseResult.warnMsg,
             duration: 0,
             unique: true,
             className: 'license-notification-hide-btn',
           })
-          throw LicenseStatus.LICENSE_FORBIDDEN
+          return false
         default:
           return true
       }
