@@ -320,7 +320,7 @@ function getFileNameContext(fileName, status) {
   return (
     <>
       <span className='configuration-tree-node-content'>{splitArray[splitArray.length - 1]}</span>
-      {FileStatus.Success === status && <Badge theme='success'>成功</Badge>}
+      {FileStatus.Edited === status && <Badge theme='warning'>待发布</Badge>}
     </>
   )
 }
