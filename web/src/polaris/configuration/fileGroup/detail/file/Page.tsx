@@ -22,8 +22,9 @@ import {
   List,
   Icon,
   Bubble,
+  Badge,
 } from 'tea-component'
-import { FileStatusMap } from './constants'
+import { FileStatus, FileStatusMap } from './constants'
 import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
 import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
@@ -57,6 +58,16 @@ insertCSS(
   .configuration-tree-node .tea-tree__label-title{
     width:100%;
   }
+  .configuration-tree-node-content {
+    display: inline-block;
+    line-height: 20px;
+    margin-right: 5px;
+    overflow: hidden;
+  }
+  .configuration-tree-node .tea-tree__label {
+    align-items: center;
+  }
+
   .no-switcher .tea-tree__switcher{
     display:none;
   }
@@ -128,12 +139,12 @@ export default function Page(props: DuckCmpProps<Duck>) {
                 fullExpandable
                 height={900}
                 style={{ width: '500px' }}
-              // onSelect={v => {
-              //   handlers.select(v)
-              // }}
-              // selectable
-              // selectedIds={selection}
-              // selectValueMode={'onlyLeaf'}
+                // onSelect={v => {
+                //   handlers.select(v)
+                // }}
+                // selectable
+                // selectedIds={selection}
+                // selectValueMode={'onlyLeaf'}
               >
                 {renderTree(props, fileTree, '', '')}
               </Tree>
@@ -304,9 +315,14 @@ export default function Page(props: DuckCmpProps<Duck>) {
   )
 }
 
-function getFileName(fileName) {
+function getFileNameContext(fileName, status) {
   const splitArray = fileName.split('/')
-  return splitArray[splitArray.length - 1]
+  return (
+    <>
+      <span className='configuration-tree-node-content'>{splitArray[splitArray.length - 1]}</span>
+      {FileStatus.Edited === status && <Badge theme='warning'>待发布</Badge>}
+    </>
+  )
 }
 
 function renderTree(props, folder, path: string, currPath: string) {
@@ -330,7 +346,7 @@ function renderTree(props, folder, path: string, currPath: string) {
       {Object.keys(node)?.map(childPath => {
         if (childPath === '__isDir__') return <noscript />
         const obj = node[childPath]
-        const showContent = obj.__isDir__ ? childPath : getFileName(obj.name)
+        const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status)
         const nextPath = `${currPath}${currPath ? '/' : ''}${childPath}`
         const folderIcon = expandedIds.indexOf(obj.name) > -1 ? 'folderopen' : 'folderclose'
         return (
