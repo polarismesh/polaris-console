@@ -98,7 +98,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
   const isInDetailpage = !!composedId?.principalId
   const countedAuthSubjectTabs = AuthSubjectTabs.map(item => ({
     ...item,
-    label: `${item.label}(${currentAuthItem?.principals?.[item.id]?.length ?? 0})`,
+    label: `${item.label}(${currentAuthItem?.principals?.[`${item.id}s`]?.length ?? 0})`,
   }))
   const defaultList = authList.filter(item => item.default_strategy)
   const customList = authList.filter(item => !item.default_strategy)
@@ -259,8 +259,8 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                           activeId={showAuthSubjectType}
                           onActive={tab => setShowAuthSubjectType(tab.id as AuthSubjectType)}
                         >
-                          {currentAuthItem.principals[showAuthSubjectType]?.length > 0 ? (
-                            currentAuthItem.principals[showAuthSubjectType].map(userItem => {
+                          {currentAuthItem.principals[`${showAuthSubjectType}s`]?.length > 0 ? ( //这里加s是为了适配接口
+                            currentAuthItem.principals[`${showAuthSubjectType}s`].map(userItem => {
                               return isOwner() ? (
                                 <Button
                                   type='link'
@@ -331,6 +331,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
       </Row>
     </>
   )
+
   return isInDetailpage ? (
     contentElement
   ) : (

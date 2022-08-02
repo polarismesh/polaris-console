@@ -74,6 +74,9 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         <FormField field={business} label={'业务'}>
           <Input field={business} size={'l'} />
         </FormField>
+        <FormField field={enableNearby} label={'开启就近访问'}>
+          <Switch field={enableNearby} />
+        </FormField>
         <FormField
           field={metadata}
           label={
@@ -100,9 +103,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             size={'l'}
           />
         </FormField>
-        <FormField field={enableNearby} label={'开启就近访问'}>
-          <Switch field={enableNearby} />
-        </FormField>
+
         {options.authOpen && (
           <>
             <Button type={'link'} onClick={() => setShowAdvance(!showAdvance)} style={{ cursor: 'pointer' }}>

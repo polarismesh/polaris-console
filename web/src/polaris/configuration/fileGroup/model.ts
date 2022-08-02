@@ -124,6 +124,17 @@ export async function describeConfigFiles(params: DescribeConfigFilesParams) {
     totalCount: res.total,
   }
 }
+export async function describeConfigFilesByGroup(params: DescribeConfigFilesParams) {
+  const res = await getApiRequest<DescribeConfigFilesResult>({
+    action: 'config/v1/configfiles/by-group',
+    data: params,
+  })
+  return {
+    list: res.configFiles,
+    totalCount: res.total,
+  }
+}
+
 export interface ModifyConfigFileParams {
   name: string
   namespace: string

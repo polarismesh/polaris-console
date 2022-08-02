@@ -21,7 +21,6 @@ import (
 	"fmt"
 
 	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/handlers"
 	"github.com/polarismesh/polaris-console/router"
 )
 
@@ -40,9 +39,6 @@ func main() {
 
 	// 设置模式
 	bootstrap.SetMode(config)
-
-	// 请求部门数据
-	handlers.SetDepartment()
 
 	// 路由请求
 	router.Router(config)

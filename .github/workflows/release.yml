@@ -15,11 +15,11 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         goos: [linux, windows, darwin]
         goarch: [amd64, arm64]
-        exclude:
-          - goos: windows
-            goarch: arm64
-          - goos: linux
-            goarch: arm64
+#         exclude:
+#           - goos: windows
+#             goarch: arm64
+#           - goos: linux
+#             goarch: arm64
 
     steps:
     - uses: actions/checkout@v2
@@ -34,14 +34,19 @@ jobs:
       with:
         go-version: 1.16.5
         
+    - name: Get version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        
     # Compile
     - name: Build server
       id: build
       env:
         GOOS: ${{ matrix.goos }}
-        GOARCH: ${{ matrix.goarch }}    
+        GOARCH: ${{ matrix.goarch }}
+        VERSION: ${{ steps.get_version.outputs.VERSION }}
       run: |
-        bash build.sh
+        bash build.sh ${VERSION}
         PACKAGE_NAME=$(ls | grep polaris-console-release*.zip | sed -n '1p')
         echo ::set-output name=name::${PACKAGE_NAME}
         

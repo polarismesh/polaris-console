@@ -129,7 +129,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: '新建路由规则',
+          title: '新建限流规则',
           visible: true,
           createId,
           isEdit: false,
@@ -227,7 +227,10 @@ export default class ServicePageDuck extends GridPageDuck {
       offset: (page - 1) * count,
       limit: count,
     })
-    result.list = result.list.map(item => ({
+    if (!result.list) {
+      return { totalCount: 0, list: [] }
+    }
+    result.list = result?.list.map(item => ({
       ...item,
       //太怪了，这里如果没有disable字段，代表是启用状态，我晕了
       disable: item.disable === true ? true : false,

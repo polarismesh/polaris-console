@@ -221,7 +221,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       list:
         result.list?.map(item => ({
           ...item,
-          id: item.name,
+          id: item.id,
         })) || [],
     }
   }
