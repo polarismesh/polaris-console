@@ -24,4 +24,7 @@ export default class BuildConfig extends BaseConfig {
   get useCmdbDetail() {
     return false
   }
+  get license() {
+    return true
+  }
 }

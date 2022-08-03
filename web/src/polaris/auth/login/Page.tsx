@@ -3,7 +3,7 @@ import { purify, DuckCmpProps } from 'saga-duck'
 
 import Duck from './PageDuck'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
-import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, Copy } from 'tea-component'
+import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, Copy, Bubble } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import buildConfig from '@src/buildConfig'
@@ -18,8 +18,10 @@ overflow:hidden;
 )
 export default purify(function(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
-  const { ducks, creators } = duck
+  const { ducks, creators, selector } = duck
   const { userName, password } = ducks.form.getAPI(store, dispatch).getFields(['userName', 'password'])
+  const { preError } = selector(store)
+  const licenseToolTip = preError && 'License已超过最大过期时间'
   return (
     <div
       style={{ background: 'url(/static/img/login-background.png)', backgroundSize: '100% 100%' }}
@@ -83,7 +85,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   )}
                   <Form style={{ padding: '20px 0px' }}>
                     <FormField field={userName} label={'用户名'}>
-                      <Input field={userName} size={'full'} />
+                      <Input field={userName} size={'full'} disabled={preError} placeholder={licenseToolTip} />
                     </FormField>
                     <FormField field={password} label={'密码'}>
                       <TeaInput.Password
@@ -99,23 +101,28 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                           dispatch(creators.submit())
                         }}
                         rules={false}
+                        disabled={preError}
+                        placeholder={licenseToolTip}
                       />
                     </FormField>
                   </Form>
                   <Row>
                     <Col span={8}></Col>
-                    <Col span={8}>
-                      <Button
-                        type={'primary'}
-                        style={{ width: '100%', margin: 'auto' }}
-                        onClick={() => {
-                          password.setError('')
-                          dispatch(creators.submit())
-                        }}
-                      >
-                        登录
-                      </Button>
-                    </Col>
+                    <Bubble content={licenseToolTip}>
+                      <Col span={8}>
+                        <Button
+                          type={'primary'}
+                          style={{ width: '100%', margin: 'auto' }}
+                          onClick={() => {
+                            password.setError('')
+                            dispatch(creators.submit())
+                          }}
+                          disabled={preError}
+                        >
+                          登录
+                        </Button>
+                      </Col>
+                    </Bubble>
                   </Row>
                 </Card.Body>
               </Card>
