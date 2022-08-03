@@ -73,6 +73,12 @@ export const MenuConfig: MenuItemConfig = {
             },
           ],
         },
+        {
+          id: 'accesslimit',
+          title: '访问限流',
+          icon: '/static/img/dynamic-route.svg',
+          subMenus: null,
+        },
       ],
     },
     {

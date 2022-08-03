@@ -204,7 +204,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                   }
                                 >
                                   <Text overflow>
-                                    {currentNode.tags.map(item => `${item.key}:${item.value}`).join(',') || '-'}
+                                    {currentNode.tags?.map(item => `${item.key}:${item.value}`).join(',') || '-'}
                                   </Text>
                                 </Bubble>
                               </FormText>

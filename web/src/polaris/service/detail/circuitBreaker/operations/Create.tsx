@@ -1,30 +1,25 @@
 import React, { useRef } from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import CreateRouteDuck from './CreateDuck'
-import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
+
 import {
-  Card,
   Form,
   FormItem,
   Segment,
   H3,
   Button,
   H4,
-  Justify,
   MonacoEditor,
   Text,
   FormText,
   InputNumber as TeaInputNumber,
 } from 'tea-component'
 import {
-  RULE_TYPE_OPTIONS,
   MATCH_TYPE_OPTIONS,
-  MATCH_TYPE,
   RuleType,
   PolicyName,
   PolicyNameOptions,
   BreakResourceOptions,
-  BREAK_RESOURCE_TYPE,
   OUTLIER_DETECT_MAP_OPTIONS,
   PolicyMap,
 } from '../types'
@@ -32,10 +27,9 @@ import Input from '@src/polaris/common/duckComponents/form/Input'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Select from '@src/polaris/common/duckComponents/form/Select'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
-import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
-import { REGEX_STAR_TIPS } from '../../limit/operations/Create'
 
+export const REGEX_STAR_TIPS = '正则模式下，使用*代表选择所有'
 export enum EditType {
   Manual = 'Manual',
   Json = 'Json',
@@ -51,9 +45,6 @@ const EditTypeOptions = [
   },
 ]
 
-const addMetadata = field => {
-  field.setValue([...field.getValue(), { key: '', value: '', type: MATCH_TYPE.EXACT }])
-}
 const removeArrayFieldValue = (field, index) => {
   const newValue = field.getValue()
   newValue.splice(index, 1)
@@ -71,51 +62,19 @@ const addPolicy = field => {
     },
   ])
 }
-const getMetadataForm = field => {
-  return [...field.asArray()].map((metadataField, index) => {
-    const { key, value, type } = metadataField.getFields(['key', 'value', 'type'])
-    const isRegex = type.getValue() === MATCH_TYPE.REGEX
-
-    return (
-      <Form layout={'inline'}>
-        <FormField showStatusIcon={false} field={key} label={'标签键'} message={isRegex && REGEX_STAR_TIPS}>
-          <Input field={key} />
-        </FormField>
-        <FormField showStatusIcon={false} field={value} label={'标签值'} message={isRegex && REGEX_STAR_TIPS}>
-          <Input field={value} />
-        </FormField>
-        <FormField showStatusIcon={false} field={type} label={'匹配方式'}>
-          <Select size='s' options={MATCH_TYPE_OPTIONS} field={type} />
-        </FormField>
-        {field.getValue()?.length > 1 && (
-          <Button type='icon' icon='close' onClick={() => removeArrayFieldValue(field, index)}></Button>
-        )}
-        <Button type={'icon'} icon={'plus'} onClick={() => addMetadata(field)}></Button>
-      </Form>
-    )
-  })
-}
 
 const renderInboundRule = props => {
   const { duck, store, dispatch } = props
   const {
-    selector,
-    creators,
     ducks: { form },
   } = duck
-  const {
-    service,
-    namespace,
-    form: { values },
-    ruleIndex,
-  } = selector(store)
+
   const formApi = form.getAPI(store, dispatch)
   const {
     inboundDestinations,
-    inboundSources,
+
     outboundDestinations,
-    outboundSources,
-    editType,
+
     ruleType,
     inboundNamespace,
     inboundService,
@@ -134,7 +93,7 @@ const renderInboundRule = props => {
     'outboundService',
   ])
   const isInbound = ruleType.getValue() === RuleType.Inbound
-  const sources = isInbound ? inboundSources : outboundSources
+
   const destinations = isInbound ? inboundDestinations : outboundDestinations
   const ruleNamespace = isInbound ? inboundNamespace : outboundNamespace
   const ruleService = isInbound ? inboundService : outboundService
@@ -159,7 +118,7 @@ const renderInboundRule = props => {
 
       <Form style={{ width: '100%' }}>
         <Form style={{ width: '850px', paddingLeft: '20px' }} layout={'inline'}>
-          {[...destinations.asArray()].map((field, index) => {
+          {[...destinations.asArray()].map(field => {
             const { method } = field.getFields(['method'])
             const { value: methodValue, type: methodType } = method.getFields(['value', 'type'])
             return (
@@ -176,13 +135,8 @@ const renderInboundRule = props => {
         </Form>
       </Form>
       <FormItem label={<H3 style={{ margin: '10px 0' }}>如果满足以下任意条件，进行熔断 </H3>}></FormItem>
-      {[...destinations.asArray()].map((field, index) => {
-        const { policy, resource, recover, resourceSetMark } = field.getFields([
-          'policy',
-          'resource',
-          'recover',
-          'resourceSetMark',
-        ])
+      {[...destinations.asArray()].map(field => {
+        const { policy, resource, recover } = field.getFields(['policy', 'resource', 'recover', 'resourceSetMark'])
         const { sleepWindow, outlierDetectWhen } = recover.getFields(['sleepWindow', 'outlierDetectWhen'])
         return (
           <>
@@ -192,7 +146,7 @@ const renderInboundRule = props => {
                   const {
                     policyName,
                     errorRateToOpen,
-                    slowRateToOpen,
+
                     maxRt,
                     requestVolumeThreshold,
                     consecutiveErrorToOpen,
@@ -207,7 +161,7 @@ const renderInboundRule = props => {
                   const threshold =
                     policyName.getValue() === PolicyName.ErrorRate ? errorRateToOpen : consecutiveErrorToOpen
                   return (
-                    <Form layout={'inline'}>
+                    <Form layout={'inline'} key='111'>
                       <FormField field={policyName} label={'条件'} showStatusIcon={false}>
                         <Select field={policyName} options={PolicyNameOptions} />
                       </FormField>
@@ -285,16 +239,9 @@ const renderInboundRule = props => {
 export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>) {
   const { duck, store, dispatch } = props
   const {
-    selector,
-    creators,
     ducks: { form },
   } = duck
-  const {
-    service,
-    namespace,
-    form: { values },
-    ruleIndex,
-  } = selector(store)
+
   const formApi = form.getAPI(store, dispatch)
   const { editType, ruleType, inboundJsonValue, outboundJsonValue } = formApi.getFields([
     'editType',
@@ -302,14 +249,9 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
     'inboundJsonValue',
     'outboundJsonValue',
   ])
-  const handlers = React.useMemo(
-    () => ({
-      submit: () => dispatch(duck.creators.submit()),
-    }),
-    [],
-  )
+
   const ref = useRef(null)
-  const isEdit = Number(ruleIndex) !== -1
+
   const currentJsonValue = ruleType.getValue() === RuleType.Inbound ? inboundJsonValue : outboundJsonValue
   return (
     <>
