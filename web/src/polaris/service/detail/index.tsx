@@ -1,5 +1,5 @@
-import { connectWithDuck } from "saga-duck";
-import ServicePage from "./Page";
-import ServicePageDuck from "./PageDuck";
+import { connectWithDuck } from 'saga-duck'
+import ServicePage from './Page'
+import ServicePageDuck from './PageDuck'
 
-export default connectWithDuck(ServicePage, ServicePageDuck);
+export default connectWithDuck(ServicePage, ServicePageDuck)

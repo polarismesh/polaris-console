@@ -7,19 +7,14 @@ import { TAB, TAB_LABLES } from './types'
 import BaseInfo from './info/Page'
 import Instance from './instance/Page'
 import Route from './route/Page'
-import RateLimit from './limit/Page'
+import AccessLimit from '@src/polaris/administration/accessLimiting/Page'
 import CircuitBreaker from './circuitBreaker/Page'
-// import buildConfig from '@src/buildConfig'
 
-const tabs: Array<Tab> = [TAB.Instance, TAB.Route, TAB.CircuitBreaker, TAB.RateLimit, TAB.Info].map(id => ({
+const tabs: Array<Tab> = [TAB.Instance, TAB.Route, TAB.CircuitBreaker, TAB.AccessLimit, TAB.Info].map(id => ({
   id,
   label: TAB_LABLES[id],
 }))
 
-// const noObservabilityTab: Array<Tab> = [TAB.Instance, TAB.Info].map(id => ({
-//   id,
-//   label: TAB_LABLES[id],
-// }))
 export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDuck>) {
   const { duck, store, dispatch } = props
   const { selector, creators, ducks } = duck
@@ -42,8 +37,8 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
         <TabPanel id={TAB.Route}>
           <Route duck={ducks[TAB.Route]} store={store} dispatch={dispatch} />
         </TabPanel>
-        <TabPanel id={TAB.RateLimit}>
-          <RateLimit duck={ducks[TAB.RateLimit]} store={store} dispatch={dispatch} />
+        <TabPanel id={TAB.AccessLimit}>
+          <AccessLimit duck={ducks[TAB.AccessLimit]} store={store} dispatch={dispatch} />
         </TabPanel>
         <TabPanel id={TAB.CircuitBreaker}>
           <CircuitBreaker duck={ducks[TAB.CircuitBreaker]} store={store} dispatch={dispatch} />
