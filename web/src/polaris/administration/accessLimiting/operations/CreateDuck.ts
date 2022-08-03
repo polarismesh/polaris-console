@@ -274,7 +274,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
                 ? item.amounts.map(o => ({
                     id: `${Math.round(Math.random() * 10000)}`,
                     maxAmount: o.maxAmount,
-                    validDurationNum: o.validDuration.substring(0, o.validDuration.length - 1),
+                    validDurationNum: Number(o.validDuration.substring(0, o.validDuration.length - 1)),
                     validDurationUnit: o.validDuration.substring(o.validDuration.length - 1, o.validDuration.length),
                   }))
                 : [],

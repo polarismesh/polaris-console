@@ -486,7 +486,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                               render(item, rowKey, recordIndex) {
                                 const index = Number(recordIndex)
                                 return (
-                                  index > 0 && (
+                                  amountsList?.length > 1 && (
                                     <Icon
                                       style={{
                                         cursor: 'pointer',
