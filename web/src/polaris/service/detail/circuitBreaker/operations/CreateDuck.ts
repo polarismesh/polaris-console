@@ -3,11 +3,8 @@ import { reduceFromPayload, createToPayload } from 'saga-duck'
 import { takeLatest } from 'redux-saga-catch'
 import { select, put } from 'redux-saga/effects'
 import Form from '@src/polaris/common/ducks/Form'
-import { format as prettyFormat } from 'pretty-format'
 
 import {
-  Destination,
-  Source,
   RuleType,
   DestinationItem,
   SourceItem,
@@ -18,47 +15,19 @@ import {
   getTemplateCircuitBreakerInbounds,
   getTemplateCircuitBreakerOutbounds,
 } from '../types'
-import {
-  describeServiceCircuitBreaker,
-  CircuitBreaker,
-  createServiceCircuitBreaker,
-  modifyServiceCircuitBreaker,
-  releaseServiceCircuitBreaker,
-  createServiceCircuitBreakerVersion,
-} from '../model'
+import { describeServiceCircuitBreaker, CircuitBreaker } from '../model'
 import { ComposedId } from '../../types'
 import { EditType } from './Create'
-import router from '@src/polaris/common/util/router'
-import service from '@src/polaris/service'
-import { MetadataItem } from '../../route/types'
-import tips from '@src/polaris/common/util/tips'
+
 import DynamicDuck from '@src/polaris/common/ducks/DynamicDuck'
 
-const convertMetadataMapToArray = metadata => {
-  return Object.keys(metadata).map(key => {
-    return {
-      key,
-      value: metadata[key].value,
-      type: metadata[key].type ? metadata[key].type : MATCH_TYPE.EXACT,
-    }
-  })
-}
-const convertMetadataArrayToMap = metadataArray => {
-  const metadataMap = {}
-  metadataArray.forEach(metadata => {
-    const { key, value, type } = metadata
-    metadataMap[key] = { value, type }
-  })
-  return metadataMap
-}
 const convertPolicyArrayToMap = policyArray => {
   const metadataMap = {}
   policyArray.forEach(policy => {
     const {
       policyName,
       errorRateToOpen,
-      slowRateToOpen,
-      maxRt,
+
       requestVolumeThreshold,
       consecutiveErrorToOpen,
     } = policy
@@ -183,18 +152,15 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
     return result || ({} as any)
   }
   *submit() {
-    const { ducks, selector } = this
+    const { ducks } = this
     const { values } = ducks.form.selector(yield select())
-    const { ruleIndex, data, namespace, service } = selector(yield select())
-    console.log(data)
+
     yield put(ducks.form.creators.setAllTouched(true))
     const firstInvalid = yield select(ducks.form.selectors.firstInvalid)
     if (firstInvalid) {
       return false
     }
     const {
-      service: currentService,
-      namespace: currentNamespace,
       inboundDestinations,
       inboundSources,
       outboundDestinations,
@@ -208,10 +174,7 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
       inboundJsonValue,
       outboundJsonValue,
     } = values
-    const params = {
-      service: currentService,
-      namespace: currentNamespace,
-    } as any
+
     let editItem
     if (ruleType === RuleType.Inbound) {
       editItem =
@@ -259,54 +222,13 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
             }
       return editItem
     }
-    // if (data.id) {
-    //   const version = new Date().getTime().toString();
-    //   const versionResult = yield createServiceCircuitBreakerVersion([
-    //     { ...params, id: data.id, version, name: service },
-    //   ]);
-    //   const releaseParams = {
-    //     service: {
-    //       name: service,
-    //       namespace,
-    //     },
-    //     circuitBreaker: {
-    //       name: service,
-    //       namespace,
-    //       version,
-    //     },
-    //   };
-    //   yield releaseServiceCircuitBreaker([releaseParams]);
-    // } else {
-    //   const createResult = yield createServiceCircuitBreaker([
-    //     { ...params, owners: "Polaris", name: service },
-    //   ]);
-    //   if (createResult.code === 200000) {
-    //     const version = new Date().getTime().toString();
-    //     const versionResult = yield createServiceCircuitBreakerVersion([
-    //       { ...params, id: data.id, version, name: service },
-    //     ]);
-    //     const releaseParams = {
-    //       service: {
-    //         name: service,
-    //         namespace,
-    //       },
-    //       circuitBreaker: {
-    //         name: service,
-    //         namespace,
-    //         version,
-    //       },
-    //     };
-    //     yield releaseServiceCircuitBreaker([releaseParams]);
-    //   }
-    // }
-    router.navigate(`/service-detail?namespace=${currentNamespace}&name=${currentService}&tab=circuitBreaker`)
   }
   *saga() {
-    const { types, selector, creators, ducks } = this
+    const { types, ducks } = this
     yield* super.saga()
     yield takeLatest(types.LOAD, function*(action) {
       const { values, ruleIndex, ruleType, service, namespace, isEdit } = action.payload
-      console.log(values)
+
       const emptyRule = {
         service,
         namespace,
