@@ -87,16 +87,20 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             disabled={options.isModify}
           ></Select>
         </FormField>
-        <FormField field={name} label={'配置文件名'} required message={'可通过/分隔符创建文件夹，强烈建议文件名带上后缀，如：datasource/master.json'}>
+        <FormField
+          field={name}
+          label={'配置文件名'}
+          required
+          message={'可通过/分隔符创建文件夹，强烈建议文件名带上后缀，如：datasource/master.json'}
+        >
           <Input
             field={name}
             disabled={options.isModify}
             maxLength={128}
-            onChange={(val, ctx) => {
-              const suffix = val.substring(val.lastIndexOf(".") + 1);
-              console.log(suffix)
-              FileFormatOptions.forEach((item) => {
-                if (suffix == item.text) {
+            onChange={val => {
+              const suffix = val.substring(val.lastIndexOf('.') + 1)
+              FileFormatOptions.forEach(item => {
+                if (suffix === item.text) {
                   format.setValue(suffix)
                 }
               })

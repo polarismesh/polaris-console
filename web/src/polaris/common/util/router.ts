@@ -1,8 +1,8 @@
-import render, { history } from "@src/index";
+import render, { history } from '@src/index'
 
 export default {
   navigate(url: string) {
-    history.push(url);
-    render();
+    history.push(url)
+    render()
   },
-};
+}

@@ -5,7 +5,7 @@ import { TAB, ComposedId } from './types'
 import InfoDuck from './info/PageDuck'
 import InstanceDuck from './instance/PageDuck'
 import RouteDuck from './route/PageDuck'
-import RateLimitDuck from './limit/PageDuck'
+import AccessLimitDuck from '@src/polaris/administration/accessLimiting/PageDuck'
 import CircuitBreakerDuck from './circuitBreaker/PageDuck'
 
 import { Service } from '../types'
@@ -57,7 +57,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
       [TAB.Info]: InfoDuck,
       [TAB.Instance]: InstanceDuck,
       [TAB.Route]: RouteDuck,
-      [TAB.RateLimit]: RateLimitDuck,
+      [TAB.AccessLimit]: AccessLimitDuck,
       [TAB.CircuitBreaker]: CircuitBreakerDuck,
     }
   }

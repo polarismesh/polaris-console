@@ -1,13 +1,9 @@
 // 对应ducks/Form 原生下拉框
 import * as React from 'react'
 import { FieldAPI } from '../../ducks/Form'
-import {
-  Select as TeaSelect,
-  SelectProps,
-  SelectOptionWithGroup
-} from 'tea-component'
+import { Select as TeaSelect, SelectProps, SelectOptionWithGroup } from 'tea-component'
 
-export interface Item extends SelectOptionWithGroup {}
+export type Item = SelectOptionWithGroup
 type Props = SelectProps & {
   value?: never
   field: FieldAPI<string | number>
@@ -17,20 +13,12 @@ type Props = SelectProps & {
   onChange?: (value: string | number) => void
 }
 function Select(props: Props) {
-  const {
-    field,
-    list,
-    type = 'native',
-    placeholder = '请选择',
-    beforeChange,
-    ...rest
-  } = props
+  const { field, list, type = 'native', placeholder = '请选择', beforeChange, ...rest } = props
 
   const isNumber = typeof field.getValue() === 'number'
 
   // 有些是值为undefined, select会取第一个，想取请选择
-  const isUndefOrNull =
-    field.getValue() === undefined || field.getValue() === null
+  const isUndefOrNull = field.getValue() === undefined || field.getValue() === null
 
   return (
     <TeaSelect
