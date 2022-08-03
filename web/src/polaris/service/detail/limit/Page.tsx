@@ -123,14 +123,14 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
                                 当{amount.validDuration}
                                 内，收到符合条件的请求超过
                                 {amount.maxAmount}个，将会进行
-                                {LIMIT_TYPE_MAP[record.action].text}限流
+                                {LIMIT_TYPE_MAP[record.action]?.text}限流
                               </Text>
                             )
                           })}
                         </FormText>
                       </FormItem>
                       <FormItem label='限流效果'>
-                        <FormText>{LIMIT_TYPE_MAP[!record.action ? LimitType.REJECT : record.action].text}</FormText>
+                        <FormText>{LIMIT_TYPE_MAP[!record.action ? LimitType.REJECT : record.action]?.text}</FormText>
                       </FormItem>
                       <FormItem label='阈值模式'>
                         <FormText>
@@ -138,7 +138,7 @@ export default function RuleLimitPage(props: DuckCmpProps<RuleLimitPageDuck>) {
                             ? '-'
                             : LIMIT_THRESHOLD_MAP[
                                 !record.amountMode ? LimitThresholdMode.GLOBAL_TOTAL : record.amountMode
-                              ].text}
+                              ]?.text}
                         </FormText>
                       </FormItem>
                     </Form>
