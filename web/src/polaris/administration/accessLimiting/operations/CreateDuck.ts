@@ -19,6 +19,7 @@ import { select, put, call } from 'redux-saga/effects'
 import { takeLatest } from 'redux-saga-catch'
 import { delay } from 'redux-saga'
 import router from '@src/polaris/common/util/router'
+import { TAB } from '@src/polaris/service/detail/types'
 
 interface ComposedId {
   id: string
@@ -248,7 +249,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
       yield call(delay, 5)
       if (result.code === 200000) {
         if (namespace) {
-          router.navigate(`/service-detail?name=${service}&namespace=${namespace}`)
+          router.navigate(`/service-detail?name=${service}&namespace=${namespace}&tab=${TAB.AccessLimit}`)
         } else {
           router.navigate(`/accesslimit`)
         }
