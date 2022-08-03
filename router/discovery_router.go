@@ -69,6 +69,8 @@ func DiscoveryRouter(r *gin.Engine, config *bootstrap.Config) {
 	v1.PUT("/:resource/token", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
 	// 修改服务别名
 	v1.PUT("/:resource/alias", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
+	// 激活规则
+	v1.PUT("/:resource/enable", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))
 
 	// 删除命名空间
 	v1.POST("/namespaces/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config, true))

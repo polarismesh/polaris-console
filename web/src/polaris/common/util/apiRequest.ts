@@ -7,6 +7,7 @@ export interface APIRequestOption {
   action: string
   data?: any
   opts?: AxiosRequestConfig
+  noError?: boolean
 }
 export interface ApiResponse {
   code: number
@@ -18,7 +19,7 @@ const handleTokenNotExist = () => {
   userLogout()
 }
 export async function apiRequest<T>(options: APIRequestOption) {
-  const { action, data = {}, opts } = options
+  const { action, data = {}, opts, noError = false } = options
   try {
     tips.showLoading({})
     const res = (await axios
@@ -29,7 +30,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response.status === TokenNotExistCode) {
           handleTokenNotExist()
           return
@@ -46,7 +47,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
         }
       })) as AxiosResponse<T & ApiResponse>
 
-    if (res.data.code > 200000) {
+    if (res.data.code > 200000 && !noError) {
       throw res.data.info
     }
     return res.data
@@ -57,7 +58,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
   }
 }
 export async function getApiRequest<T>(options: APIRequestOption) {
-  const { action, data = {}, opts } = options
+  const { action, data = {}, opts, noError = false } = options
   try {
     tips.showLoading({})
     const res = (await axios
@@ -69,7 +70,7 @@ export async function getApiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response.status === TokenNotExistCode) {
           handleTokenNotExist()
           return
@@ -85,7 +86,7 @@ export async function getApiRequest<T>(options: APIRequestOption) {
           })
         }
       })) as AxiosResponse<T & ApiResponse>
-    if (res.data.code > 200000) {
+    if (res.data.code > 200000 && !noError) {
       throw res.data.info
     }
     return res.data
@@ -96,7 +97,7 @@ export async function getApiRequest<T>(options: APIRequestOption) {
   }
 }
 export async function putApiRequest<T>(options: APIRequestOption) {
-  const { action, data = {}, opts } = options
+  const { action, data = {}, opts, noError = false } = options
   try {
     tips.showLoading({})
     const res = (await axios
@@ -107,7 +108,7 @@ export async function putApiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response.status === TokenNotExistCode) {
           handleTokenNotExist()
           return
@@ -123,7 +124,7 @@ export async function putApiRequest<T>(options: APIRequestOption) {
           })
         }
       })) as AxiosResponse<T & ApiResponse>
-    if (res.data.code > 200000) {
+    if (res.data.code > 200000 && !noError) {
       throw res.data.info
     }
     return res.data
@@ -134,7 +135,7 @@ export async function putApiRequest<T>(options: APIRequestOption) {
   }
 }
 export async function deleteApiRequest<T>(options: APIRequestOption) {
-  const { action, data = {}, opts } = options
+  const { action, data = {}, opts, noError = false } = options
   try {
     tips.showLoading({})
     const res = (await axios
@@ -146,7 +147,7 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response.status === TokenNotExistCode) {
           handleTokenNotExist()
           return
@@ -162,7 +163,7 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
           })
         }
       })) as AxiosResponse<T & ApiResponse>
-    if (res.data.code > 200000) {
+    if (res.data.code > 200000 && !noError) {
       throw res.data.info
     }
     return res.data
@@ -190,7 +191,7 @@ const DefaultOptions = {
  * @param listKey 返回结果中列表的键名称 默认list
  */
 export function getAllList(fetchFun: (params?: any) => Promise<any>, options: FetchAllOptions = {}) {
-  return async function (params: any) {
+  return async function(params: any) {
     const fetchOptions = { ...DefaultOptions, ...options }
     let allList = [],
       pageNo = 0

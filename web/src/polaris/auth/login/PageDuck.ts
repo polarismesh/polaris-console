@@ -17,7 +17,7 @@ export default abstract class CreateDuck extends Page {
     return `/#/login`
   }
   get preEffects() {
-    return [call([this, this.ready], this)]
+    return [call([this, this.ready], this), call([this, this.checkLicense], this)]
   }
   get quickTypes() {
     enum Types {

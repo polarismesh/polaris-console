@@ -227,7 +227,10 @@ export default class ServicePageDuck extends GridPageDuck {
       offset: (page - 1) * count,
       limit: count,
     })
-    result.list = result.list.map(item => ({
+    if (!result.list) {
+      return { totalCount: 0, list: [] }
+    }
+    result.list = result?.list.map(item => ({
       ...item,
       //太怪了，这里如果没有disable字段，代表是启用状态，我晕了
       disable: item.disable === true ? true : false,
