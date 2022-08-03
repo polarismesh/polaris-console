@@ -76,8 +76,8 @@ module.exports = {
     new MonacoWebpackPlugin({
       // 所需语言支持
       languages: ["json", "yaml", "html", "xml", "ini"],
-      // targetName 业务名
-      filename: "polaris-[name].[contenthash:10].js",
+
+      filename: "polaris-console-[name]-[contenthash:10].js",
     }),
     new HtmlWebpackPlugin({
       filename: "index.html",
