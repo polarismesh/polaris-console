@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserJSPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -47,6 +48,27 @@ module.exports = {
           name: "./images/[name].[hash:8].[ext]",
         },
       },
+      {
+        test: /\.(eot|ttf|woff|woff2)$/,
+        use: [
+          {
+            loader: "url-loader",
+          },
+        ],
+      },
+      {
+        test: /\.svg$/,
+        use: [
+          "url-loader",
+          "svg-transform-loader",
+          {
+            loader: "svgo-loader",
+            options: {
+              plugins: [{ removeTitle: true }, { convertStyleToAttrs: true }],
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {
@@ -64,14 +86,20 @@ module.exports = {
     ],
   },
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: `./static/css/polaris-console.css`,
+    }),
+    new MonacoWebpackPlugin({
+      // 所需语言支持
+      languages: ["json", "yaml"],
+      // targetName 业务名
+      filename: `static/js/[name].js`,
+    }),
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: "./src/assets/index.html",
       minify: !isDev,
       publicPath: "/",
-    }),
-    new MiniCssExtractPlugin({
-      filename: `./static/css/polaris-console.css`,
     }),
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),

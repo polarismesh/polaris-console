@@ -202,3 +202,27 @@ export async function describeLastReleaseConfigFile(params: DescribeLastReleaseC
   })
   return res
 }
+
+export interface ConfigFileTemplate {
+  id: string
+  name: string
+  content: string
+  format: string
+  comment: string
+  createTime: string
+  createBy: string
+  modifyTime: string
+  modifyBy: string
+}
+export type DescribeConfigFileTemplatesParams = {}
+export interface DescribeConfigFileTemplatesResult {
+  configFileTemplates: ConfigFileTemplate
+}
+
+export async function describeConfigFileTemplates(params: DescribeConfigFileTemplatesParams) {
+  const res = await getApiRequest<DescribeConfigFileTemplatesResult>({
+    action: 'config/v1/configfiletemplates',
+    data: params,
+  })
+  return res
+}

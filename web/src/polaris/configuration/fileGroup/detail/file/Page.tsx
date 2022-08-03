@@ -47,6 +47,7 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   showReleaseHistory: v => dispatch(creators.showReleaseHistory(v)),
   select: v => dispatch(creators.select(v)),
   cancel: () => dispatch(creators.cancel()),
+  getTemplate: v => dispatch(creators.getTemplate(v)),
 }))
 
 insertCSS(
@@ -111,43 +112,45 @@ export default function Page(props: DuckCmpProps<Duck>) {
                 onChange={handlers.setSearchKeyword}
                 placeholder={'请输入文件名搜索'}
                 onSearch={handlers.searchPath}
-                style={{ width: '420px' }}
+                style={{ width: '100%' }}
               />
-              <Tree
-                activable
-                onActive={(activeIds, { nodeId }) => {
-                  // if (!fileMap[nodeId]) {
-                  //   const index = expandedIds.findIndex(item => item === nodeId)
-                  //   if (index === -1) {
-                  //     expandedIds.push(nodeId)
-                  //     handlers.setExpandedIds([...expandedIds])
-                  //   } else {
-                  //     const newArray = [...expandedIds]
-                  //     newArray.splice(index, 1)
-                  //     handlers.setExpandedIds(newArray)
-                  //   }
-                  // } else {
-                  //   handlers.clickFileItem(nodeId)
-                  // }
-                  handlers.clickFileItem(nodeId)
-                }}
-                activeIds={currentNode ? [currentNode?.name] : []}
-                expandedIds={expandedIds}
-                onExpand={expandedIds => {
-                  handlers.setExpandedIds(expandedIds)
-                }}
-                fullExpandable
-                height={900}
-                style={{ width: '500px' }}
-                // onSelect={v => {
-                //   handlers.select(v)
-                // }}
-                // selectable
-                // selectedIds={selection}
-                // selectValueMode={'onlyLeaf'}
-              >
-                {renderTree(props, fileTree, '', '')}
-              </Tree>
+              <div style={{ height: 910, overflowY: 'scroll' }}>
+                <Tree
+                  activable
+                  onActive={(activeIds, { nodeId }) => {
+                    // if (!fileMap[nodeId]) {
+                    //   const index = expandedIds.findIndex(item => item === nodeId)
+                    //   if (index === -1) {
+                    //     expandedIds.push(nodeId)
+                    //     handlers.setExpandedIds([...expandedIds])
+                    //   } else {
+                    //     const newArray = [...expandedIds]
+                    //     newArray.splice(index, 1)
+                    //     handlers.setExpandedIds(newArray)
+                    //   }
+                    // } else {
+                    //   handlers.clickFileItem(nodeId)
+                    // }
+                    handlers.clickFileItem(nodeId)
+                  }}
+                  activeIds={currentNode ? [currentNode?.name] : []}
+                  expandedIds={expandedIds}
+                  onExpand={expandedIds => {
+                    handlers.setExpandedIds(expandedIds)
+                  }}
+                  fullExpandable
+                  height={900}
+                  style={{ width: '500px' }}
+                  // onSelect={v => {
+                  //   handlers.select(v)
+                  // }}
+                  // selectable
+                  // selectedIds={selection}
+                  // selectValueMode={'onlyLeaf'}
+                >
+                  {renderTree(props, fileTree, '', '')}
+                </Tree>
+              </div>
             </div>
             <div style={{ width: 'calc(100% - 540px)', margin: '15px 20px' }}>
               {currentNode?.name &&
@@ -230,10 +233,16 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <Button type={'primary'} disabled={editing} onClick={() => handlers.releaseCurrentFile()}>
                               发布
                             </Button>
+
                             {editing ? (
-                              <Button type={'weak'} onClick={() => handlers.save()}>
-                                保存
-                              </Button>
+                              <>
+                                <Button type={'weak'} onClick={() => handlers.getTemplate(currentNode)}>
+                                  应用模板
+                                </Button>
+                                <Button type={'weak'} onClick={() => handlers.save()}>
+                                  保存
+                                </Button>
+                              </>
                             ) : (
                               <Button type={'weak'} onClick={() => handlers.editCurrentNode()}>
                                 编辑
