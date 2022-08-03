@@ -3,12 +3,29 @@ import { delay, Effect } from 'redux-saga'
 import { DuckMap, reduceFromPayload, createToPayload } from 'saga-duck'
 import { takeEvery, takeLatest, runAndTakeLatest } from 'redux-saga-catch'
 import RouteDuck, { Param } from '../ducks/Route'
-import { createElement, ReactElement, ReactChild } from 'react'
-import { Alert } from 'tea-component'
-import { PolarisTokenKey, getUin } from '../util/common'
+import { createElement, ReactElement } from 'react'
+import { Alert, notification } from 'tea-component'
+import { PolarisTokenKey, userLogout } from '../util/common'
 import router from '../util/router'
-import { checkAuth, describeGovernanceUserToken } from '@src/polaris/auth/model'
 import { once, ttl } from '../helpers/cacheable'
+import { describeLicenseStatus, LicenseStatus } from '../util/license'
+import buildConfig from '@src/buildConfig'
+import insertCSS from '../helpers/insertCSS'
+import React from 'react'
+
+insertCSS(
+  `license-notification`,
+  `
+  .license-notification-hide-btn .tea-icon-close{
+    display: none;
+  }
+  .tea-notification-wrap{
+    z-index: 999;
+  }
+`,
+)
+
+const cacheDescribeLicenseStatus = once(describeLicenseStatus, ttl(30 * 60 * 1000))
 
 type SELECTOR<T> = (globalState: any) => T
 type CREATOR<T> = (value: T) => any
@@ -281,7 +298,7 @@ get preSagas(){
    * ```
    */
   get preEffects(): Effect[] {
-    return [call([this, this.ready], this), call([this, this.checkUserLogin], this)]
+    return [call([this, this.ready], this), call([this, this.checkLicense], this), call([this, this.checkUserLogin])]
   }
   /** preEffects类型定义 */
   get PreEffects(): Effect[] {
@@ -332,6 +349,53 @@ get preSagas(){
   *checkUserLogin() {
     if (!window.localStorage.getItem(PolarisTokenKey)) {
       router.navigate('/login')
+    } else {
+      return true
+    }
+  }
+  *checkLicense() {
+    if (buildConfig.license) {
+      const licenseResult = yield cacheDescribeLicenseStatus({})
+      switch (licenseResult.code) {
+        case LicenseStatus.LICENSE_OK:
+          return true
+        case LicenseStatus.LICENSE_LEFT_30_DAY:
+          if (!window.sessionStorage.getItem(`license_status_closed${licenseResult.code}`)) {
+            notification.warning({
+              title: '请注意License即将到期',
+              description: licenseResult.warnMsg,
+              duration: 0,
+              unique: true,
+              onClose: () => {
+                window.sessionStorage.setItem(`license_status_closed${licenseResult.code}`, 'true')
+              },
+            })
+          }
+          return true
+        case LicenseStatus.LICENSE_EXPIRE_30_DAY:
+          notification.error({
+            title: '请注意License已过期',
+            description: licenseResult.warnMsg,
+            duration: 0,
+            unique: true,
+            className: 'license-notification-hide-btn',
+          })
+          return true
+        case LicenseStatus.LICENSE_FORBIDDEN:
+          if (window.location.hash.indexOf('login') === -1) {
+            userLogout()
+          }
+          notification.error({
+            title: 'License已超过最大过期时间',
+            description: licenseResult.warnMsg,
+            duration: 0,
+            unique: true,
+            className: 'license-notification-hide-btn',
+          })
+          throw LicenseStatus.LICENSE_FORBIDDEN
+        default:
+          return true
+      }
     } else {
       return true
     }

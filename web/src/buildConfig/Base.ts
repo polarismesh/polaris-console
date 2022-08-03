@@ -23,4 +23,7 @@ export default class BuildConfig {
   get useCmdbDetail() {
     return true
   }
+  get license() {
+    return false
+  }
 }
