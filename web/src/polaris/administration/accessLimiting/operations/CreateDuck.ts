@@ -289,9 +289,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
                     operator: o.value.type,
                   }))
                 : [],
-            regex_combine: item.regexCombine,
-            max_queue_delay: item.maxQueueDelay,
-            failover: item.failover,
+            // failover: item.failover,
           }))
         ruleDetailInfo = result.list[0]
         yield put(ducks.form.creators.setValues(ruleDetailInfo))

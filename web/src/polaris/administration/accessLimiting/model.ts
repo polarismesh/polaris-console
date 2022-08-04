@@ -75,11 +75,11 @@ export interface RateLimit {
   etime: string // 启用时间
   revision: string
   method: LimitMethodConfig //接口定义
-  regexCombine: boolean
+  regex_combine: boolean
   failover: LimitFailover
-  maxQueueDelay: number
+  max_queue_delay: number
+  resource: string // 限流资源
   // priority: number // 限流规则优先级
-  // resource: string // 限流资源
   // labels: Record<string, MetadataItem>
 }
 
