@@ -15,6 +15,7 @@ import {
   InputAdornment,
   H6,
   Input as TeaInput,
+  AutoComplete,
 } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
@@ -196,6 +197,8 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
     serviceField.setValue(composedId?.service)
   }
 
+  const [serviceInputValue, setServiceInputValue] = React.useState('')
+
   return (
     <DetailPage
       store={store}
@@ -237,6 +240,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                         onChange={value => {
                           namespaceField.setValue(value)
                           serviceField.setValue('')
+                          setServiceInputValue('')
                         }}
                         searchable
                         type={'simulate'}
@@ -248,24 +252,35 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                       />
                     </FormField>
                     <FormField field={serviceField} label='服务名称' required>
-                      <Select
-                        value={serviceField.getValue()}
+                      <AutoComplete
                         options={data?.serviceList.filter(o => {
                           if (namespaceField.getValue()) {
-                            return o.namespace === namespaceField.getValue()
+                            return o.text.includes(serviceInputValue) && o.namespace === namespaceField.getValue()
                           } else {
-                            return data?.serviceList
+                            return o.text.includes(serviceInputValue)
                           }
                         })}
-                        onChange={value => serviceField.setValue(value)}
-                        searchable
-                        type={'simulate'}
-                        appearance={'button'}
-                        matchButtonWidth
-                        placeholder='请选择服务名'
-                        size='m'
-                        disabled={!!composedId?.service}
-                      ></Select>
+                        tips='没有匹配的服务名称'
+                        onChange={value => {
+                          const option = data?.serviceList.find(opt => opt.value === value)
+                          setServiceInputValue(option.text)
+                          serviceField.setValue(option.text)
+                        }}
+                      >
+                        {ref => (
+                          <TeaInput
+                            ref={ref}
+                            value={
+                              !!composedId?.id || !!composedId?.service ? serviceField.getValue() : serviceInputValue
+                            }
+                            onChange={value => {
+                              setServiceInputValue(value)
+                              serviceField.setValue(value)
+                            }}
+                            disabled={!!composedId?.service}
+                          />
+                        )}
+                      </AutoComplete>
                     </FormField>
                     <FormField label='接口名称' field={methodField} align='middle'>
                       <Input
