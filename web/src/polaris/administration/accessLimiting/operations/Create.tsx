@@ -15,6 +15,7 @@ import {
   InputAdornment,
   H6,
   Input as TeaInput,
+  AutoComplete,
 } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
@@ -38,6 +39,7 @@ import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { FieldAPI } from '@src/polaris/common/ducks/Form'
 import { LimitArgumentsConfigForFormFilling } from '../model'
 import router from '@src/polaris/common/util/router'
+import { TAB } from '@src/polaris/service/detail/types'
 
 insertCSS(
   'create-rule-form',
@@ -188,13 +190,17 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
     ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`
     : `/accesslimit`
 
-  if (composedId?.namespace) {
-    namespaceField.setValue(composedId?.namespace)
-  }
+  React.useEffect(() => {
+    if (composedId?.namespace) {
+      namespaceField.setValue(composedId?.namespace)
+    }
 
-  if (composedId?.service) {
-    serviceField.setValue(composedId?.service)
-  }
+    if (composedId?.service) {
+      serviceField.setValue(composedId?.service)
+    }
+  }, [composedId?.namespace, composedId?.service])
+
+  const [serviceInputValue, setServiceInputValue] = React.useState('')
 
   return (
     <DetailPage
@@ -237,6 +243,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                         onChange={value => {
                           namespaceField.setValue(value)
                           serviceField.setValue('')
+                          setServiceInputValue('')
                         }}
                         searchable
                         type={'simulate'}
@@ -248,24 +255,33 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                       />
                     </FormField>
                     <FormField field={serviceField} label='服务名称' required>
-                      <Select
-                        value={serviceField.getValue()}
+                      <AutoComplete
                         options={data?.serviceList.filter(o => {
                           if (namespaceField.getValue()) {
-                            return o.namespace === namespaceField.getValue()
+                            return o.text.includes(serviceInputValue) && o.namespace === namespaceField.getValue()
                           } else {
-                            return data?.serviceList
+                            return o.text.includes(serviceInputValue)
                           }
                         })}
-                        onChange={value => serviceField.setValue(value)}
-                        searchable
-                        type={'simulate'}
-                        appearance={'button'}
-                        matchButtonWidth
-                        placeholder='请选择服务名'
-                        size='m'
-                        disabled={!!composedId?.service}
-                      ></Select>
+                        tips='没有匹配的服务名称'
+                        onChange={value => {
+                          const option = data?.serviceList.find(opt => opt.value === value)
+                          setServiceInputValue(option.value)
+                          serviceField.setValue(option.value)
+                        }}
+                      >
+                        {ref => (
+                          <TeaInput
+                            ref={ref}
+                            value={serviceField.getValue()}
+                            onChange={value => {
+                              setServiceInputValue(value)
+                              serviceField.setValue(value)
+                            }}
+                            disabled={!!composedId?.service}
+                          />
+                        )}
+                      </AutoComplete>
                     </FormField>
                     <FormField label='接口名称' field={methodField} align='middle'>
                       <Input
@@ -583,7 +599,9 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
             <Button
               onClick={() => {
                 if (composedId?.namespace) {
-                  router.navigate(`/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`)
+                  router.navigate(
+                    `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=${TAB.AccessLimit}`,
+                  )
                 } else {
                   router.navigate(`/accesslimit`)
                 }
