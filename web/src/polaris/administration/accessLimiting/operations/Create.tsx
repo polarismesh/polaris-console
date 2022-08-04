@@ -39,6 +39,7 @@ import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { FieldAPI } from '@src/polaris/common/ducks/Form'
 import { LimitArgumentsConfigForFormFilling } from '../model'
 import router from '@src/polaris/common/util/router'
+import { TAB } from '@src/polaris/service/detail/types'
 
 insertCSS(
   'create-rule-form',
@@ -263,16 +264,14 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                         tips='没有匹配的服务名称'
                         onChange={value => {
                           const option = data?.serviceList.find(opt => opt.value === value)
-                          setServiceInputValue(option.text)
-                          serviceField.setValue(option.text)
+                          setServiceInputValue(option.value)
+                          serviceField.setValue(option.value)
                         }}
                       >
                         {ref => (
                           <TeaInput
                             ref={ref}
-                            value={
-                              !!composedId?.id || !!composedId?.service ? serviceField.getValue() : serviceInputValue
-                            }
+                            value={serviceField.getValue()}
                             onChange={value => {
                               setServiceInputValue(value)
                               serviceField.setValue(value)
@@ -598,7 +597,9 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
             <Button
               onClick={() => {
                 if (composedId?.namespace) {
-                  router.navigate(`/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`)
+                  router.navigate(
+                    `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=${TAB.AccessLimit}`,
+                  )
                 } else {
                   router.navigate(`/accesslimit`)
                 }
