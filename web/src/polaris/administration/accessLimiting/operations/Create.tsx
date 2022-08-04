@@ -190,13 +190,15 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
     ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`
     : `/accesslimit`
 
-  if (composedId?.namespace) {
-    namespaceField.setValue(composedId?.namespace)
-  }
+  React.useEffect(() => {
+    if (composedId?.namespace) {
+      namespaceField.setValue(composedId?.namespace)
+    }
 
-  if (composedId?.service) {
-    serviceField.setValue(composedId?.service)
-  }
+    if (composedId?.service) {
+      serviceField.setValue(composedId?.service)
+    }
+  }, [composedId?.namespace, composedId?.service])
 
   const [serviceInputValue, setServiceInputValue] = React.useState('')
 
