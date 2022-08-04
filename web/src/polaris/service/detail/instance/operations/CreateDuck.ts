@@ -38,6 +38,9 @@ const generateParams = (params) => {
     ttl,
     service,
     namespace,
+    location_region,
+    location_zone,
+    location_campus,
   } = params;
   const metadataObject = {};
   const tags = metadata.split("\n");
@@ -74,6 +77,11 @@ const generateParams = (params) => {
           : undefined,
         service,
         namespace,
+        location: {
+          region: location_region,
+          zone: location_zone,
+          campus: location_campus,
+        }
       });
     });
   });
@@ -95,6 +103,9 @@ const generateModifyParams = (params) => {
     service,
     namespace,
     instance,
+    location_region,
+    location_zone,
+    location_campus,
   } = params;
   const metadataObject = {};
   const tags = metadata.split("\n");
@@ -122,6 +133,11 @@ const generateModifyParams = (params) => {
           : undefined,
         service,
         namespace,
+        location: {
+          region: location_region,
+          zone: location_zone,
+          campus: location_campus,
+        },
         id: instance.id,
       },
     ] as ModifyInstanceParams[];
@@ -143,6 +159,9 @@ const generateBatchModifyParams = (params) => {
       id,
       healthCheck,
       enableHealthCheck,
+      location_region,
+      location_zone,
+      location_campus,
     } = instance;
     return {
       weight,
@@ -156,6 +175,11 @@ const generateBatchModifyParams = (params) => {
       service,
       namespace,
       id,
+      location: {
+        location_region,
+        location_zone,
+        location_campus,
+      },
       [params.batchEditType]: modifyPart,
     };
   });
@@ -247,6 +271,9 @@ export interface Values {
   enableHealthCheck: boolean;
   healthCheckMethod: string;
   ttl: number;
+  location_region: string;
+  location_zone: string;
+  location_campus: string;
 }
 class CreateForm extends Form {
   Values: Values;

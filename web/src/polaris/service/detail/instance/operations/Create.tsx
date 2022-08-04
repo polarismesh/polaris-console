@@ -16,11 +16,32 @@ import Input from "@src/polaris/common/duckComponents/form/Input";
 import Dialog from "@src/polaris/common/duckComponents/Dialog";
 import Switch from "@src/polaris/common/duckComponents/form/Switch";
 import InputNumber from "@src/polaris/common/duckComponents/form/InputNumber";
+import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import {
   HEALTH_STATUS_OPTIONS,
   HEALTH_CHECK_METHOD_OPTIONS,
   BATCH_EDIT_TYPE,
 } from "../types";
+
+insertCSS('service-detail-edit-instance', `
+.service-instance-location .tea-form__controls .tea-form__item {
+  display: inline-block;
+}
+.service-instance-location .tea-form__controls--text .tea-form__label {
+  padding: 0px;
+}
+
+.service-instance-location .tea-form__controls--text .tea-form__controls {
+  padding: 0px;
+}
+
+.service-instance-location .tea-form__item {
+  margin-right: 16px;
+}
+
+.service-instance-location input.tea-input {
+  width: 150px;
+}`);
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props;
@@ -64,6 +85,9 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     enableHealthCheck,
     healthCheckMethod,
     ttl,
+    location_region,
+    location_zone,
+    location_campus,
   } = formApi.getFields([
     "host",
     "port",
@@ -76,6 +100,9 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     "enableHealthCheck",
     "healthCheckMethod",
     "ttl",
+    "location_region",
+    "location_zone",
+    "location_campus",
   ]);
   const { isModify, batchEditType } = selectors.options(store);
   if (batchEditType) {
@@ -183,6 +210,38 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             multiline
           />
         </FormField>
+        <FormItem
+          label="地域信息"
+          className="service-instance-location"
+        >
+          <FormField
+            field={location_region}
+          >
+            <Input
+              field={location_region}
+              placeholder="请输入 Region"
+              size="m"
+            />
+          </FormField>
+          <FormField
+            field={location_zone}
+          >
+            <Input
+              field={location_zone}
+              placeholder="请输入 Zone"
+              size="m"
+            />
+          </FormField>
+          <FormField
+            field={location_campus}
+          >
+            <Input
+              field={location_campus}
+              placeholder="请输入 Campus"
+              size="m"
+            />
+          </FormField>
+        </FormItem>
         <FormField field={healthy} label={"健康状态"}>
           <Switch field={healthy} />
         </FormField>
