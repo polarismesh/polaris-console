@@ -10,6 +10,9 @@ import {
   Bubble,
   FormItem,
   FormText,
+  Table,
+  Button,
+  FormControl,
 } from "tea-component";
 import FormField from "@src/polaris/common/duckComponents/form/Field";
 import Input from "@src/polaris/common/duckComponents/form/Input";
@@ -188,8 +191,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         <FormField field={version} label={"版本"}>
           <Input field={version} size={"l"} />
         </FormField>
-        <FormField
-          field={metadata}
+        <FormItem
           label={
             <>
               <Text>实例标签</Text>
@@ -201,15 +203,87 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             </>
           }
         >
-          <Input
-            field={metadata}
-            placeholder={
-              "每个key最长不超过128个字符，每个value最长不超过4096个字符\n标签数量不能超过64个"
+          <Table
+            verticalTop
+            records={[...metadata.asArray()]}
+            columns={[
+              {
+                key: 'tagName',
+                header: '标签名',
+                width: '150px',
+                render: item => {
+                  const { key } = item.getFields(['key'])
+                  const validate = key.getTouched() && key.getError()
+                  return (
+                    <>
+                      <FormControl
+                        status={validate ? 'error' : null}
+                        message={validate ? key.getError() : ''}
+                        showStatusIcon={false}
+                        style={{ padding: 0, display: 'block' }}
+                      >
+                        <Input size='m' field={key} />
+                      </FormControl>
+                    </>
+                  )
+                },
+              },
+              {
+                key: 'tagValue',
+                header: '标签值',
+                render: item => {
+                  const { value } = item.getFields(['value'])
+                  const validate = value.getTouched() && value.getError()
+                  return (
+                    <>
+                      <FormControl
+                        status={validate ? 'error' : null}
+                        message={validate ? value.getError() : ''}
+                        showStatusIcon={false}
+                        style={{ padding: 0, display: 'block' }}
+                      >
+                        <Input size='m' field={value} />
+                      </FormControl>
+                    </>
+                  )
+                },
+              },
+              {
+                key: 'close',
+                header: '删除',
+                width: '80px',
+                render: (item, rowKey, recordIndex) => {
+                  const index = Number(recordIndex)
+                  const length = [...metadata.asArray()].length
+                  return (
+                    <>
+                      <Button
+                        disabled={length < 2}
+                        title={'删除'}
+                        icon={'close'}
+                        onClick={() => metadata.asArray().remove(index)}
+                      />
+                    </>
+                  )
+                },
+              },
+            ]}
+            bordered
+            bottomTip={
+              <Button
+                type='link'
+                onClick={() => {
+                  metadata.asArray().push({
+                    key: '',
+                    value: '',
+                  })
+                }}
+              >
+                新增
+              </Button>
             }
-            size={"l"}
-            multiline
           />
-        </FormField>
+        </FormItem>
         <FormItem
           label="地域信息"
           className="service-instance-location"
