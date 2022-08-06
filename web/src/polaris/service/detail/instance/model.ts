@@ -63,6 +63,11 @@ export interface CreateInstanceParams {
   service: string;
   version: string;
   weight: number;
+  location: {
+    region: string
+    zone: string
+    campus: string
+  }
 }
 
 export interface ModifyInstanceParams {
@@ -76,6 +81,11 @@ export interface ModifyInstanceParams {
   service: string;
   version: string;
   weight: number;
+  location: {
+    region: string
+    zone: string
+    campus: string
+  }
   id: string;
 }
 export interface DeleteInstancesParams {
