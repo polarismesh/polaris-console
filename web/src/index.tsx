@@ -1,5 +1,7 @@
 // 导入样式
 import 'tea-component/dist/tea.css'
+// 全局自定义样式
+import './assets/css/global.css'
 import { createHashHistory } from 'history'
 
 export const history = createHashHistory()
