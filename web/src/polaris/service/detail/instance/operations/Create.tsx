@@ -196,7 +196,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             <>
               <Text>实例标签</Text>
               <Bubble
-                content={"实例标签可用于标识实例的用处、特征，格式为key:value"}
+                content={"实例标签可用于标识实例的用处、特征, 标签数量不能超过64"}
               >
                 <Icon type={"info"}></Icon>
               </Bubble>
@@ -222,7 +222,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                         showStatusIcon={false}
                         style={{ padding: 0, display: 'block' }}
                       >
-                        <Input size='m' field={key} />
+                        <Input size='m' field={key} placeholder="key 最长不超过128个字符" />
                       </FormControl>
                     </>
                   )
@@ -242,7 +242,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                         showStatusIcon={false}
                         style={{ padding: 0, display: 'block' }}
                       >
-                        <Input size='m' field={value} />
+                        <Input size='m' field={value} placeholder="value 最长不超过4096个字符" />
                       </FormControl>
                     </>
                   )
