@@ -10,17 +10,41 @@ import {
   Bubble,
   FormItem,
   FormText,
+  Table,
+  Button,
+  FormControl,
 } from "tea-component";
 import FormField from "@src/polaris/common/duckComponents/form/Field";
 import Input from "@src/polaris/common/duckComponents/form/Input";
 import Dialog from "@src/polaris/common/duckComponents/Dialog";
 import Switch from "@src/polaris/common/duckComponents/form/Switch";
 import InputNumber from "@src/polaris/common/duckComponents/form/InputNumber";
+import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import {
   HEALTH_STATUS_OPTIONS,
   HEALTH_CHECK_METHOD_OPTIONS,
   BATCH_EDIT_TYPE,
 } from "../types";
+
+insertCSS('service-detail-edit-instance', `
+.service-instance-location .tea-form__controls .tea-form__item {
+  display: inline-block;
+}
+.service-instance-location .tea-form__controls--text .tea-form__label {
+  padding: 0px;
+}
+
+.service-instance-location .tea-form__controls--text .tea-form__controls {
+  padding: 0px;
+}
+
+.service-instance-location .tea-form__item {
+  margin-right: 16px;
+}
+
+.service-instance-location input.tea-input {
+  width: 150px;
+}`);
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props;
@@ -64,6 +88,9 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     enableHealthCheck,
     healthCheckMethod,
     ttl,
+    location_region,
+    location_zone,
+    location_campus,
   } = formApi.getFields([
     "host",
     "port",
@@ -76,6 +103,9 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     "enableHealthCheck",
     "healthCheckMethod",
     "ttl",
+    "location_region",
+    "location_zone",
+    "location_campus",
   ]);
   const { isModify, batchEditType } = selectors.options(store);
   if (batchEditType) {
@@ -161,28 +191,131 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         <FormField field={version} label={"版本"}>
           <Input field={version} size={"l"} />
         </FormField>
-        <FormField
-          field={metadata}
+        <FormItem
           label={
             <>
               <Text>实例标签</Text>
               <Bubble
-                content={"实例标签可用于标识实例的用处、特征，格式为key:value"}
+                content={"实例标签可用于标识实例的用处、特征, 标签数量不能超过64"}
               >
                 <Icon type={"info"}></Icon>
               </Bubble>
             </>
           }
         >
-          <Input
-            field={metadata}
-            placeholder={
-              "每个key最长不超过128个字符，每个value最长不超过4096个字符\n标签数量不能超过64个"
+          <Table
+            verticalTop
+            records={[...metadata.asArray()]}
+            columns={[
+              {
+                key: 'tagName',
+                header: '标签名',
+                width: '150px',
+                render: item => {
+                  const { key } = item.getFields(['key'])
+                  const validate = key.getTouched() && key.getError()
+                  return (
+                    <>
+                      <FormControl
+                        status={validate ? 'error' : null}
+                        message={validate ? key.getError() : ''}
+                        showStatusIcon={false}
+                        style={{ padding: 0, display: 'block' }}
+                      >
+                        <Input size='m' field={key} placeholder="key 最长不超过128个字符" />
+                      </FormControl>
+                    </>
+                  )
+                },
+              },
+              {
+                key: 'tagValue',
+                header: '标签值',
+                render: item => {
+                  const { value } = item.getFields(['value'])
+                  const validate = value.getTouched() && value.getError()
+                  return (
+                    <>
+                      <FormControl
+                        status={validate ? 'error' : null}
+                        message={validate ? value.getError() : ''}
+                        showStatusIcon={false}
+                        style={{ padding: 0, display: 'block' }}
+                      >
+                        <Input size='m' field={value} placeholder="value 最长不超过4096个字符" />
+                      </FormControl>
+                    </>
+                  )
+                },
+              },
+              {
+                key: 'close',
+                header: '删除',
+                width: '80px',
+                render: (item, rowKey, recordIndex) => {
+                  const index = Number(recordIndex)
+                  const length = [...metadata.asArray()].length
+                  return (
+                    <>
+                      <Button
+                        disabled={length < 2}
+                        title={'删除'}
+                        icon={'close'}
+                        onClick={() => metadata.asArray().remove(index)}
+                      />
+                    </>
+                  )
+                },
+              },
+            ]}
+            bordered
+            bottomTip={
+              <Button
+                type='link'
+                onClick={() => {
+                  metadata.asArray().push({
+                    key: '',
+                    value: '',
+                  })
+                }}
+              >
+                新增
+              </Button>
             }
-            size={"l"}
-            multiline
           />
-        </FormField>
+        </FormItem>
+        <FormItem
+          label="地域信息"
+          className="service-instance-location"
+        >
+          <FormField
+            field={location_region}
+          >
+            <Input
+              field={location_region}
+              placeholder="请输入 Region"
+              size="m"
+            />
+          </FormField>
+          <FormField
+            field={location_zone}
+          >
+            <Input
+              field={location_zone}
+              placeholder="请输入 Zone"
+              size="m"
+            />
+          </FormField>
+          <FormField
+            field={location_campus}
+          >
+            <Input
+              field={location_campus}
+              placeholder="请输入 Campus"
+              size="m"
+            />
+          </FormField>
+        </FormItem>
         <FormField field={healthy} label={"健康状态"}>
           <Switch field={healthy} />
         </FormField>
