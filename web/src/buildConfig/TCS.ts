@@ -25,6 +25,6 @@ export default class BuildConfig extends BaseConfig {
     return false
   }
   get license() {
-    return false
+    return true
   }
 }
