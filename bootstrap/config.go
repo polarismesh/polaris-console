@@ -85,6 +85,8 @@ type WebServer struct {
 	MonitorURL string `yaml:"monitorURL"`
 	ConfigURL  string `yaml:"configURL"`
 	WebPath    string `yaml:"webPath"`
+	JwtKey     string `yaml:"jwtKey"`
+	JwtExpired int    `yaml:"jwtExpired"`
 }
 
 // LoadConfig 加载配置文件
@@ -104,6 +106,8 @@ func LoadConfig(filePath string) (*Config, error) {
 	}
 
 	config := &Config{}
+	config.WebServer.JwtExpired = 1800 // 默认30分钟
+	config.WebServer.JwtKey = "polarismesh@2021"
 	err = yaml.NewDecoder(file).Decode(config)
 	if err != nil {
 		fmt.Printf("[ERROR] %v\n", err)

@@ -18,11 +18,19 @@
 package handlers
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
+
 	"github.com/polarismesh/polaris-console/bootstrap"
 	"github.com/polarismesh/polaris-console/common/log"
 )
@@ -56,7 +64,37 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 			req.URL.Host = polarisServer.Address
 			req.Host = polarisServer.Address
 		}
-		proxy := &httputil.ReverseProxy{Director: director}
+		modifyResp := func(resp *http.Response) error {
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return err
+			}
+			if err = resp.Body.Close(); err != nil {
+				return err
+			}
+			loginResp := make(map[string]interface{})
+			if err = json.Unmarshal(body, &loginResp); err != nil {
+				return err
+			}
+			if val, ok := loginResp["loginResponse"].(map[string]interface{}); ok {
+				if token := val["token"]; token != "" {
+					val["token"] = "******" // 避免前端出错,保证返回, 但隐藏现有的token
+					body, err = json.Marshal(loginResp)
+					if err != nil {
+						return err
+					}
+					if err = refreshJWT(c, val["user_id"].(string), token.(string), conf); err != nil {
+						return err
+					}
+					resp.Header["Content-Length"] = []string{fmt.Sprint(len(body))}
+					resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+					return nil
+				}
+			}
+			resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+			return nil
+		}
+		proxy := &httputil.ReverseProxy{Director: director, ModifyResponse: modifyResp}
 		proxy.ServeHTTP(c.Writer, c.Request)
 	}
 }
@@ -64,6 +102,15 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 // ReverseProxyForServer 反向代理
 func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config, check bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		userID, token, err := parseJWTThenSetToken(c, conf)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": http.StatusProxyAuthRequired,
+				"info": "Proxy Authentication Required",
+			})
+			return
+		}
+
 		if ok := authority(c, conf); !ok {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": http.StatusProxyAuthRequired,
@@ -85,6 +132,14 @@ func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstr
 			if ok := checkOwner(c); !ok {
 				return
 			}
+		}
+		// 只有全部校验通过之后,请求才会自动续期jwtToken
+		if err = refreshJWT(c, userID, token, conf); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": http.StatusInternalServerError,
+				"info": "generate jwt token occurs error",
+			})
+			return
 		}
 
 		c.Request.Header.Add("Polaris-Token", polarisServer.PolarisToken)
@@ -192,4 +247,55 @@ func ReverseProxyForLogRecord(zhiyan *bootstrap.ZhiYan) gin.HandlerFunc {
 		proxy := &httputil.ReverseProxy{Director: director}
 		proxy.ServeHTTP(c.Writer, c.Request)
 	}
+}
+
+// jwtClaims jwt 额外信息
+type jwtClaims struct {
+	UserID string
+	Token  string
+	jwt.RegisteredClaims
+}
+
+// parseJWTThenSetToken 从jwt中抽取userID 和 token
+func parseJWTThenSetToken(c *gin.Context, conf *bootstrap.Config) (string, string, error) {
+	jwtCookie, _ := c.Request.Cookie("jwt")
+	if jwtCookie == nil {
+		return "", "", nil
+	}
+	token, err := jwt.ParseWithClaims(jwtCookie.Value, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(conf.WebServer.JwtKey), nil
+	})
+	if _, ok := err.(*jwt.ValidationError); ok {
+		return "", "", err
+	}
+	claims, ok := token.Claims.(*jwtClaims)
+	if !ok || !token.Valid || claims.UserID == "" {
+		return "", "", errors.New("jwt token is invalid")
+	}
+	c.Request.Header.Set("x-polaris-user", claims.UserID)
+	c.Request.Header.Set("x-polaris-token", claims.Token)
+	return claims.UserID, claims.Token, nil
+}
+
+// refreshJWT 刷新jwtToken
+func refreshJWT(c *gin.Context, userID, token string, conf *bootstrap.Config) error {
+	if userID == "" || token == "" {
+		return nil
+	}
+	nowTime := time.Now()
+	claims := jwtClaims{
+		UserID: userID,
+		Token:  token,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(nowTime.Add(time.Duration(conf.WebServer.JwtExpired) * time.Second)),
+			NotBefore: jwt.NewNumericDate(nowTime),
+			IssuedAt:  jwt.NewNumericDate(nowTime),
+		},
+	}
+	jwtToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(conf.WebServer.JwtKey))
+	if err != nil {
+		return err
+	}
+	c.SetCookie("jwt", jwtToken, conf.WebServer.JwtExpired, "/", "", false, false)
+	return nil
 }
