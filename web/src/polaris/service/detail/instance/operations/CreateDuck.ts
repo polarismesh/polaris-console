@@ -3,7 +3,7 @@ import Form from "@src/polaris/common/ducks/Form";
 import { put, select } from "redux-saga/effects";
 import { resolvePromise } from "saga-duck/build/helper";
 import { createInstances, CreateInstanceParams, modifyInstances, ModifyInstanceParams } from "../model";
-import { Instance, BATCH_EDIT_TYPE } from "../types";
+import { Instance, BATCH_EDIT_TYPE, InstanceLocation } from "../types";
 import { KeyValuePair } from "@src/polaris/configuration/fileGroup/types";
 
 export interface DialogOptions {
@@ -18,6 +18,14 @@ export const enableNearbyString = "internal-enable-nearby";
 const convertMetaData = (metaData: Record<string, string>): Array<KeyValuePair> => {
   return Object.entries(metaData).map(([key, value]) => ({ key, value }));
 };
+
+function convertLocation(loc: InstanceLocation) {
+  return {
+    location_campus: loc.campus,
+    location_region: loc.region,
+    location_zone: loc.zone,
+  }
+}
 
 const generateParams = (params) => {
   const {
@@ -249,6 +257,7 @@ export default class CreateDuck extends FormDialog {
               ttl: options.instance.healthCheck?.heartbeat?.ttl,
             }
           : {}),
+          ...convertLocation((data as any).location ?? {})
       }),
     );
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel
