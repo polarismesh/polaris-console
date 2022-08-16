@@ -30,8 +30,8 @@ import (
 
 func TestRefreshJWTAndParse(t *testing.T) {
 	conf := &bootstrap.Config{}
-	conf.WebServer.JwtExpired = 2
-	conf.WebServer.JwtKey = "polarismesh@2021"
+	conf.WebServer.JWT.Expired = 2
+	conf.WebServer.JWT.Key = "polarismesh@2021"
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 	userID, token := "user1", "token1"
 	err := refreshJWT(c, userID, token, conf)

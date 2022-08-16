@@ -263,7 +263,7 @@ func parseJWTThenSetToken(c *gin.Context, conf *bootstrap.Config) (string, strin
 		return "", "", nil
 	}
 	token, err := jwt.ParseWithClaims(jwtCookie.Value, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(conf.WebServer.JwtKey), nil
+		return []byte(conf.WebServer.JWT.Key), nil
 	})
 	if _, ok := err.(*jwt.ValidationError); ok {
 		return "", "", err
@@ -287,15 +287,15 @@ func refreshJWT(c *gin.Context, userID, token string, conf *bootstrap.Config) er
 		UserID: userID,
 		Token:  token,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(nowTime.Add(time.Duration(conf.WebServer.JwtExpired) * time.Second)),
+			ExpiresAt: jwt.NewNumericDate(nowTime.Add(time.Duration(conf.WebServer.JWT.Expired) * time.Second)),
 			NotBefore: jwt.NewNumericDate(nowTime),
 			IssuedAt:  jwt.NewNumericDate(nowTime),
 		},
 	}
-	jwtToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(conf.WebServer.JwtKey))
+	jwtToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(conf.WebServer.JWT.Key))
 	if err != nil {
 		return err
 	}
-	c.SetCookie("jwt", jwtToken, conf.WebServer.JwtExpired, "/", "", false, false)
+	c.SetCookie("jwt", jwtToken, conf.WebServer.JWT.Expired, "/", "", false, false)
 	return nil
 }

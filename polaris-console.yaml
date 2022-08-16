@@ -8,8 +8,9 @@ webServer:
   mode: "release"
   listenIP: "0.0.0.0"
   listenPort: 8080
-  jwtKey: "polarismesh@2021"
-  jwtExpired: 1800
+  jwt:
+    key: "polarismesh@2021"
+    expired: 1800
   namingURL: "/naming/v1"
   authURL: "/core/v1"
   requestURL: "/naming/v1"
