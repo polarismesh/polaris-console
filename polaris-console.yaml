@@ -9,7 +9,7 @@ webServer:
   listenIP: "0.0.0.0"
   listenPort: 8080
   jwt:
-    key: "polarismesh@2021"
+    secretKey: "polarismesh@2021"
     expired: 1800
   namingURL: "/naming/v1"
   authURL: "/core/v1"

@@ -263,7 +263,7 @@ func parseJWTThenSetToken(c *gin.Context, conf *bootstrap.Config) (string, strin
 		return "", "", nil
 	}
 	token, err := jwt.ParseWithClaims(jwtCookie.Value, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(conf.WebServer.JWT.Key), nil
+		return []byte(conf.WebServer.JWT.SecretKey), nil
 	})
 	if _, ok := err.(*jwt.ValidationError); ok {
 		return "", "", err
@@ -292,7 +292,7 @@ func refreshJWT(c *gin.Context, userID, token string, conf *bootstrap.Config) er
 			IssuedAt:  jwt.NewNumericDate(nowTime),
 		},
 	}
-	jwtToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(conf.WebServer.JWT.Key))
+	jwtToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(conf.WebServer.JWT.SecretKey))
 	if err != nil {
 		return err
 	}

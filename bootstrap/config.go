@@ -91,7 +91,7 @@ type WebServer struct {
 // JWT jwtToken 相关的配置
 type JWT struct {
 	// 参与jwt运算的key
-	Key string `yaml:"key"`
+	SecretKey string `yaml:"secretKey"`
 	// 过期时间, 单位为秒
 	Expired int `yaml:"expired"`
 }
@@ -114,7 +114,7 @@ func LoadConfig(filePath string) (*Config, error) {
 
 	config := &Config{}
 	config.WebServer.JWT.Expired = 1800 // 默认30分钟
-	config.WebServer.JWT.Key = "polarismesh@2021"
+	config.WebServer.JWT.SecretKey = "polarismesh@2021"
 	err = yaml.NewDecoder(file).Decode(config)
 	if err != nil {
 		fmt.Printf("[ERROR] %v\n", err)
