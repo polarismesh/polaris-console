@@ -1,3 +1,9 @@
+export interface InstanceLocation {
+  region: string
+  zone: string
+  campus: string
+}
+
 export interface Instance {
   ctime: string
   enableHealthCheck: boolean
@@ -16,12 +22,9 @@ export interface Instance {
   vpc_id: string
   weight: number
   editable: boolean
-  location: {
-    region: string
-    zone: string
-    campus: string
-  }
+  location: InstanceLocation
 }
+
 export enum HEALTH_STATUS {
   HEALTH = 'true',
   ABNORMAL = 'false',
