@@ -85,6 +85,15 @@ type WebServer struct {
 	MonitorURL string `yaml:"monitorURL"`
 	ConfigURL  string `yaml:"configURL"`
 	WebPath    string `yaml:"webPath"`
+	JWT        JWT    `yaml:"jwt"`
+}
+
+// JWT jwtToken 相关的配置
+type JWT struct {
+	// 参与jwt运算的key
+	SecretKey string `yaml:"secretKey"`
+	// 过期时间, 单位为秒
+	Expired int `yaml:"expired"`
 }
 
 // LoadConfig 加载配置文件
@@ -104,6 +113,8 @@ func LoadConfig(filePath string) (*Config, error) {
 	}
 
 	config := &Config{}
+	config.WebServer.JWT.Expired = 1800 // 默认30分钟
+	config.WebServer.JWT.SecretKey = "polarismesh@2021"
 	err = yaml.NewDecoder(file).Decode(config)
 	if err != nil {
 		fmt.Printf("[ERROR] %v\n", err)
