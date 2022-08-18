@@ -7,6 +7,7 @@ import {
   createServiceCircuitBreakerVersion,
   releaseServiceCircuitBreaker,
   createServiceCircuitBreaker,
+  unbindServiceCircuitBreaker,
 } from './model'
 import { takeLatest } from 'redux-saga-catch'
 import { put, select, take } from 'redux-saga/effects'
@@ -134,7 +135,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types, creators, selector, ducks } = this
     yield* this.sagaInitLoad()
     yield* super.saga()
-    yield takeLatest(types.CREATE, function*(action) {
+    yield takeLatest(types.CREATE, function* (action) {
       const {
         data: { name, namespace },
         circuitBreaker,
@@ -167,7 +168,7 @@ export default class ServicePageDuck extends GridPageDuck {
         }),
       )
     })
-    yield takeLatest(types.EDIT, function*(action) {
+    yield takeLatest(types.EDIT, function* (action) {
       const {
         data: { name, namespace },
         ruleType,
@@ -200,7 +201,7 @@ export default class ServicePageDuck extends GridPageDuck {
         }),
       )
     })
-    yield takeLatest(types.REMOVE, function*(action) {
+    yield takeLatest(types.REMOVE, function* (action) {
       const confirm = yield Modal.confirm({
         message: `确认删除规则`,
         description: '删除后，无法恢复',
@@ -223,7 +224,7 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.DRAWER_SUBMIT, function*() {
+    yield takeLatest(types.DRAWER_SUBMIT, function* () {
       const {
         drawerStatus: { createId, ruleType, ruleIndex, isEdit },
         circuitBreaker,
@@ -272,12 +273,12 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
       const { circuitBreaker, originData } = action.payload
       yield put({ type: types.SET_CIRCUIT_BREAKER, payload: circuitBreaker })
       if (originData) yield put({ type: types.SET_ORIGIN_DATA, payload: originData })
     })
-    yield takeLatest(types.RESET_DATA, function*() {
+    yield takeLatest(types.RESET_DATA, function* () {
       const { originData } = selector(yield select())
       yield put({ type: types.SET_CIRCUIT_BREAKER, payload: originData })
       yield put({
@@ -286,7 +287,7 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(types.SUBMIT, function*() {
+    yield takeLatest(types.SUBMIT, function* () {
       const {
         originData,
         circuitBreaker,
@@ -299,20 +300,36 @@ export default class ServicePageDuck extends GridPageDuck {
         outbounds: circuitBreaker.outbounds,
       }
       if (originData?.ctime) {
-        const version = new Date().getTime().toString()
-        yield createServiceCircuitBreakerVersion([{ ...params, id: originData.id, version, name: service }])
-        const releaseParams = {
-          service: {
-            name: service,
-            namespace,
-          },
-          circuitBreaker: {
-            name: service,
-            namespace,
-            version,
-          },
+        if (params.inbounds.length === 0 && params.outbounds.length === 0) {
+          // 如果出入都没有了，删除熔断规则
+          yield unbindServiceCircuitBreaker([{
+            service: {
+              name: service,
+              namespace,
+            }, circuitBreaker: {
+              id: originData.id,
+              name: service,
+              namespace: namespace,
+              version: originData.version,
+            }
+          }])
+        } else {
+          const version = new Date().getTime().toString()
+          // 只是更新熔断规则，直接创建出新的版本并直接 release
+          yield createServiceCircuitBreakerVersion([{ ...params, id: originData.id, version, name: service }])
+          const releaseParams = {
+            service: {
+              name: service,
+              namespace,
+            },
+            circuitBreaker: {
+              name: service,
+              namespace,
+              version,
+            },
+          }
+          yield releaseServiceCircuitBreaker([releaseParams])
         }
-        yield releaseServiceCircuitBreaker([releaseParams])
       } else {
         const createResult = yield createServiceCircuitBreaker([{ ...params, owners: 'Polaris', name: service }])
         if (createResult.code === 200000) {
@@ -344,7 +361,7 @@ export default class ServicePageDuck extends GridPageDuck {
     })
   }
 
-  *sagaInitLoad() {}
+  *sagaInitLoad() { }
   async getData(filters: this['Filter']) {
     const { page, count, namespace, service, ruleType } = filters
     let circuitBreaker = filters.circuitBreaker
