@@ -32,7 +32,7 @@ rm -rf "polaris_console_package"
 cd $workdir/web
 rm -rf dist/
 npm install
-npm run build
+npm run tcs-build
 
 # 编译web服务器
 cd $workdir

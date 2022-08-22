@@ -1,0 +1,86 @@
+server_name="polaris-console"
+cmdline="./polaris-console"
+configuration="polaris-console.yaml"
+hr_token="hrToken"
+unit_address="unitAddress"
+department_url="departmentURL"
+enable_hr_data="enableHrData"
+
+function log_date() {
+  echo $(date "+%Y-%m-%dT%H:%M:%S")
+}
+
+function log_error() {
+  echo -e "\033[31m\033[01m$(log_date)\terror\t$1 \033[0m"
+}
+
+function log_info() {
+  echo -e "\033[32m\033[01m$(log_date)\tinfo\t$1 \033[0m"
+}
+
+function del_file() {
+  log_info "del file for $server_name"
+
+  rm -rf ./log
+}
+
+function start() {
+  log_info "start $server_name"
+
+  if [ ! -d "./log" ]; then
+    mkdir ./log
+  fi
+
+  nohup $cmdline >>./log/stdout 2>&1 &
+}
+
+function stop() {
+  pids=$(ps -ef | grep -w "$cmdline" | grep -v "grep" | awk '{print $2}')
+  array=($pids)
+  for pid in ${array[@]}; do
+    log_info "stop $server_name: pid=$pid"
+
+    kill -15 $pid
+  done
+}
+
+function add_cron() {
+  item="$workdir/tool/check.sh >>$workdir/log/check.log 2>&1"
+  exist=$(crontab -l | grep "$item" | grep -v "#" | wc -l)
+  if [ "$exist" == "0" ]; then
+    log_info "add cron for $server_name"
+
+    cron=$(mktemp)
+    crontab -l >$cron
+    echo "*/1 * * * * $item" >>$cron
+    crontab $cron
+    rm -f $cron
+  fi
+}
+
+function del_cron() {
+  item="$workdir/tool/check.sh >>$workdir/log/check.log 2>&1"
+  exist=$(crontab -l | grep "$item" | grep -v "#" | wc -l)
+  if [ "$exist" != "0" ]; then
+    log_info "del cron for $server_name"
+
+    cron=$(mktemp)
+    crontab -l | grep -v "$item" >$cron
+    crontab $cron
+    rm -f $cron
+  fi
+}
+
+function get_department() {
+  token=$(grep $hr_token $workdir/$configuration | awk -F'"' {'print $2'})
+  unit_address=$(grep $unit_address $workdir/$configuration | awk -F '"' {'print $2'})
+  department_url=$(grep $department_url $workdir/$configuration | awk -F '"' {'print $2'})
+  department_url="http://"$unit_address""$department_url""
+  current=$(date "+%Y-%m-%d %H:%M:%S")
+  timestamp=$(date -d "$current" +%s)
+  sn=$timestamp$token$timestamp
+  signature=$(echo -n $sn | sha256sum | awk {'print $1'})
+  departments=$(curl -X GET "$department_url" -H "timestamp:$timestamp" -H "signature:$signature")
+  touch $workdir/department.txt
+  echo $departments >$workdir/department.txt
+}
