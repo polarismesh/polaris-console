@@ -45,15 +45,15 @@ export interface GetLabelDataParams {
 export async function getMonitorData(params: GetMonitorDataParams) {
   const res = await getPromethusApiRequest<{ result: MonitorFetcherData[] }>({
     action: `/api/v1/query_range`,
-    data: params,
+    data: new URLSearchParams(params as any),
   })
   return res.data.result
 }
 export async function getLabelData(params: GetLabelDataParams) {
-  let searchParams = new URLSearchParams()
+  const searchParams = new URLSearchParams()
 
   if (params.match) {
-    params.match.forEach((match) => searchParams.append('match[]', match))
+    params.match.forEach(match => searchParams.append('match[]', match))
     searchParams.append('start', params.start.toString())
     searchParams.append('end', params.end.toString())
   }

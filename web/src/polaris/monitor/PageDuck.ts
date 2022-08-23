@@ -28,6 +28,7 @@ export interface FilterConfig {
   metricNames: string[]
   filterLabels: Record<MonitorLabelKey, string[]>
 }
+
 export interface MetricQuerySet {
   metricName: string
   monitorFilters: MonitorFilter[]
@@ -234,7 +235,7 @@ export default class MonitorDuck extends Page {
       if (!res) return
       const { monitorFilters, metricName, start, end, step } = res
       const queryFilterString = monitorFilters.map(item => `${item.labelKey}="${item.labelValue}"`).join(',')
-      const query = `sum+without(instance)+(${metricName}{${queryFilterString}})`
+      const query = `sum without(instance) (${metricName}{${queryFilterString}})`
       const fetcherId = Math.floor(Math.random() * 1000).toString()
       const fetcher = yield* getFetcher(`${encodeURIComponent(query)}-${fetcherId}`)
       yield fetcher.fetch({ query, start, end, step })
@@ -299,7 +300,7 @@ export default class MonitorDuck extends Page {
 
       const { monitorFilters, metricName, start, end, step } = res
       const queryFilterString = monitorFilters.map(item => `${item.labelKey}="${item.labelValue}"`).join(',')
-      const query = `sum+without(instance)+(${metricName}{${queryFilterString}})`
+      const query = `sum without(instance) (${metricName}{${queryFilterString}})`
       const fetcher = yield* getFetcher(`${encodeURIComponent(query)}-${querySet.fetcherId}`)
       yield fetcher.fetch({ query, start, end, step })
       const prevQuerySetIndex = metricQuerySets.findIndex(item => item.fetcherId === querySet.fetcherId)
@@ -368,7 +369,7 @@ export default class MonitorDuck extends Page {
         } else {
           monitorFilterList.forEach(monitorFilters => {
             const queryFilterString = monitorFilters.map(item => `${item.labelKey}="${item.labelValue}"`).join(',')
-            let query = `${metricName}{${queryFilterString}}`
+            let query = `sum without(instance) (${metricName}{${queryFilterString}})`
             //平均时延
             if (metricName === MetricName.UpstreamRqTimeout) {
               query = `avg(${metricName}{${queryFilterString}})`
