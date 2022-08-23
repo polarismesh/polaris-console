@@ -48,4 +48,7 @@ func ConfigRouter(r *gin.Engine, config *bootstrap.Config) {
 
 	// 配置文件发布历史
 	configV1.GET("configfiles/releasehistory", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+
+	//配置文件模板
+	configV1.GET("configfiletemplates", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 }

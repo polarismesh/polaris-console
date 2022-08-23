@@ -22,8 +22,9 @@ import {
   List,
   Icon,
   Bubble,
+  Badge,
 } from 'tea-component'
-import { FileStatusMap } from './constants'
+import { FileStatus, FileStatusMap } from './constants'
 import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
 import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
@@ -46,6 +47,7 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   showReleaseHistory: v => dispatch(creators.showReleaseHistory(v)),
   select: v => dispatch(creators.select(v)),
   cancel: () => dispatch(creators.cancel()),
+  getTemplate: v => dispatch(creators.getTemplate(v)),
 }))
 
 insertCSS(
@@ -57,6 +59,16 @@ insertCSS(
   .configuration-tree-node .tea-tree__label-title{
     width:100%;
   }
+  .configuration-tree-node-content {
+    display: inline-block;
+    line-height: 20px;
+    margin-right: 5px;
+    overflow: hidden;
+  }
+  .configuration-tree-node .tea-tree__label {
+    align-items: center;
+  }
+
   .no-switcher .tea-tree__switcher{
     display:none;
   }
@@ -100,43 +112,45 @@ export default function Page(props: DuckCmpProps<Duck>) {
                 onChange={handlers.setSearchKeyword}
                 placeholder={'请输入文件名搜索'}
                 onSearch={handlers.searchPath}
-                style={{ width: '420px' }}
+                style={{ width: '100%' }}
               />
-              <Tree
-                activable
-                onActive={(activeIds, { nodeId }) => {
-                  // if (!fileMap[nodeId]) {
-                  //   const index = expandedIds.findIndex(item => item === nodeId)
-                  //   if (index === -1) {
-                  //     expandedIds.push(nodeId)
-                  //     handlers.setExpandedIds([...expandedIds])
-                  //   } else {
-                  //     const newArray = [...expandedIds]
-                  //     newArray.splice(index, 1)
-                  //     handlers.setExpandedIds(newArray)
-                  //   }
-                  // } else {
-                  //   handlers.clickFileItem(nodeId)
-                  // }
-                  handlers.clickFileItem(nodeId)
-                }}
-                activeIds={currentNode ? [currentNode?.name] : []}
-                expandedIds={expandedIds}
-                onExpand={expandedIds => {
-                  handlers.setExpandedIds(expandedIds)
-                }}
-                fullExpandable
-                height={900}
-                style={{ width: '500px' }}
-              // onSelect={v => {
-              //   handlers.select(v)
-              // }}
-              // selectable
-              // selectedIds={selection}
-              // selectValueMode={'onlyLeaf'}
-              >
-                {renderTree(props, fileTree, '', '')}
-              </Tree>
+              <div style={{ height: 910, overflowY: 'scroll' }}>
+                <Tree
+                  activable
+                  onActive={(activeIds, { nodeId }) => {
+                    // if (!fileMap[nodeId]) {
+                    //   const index = expandedIds.findIndex(item => item === nodeId)
+                    //   if (index === -1) {
+                    //     expandedIds.push(nodeId)
+                    //     handlers.setExpandedIds([...expandedIds])
+                    //   } else {
+                    //     const newArray = [...expandedIds]
+                    //     newArray.splice(index, 1)
+                    //     handlers.setExpandedIds(newArray)
+                    //   }
+                    // } else {
+                    //   handlers.clickFileItem(nodeId)
+                    // }
+                    handlers.clickFileItem(nodeId)
+                  }}
+                  activeIds={currentNode ? [currentNode?.name] : []}
+                  expandedIds={expandedIds}
+                  onExpand={expandedIds => {
+                    handlers.setExpandedIds(expandedIds)
+                  }}
+                  fullExpandable
+                  height={900}
+                  style={{ width: '500px' }}
+                  // onSelect={v => {
+                  //   handlers.select(v)
+                  // }}
+                  // selectable
+                  // selectedIds={selection}
+                  // selectValueMode={'onlyLeaf'}
+                >
+                  {renderTree(props, fileTree, '', '')}
+                </Tree>
+              </div>
             </div>
             <div style={{ width: 'calc(100% - 540px)', margin: '15px 20px' }}>
               {currentNode?.name &&
@@ -190,7 +204,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                   }
                                 >
                                   <Text overflow>
-                                    {currentNode.tags.map(item => `${item.key}:${item.value}`).join(',') || '-'}
+                                    {currentNode.tags?.map(item => `${item.key}:${item.value}`).join(',') || '-'}
                                   </Text>
                                 </Bubble>
                               </FormText>
@@ -219,10 +233,16 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <Button type={'primary'} disabled={editing} onClick={() => handlers.releaseCurrentFile()}>
                               发布
                             </Button>
+
                             {editing ? (
-                              <Button type={'weak'} onClick={() => handlers.save()}>
-                                保存
-                              </Button>
+                              <>
+                                <Button type={'weak'} onClick={() => handlers.getTemplate(currentNode)}>
+                                  应用模板
+                                </Button>
+                                <Button type={'weak'} onClick={() => handlers.save()}>
+                                  保存
+                                </Button>
+                              </>
                             ) : (
                               <Button type={'weak'} onClick={() => handlers.editCurrentNode()}>
                                 编辑
@@ -304,9 +324,14 @@ export default function Page(props: DuckCmpProps<Duck>) {
   )
 }
 
-function getFileName(fileName) {
+function getFileNameContext(fileName, status) {
   const splitArray = fileName.split('/')
-  return splitArray[splitArray.length - 1]
+  return (
+    <>
+      <span className='configuration-tree-node-content'>{splitArray[splitArray.length - 1]}</span>
+      {FileStatus.Edited === status && <Badge theme='warning'>待发布</Badge>}
+    </>
+  )
 }
 
 function renderTree(props, folder, path: string, currPath: string) {
@@ -330,7 +355,7 @@ function renderTree(props, folder, path: string, currPath: string) {
       {Object.keys(node)?.map(childPath => {
         if (childPath === '__isDir__') return <noscript />
         const obj = node[childPath]
-        const showContent = obj.__isDir__ ? childPath : getFileName(obj.name)
+        const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status)
         const nextPath = `${currPath}${currPath ? '/' : ''}${childPath}`
         const folderIcon = expandedIds.indexOf(obj.name) > -1 ? 'folderopen' : 'folderclose'
         return (

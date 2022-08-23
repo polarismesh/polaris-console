@@ -10,7 +10,7 @@ import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
 import { ConfigFileReleaseHistory, ConfigFileGroup } from '../fileGroup/types'
 import { describeConfigFileReleaseHistories } from './model'
-import { describeConfigFileGroups, describeLastReleaseConfigFile } from '../fileGroup/model'
+import { describeConfigFileGroups } from '../fileGroup/model'
 import React from 'react'
 import FileDiff from '../fileGroup/detail/file/FileDiff'
 

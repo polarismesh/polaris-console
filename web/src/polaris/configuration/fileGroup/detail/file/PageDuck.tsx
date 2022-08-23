@@ -21,6 +21,8 @@ import {
 } from '../../model'
 import Fetcher from '@src/polaris/common/ducks/Fetcher'
 import { describeConfigFileReleaseHistories } from '@src/polaris/configuration/releaseHistory/model'
+import GetFileTemplate from './operation/GetFileTemplate'
+import GetFileTemplateDuck from './operation/GetFileTemplateDuck'
 interface MyFilter {
   namespace: string
   group: string
@@ -133,6 +135,7 @@ export default class PageDuck extends Base {
       SELECT,
       EDIT_FILE_META,
       CANCEL,
+      GET_FILE_TEMPLATE,
     }
     return {
       ...super.quickTypes,
@@ -189,6 +192,7 @@ export default class PageDuck extends Base {
       save: createToPayload<void>(types.SAVE_CURRENT_NODE),
       select: createToPayload<string[]>(types.SELECT),
       cancel: createToPayload<void>(types.CANCEL),
+      getTemplate: createToPayload<ConfigFile>(types.GET_FILE_TEMPLATE),
     }
   }
 
@@ -235,6 +239,25 @@ export default class PageDuck extends Base {
       )
       if (res) {
         yield put({ type: types.FETCH_DATA })
+      }
+    })
+    yield takeLatest(types.GET_FILE_TEMPLATE, function*(action) {
+      const file = action.payload
+      const templateContent = yield* resolvePromise(
+        new Promise(resolve => {
+          showDialog(GetFileTemplate, GetFileTemplateDuck, function*(duck: GetFileTemplateDuck) {
+            try {
+              const result = yield* duck.execute({}, { file })
+              resolve(result)
+            } finally {
+              resolve(false)
+            }
+          })
+        }),
+      )
+      if (templateContent) {
+        yield put({ type: types.SET_EDITING, payload: true })
+        yield put(creators.setEditContent(templateContent as string))
       }
     })
     yield takeLatest(types.EDIT_FILE_META, function*(action) {
@@ -286,7 +309,11 @@ export default class PageDuck extends Base {
       const searchKeyword = selectors.searchKeyword(yield select())
       const currentNode = selectors.currentNode(yield select())
       const { namespace, group } = composedId
-      const fileResult = yield getAllList(describeConfigFilesByGroup)({ namespace, group, name: searchKeyword || undefined })
+      const fileResult = yield getAllList(describeConfigFilesByGroup)({
+        namespace,
+        group,
+        name: searchKeyword || undefined,
+      })
       const fileList = fileResult.list as ConfigFile[]
       const fileMap = fileList.reduce((prev, curr) => {
         prev[curr.name] = curr

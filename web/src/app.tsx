@@ -22,10 +22,6 @@ import RouteCreatePage from '@src/polaris/service/detail/route/operations/Create
 import RouteCreateDuck from '@src/polaris/service/detail/route/operations/CreateDuck'
 const RouteCreate = connectWithDuck(RouteCreatePage, RouteCreateDuck)
 
-import RateLimitCreatePage from '@src/polaris/service/detail/limit/operations/Create'
-import RateLimitDuck from '@src/polaris/service/detail/limit/operations/CreateDuck'
-const RateLimit = connectWithDuck(RateLimitCreatePage, RateLimitDuck)
-
 import CircuitBreakerPage from '@src/polaris/service/detail/circuitBreaker/operations/Create'
 import CircuitBreakerDuck from '@src/polaris/service/detail/circuitBreaker/operations/CreateDuck'
 const CircuitBreaker = connectWithDuck(CircuitBreakerPage, CircuitBreakerDuck)
@@ -79,6 +75,14 @@ import { cacheCheckAuth } from './polaris/auth/model'
 const ServiceAlias = connectWithDuck(ServiceAliasPage, ServiceAliasPageDuck)
 
 import TestEnvRoutePage from '@src/polaris/administration/dynamicRoute/testEnvRoute/Page'
+
+import AccessLimitingPage from '@src/polaris/administration/accessLimiting/Page'
+import AccessLimitingPageDuck from '@src/polaris/administration/accessLimiting/PageDuck'
+const AccessLimiting = connectWithDuck(AccessLimitingPage, AccessLimitingPageDuck)
+
+import LimitRuleCreatePage from '@src/polaris/administration/accessLimiting/operations/Create'
+import LimitRuleCreatePageDuck from '@src/polaris/administration/accessLimiting/operations/CreateDuck'
+const LimitRuleCreate = connectWithDuck(LimitRuleCreatePage, LimitRuleCreatePageDuck)
 
 export default function root() {
   const history = useHistory()
@@ -199,7 +203,7 @@ export default function root() {
               <Route exact path='/service' component={Service} />
               <Route exact path='/service-detail' component={ServiceDetail} />
               <Route exact path='/route-create' component={RouteCreate} />
-              <Route exact path='/ratelimit-create' component={RateLimit} />
+              <Route exact path='/accesslimit-create' component={LimitRuleCreate} />
               <Route exact path='/circuitBreaker-create' component={CircuitBreaker} />
               <Route exact path='/circuitBreaker-monitor' component={CircuitBreakerMonitor} />
               <Route exact path='/route-monitor' component={RouteMonitor} />
@@ -215,6 +219,7 @@ export default function root() {
               <Route exact path='/policy-create' component={PolicyCreate} />
               <Route exact path='/alias' component={ServiceAlias} />
               <Route exact path='/test-env-route' component={TestEnvRoutePage} />
+              <Route exact path='/accesslimit' component={AccessLimiting} />
             </Switch>
           </Content>
         </Body>

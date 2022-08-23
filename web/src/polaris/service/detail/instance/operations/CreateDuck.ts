@@ -3,7 +3,8 @@ import Form from "@src/polaris/common/ducks/Form";
 import { put, select } from "redux-saga/effects";
 import { resolvePromise } from "saga-duck/build/helper";
 import { createInstances, CreateInstanceParams, modifyInstances, ModifyInstanceParams } from "../model";
-import { Instance, BATCH_EDIT_TYPE } from "../types";
+import { Instance, BATCH_EDIT_TYPE, InstanceLocation } from "../types";
+import { KeyValuePair } from "@src/polaris/configuration/fileGroup/types";
 
 export interface DialogOptions {
   isModify: boolean;
@@ -14,15 +15,18 @@ export interface DialogOptions {
   batchEditType?: BATCH_EDIT_TYPE;
 }
 export const enableNearbyString = "internal-enable-nearby";
-const convertMetaData = (metaData) => {
-  let metaDataString = "";
-  Object.keys(metaData).forEach((key, index, arr) => {
-    if (key !== enableNearbyString) {
-      metaDataString += `${key}:${metaData[key]}${index < arr.length ? "\n" : ""}`;
-    }
-  });
-  return metaDataString;
+const convertMetaData = (metaData: Record<string, string>): Array<KeyValuePair> => {
+  return Object.entries(metaData).map(([key, value]) => ({ key, value }));
 };
+
+function convertLocation(loc: InstanceLocation) {
+  return {
+    location_campus: loc.campus,
+    location_region: loc.region,
+    location_zone: loc.zone,
+  }
+}
+
 const generateParams = (params) => {
   const {
     host,
@@ -38,13 +42,15 @@ const generateParams = (params) => {
     ttl,
     service,
     namespace,
+    location_region,
+    location_zone,
+    location_campus,
   } = params;
-  const metadataObject = {};
-  const tags = metadata.split("\n");
-  tags.forEach((tag) => {
-    const [key, value] = tag.split(":");
-    metadataObject[key] = value;
-  });
+  const metadataObject = metadata
+    .reduce((preV: Record<string, string>, curV: KeyValuePair) => {
+      preV[curV.key] = curV.value;
+      return preV;
+    }, {});
 
   let operateRequests = [] as CreateInstanceParams[];
   const splitRegex = /,|;|\n|\s/;
@@ -74,6 +80,11 @@ const generateParams = (params) => {
           : undefined,
         service,
         namespace,
+        location: {
+          region: location_region,
+          zone: location_zone,
+          campus: location_campus,
+        }
       });
     });
   });
@@ -95,13 +106,16 @@ const generateModifyParams = (params) => {
     service,
     namespace,
     instance,
+    location_region,
+    location_zone,
+    location_campus,
   } = params;
-  const metadataObject = {};
-  const tags = metadata.split("\n");
-  tags.forEach((tag) => {
-    const [key, value] = tag.split(":");
-    metadataObject[key] = value;
-  });
+  const metadataObject = metadata
+    .reduce((preV: Record<string, string>, curV: KeyValuePair) => {
+      preV[curV.key] = curV.value;
+      return preV;
+    }, {});
+
   if (instance?.id) {
     return [
       {
@@ -122,6 +136,11 @@ const generateModifyParams = (params) => {
           : undefined,
         service,
         namespace,
+        location: {
+          region: location_region,
+          zone: location_zone,
+          campus: location_campus,
+        },
         id: instance.id,
       },
     ] as ModifyInstanceParams[];
@@ -143,6 +162,9 @@ const generateBatchModifyParams = (params) => {
       id,
       healthCheck,
       enableHealthCheck,
+      location_region,
+      location_zone,
+      location_campus,
     } = instance;
     return {
       weight,
@@ -156,6 +178,11 @@ const generateBatchModifyParams = (params) => {
       service,
       namespace,
       id,
+      location: {
+        location_region,
+        location_zone,
+        location_campus,
+      },
       [params.batchEditType]: modifyPart,
     };
   });
@@ -223,13 +250,14 @@ export default class CreateDuck extends FormDialog {
         healthy: true,
         enableHealthCheck: false,
         ...data,
-        metadata: convertMetaData(data.metadata || {}),
+        metadata: convertMetaData((data.metadata as unknown as Record<string, string>) || {}),
         ...(options.instance
           ? {
               healthCheckMethod: options.instance.healthCheck?.type,
               ttl: options.instance.healthCheck?.heartbeat?.ttl,
             }
           : {}),
+          ...convertLocation((data as any).location ?? {})
       }),
     );
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel
@@ -241,12 +269,15 @@ export interface Values {
   weight: number;
   protocol: string;
   version: string;
-  metadata: string;
+  metadata: Array<KeyValuePair>;
   healthy: boolean;
   isolate: boolean;
   enableHealthCheck: boolean;
   healthCheckMethod: string;
   ttl: number;
+  location_region: string;
+  location_zone: string;
+  location_campus: string;
 }
 class CreateForm extends Form {
   Values: Values;
