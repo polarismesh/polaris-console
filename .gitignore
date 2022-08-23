@@ -14,3 +14,6 @@ log
 
 vendor
 .DS_Store
+
+polaris_console_package
+polaris-frontend.tar.gz
