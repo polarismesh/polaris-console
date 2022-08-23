@@ -35,17 +35,10 @@ type ServiceOwner struct {
 }
 
 // ReverseProxyForLogin 反向代理
-func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config, check bool) gin.HandlerFunc {
+func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if ok := authority(c, conf); !ok {
 			return
-		}
-
-		if &conf.OAAuthority != nil && !conf.OAAuthority.EnableOAAuth && check {
-			// 检查负责人
-			if ok := checkOwner(c); !ok {
-				return
-			}
 		}
 
 		c.Request.Header.Add("Polaris-Token", polarisServer.PolarisToken)
@@ -62,7 +55,7 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 }
 
 // ReverseProxyForServer 反向代理
-func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config, check bool) gin.HandlerFunc {
+func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if ok := authority(c, conf); !ok {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -80,13 +73,22 @@ func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstr
 			return
 		}
 
-		if &conf.OAAuthority != nil && conf.OAAuthority.EnableOAAuth && check {
-			// 检查负责人
-			if ok := checkOwner(c); !ok {
-				return
-			}
-		}
+		c.Request.Header.Add("Polaris-Token", polarisServer.PolarisToken)
+		c.Request.Header.Del("Cookie")
 
+		director := func(req *http.Request) {
+			req.URL.Scheme = "http"
+			req.URL.Host = polarisServer.Address
+			req.Host = polarisServer.Address
+		}
+		proxy := &httputil.ReverseProxy{Director: director}
+		proxy.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+// ReverseProxyNoAuthForServer 反向代理
+func ReverseProxyNoAuthForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		c.Request.Header.Add("Polaris-Token", polarisServer.PolarisToken)
 		c.Request.Header.Del("Cookie")
 
