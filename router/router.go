@@ -47,6 +47,9 @@ func Router(config *bootstrap.Config) {
 	mv1.GET("/query_range", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
 	mv1.GET("/label/:resource/values", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
 
+	// 管理接口
+	AdminRouter(r, config)
+
 	// 鉴权请求
 	AuthRouter(r, config)
 

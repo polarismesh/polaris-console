@@ -28,27 +28,27 @@ func ConfigRouter(r *gin.Engine, config *bootstrap.Config) {
 	// 配置中心
 	configV1 := r.Group(config.WebServer.ConfigURL)
 	// 配置文件组
-	configV1.POST("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
-	configV1.GET("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
-	configV1.DELETE("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
-	configV1.PUT("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
+	configV1.POST("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.GET("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.DELETE("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.PUT("configfilegroups", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	// 配置文件
-	configV1.POST("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
-	configV1.GET("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
-	configV1.GET("configfiles/by-group", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
-	configV1.GET("configfiles/search", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
-	configV1.PUT("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
-	configV1.DELETE("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
-	configV1.DELETE("configfiles/batchdelete", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
+	configV1.POST("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.GET("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.GET("configfiles/by-group", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.GET("configfiles/search", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.PUT("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.DELETE("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.DELETE("configfiles/batchdelete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	// 配置文件发布
-	configV1.POST("configfiles/release", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
-	configV1.GET("configfiles/release", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
+	configV1.POST("configfiles/release", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.GET("configfiles/release", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	// 配置文件发布历史
-	configV1.GET("configfiles/releasehistory", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
+	configV1.GET("configfiles/releasehistory", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	//配置文件模板
-	configV1.GET("configfiletemplates", handlers.ReverseProxyForServer(&config.PolarisServer, config, false))
+	configV1.GET("configfiletemplates", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 }
