@@ -25,14 +25,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/log"
 )
 
 // ServiceOwner 服务(规则)负责人信息
@@ -43,17 +41,10 @@ type ServiceOwner struct {
 }
 
 // ReverseProxyForLogin 反向代理
-func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config, check bool) gin.HandlerFunc {
+func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if ok := authority(c, conf); !ok {
 			return
-		}
-
-		if &conf.OAAuthority != nil && !conf.OAAuthority.EnableOAAuth && check {
-			// 检查负责人
-			if ok := checkOwner(c); !ok {
-				return
-			}
 		}
 
 		c.Request.Header.Add("Polaris-Token", polarisServer.PolarisToken)
@@ -100,7 +91,7 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 }
 
 // ReverseProxyForServer 反向代理
-func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config, check bool) gin.HandlerFunc {
+func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID, token, err := parseJWTThenSetToken(c, conf)
 		if err != nil {
@@ -127,12 +118,6 @@ func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstr
 			return
 		}
 
-		if &conf.OAAuthority != nil && conf.OAAuthority.EnableOAAuth && check {
-			// 检查负责人
-			if ok := checkOwner(c); !ok {
-				return
-			}
-		}
 		// 只有全部校验通过之后,请求才会自动续期jwtToken
 		if err = refreshJWT(c, userID, token, conf); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -142,6 +127,22 @@ func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstr
 			return
 		}
 
+		c.Request.Header.Add("Polaris-Token", polarisServer.PolarisToken)
+		c.Request.Header.Del("Cookie")
+
+		director := func(req *http.Request) {
+			req.URL.Scheme = "http"
+			req.URL.Host = polarisServer.Address
+			req.Host = polarisServer.Address
+		}
+		proxy := &httputil.ReverseProxy{Director: director}
+		proxy.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+// ReverseProxyNoAuthForServer 反向代理
+func ReverseProxyNoAuthForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		c.Request.Header.Add("Polaris-Token", polarisServer.PolarisToken)
 		c.Request.Header.Del("Cookie")
 
@@ -166,61 +167,6 @@ func ReverseProxyForMonitorServer(monitorServer *bootstrap.MonitorServer) gin.Ha
 		proxy := &httputil.ReverseProxy{Director: director}
 		proxy.ServeHTTP(c.Writer, c.Request)
 	}
-}
-
-// checkOwner 检查负责人
-func checkOwner(c *gin.Context) bool {
-	serviceOwners := convertServiceOwners(c.Request.Header.Get("owners"))
-	if serviceOwners == nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"code": http.StatusInternalServerError,
-			"info": "权限校验错误",
-		})
-		return false
-	}
-
-	staffName := c.Request.Header.Get("Staffname")
-	for _, service := range serviceOwners {
-		if _, ok := service.Owners[staffName]; !ok {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": http.StatusInternalServerError,
-				"info": "不是资源" + service.Namespace + "/" + service.Name + "的负责人，没有操作权限",
-			})
-			return false
-		}
-	}
-	return true
-}
-
-// convertServiceOwners 处理头部owner字段
-func convertServiceOwners(headerOwner string) []*ServiceOwner {
-	var serviceOwners []*ServiceOwner
-	// 分割服务
-	services := strings.Split(headerOwner, "&")
-
-	for _, service := range services {
-		service = strings.ReplaceAll(service, ";", ",")
-		serviceSlice := strings.Split(service, ",")
-		// 命名空间+服务名+至少一个负责人，长度不能小于3
-		if len(serviceSlice) < 3 {
-			log.Infof("owner in header is %s", headerOwner)
-			return serviceOwners
-		}
-		owners := make(map[string]bool)
-		for index, item := range serviceSlice {
-			if index == 0 || index == 1 {
-				continue
-			}
-			owners[item] = true
-		}
-		item := &ServiceOwner{
-			Namespace: serviceSlice[0],
-			Name:      serviceSlice[1],
-			Owners:    owners,
-		}
-		serviceOwners = append(serviceOwners, item)
-	}
-	return serviceOwners
 }
 
 // ReverseProxyForDepartment department的反向代理

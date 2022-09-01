@@ -25,7 +25,7 @@ insertCSS(
 `,
 )
 
-const cacheDescribeLicenseStatus = once(describeLicenseStatus, ttl(30 * 60 * 1000))
+const cacheDescribeLicenseStatus = once(describeLicenseStatus, ttl(30 * 1000))
 
 type SELECTOR<T> = (globalState: any) => T
 type CREATOR<T> = (value: T) => any
