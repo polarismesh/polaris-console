@@ -8,7 +8,7 @@ export interface MenuItemConfig {
 
 export const MenuConfig: MenuItemConfig = {
   id: 'polaris',
-  title: '北极星',
+  title: '北极星服务治理',
   icon: null,
   subMenus: [
     {
@@ -19,7 +19,7 @@ export const MenuConfig: MenuItemConfig = {
     },
     {
       id: 'serviceManage',
-      title: '服务治理',
+      title: '注册中心',
       icon: null,
       subMenus: [
         {
@@ -36,28 +36,9 @@ export const MenuConfig: MenuItemConfig = {
         },
       ],
     },
-    buildConfig.configuration && {
-      id: 'configuration',
-      title: '配置中心',
-      icon: null,
-      subMenus: [
-        {
-          id: 'filegroup',
-          title: '配置分组',
-          icon: '/static/img/route-monitor.svg',
-          subMenus: null,
-        },
-        {
-          id: 'file-release-history',
-          title: '发布历史',
-          icon: '/static/img/circuit-monitor.svg',
-          subMenus: null,
-        },
-      ],
-    },
     {
       id: 'administration',
-      title: '治理中心',
+      title: '服务网格',
       icon: '',
       subMenus: [
         {
@@ -77,6 +58,25 @@ export const MenuConfig: MenuItemConfig = {
           id: 'accesslimit',
           title: '访问限流',
           icon: '/static/img/dynamic-route.svg',
+          subMenus: null,
+        },
+      ],
+    },
+    buildConfig.configuration && {
+      id: 'configuration',
+      title: '配置中心',
+      icon: null,
+      subMenus: [
+        {
+          id: 'filegroup',
+          title: '配置分组',
+          icon: '/static/img/route-monitor.svg',
+          subMenus: null,
+        },
+        {
+          id: 'file-release-history',
+          title: '发布历史',
+          icon: '/static/img/circuit-monitor.svg',
           subMenus: null,
         },
       ],
