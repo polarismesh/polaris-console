@@ -11,17 +11,34 @@ import insertCSS from '../helpers/insertCSS'
 insertCSS(
   'monaco-section',
   `
+.monaco-section-full-screen {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+}
 .monaco-section .app-tsf-alert__info{
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-}`,
+}
+.monaco-full-screen-icon {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  z-index: 9999 
+}
+`,
 )
 
 type MonacoEditorProps = Omit<CodeEditorProps, 'monaco'>
 
 export default function MonacoEditor({ style, ...props }: MonacoEditorProps) {
   const editorRef = React.useRef<{ editor: any }>(null)
+  const [isFullScreen, setFullScreen] = React.useState(false)
+  const [rect, setRect] = React.useState({ width: 0, height: 0 })
 
   const { defaultValue } = props
   const options = props.options as any
@@ -35,11 +52,48 @@ export default function MonacoEditor({ style, ...props }: MonacoEditorProps) {
   }, [defaultValue, options?.readOnly])
 
   const { FontSizeReset } = useClassNames()
+
+  function handleEscKey(evt: React.KeyboardEvent<HTMLElement>) {
+    if (evt.code === 'Escape' && isFullScreen) {
+      editorRef.current.editor.layout({
+        height: rect.height,
+        width: rect.width,
+      })
+      setFullScreen(false)
+    }
+  }
+
+  function handleFullScreen() {
+    setFullScreen(!isFullScreen)
+    if (editorRef.current) {
+      if (isFullScreen) {
+        editorRef.current.editor.layout({
+          height: rect.height,
+          width: rect.width,
+        })
+      } else {
+        const originRect: DOMRect = editorRef.current.editor._domElement.getBoundingClientRect()
+        setRect({ width: originRect.width, height: originRect.height })
+        editorRef.current.editor.layout({
+          height: document.body.clientHeight,
+          width: document.body.clientWidth,
+        })
+      }
+    }
+  }
+
   return monaco ? (
     <section
-      className='monaco-section'
+      className={`monaco-section ${isFullScreen && 'monaco-section-full-screen'}`}
       style={{ ...style, height: props.height, width: props.width, position: 'relative' }}
+      onKeyUp={handleEscKey}
     >
+      <Icon
+        className='monaco-full-screen-icon'
+        type={isFullScreen ? 'fullscreenquit' : 'fullscreen'}
+        size='l'
+        onClick={handleFullScreen}
+      />
       <CodeEditor monaco={monaco} {...props} ref={editorRef} />
     </section>
   ) : (
