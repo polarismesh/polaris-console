@@ -15,6 +15,7 @@ RUN set -eux && \
 COPY ./polaris_console_package/polaris-console /root/polaris-console
 COPY ./polaris_console_package/tool /root/tool
 COPY ./polaris_console_package/web /root/web
+COPY ./polaris_console_package/swagger-ui /root/swagger-ui
 COPY ./polaris_console_package/polaris-console.yaml /root/polaris-console.yaml
 
 EXPOSE 8080

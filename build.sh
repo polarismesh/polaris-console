@@ -46,6 +46,7 @@ mv web/dist/ ${folder_name}/web/
 mv ${bin_name} ${folder_name}
 cp polaris-console.yaml ${folder_name}
 cp -r tool/ ${folder_name}/tool/
+cp -r swagger-ui/ ${folder_name}/swagger-ui/
 zip -r "${pkg_name}" ${folder_name}
 md5sum ${pkg_name} >"${pkg_name}.md5sum"
 mv ${folder_name} "polaris_console_package"
