@@ -6,8 +6,9 @@ import { Tab, TabPanel, Tabs } from 'tea-component'
 import { TAB, TAB_LABLES } from './types'
 import BaseInfo from './info/Page'
 import Instance from './instance/Page'
-import Route from './route/Page'
 import AccessLimit from '@src/polaris/administration/accessLimiting/Page'
+import Route from '@src/polaris/administration/dynamicRoute/customRoute/Page'
+
 import CircuitBreaker from './circuitBreaker/Page'
 
 const tabs: Array<Tab> = [TAB.Instance, TAB.Route, TAB.CircuitBreaker, TAB.AccessLimit, TAB.Info].map(id => ({

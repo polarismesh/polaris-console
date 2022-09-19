@@ -47,6 +47,12 @@ export const MenuConfig: MenuItemConfig = {
           icon: '/static/img/dynamic-route.svg',
           subMenus: [
             {
+              id: 'custom-route',
+              title: '自定义路由',
+              icon: '/static/img/dynamic-route.svg',
+              subMenus: null,
+            },
+            {
               id: 'test-env-route',
               title: '测试环境路由',
               icon: '/static/img/dynamic-route.svg',
