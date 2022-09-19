@@ -84,6 +84,7 @@ export default class MonitorDuck extends Page {
       CHANGE_FILTER_CONFIG,
       FETCH_LABELS,
       SEARCH,
+      SET_STEP,
     }
     return {
       ...super.quickTypes,
@@ -116,6 +117,7 @@ export default class MonitorDuck extends Page {
           return prev
         }, {}),
       } as FilterConfig),
+      step: reduceFromPayload(types.SET_STEP, 60),
     }
   }
   get creators() {
@@ -132,6 +134,7 @@ export default class MonitorDuck extends Page {
       search: createToPayload<void>(types.SEARCH),
       fetchLabels: createToPayload<string>(types.FETCH_LABELS),
       getFilterConfig: createToPayload<void>(types.GET_MONITOR_CONFIG),
+      setStep: createToPayload<number>(types.SET_STEP),
     }
   }
   get rawSelectors() {
@@ -233,7 +236,8 @@ export default class MonitorDuck extends Page {
         }),
       ) as any
       if (!res) return
-      const { monitorFilters, metricName, start, end, step } = res
+      const { step } = selector(yield select())
+      const { monitorFilters, metricName, start, end } = res
       const queryFilterString = monitorFilters.map(item => `${item.labelKey}="${item.labelValue}"`).join(',')
       const querySumString = monitorFilters.map(item => `${item.labelKey}`).join(',')
       const query = `sum(${metricName}{${queryFilterString}}) by(${querySumString})`
@@ -298,8 +302,8 @@ export default class MonitorDuck extends Page {
         }),
       ) as any
       if (!res) return
-
-      const { monitorFilters, metricName, start, end, step } = res
+      const { step } = selector(yield select())
+      const { monitorFilters, metricName, start, end } = res
       const queryFilterString = monitorFilters.map(item => `${item.labelKey}="${item.labelValue}"`).join(',')
       const querySumString = monitorFilters.map(item => `${item.labelKey}`).join(',')
       const query = `sum(${metricName}{${queryFilterString}}) by(${querySumString}`
@@ -335,7 +339,7 @@ export default class MonitorDuck extends Page {
         filterConfig: { filterLabels, filterTime, metricNames },
       } = selector(yield select())
       const { start, end } = filterTime
-      const step = end - start < 86400 ? 60 : end - start < 86400 * 7 ? 300 : start < 86400 * 30 ? 1800 : 3600
+      const { step } = selector(yield select())
       const metricQuerySets = []
       const continueSearch = yield duck.searchPreCheck()
       if (!continueSearch) return

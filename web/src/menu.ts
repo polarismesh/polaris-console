@@ -8,7 +8,7 @@ export interface MenuItemConfig {
 
 export const MenuConfig: MenuItemConfig = {
   id: 'polaris',
-  title: '北极星',
+  title: '北极星服务治理',
   icon: null,
   subMenus: [
     {
@@ -19,7 +19,7 @@ export const MenuConfig: MenuItemConfig = {
     },
     {
       id: 'serviceManage',
-      title: '服务治理',
+      title: '注册中心',
       icon: null,
       subMenus: [
         {
@@ -32,6 +32,38 @@ export const MenuConfig: MenuItemConfig = {
           id: 'alias',
           title: '服务别名',
           icon: '/static/img/namespace.svg',
+          subMenus: null,
+        },
+      ],
+    },
+    {
+      id: 'administration',
+      title: '服务网格',
+      icon: '',
+      subMenus: [
+        {
+          id: 'dynamic-route',
+          title: '动态路由',
+          icon: '/static/img/dynamic-route.svg',
+          subMenus: [
+            {
+              id: 'custom-route',
+              title: '自定义路由',
+              icon: '/static/img/dynamic-route.svg',
+              subMenus: null,
+            },
+            {
+              id: 'test-env-route',
+              title: '测试环境路由',
+              icon: '/static/img/dynamic-route.svg',
+              subMenus: null,
+            },
+          ],
+        },
+        {
+          id: 'accesslimit',
+          title: '访问限流',
+          icon: '/static/img/dynamic-route.svg',
           subMenus: null,
         },
       ],
@@ -51,32 +83,6 @@ export const MenuConfig: MenuItemConfig = {
           id: 'file-release-history',
           title: '发布历史',
           icon: '/static/img/circuit-monitor.svg',
-          subMenus: null,
-        },
-      ],
-    },
-    {
-      id: 'administration',
-      title: '治理中心',
-      icon: '',
-      subMenus: [
-        {
-          id: 'dynamic-route',
-          title: '动态路由',
-          icon: '/static/img/dynamic-route.svg',
-          subMenus: [
-            {
-              id: 'test-env-route',
-              title: '测试环境路由',
-              icon: '/static/img/dynamic-route.svg',
-              subMenus: null,
-            },
-          ],
-        },
-        {
-          id: 'accesslimit',
-          title: '访问限流',
-          icon: '/static/img/dynamic-route.svg',
           subMenus: null,
         },
       ],

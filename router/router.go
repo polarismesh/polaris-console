@@ -31,6 +31,9 @@ func Router(config *bootstrap.Config) {
 	// 加载静态资源
 	r.Static("/static", config.WebServer.WebPath+"static")
 
+	// 加载Swagger UI
+	r.Static("/apidocs", "./swagger-ui")
+
 	// 加载界面
 	r.LoadHTMLGlob(config.WebServer.WebPath + "index.html")
 	r.GET("/", handlers.PolarisPage(config))
@@ -47,11 +50,15 @@ func Router(config *bootstrap.Config) {
 	mv1.GET("/query_range", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
 	mv1.GET("/label/:resource/values", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))
 
+	// 管理接口
+	AdminRouter(r, config)
+
 	// 鉴权请求
 	AuthRouter(r, config)
 
 	// 服务请求
-	DiscoveryRouter(r, config)
+	DiscoveryV1Router(r, config)
+	DiscoveryV2Router(r, config)
 
 	// 配置请求
 	ConfigRouter(r, config)

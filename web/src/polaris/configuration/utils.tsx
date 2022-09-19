@@ -20,3 +20,23 @@ export const replaceTags = (tagKey, changeValue, tags, optionList, tagAttribute)
     return [...tags, tag]
   }
 }
+
+/**
+ * 通用函数节流
+ *
+ * @param { Function } func
+ * @param { Number } delay
+ * @return { Function }
+ */
+export const debounce = (func, delay) => {
+  let timer
+  return function(this: any, ...args) {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this, args)
+      timer = null
+    }, delay)
+  }
+}

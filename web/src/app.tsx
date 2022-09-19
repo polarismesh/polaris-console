@@ -84,6 +84,14 @@ import LimitRuleCreatePage from '@src/polaris/administration/accessLimiting/oper
 import LimitRuleCreatePageDuck from '@src/polaris/administration/accessLimiting/operations/CreateDuck'
 const LimitRuleCreate = connectWithDuck(LimitRuleCreatePage, LimitRuleCreatePageDuck)
 
+import CustomRoutePage from '@src/polaris/administration/dynamicRoute/customRoute/Page'
+import CustomRoutePageDuck from '@src/polaris/administration/dynamicRoute/customRoute/PageDuck'
+const CustomRoute = connectWithDuck(CustomRoutePage, CustomRoutePageDuck)
+
+import CustomRouteCreatePage from '@src/polaris/administration/dynamicRoute/customRoute/operations/Create'
+import CustomRouteCreatePageDuck from '@src/polaris/administration/dynamicRoute/customRoute/operations/CreateDuck'
+const CustomRouteCreate = connectWithDuck(CustomRouteCreatePage, CustomRouteCreatePageDuck as any)
+
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1])
@@ -220,6 +228,8 @@ export default function root() {
               <Route exact path='/alias' component={ServiceAlias} />
               <Route exact path='/test-env-route' component={TestEnvRoutePage} />
               <Route exact path='/accesslimit' component={AccessLimiting} />
+              <Route exact path='/custom-route' component={CustomRoute} />
+              <Route exact path='/custom-route-create' component={CustomRouteCreate} />
             </Switch>
           </Content>
         </Body>
