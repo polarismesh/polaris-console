@@ -15,7 +15,7 @@ interface Props {
 insertCSS(
   'monaco-section-file-diff',
   `
-  .monaco-fileo-diff-full-screen-icon {
+  .monaco-file-diff-full-screen-icon {
     position: absolute;
     right: -2px;
     top: 8px;
@@ -101,7 +101,7 @@ export default function FileDiff(props: Props) {
 
         <Col style={{ position: 'relative' }}>
           <Icon
-            className='monaco-fileo-diff-full-screen-icon'
+            className='monaco-file-diff-full-screen-icon'
             type={isFullScreen ? 'fullscreenquit' : 'fullscreen'}
             size='l'
             onClick={handleFullScreen}
