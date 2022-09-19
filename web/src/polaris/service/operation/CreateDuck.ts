@@ -4,13 +4,14 @@ import { put, select } from 'redux-saga/effects'
 import { createService, modifyServices, describeNamespaces } from '../model'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { NamespaceItem } from '../PageDuck'
-import { isReadOnly, isReadOnlyNamespace } from '../utils'
+import { isReadOnlyNamespace } from '../utils'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeGovernanceStrategies, AuthStrategy } from '@src/polaris/auth/model'
 import { UserSelectDuck } from '@src/polaris/auth/userGroup/operation/CreateDuck'
 import { UserGroupSelectDuck } from '@src/polaris/auth/user/operation/AttachUserGroupDuck'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { DescribeStrategyOption } from '@src/polaris/auth/constants'
+import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -18,15 +19,7 @@ export interface DialogOptions {
   authOpen: boolean
 }
 export const enableNearbyString = 'internal-enable-nearby'
-const convertMetaData = metaData => {
-  let metaDataString = ''
-  Object.keys(metaData).forEach((key, index, arr) => {
-    if (key !== enableNearbyString) {
-      metaDataString += `${key}:${metaData[key]}${index < arr.length ? '\n' : ''}`
-    }
-  })
-  return metaDataString
-}
+
 export default class CreateDuck extends FormDialog {
   Options: DialogOptions
   get Form() {
@@ -60,12 +53,11 @@ export default class CreateDuck extends FormDialog {
     const values = form.selectors.values(yield select())
     const { removeArray: removeUserIds } = diffAddRemoveArray(originUsers, userIds)
     const { removeArray: removeGroupIds } = diffAddRemoveArray(originGroups, groupIds)
-    const metaData = {}
-    const tags = values.metadata.split('\n')
-    tags.forEach(tag => {
-      const [key, value] = tag.split(':')
-      metaData[key] = value
-    })
+    const metaData: Record<string, string> = values.metadata.reduce((preV, curV) => {
+      preV[curV.key] = curV.value
+      return preV
+    }, {})
+
     if (values.enableNearby) {
       metaData[enableNearbyString] = 'true'
     }
@@ -177,8 +169,6 @@ export default class CreateDuck extends FormDialog {
     yield put(
       form.creators.setValues({
         ...data,
-        metadata: convertMetaData(data.metadata || {}),
-        enableNearby: data.metadata && !!data.metadata[enableNearbyString],
       }),
     )
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel
@@ -190,7 +180,7 @@ export interface Values {
   business: string
   enableNearby: boolean
   comment: string
-  metadata: string
+  metadata: Array<KeyValuePair>
   ports: string
   department: string
   id?: string

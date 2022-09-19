@@ -25,6 +25,7 @@ import {
   HEALTH_CHECK_METHOD_OPTIONS,
   BATCH_EDIT_TYPE,
 } from "../types";
+import { TagTable } from "@src/polaris/common/components/TagTable";
 
 insertCSS('service-detail-edit-instance', `
 .service-instance-location .tea-form__controls .tea-form__item {
@@ -203,86 +204,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             </>
           }
         >
-          <Table
-            verticalTop
-            records={[...metadata.asArray()]}
-            columns={[
-              {
-                key: 'tagName',
-                header: '标签名',
-                width: '150px',
-                render: item => {
-                  const { key } = item.getFields(['key'])
-                  const validate = key.getTouched() && key.getError()
-                  return (
-                    <>
-                      <FormControl
-                        status={validate ? 'error' : null}
-                        message={validate ? key.getError() : ''}
-                        showStatusIcon={false}
-                        style={{ padding: 0, display: 'block' }}
-                      >
-                        <Input size='m' field={key} placeholder="key 最长不超过128个字符" />
-                      </FormControl>
-                    </>
-                  )
-                },
-              },
-              {
-                key: 'tagValue',
-                header: '标签值',
-                render: item => {
-                  const { value } = item.getFields(['value'])
-                  const validate = value.getTouched() && value.getError()
-                  return (
-                    <>
-                      <FormControl
-                        status={validate ? 'error' : null}
-                        message={validate ? value.getError() : ''}
-                        showStatusIcon={false}
-                        style={{ padding: 0, display: 'block' }}
-                      >
-                        <Input size='m' field={value} placeholder="value 最长不超过4096个字符" />
-                      </FormControl>
-                    </>
-                  )
-                },
-              },
-              {
-                key: 'close',
-                header: '删除',
-                width: '80px',
-                render: (item, rowKey, recordIndex) => {
-                  const index = Number(recordIndex)
-                  const length = [...metadata.asArray()].length
-                  return (
-                    <>
-                      <Button
-                        disabled={length < 2}
-                        title={'删除'}
-                        icon={'close'}
-                        onClick={() => metadata.asArray().remove(index)}
-                      />
-                    </>
-                  )
-                },
-              },
-            ]}
-            bordered
-            bottomTip={
-              <Button
-                type='link'
-                onClick={() => {
-                  metadata.asArray().push({
-                    key: '',
-                    value: '',
-                  })
-                }}
-              >
-                新增
-              </Button>
-            }
-          />
+          <TagTable tags={metadata} />
         </FormItem>
         <FormItem
           label="地域信息"

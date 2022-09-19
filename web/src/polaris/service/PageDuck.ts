@@ -6,7 +6,7 @@ import { takeLatest } from 'redux-saga-catch'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '../common/helpers/showDialog'
 import Create from './operation/Create'
-import CreateDuck from './operation/CreateDuck'
+import CreateDuck, { enableNearbyString } from './operation/CreateDuck'
 import { put, select } from 'redux-saga/effects'
 import { Modal, TagValue } from 'tea-component'
 import { checkAuth } from '../auth/model'
@@ -51,6 +51,11 @@ export interface NamespaceItem extends Namespace {
 export interface ServiceItem extends Service {
   id: string
 }
+
+const convertMetaData = (metaData: Record<string, string>): KeyValuePair[] => {
+  return Object.entries(metaData).map(([key, value]) => ({ key, value }))
+}
+
 export default class ServicePageDuck extends GridPageDuck {
   Filter: Filter
   Item: ServiceItem
@@ -109,7 +114,17 @@ export default class ServicePageDuck extends GridPageDuck {
     return {
       ...super.creators,
       setCustomFilters: createToPayload<CustomFilters>(types.SET_CUSTOM_FILTERS),
-      edit: createToPayload<Service>(types.EDIT),
+      edit: (payload: Service) => {
+        return {
+          type: types.EDIT,
+          payload: {
+            ...payload,
+            enableNearby: payload.metadata && !!payload.metadata[enableNearbyString],
+            metadata: convertMetaData(payload.metadata).filter(item => item.key !== enableNearbyString),
+          },
+        }
+      },
+      //  createToPayload<Service>(types.EDIT),
       remove: createToPayload<Service[]>(types.REMOVE),
       create: createToPayload<void>(types.CREATE),
       setSelection: createToPayload<string[]>(types.SET_SELECTION),
