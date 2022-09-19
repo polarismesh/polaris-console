@@ -457,11 +457,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   }) || []),
                                   ...(destinationService.getValue()
                                     ? [
-                                        {
-                                          text: `${destinationService.getValue()}(输入值)`,
-                                          value: destinationService.getValue(),
-                                        },
-                                      ]
+                                      {
+                                        text: `${destinationService.getValue()}(输入值)`,
+                                        value: destinationService.getValue(),
+                                      },
+                                    ]
                                     : []),
                                 ]),
                               ]}
