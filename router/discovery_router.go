@@ -23,10 +23,10 @@ import (
 	"github.com/polarismesh/polaris-console/handlers"
 )
 
-// DiscoveryRouter 路由请求
-func DiscoveryRouter(r *gin.Engine, config *bootstrap.Config) {
+// DiscoveryV1Router 路由请求
+func DiscoveryV1Router(r *gin.Engine, config *bootstrap.Config) {
 	// 后端server路由组
-	v1 := r.Group(config.WebServer.NamingURL)
+	v1 := r.Group(config.WebServer.NamingV1URL)
 	// 创建命名空间
 	v1.POST("/namespaces", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 创建服务
@@ -62,6 +62,8 @@ func DiscoveryRouter(r *gin.Engine, config *bootstrap.Config) {
 	v1.GET("/:resource/aliases", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 查看Token，需要鉴权
 	v1.GET("/:resource/token", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 查询实例的标签列表
+	v1.GET("/:resource/labels", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	// 修改资源
 	v1.PUT("/:resource", handlers.ReverseProxyForServer(&config.PolarisServer, config))
@@ -88,4 +90,20 @@ func DiscoveryRouter(r *gin.Engine, config *bootstrap.Config) {
 	v1.POST("circuitbreakers/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 解绑熔断规则
 	v1.POST("circuitbreakers/unbind", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+}
+
+// DiscoveryV2Router 路由请求
+func DiscoveryV2Router(r *gin.Engine, config *bootstrap.Config) {
+	// 后端server路由组
+	v2 := r.Group(config.WebServer.NamingV2URL)
+	// 创建路由
+	v2.POST("/routings", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 查看资源
+	v2.GET("/routings", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 修改资源
+	v2.PUT("/routings", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 激活规则
+	v2.PUT("/routings/enable", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 删除路由规则
+	v2.POST("/routings/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 }

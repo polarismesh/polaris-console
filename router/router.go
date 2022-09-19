@@ -57,7 +57,8 @@ func Router(config *bootstrap.Config) {
 	AuthRouter(r, config)
 
 	// 服务请求
-	DiscoveryRouter(r, config)
+	DiscoveryV1Router(r, config)
+	DiscoveryV2Router(r, config)
 
 	// 配置请求
 	ConfigRouter(r, config)
