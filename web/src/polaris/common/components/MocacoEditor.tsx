@@ -11,25 +11,25 @@ import insertCSS from '../helpers/insertCSS'
 insertCSS(
   'monaco-section',
   `
-.monaco-section-full-screen {
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9998;
-}
-.monaco-section .app-tsf-alert__info{
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.monaco-full-screen-icon {
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  z-index: 9999 
-}
+  .monaco-section-full-screen {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9998;
+  }
+  .monaco-section .app-tsf-alert__info{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .monaco-full-screen-icon {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    z-index: 1 
+  }
 `,
 )
 
