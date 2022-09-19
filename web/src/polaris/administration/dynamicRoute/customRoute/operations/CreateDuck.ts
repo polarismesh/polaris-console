@@ -10,7 +10,7 @@ import { delay } from 'redux-saga'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
 import { createCustomRoute, CustomRoute, describeCustomRoute, modifyCustomRoute } from '../model'
-import { RouteLabelMatchType, RouteLabelType } from '../types'
+import { RouteLabelMatchType, RoutingArgumentsType } from '../types'
 import { describeInstanceLabels } from '@src/polaris/service/detail/instance/model'
 
 interface ComposedId {
@@ -111,7 +111,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
     const { types, ducks, selectors } = this
 
     // 规则创建
-    yield takeLatest(types.SUBMIT, function*() {
+    yield takeLatest(types.SUBMIT, function* () {
       try {
         yield* ducks.form.submit()
       } catch (e) {
@@ -159,6 +159,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
         destination: undefined,
       }
 
+      delete params['@type']
       let result
       if (id) {
         result = yield modifyCustomRoute([params])
@@ -177,7 +178,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
     })
 
     // 规则编辑
-    yield takeLatest(types.SET_ID, function*(action) {
+    yield takeLatest(types.SET_ID, function* (action) {
       if (action.payload) {
         let ruleDetailInfo: Values = null
         const result = yield describeCustomRoute({
@@ -218,7 +219,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
       }
     })
 
-    yield takeEvery([ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE], function*(action) {
+    yield takeEvery([ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE], function* (action) {
       const type = action.type === ducks.form.types.SET_SOURCE_SERVICE ? 'source' : 'destination'
       const setLabelListType =
         action.type === ducks.form.types.SET_SOURCE_SERVICE
@@ -412,7 +413,7 @@ export class RouteCreateDuck extends Form {
         namespace: '',
         arguments: [
           {
-            type: RouteLabelType.CUSTOM,
+            type: RoutingArgumentsType.CUSTOM,
             key: '',
             value: '',
             operator: RouteLabelMatchType.EXACT,

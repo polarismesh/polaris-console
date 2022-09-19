@@ -24,7 +24,7 @@ import { TAB } from '@src/polaris/service/detail/types'
 import CreateDuck, { RouteDestinationArgument, RouteSourceArgument } from './CreateDuck'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
-import { RouteLabelMatchType, RouteLabelType, RouteLabelMatchTypeOptions } from '../types'
+import { RouteLabelMatchType, RouteLabelMatchTypeOptions, RoutingArgumentsTypeOptions, RoutingArgumentsType } from '../types'
 
 insertCSS(
   'create-rule-form',
@@ -281,6 +281,35 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 records={[...argumentsField.asArray()]}
                                 columns={[
                                   {
+                                    key: 'type',
+                                    header: '类型',
+                                    render: item => {
+                                      const { type, key } = item.getFields(['type', 'key'])
+                                      const validate = type.getTouched() && type.getError()
+                                      return (
+                                        <FormControl
+                                          status={validate ? 'error' : null}
+                                          message={validate ? type.getError() : ''}
+                                          showStatusIcon={false}
+                                          style={{ display: 'inline', padding: 0 }}
+                                        >
+                                          <Select
+                                            options={RoutingArgumentsTypeOptions}
+                                            value={type.getValue()}
+                                            onChange={value => {
+                                              type.setValue(RoutingArgumentsType[value])
+                                              key.setValue('')
+                                            }}
+                                            type={'simulate'}
+                                            appearance={'button'}
+                                            matchButtonWidth
+                                            size='m'
+                                          ></Select>
+                                        </FormControl>
+                                      )
+                                    },
+                                  },
+                                  {
                                     key: 'key',
                                     header: 'key',
                                     render: item => {
@@ -343,7 +372,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 type='link'
                                 onClick={() =>
                                   argumentsField.asArray().push({
-                                    type: RouteLabelType.CUSTOM,
+                                    type: RoutingArgumentsType.CUSTOM,
                                     key: '',
                                     value: '',
                                     operator: RouteLabelMatchType.EXACT,
@@ -412,11 +441,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   }) || []),
                                   ...(destinationService.getValue()
                                     ? [
-                                        {
-                                          text: `${destinationService.getValue()}(输入值)`,
-                                          value: destinationService.getValue(),
-                                        },
-                                      ]
+                                      {
+                                        text: `${destinationService.getValue()}(输入值)`,
+                                        value: destinationService.getValue(),
+                                      },
+                                    ]
                                     : []),
                                 ]),
                               ]}
