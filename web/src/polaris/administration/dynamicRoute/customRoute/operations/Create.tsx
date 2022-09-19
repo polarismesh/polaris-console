@@ -14,6 +14,7 @@ import {
   Col,
   Row,
   Text,
+  Bubble,
 } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
@@ -24,7 +25,12 @@ import { TAB } from '@src/polaris/service/detail/types'
 import CreateDuck, { RouteDestinationArgument, RouteSourceArgument } from './CreateDuck'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
-import { RouteLabelMatchType, RouteLabelMatchTypeOptions, RoutingArgumentsTypeOptions, RoutingArgumentsType } from '../types'
+import {
+  RouteLabelMatchType,
+  RouteLabelMatchTypeOptions,
+  RoutingArgumentsTypeOptions,
+  RoutingArgumentsType,
+} from '../types'
 
 insertCSS(
   'create-rule-form',
@@ -72,33 +78,36 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     const labelList = [...(type === 'source' ? sourceLabelList : destinationLabelList)]
     if (keyField.getValue()) labelList.push({ text: `${keyField.getValue()}(输入值)`, value: keyField.getValue() })
     return (
-      <FormControl
-        status={keyValidate ? 'error' : null}
-        message={keyValidate ? keyField.getError() : ''}
-        showStatusIcon={false}
-        style={{ display: 'inline', padding: 0 }}
-      >
-        <AutoComplete
-          options={labelList}
-          tips='没有匹配的标签键'
-          onChange={value => {
-            if (value !== keyField.getValue()) {
-              valueField.setValue('')
-            }
-            keyField.setValue(value)
-          }}
+      <Bubble content={keyField.getValue()}>
+        <FormControl
+          status={keyValidate ? 'error' : null}
+          message={keyValidate ? keyField.getError() : ''}
+          showStatusIcon={false}
+          style={{ display: 'inline', padding: 0 }}
         >
-          {ref => (
-            <TeaInput
-              ref={ref}
-              value={keyField.getValue()}
-              onChange={value => {
-                keyField.setValue(value)
-              }}
-            />
-          )}
-        </AutoComplete>
-      </FormControl>
+          <AutoComplete
+            options={labelList}
+            tips='没有匹配的标签键'
+            onChange={value => {
+              if (value !== keyField.getValue()) {
+                valueField.setValue('')
+              }
+              keyField.setValue(value)
+            }}
+          >
+            {ref => (
+              <TeaInput
+                ref={ref}
+                value={keyField.getValue()}
+                onChange={value => {
+                  keyField.setValue(value)
+                }}
+                placeholder={'请输入标签键'}
+              />
+            )}
+          </AutoComplete>
+        </FormControl>
+      </Bubble>
     )
   }
 
@@ -110,30 +119,33 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     if (valueField.getValue())
       valueOptions.push({ text: `${valueField.getValue()}(输入值)`, value: valueField.getValue() })
     return (
-      <FormControl
-        status={valueValidate ? 'error' : null}
-        message={valueValidate ? valueField.getError() : ''}
-        showStatusIcon={false}
-        style={{ display: 'inline', padding: 0 }}
-      >
-        <AutoComplete
-          options={valueOptions}
-          tips='没有匹配的标签值'
-          onChange={value => {
-            valueField.setValue(value)
-          }}
+      <Bubble content={valueField.getValue()}>
+        <FormControl
+          status={valueValidate ? 'error' : null}
+          message={valueValidate ? valueField.getError() : ''}
+          showStatusIcon={false}
+          style={{ display: 'inline', padding: 0 }}
         >
-          {ref => (
-            <TeaInput
-              ref={ref}
-              value={valueField.getValue()}
-              onChange={value => {
-                valueField.setValue(value)
-              }}
-            />
-          )}
-        </AutoComplete>
-      </FormControl>
+          <AutoComplete
+            options={valueOptions}
+            tips='没有匹配的标签值'
+            onChange={value => {
+              valueField.setValue(value)
+            }}
+          >
+            {ref => (
+              <TeaInput
+                ref={ref}
+                value={valueField.getValue()}
+                onChange={value => {
+                  valueField.setValue(value)
+                }}
+                placeholder={'请输入标签值'}
+              />
+            )}
+          </AutoComplete>
+        </FormControl>
+      </Bubble>
     )
   }
 
@@ -286,26 +298,30 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                     render: item => {
                                       const { type, key } = item.getFields(['type', 'key'])
                                       const validate = type.getTouched() && type.getError()
+                                      const option = RoutingArgumentsTypeOptions.find(
+                                        item => item.value === type.getValue(),
+                                      )
                                       return (
-                                        <FormControl
-                                          status={validate ? 'error' : null}
-                                          message={validate ? type.getError() : ''}
-                                          showStatusIcon={false}
-                                          style={{ display: 'inline', padding: 0 }}
-                                        >
-                                          <Select
-                                            options={RoutingArgumentsTypeOptions}
-                                            value={type.getValue()}
-                                            onChange={value => {
-                                              type.setValue(RoutingArgumentsType[value])
-                                              key.setValue('')
-                                            }}
-                                            type={'simulate'}
-                                            appearance={'button'}
-                                            matchButtonWidth
-                                            size='m'
-                                          ></Select>
-                                        </FormControl>
+                                        <Bubble content={option.text}>
+                                          <FormControl
+                                            status={validate ? 'error' : null}
+                                            message={validate ? type.getError() : ''}
+                                            showStatusIcon={false}
+                                            style={{ display: 'inline', padding: 0 }}
+                                          >
+                                            <Select
+                                              options={RoutingArgumentsTypeOptions}
+                                              value={type.getValue()}
+                                              onChange={value => {
+                                                type.setValue(RoutingArgumentsType[value])
+                                                key.setValue('')
+                                              }}
+                                              type={'simulate'}
+                                              appearance={'button'}
+                                              size={'full'}
+                                            ></Select>
+                                          </FormControl>
+                                        </Bubble>
                                       )
                                     },
                                   },
@@ -441,11 +457,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   }) || []),
                                   ...(destinationService.getValue()
                                     ? [
-                                      {
-                                        text: `${destinationService.getValue()}(输入值)`,
-                                        value: destinationService.getValue(),
-                                      },
-                                    ]
+                                        {
+                                          text: `${destinationService.getValue()}(输入值)`,
+                                          value: destinationService.getValue(),
+                                        },
+                                      ]
                                     : []),
                                 ]),
                               ]}
@@ -481,10 +497,24 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             'labels',
                             'isolate',
                           ])
+                          const nameValidate = name.getTouched() && name.getError()
                           return (
                             <Card key={index} bordered>
                               <Card.Body
-                                title={<Input field={name} placeholder={'请输入实例分组名称'}></Input>}
+                                title={
+                                  <FormControl
+                                    style={{ paddingBottom: '0px' }}
+                                    status={nameValidate ? 'error' : null}
+                                    message={nameValidate ? name.getError() : ''}
+                                    showStatusIcon={false}
+                                  >
+                                    <TeaInput
+                                      value={name.getValue()}
+                                      onChange={v => name.setValue(v)}
+                                      placeholder={'请输入实例分组名称'}
+                                    ></TeaInput>
+                                  </FormControl>
+                                }
                                 operation={
                                   <>
                                     <Button
