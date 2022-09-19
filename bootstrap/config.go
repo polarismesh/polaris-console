@@ -77,15 +77,16 @@ type Config struct {
 
 // WebServer web server配置
 type WebServer struct {
-	Mode       string `yaml:"mode"`
-	ListenIP   string `yaml:"listenIP"`
-	ListenPort int    `yaml:"listenPort"`
-	NamingURL  string `yaml:"namingURL"`
-	AuthURL    string `yaml:"authURL"`
-	MonitorURL string `yaml:"monitorURL"`
-	ConfigURL  string `yaml:"configURL"`
-	WebPath    string `yaml:"webPath"`
-	JWT        JWT    `yaml:"jwt"`
+	Mode        string `yaml:"mode"`
+	ListenIP    string `yaml:"listenIP"`
+	ListenPort  int    `yaml:"listenPort"`
+	NamingV1URL string `yaml:"namingV1URL"`
+	NamingV2URL string `yaml:"namingV2URL"`
+	AuthURL     string `yaml:"authURL"`
+	MonitorURL  string `yaml:"monitorURL"`
+	ConfigURL   string `yaml:"configURL"`
+	WebPath     string `yaml:"webPath"`
+	JWT         JWT    `yaml:"jwt"`
 }
 
 // JWT jwtToken 相关的配置
