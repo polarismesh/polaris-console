@@ -194,9 +194,9 @@ export default class CustomRouteDuck extends GridPageDuck {
           })
           if (confirm) {
             if (disable) {
-              yield disableCustomRoute([{ id: item.id }])
+              yield disableCustomRoute([{ id: item.id, enable: false }])
             } else {
-              yield enableCustomRoute([{ id: item.id }])
+              yield enableCustomRoute([{ id: item.id, enable: true }])
             }
             yield put(creators.reload())
           }

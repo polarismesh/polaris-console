@@ -109,6 +109,7 @@ export async function deleteCustomRoute(params: DeleteCustomRouteParams[]) {
 }
 export interface EnableCustomRouteParams {
   id: string
+  enable: boolean
 }
 export async function enableCustomRoute(params: EnableCustomRouteParams[]) {
   const res = await putApiRequest<any>({
@@ -120,10 +121,11 @@ export async function enableCustomRoute(params: EnableCustomRouteParams[]) {
 
 export interface DisableCustomRouteParams {
   id: string
+  enable: boolean
 }
 export async function disableCustomRoute(params: DisableCustomRouteParams[]) {
   const res = await putApiRequest<any>({
-    action: 'naming/v2/routings/disable',
+    action: 'naming/v2/routings/enable',
     data: params,
   })
   return res
