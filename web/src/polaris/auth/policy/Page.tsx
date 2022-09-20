@@ -23,7 +23,7 @@ import {
 } from 'tea-component'
 import { autotip, scrollable } from 'tea-component/lib/table/addons'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
-import { isOwner } from '@src/polaris/common/util/common'
+import { getOwnerUin, isOwner } from '@src/polaris/common/util/common'
 import router from '@src/polaris/common/util/router'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
 import { AuthStrategy } from '../model'
@@ -102,9 +102,17 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
   }))
   const defaultList = authList.filter(item => item.default_strategy)
   const customList = authList.filter(item => !item.default_strategy)
+  const isCurrAuthItemOwnerDefaultPrinciple =
+    currentAuthItem?.default_strategy &&
+    currentAuthItem?.principals?.users?.length === 1 &&
+    currentAuthItem?.principals?.users?.[0]?.id === getOwnerUin()
   const renderListItem = (item: AuthStrategy) => {
     const principalType = item.name.indexOf('用户组') > -1 ? AuthSubjectType.USERGROUP : AuthSubjectType.USER
     const isActive = item.id === currentAuthItem.id
+    const isOwnerDefaultPrinciple =
+      item.default_strategy &&
+      item?.principals?.users?.length === 1 &&
+      item?.principals?.users?.[0]?.id === getOwnerUin()
     return (
       <ListItem
         key={item.id}
@@ -142,7 +150,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
         </Text>
         <Dropdown button={<Button type='icon' icon='more' />} appearance='pure'>
           <List type='option'>
-            <ListItem onClick={() => handlers.modify(item.id)}>
+            <ListItem onClick={() => handlers.modify(item.id)} disabled={isOwnerDefaultPrinciple}>
               <Text> {'编辑'}</Text>
             </ListItem>
             <ListItem onClick={() => handlers.delete(item.id)} disabled={item.default_strategy}>
@@ -217,7 +225,11 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                   !isInDetailpage &&
                   isOwner() && (
                     <>
-                      <Button type='link' onClick={() => handlers.modify(currentAuthItem.id)}>
+                      <Button
+                        type='link'
+                        onClick={() => handlers.modify(currentAuthItem.id)}
+                        disabled={isCurrAuthItemOwnerDefaultPrinciple}
+                      >
                         {'编辑'}
                       </Button>
                       <Button
