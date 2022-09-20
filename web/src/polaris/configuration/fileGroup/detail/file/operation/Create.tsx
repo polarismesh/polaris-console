@@ -5,6 +5,7 @@ import { Form, Select, FormItem, Table, FormControl, Button } from 'tea-componen
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
+import { TagTable } from '@src/polaris/common/components/TagTable'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -122,86 +123,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
         </FormField>
         <FormItem label={'配置标签'}>
-          <Table
-            verticalTop
-            records={[...tags.asArray()]}
-            columns={[
-              {
-                key: 'tagName',
-                header: '标签名',
-                width: '150px',
-                render: item => {
-                  const { key } = item.getFields(['key'])
-                  const validate = key.getTouched() && key.getError()
-                  return (
-                    <>
-                      <FormControl
-                        status={validate ? 'error' : null}
-                        message={validate ? key.getError() : ''}
-                        showStatusIcon={false}
-                        style={{ padding: 0, display: 'block' }}
-                      >
-                        <Input size='m' field={key} />
-                      </FormControl>
-                    </>
-                  )
-                },
-              },
-              {
-                key: 'tagValue',
-                header: '标签值',
-                render: item => {
-                  const { value } = item.getFields(['value'])
-                  const validate = value.getTouched() && value.getError()
-                  return (
-                    <>
-                      <FormControl
-                        status={validate ? 'error' : null}
-                        message={validate ? value.getError() : ''}
-                        showStatusIcon={false}
-                        style={{ padding: 0, display: 'block' }}
-                      >
-                        <Input size='m' field={value} />
-                      </FormControl>
-                    </>
-                  )
-                },
-              },
-              {
-                key: 'close',
-                header: '删除',
-                width: '80px',
-                render: (item, rowKey, recordIndex) => {
-                  const index = Number(recordIndex)
-                  const length = [...tags.asArray()].length
-                  return (
-                    <>
-                      <Button
-                        disabled={length < 2}
-                        title={'删除'}
-                        icon={'close'}
-                        onClick={() => tags.asArray().remove(index)}
-                      />
-                    </>
-                  )
-                },
-              },
-            ]}
-            bordered
-            bottomTip={
-              <Button
-                type='link'
-                onClick={() => {
-                  tags.asArray().push({
-                    key: '',
-                    value: '',
-                  })
-                }}
-              >
-                新增
-              </Button>
-            }
-          />
+          <TagTable tags={tags} />
         </FormItem>
       </Form>
     </>

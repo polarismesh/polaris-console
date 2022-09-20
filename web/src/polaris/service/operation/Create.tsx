@@ -1,12 +1,13 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
-import { Form, Select, Text, Icon, Bubble, Button, FormItem } from 'tea-component'
+import { Form, Select, Text, Icon, Bubble, Button, FormItem, Table, FormControl } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import ResourcePrincipalAuth from '@src/polaris/auth/user/operation/ResourcePrincipalAuth'
+import { TagTable } from '@src/polaris/common/components/TagTable'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -77,8 +78,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         <FormField field={enableNearby} label={'开启就近访问'}>
           <Switch field={enableNearby} />
         </FormField>
-        <FormField
-          field={metadata}
+        <FormItem
           label={
             <>
               <Text>服务标签</Text>
@@ -88,13 +88,8 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             </>
           }
         >
-          <Input
-            field={metadata}
-            placeholder={'每个key最长不超过128个字符，每个value最长不超过4096个字符,标签数量不能超过64个'}
-            multiline
-            size={'l'}
-          />
-        </FormField>
+          <TagTable tags={metadata} />
+        </FormItem>
         <FormField field={comment} label={'描述'}>
           <Input
             field={comment}
