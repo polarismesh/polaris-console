@@ -19,6 +19,8 @@ import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
 import { describeServices } from '@src/polaris/service/model'
 import { notification } from 'tea-component'
 import router from '@src/polaris/common/util/router'
+import { ConfigFileGroup } from '@src/polaris/configuration/fileGroup/types'
+import { describeConfigFileGroups } from '@src/polaris/configuration/fileGroup/model'
 
 interface ComposedId {
   id: string
@@ -66,6 +68,7 @@ export default abstract class CreateDuck extends DetailPage {
       userGroup: UserGroupSelectDuck,
       namespace: NamespaceSelectDuck,
       service: ServiceSelectDuck,
+      configGroup: ConfigurationSelectDuck,
     }
   }
   get reducers() {
@@ -108,6 +111,7 @@ export default abstract class CreateDuck extends DetailPage {
         userGroup: { selection: userGroupSelection },
         namespace: { selection: namespaceSelection },
         service: { selection: serviceSelection },
+        configGroup: { selection: configGroupSelection },
         originPolicy,
       } = selector(yield select())
       const values = ducks.form.selectors.values(yield select())
@@ -115,10 +119,11 @@ export default abstract class CreateDuck extends DetailPage {
       if (id) {
         const {
           principals: { users: originUsers, groups: originUserGroups },
-          resources: { namespaces: originNamespaces, services: originServices },
+          resources: { namespaces: originNamespaces, services: originServices, config_groups: originConfigGroup },
         } = originPolicy
         const isOriginAllNamespace = !!originNamespaces.find(item => item.id === '*')
         const isOriginAllService = !!originServices.find(item => item.id === '*')
+        const isOriginAllConfigGroup = !!originConfigGroup.find(item => item.id === '*')
         const { addArray: addUsers, removeArray: removeUsers } = diffAddRemoveArray(
           originUsers.map(item => item.id),
           userSelection.map(item => item.id),
@@ -134,6 +139,10 @@ export default abstract class CreateDuck extends DetailPage {
         let { addArray: addServices, removeArray: removeServices } = diffAddRemoveArray(
           originServices.map(item => item.id),
           serviceSelection.map(item => item.id),
+        )
+        let { addArray: addConfigGroup, removeArray: removeConfigGroup } = diffAddRemoveArray(
+          originConfigGroup.map(item => item.id),
+          configGroupSelection.map(item => item.id),
         )
         if (values.useAllNamespace && !isOriginAllNamespace) {
           addNamespaces = ['*']
@@ -154,6 +163,14 @@ export default abstract class CreateDuck extends DetailPage {
           addServices = serviceSelection.filter(item => item.id !== '*').map(item => item.id)
           removeServices = ['*']
         }
+        if (!isOriginAllConfigGroup && values.useAllConfigGroup) {
+          addConfigGroup = ['*']
+          removeConfigGroup = originConfigGroup.map(item => item.id)
+        }
+        if (isOriginAllConfigGroup && !values.useAllConfigGroup) {
+          addConfigGroup = configGroupSelection.filter(item => item.id !== '*').map(item => item.id)
+          removeConfigGroup = ['*']
+        }
         if (isOriginAllService && values.useAllService) {
           removeServices = []
         }
@@ -167,6 +184,7 @@ export default abstract class CreateDuck extends DetailPage {
             add_resources: {
               namespaces: addNamespaces.map(item => ({ id: item })),
               services: addServices.map(item => ({ id: item })),
+              config_groups: addConfigGroup.map(id => ({ id })),
             },
             remove_principals: {
               users: removeUsers.map(item => ({ id: item })),
@@ -175,6 +193,7 @@ export default abstract class CreateDuck extends DetailPage {
             remove_resources: {
               namespaces: removeNamespaces.map(item => ({ id: item })),
               services: removeServices.map(item => ({ id: item })),
+              config_groups: removeConfigGroup.map(id => ({ id })),
             },
             comment: values.comment,
           },
@@ -197,6 +216,9 @@ export default abstract class CreateDuck extends DetailPage {
               ? [{ id: '*' }]
               : namespaceSelection.map(item => ({ id: item.name, namespace: item.name })),
             services: values.useAllService ? [{ id: '*' }] : serviceSelection.map(item => ({ id: item.id })),
+            config_groups: values.useAllConfigGroup
+              ? [{ id: '*' }]
+              : configGroupSelection.map(item => ({ id: item.id })),
           },
           comment: values.comment,
         })
@@ -209,11 +231,12 @@ export default abstract class CreateDuck extends DetailPage {
       }
     })
     yield takeLatest(types.FETCH_DONE, function*(action) {
-      const { form, user, userGroup, namespace, service } = ducks
+      const { form, user, userGroup, namespace, service, configGroup } = ducks
       yield put(user.creators.load({}))
       yield put(userGroup.creators.load({}))
       yield put(namespace.creators.load({}))
       yield put(service.creators.load({}))
+      yield put(configGroup.creators.load({}))
       if (!action.payload.id) return
       const policy = action.payload as AuthStrategy
       yield put({ type: types.SET_ORIGIN_POLICY, payload: policy })
@@ -222,12 +245,20 @@ export default abstract class CreateDuck extends DetailPage {
       yield put(form.creators.setValue('id', policy.id))
       yield put(form.creators.setValue('useAllNamespace', !!policy.resources.namespaces.find(item => item.id === '*')))
       yield put(form.creators.setValue('useAllService', !!policy.resources.services.find(item => item.id === '*')))
+      yield put(
+        form.creators.setValue('useAllConfigGroup', !!policy.resources.config_groups.find(item => item.id === '*')),
+      )
       yield put(user.creators.select(policy.principals.users))
       yield put(userGroup.creators.select(policy.principals.groups))
       yield put(
         namespace.creators.select(policy.resources.namespaces.filter(item => item.id !== '*') as NamespaceItem[]),
       )
       yield put(service.creators.select(policy.resources.services.filter(item => item.id !== '*') as Service[]))
+      yield put(
+        configGroup.creators.select(
+          policy.resources.config_groups.filter(item => item.id !== '*') as ConfigFileGroup[],
+        ),
+      )
     })
   }
   async getData(composedId) {
@@ -241,6 +272,7 @@ export interface Fvalues {
   name: string
   useAllNamespace: boolean
   useAllService: boolean
+  useAllConfigGroup: boolean
   comment: string
   id: string
 }
@@ -357,6 +389,31 @@ export class ServiceSelectDuck extends SearchableMultiSelect {
 
     const result = await getAllList(describeServices)(keyword ? { name: keyword } : {})
     result.list = result.list.map(item => ({ ...item }))
+    return result
+  }
+}
+
+export class ConfigurationSelectDuck extends SearchableMultiSelect {
+  Item: ConfigFileGroup
+
+  getId(item: this['Item']) {
+    return item.id
+  }
+
+  get autoSearch() {
+    return false
+  }
+
+  get autoClearBeforeLoad() {
+    return false
+  }
+
+  async getData(param) {
+    const { keyword } = param
+
+    const result = await getAllList(describeConfigFileGroups)(keyword ? { fileName: keyword } : {})
+    result.list = result.list.map(item => ({ ...item }))
+
     return result
   }
 }
