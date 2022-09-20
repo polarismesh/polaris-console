@@ -111,7 +111,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
     const { types, ducks, selectors } = this
 
     // 规则创建
-    yield takeLatest(types.SUBMIT, function*() {
+    yield takeLatest(types.SUBMIT, function* () {
       try {
         yield* ducks.form.submit()
       } catch (e) {
@@ -178,7 +178,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
     })
 
     // 规则编辑
-    yield takeLatest(types.SET_ID, function*(action) {
+    yield takeLatest(types.SET_ID, function* (action) {
       if (action.payload) {
         let ruleDetailInfo: Values = null
         const result = yield describeCustomRoute({
@@ -219,7 +219,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
       }
     })
 
-    yield takeEvery([ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE], function*(action) {
+    yield takeEvery([ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE], function* (action) {
       const type = action.type === ducks.form.types.SET_SOURCE_SERVICE ? 'source' : 'destination'
       const setLabelListType =
         action.type === ducks.form.types.SET_SOURCE_SERVICE
