@@ -10,7 +10,7 @@ export enum RouteLabelMatchType {
 export const RouteLabelMatchTypeOptions = [
   {
     value: RouteLabelMatchType.EXACT,
-    text: '全匹配',
+    text: '等于',
   },
   {
     value: RouteLabelMatchType.REGEX,
