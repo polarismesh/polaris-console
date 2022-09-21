@@ -29,7 +29,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
   Data: Data
 
   get baseUrl() {
-    return `/#/accesslimit-create`
+    return `/#/custom-route-create`
   }
 
   get params() {
@@ -108,10 +108,10 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
 
   *saga() {
     yield* super.saga()
-    const { types, ducks, selectors } = this
+    const { types, ducks, selectors, selector } = this
 
     // 规则创建
-    yield takeLatest(types.SUBMIT, function* () {
+    yield takeLatest(types.SUBMIT, function*() {
       try {
         yield* ducks.form.submit()
       } catch (e) {
@@ -137,7 +137,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
         type: item.type,
         key: item.key,
         value: {
-          type: item.operator,
+          type: item.value_type,
           value: item.value,
           value_type: 'TEXT',
         },
@@ -178,7 +178,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
     })
 
     // 规则编辑
-    yield takeLatest(types.SET_ID, function* (action) {
+    yield takeLatest(types.SET_ID, function*(action) {
       if (action.payload) {
         let ruleDetailInfo: Values = null
         const result = yield describeCustomRoute({
@@ -196,7 +196,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
                 return {
                   type: item.type,
                   key: item.key,
-                  operator: item.value.type,
+                  value_type: item.value.type,
                   value: item.value.value,
                 }
               }),
@@ -219,7 +219,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
       }
     })
 
-    yield takeEvery([ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE], function* (action) {
+    yield takeEvery([ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE], function*(action) {
       const type = action.type === ducks.form.types.SET_SOURCE_SERVICE ? 'source' : 'destination'
       const setLabelListType =
         action.type === ducks.form.types.SET_SOURCE_SERVICE
@@ -227,6 +227,10 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
           : types.SET_DESTINATION_LABEL_LIST
       if (action.payload === '*' || !action.payload) {
         yield put({ type: setLabelListType, payload: [] })
+        return
+      }
+      const { data } = selector(yield select())
+      if (!data?.serviceList?.find(item => item.value === action.payload)) {
         return
       }
       const values = ducks.form.selectors.values(yield select())
@@ -284,9 +288,9 @@ export interface RouteDestinationArgument {
   type: string
 }
 export interface RouteSourceArgument {
-  type: string
+  value_type: string
   key: string
-  operator: string
+  type: string
   value: string
 }
 export interface Values {
@@ -328,7 +332,15 @@ const validator = Form.combineValidators<Values>({
       {
         key(v) {
           if (!v) {
-            return '请输入或者选择key值'
+            return '请输入key值'
+          }
+        },
+        value(v, data) {
+          if (!v && data.type === RoutingArgumentsType.CALLER_IP) {
+            return '请输入IP'
+          }
+          if (!v && data.type !== RoutingArgumentsType.CALLER_IP) {
+            return '请输入value值'
           }
         },
       },
@@ -365,7 +377,12 @@ const validator = Form.combineValidators<Values>({
           {
             key(v) {
               if (!v) {
-                return '请输入或者选择key值'
+                return '请输入key值'
+              }
+            },
+            value(v) {
+              if ((v ?? false) === false) {
+                return '请输入value值'
               }
             },
           },
@@ -401,7 +418,7 @@ export class RouteCreateDuck extends Form {
                 type: RouteLabelMatchType.EXACT,
               },
             ],
-            weight: 0,
+            weight: 100,
             priority: 0,
             isolate: false,
             name: '实例分组1',
@@ -416,7 +433,7 @@ export class RouteCreateDuck extends Form {
             type: RoutingArgumentsType.CUSTOM,
             key: '',
             value: '',
-            operator: RouteLabelMatchType.EXACT,
+            value_type: RouteLabelMatchType.EXACT,
           },
         ],
       },

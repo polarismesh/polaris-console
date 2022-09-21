@@ -53,7 +53,7 @@ export default class CreateDuck extends FormDialog {
     const values = form.selectors.values(yield select())
     const { removeArray: removeUserIds } = diffAddRemoveArray(originUsers, userIds)
     const { removeArray: removeGroupIds } = diffAddRemoveArray(originGroups, groupIds)
-    const metaData: Record<string, string> = values.metadata.reduce((preV, curV) => {
+    const metaData: Record<string, string> = values?.metadata?.reduce((preV, curV) => {
       preV[curV.key] = curV.value
       return preV
     }, {})
