@@ -411,7 +411,7 @@ export class ConfigurationSelectDuck extends SearchableMultiSelect {
   async getData(param) {
     const { keyword } = param
 
-    const result = await getAllList(describeConfigFileGroups)(keyword ? { fileName: keyword } : {})
+    const result = await getAllList(describeConfigFileGroups)(keyword ? { group: keyword } : {})
     result.list = result.list.map(item => ({ ...item }))
 
     return result
