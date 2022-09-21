@@ -263,7 +263,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               onChange={value => {
                                 if (value === '*') {
                                   sourceNamespace.setValue('*')
-                                  sourceService.setValue('*')
                                   return
                                 }
                                 sourceNamespace.setValue(value)
@@ -274,6 +273,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               appearance={'button'}
                               matchButtonWidth
                               placeholder='请选择命名空间'
+                              disabled={sourceService.getValue() === '*'}
                               size='m'
                             />
                           </FormField>
@@ -293,8 +293,10 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               tips='没有匹配的服务名称'
                               onChange={value => {
                                 if (value === '*') {
-                                  sourceNamespace.setValue('*')
                                   sourceService.setValue('*')
+                                  return
+                                }
+                                if (sourceNamespace.getValue() === "*") {
                                   return
                                 }
                                 sourceService.setValue(value)
@@ -307,7 +309,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   onChange={value => {
                                     sourceService.setValue(value)
                                   }}
-                                  disabled={sourceNamespace.getValue() === '*'}
                                 />
                               )}
                             </AutoComplete>
@@ -476,6 +477,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               appearance={'button'}
                               matchButtonWidth
                               placeholder='请选择命名空间'
+                              disabled={destinationService.getValue() === "*"}
                               size='m'
                             />
                           </FormField>
@@ -486,11 +488,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   { text: '全部服务', value: '*', disabled: sourceNamespace.getValue() === '*' },
                                   ...(destinationService.getValue()
                                     ? [
-                                        {
-                                          text: `(输入值)${destinationService.getValue()}`,
-                                          value: destinationService.getValue(),
-                                        },
-                                      ]
+                                      {
+                                        text: `(输入值)${destinationService.getValue()}`,
+                                        value: destinationService.getValue(),
+                                      },
+                                    ]
                                     : []),
                                   ...(data?.serviceList.filter(o => {
                                     return o.namespace === destinationNamespace.getValue()
@@ -500,8 +502,10 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               tips='没有匹配的服务名称'
                               onChange={value => {
                                 if (value === '*') {
-                                  destinationNamespace.setValue('*')
                                   destinationService.setValue('*')
+                                  return
+                                }
+                                if (destinationNamespace.getValue() === "*") {
                                   return
                                 }
                                 destinationService.setValue(value)
@@ -514,7 +518,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   onChange={value => {
                                     destinationService.setValue(value)
                                   }}
-                                  disabled={destinationNamespace.getValue() === '*'}
                                 />
                               )}
                             </AutoComplete>
@@ -659,7 +662,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                     required
                                     tips={'优先级数字设置越小，匹配顺序越靠前'}
                                   >
-                                    <InputNumber min={0} field={priority} />
+                                    <InputNumber min={0} max={10} field={priority} />
                                   </FormField>
                                   <FormField label='是否隔离' field={isolate} required>
                                     <Switch field={isolate} />
@@ -697,8 +700,8 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Row>
               </Form>
             </Form.Item>
-            <FormField label='优先级' field={priority} required>
-              <InputNumber field={priority} />
+            <FormField label='优先级' field={priority} tips={'优先级数字设置越大，匹配顺序越靠前'} required>
+              <InputNumber min={0} max={10} field={priority} />
             </FormField>
           </Form>
           <Form.Action>
