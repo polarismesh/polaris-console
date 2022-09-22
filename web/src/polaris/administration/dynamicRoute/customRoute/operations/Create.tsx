@@ -675,7 +675,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                     required
                                     tips={'优先级数字设置越小，匹配顺序越靠前'}
                                   >
-                                    <InputNumber min={0} field={priority} />
+                                    <InputNumber min={0} max={10} field={priority} />
                                   </FormField>
                                   <FormField label='是否隔离' field={isolate} required>
                                     <Switch field={isolate} />
@@ -713,8 +713,8 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Row>
               </Form>
             </Form.Item>
-            <FormField label='优先级' field={priority} required>
-              <InputNumber min={0} field={priority} />
+            <FormField label='优先级' field={priority} tips={'优先级数字设置越小，匹配顺序越靠前'} required>
+              <InputNumber min={0} max={10} field={priority} />
             </FormField>
           </Form>
           <Form.Action>
