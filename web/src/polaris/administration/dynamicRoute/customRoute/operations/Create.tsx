@@ -294,7 +294,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             <AutoComplete
                               options={[
                                 ...new Set([
-                                  { text: '全部服务', value: '*', disabled: destinationNamespace.getValue() === '*' },
+                                  { text: '全部服务', value: '*' },
                                   ...(sourceService.getValue()
                                     ? [{ text: `(输入值)${sourceService.getValue()}`, value: sourceService.getValue() }]
                                     : []),
@@ -490,7 +490,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             <AutoComplete
                               options={[
                                 ...new Set([
-                                  { text: '全部服务', value: '*', disabled: sourceNamespace.getValue() === '*' },
+                                  { text: '全部服务', value: '*' },
                                   ...(destinationService.getValue()
                                     ? [
                                         {
