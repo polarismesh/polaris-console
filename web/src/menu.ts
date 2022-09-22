@@ -31,7 +31,7 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'alias',
           title: '服务别名',
-          icon: '/static/img/namespace.svg',
+          icon: '/static/img/service.svg',
           subMenus: null,
         },
       ],
@@ -82,7 +82,7 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'file-release-history',
           title: '发布历史',
-          icon: '/static/img/circuit-monitor.svg',
+          icon: '/static/img/route-monitor.svg',
           subMenus: null,
         },
       ],
@@ -95,7 +95,7 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'route-monitor',
           title: '路由监控',
-          icon: '/static/img/route-monitor.svg',
+          icon: '/static/img/circuit-monitor.svg',
           subMenus: null,
         },
         {
@@ -107,7 +107,7 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'ratelimit-monitor',
           title: '限流监控',
-          icon: '/static/img/limit-monitor.svg',
+          icon: '/static/img/circuit-monitor.svg',
           subMenus: null,
         },
       ],
@@ -120,19 +120,19 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'user',
           title: '用户',
-          icon: '/static/img/route-monitor.svg',
+          icon: '/static/img/user-icon.svg',
           subMenus: null,
         },
         {
           id: 'usergroup',
           title: '用户组',
-          icon: '/static/img/circuit-monitor.svg',
+          icon: '/static/img/user-icon.svg',
           subMenus: null,
         },
         {
           id: 'policy',
           title: '策略',
-          icon: '/static/img/circuit-monitor.svg',
+          icon: '/static/img/user-icon.svg',
           subMenus: null,
         },
       ],
