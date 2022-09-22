@@ -184,6 +184,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`
     : `/custom-route`
 
+  const formatServiceValue = (value) => {
+    if (value === "*") {
+      return "全部服务"
+    }
+    return value
+  }
+
   React.useEffect(() => {
     if (composedId?.namespace) {
       sourceNamespace.setValue(composedId?.namespace)
@@ -273,7 +280,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               appearance={'button'}
                               matchButtonWidth
                               placeholder='请选择命名空间'
-                              disabled={sourceService.getValue() === '*'}
                               size='m'
                             />
                           </FormField>
@@ -305,7 +311,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               {ref => (
                                 <TeaInput
                                   ref={ref}
-                                  value={sourceService.getValue()}
+                                  value={formatServiceValue(sourceService.getValue())}
                                   onChange={value => {
                                     sourceService.setValue(value)
                                   }}
@@ -477,7 +483,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               appearance={'button'}
                               matchButtonWidth
                               placeholder='请选择命名空间'
-                              disabled={destinationService.getValue() === "*"}
                               size='m'
                             />
                           </FormField>
@@ -514,7 +519,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               {ref => (
                                 <TeaInput
                                   ref={ref}
-                                  value={destinationService.getValue()}
+                                  value={formatServiceValue(destinationService.getValue())}
                                   onChange={value => {
                                     destinationService.setValue(value)
                                   }}
@@ -700,7 +705,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Row>
               </Form>
             </Form.Item>
-            <FormField label='优先级' field={priority} tips={'优先级数字设置越大，匹配顺序越靠前'} required>
+            <FormField label='优先级' field={priority} tips={'优先级数字设置越小，匹配顺序越靠前'} required>
               <InputNumber min={0} max={10} field={priority} />
             </FormField>
           </Form>
