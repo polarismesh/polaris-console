@@ -110,6 +110,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 keyField.setValue(value)
               }}
               placeholder={'请输入标签键'}
+              size={'full'}
             />
           )}
         </AutoComplete>
@@ -167,6 +168,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 valueField.setValue(value)
               }}
               placeholder={'请输入标签值'}
+              size={'full'}
             />
           )}
         </AutoComplete>
