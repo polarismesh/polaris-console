@@ -266,6 +266,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                         resources={{
                           namespaces: currentAuthItem?.resources?.['namespaces'],
                           services: currentAuthItem?.resources?.['services'],
+                          configGroups: currentAuthItem?.resources?.config_groups,
                         }}
                       />
                     </Card.Body>
