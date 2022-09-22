@@ -31,6 +31,7 @@ import {
   RoutingArgumentsTypeOptions,
   RoutingArgumentsType,
 } from '../types'
+import { MatchingLabelTips } from '@src/polaris/administration/accessLimiting/operations/Create'
 
 insertCSS(
   'create-rule-form',
@@ -325,7 +326,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                       </Card.Body>
                       <Card.Body title='请求标签'>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                          <Form.Item label='请求匹配规则' align='middle'>
+                          <Form.Item label='请求匹配规则' align='middle' tips={MatchingLabelTips}>
                             {argumentsField?.getValue()?.length > 0 && (
                               <Table
                                 hideHeader

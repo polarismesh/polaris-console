@@ -52,7 +52,18 @@ insertCSS(
   }
 `,
 )
-
+export const MatchingLabelTips = (
+  <>
+    <Text parent={'div'}>多个请求匹配规则之间是且的关系</Text>
+    <Text parent={'div'}>部分匹配运算符的说明如下：</Text>
+    <Text parent={'div'}>
+      包含：多字符串取OR匹配，传入的值只要匹配到其中一个字符串，就算匹配成功。字符串之间使用逗号进行分割。值格式为'value1,value2,value3‘，匹配到其中一个就算成功。
+    </Text>
+    <Text parent={'div'}>
+      不包含：多字符串取反匹配，传入的值必须都没有出现在所配置的字符串列表中，才算匹配通过。值格式为'value1,value2,value3‘，全部不等于才算成功。
+    </Text>
+  </>
+)
 export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRuleCreatePageDuck>) {
   const { duck, store, dispatch } = props
   const {
@@ -299,22 +310,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                         matchButtonWidth
                       />
                     </FormField>
-                    <Form.Item
-                      label='请求匹配规则'
-                      align='middle'
-                      tips={
-                        <>
-                          <Text parent={'div'}>多个请求匹配规则之间是且的关系</Text>
-                          <Text parent={'div'}>部分匹配运算符的说明如下：</Text>
-                          <Text parent={'div'}>
-                            包含：多字符串取OR匹配，传入的值只要匹配到其中一个字符串，就算匹配成功。字符串之间使用逗号进行分割。值格式为'value1,value2,value3‘，匹配到其中一个就算成功。
-                          </Text>
-                          <Text parent={'div'}>
-                            不包含：多字符串取反匹配，传入的值必须都没有出现在所配置的字符串列表中，才算匹配通过。值格式为'value1,value2,value3‘，全部不等于才算成功。
-                          </Text>
-                        </>
-                      }
-                    >
+                    <Form.Item label='请求匹配规则' align='middle' tips={MatchingLabelTips}>
                       {argumentsList?.length > 0 && (
                         <Table
                           hideHeader
