@@ -1,5 +1,17 @@
 #!/bin/bash
 
+set -e
+
+if [[ $(uname) == 'Darwin' ]]; then
+  realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+  }
+
+  md5sum() {
+    md5 $*
+  }
+fi
+
 workdir=$(dirname $(realpath $0))
 version=$(cat version 2>/dev/null)
 
