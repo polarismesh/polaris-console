@@ -92,6 +92,9 @@ import CustomRouteCreatePage from '@src/polaris/administration/dynamicRoute/cust
 import CustomRouteCreatePageDuck from '@src/polaris/administration/dynamicRoute/customRoute/operations/CreateDuck'
 const CustomRouteCreate = connectWithDuck(CustomRouteCreatePage, CustomRouteCreatePageDuck as any)
 
+import CustomRouteDetailPage from '@src/polaris/administration/dynamicRoute/customRoute/detail/Page'
+import CustomRouteDetailPageDuck from '@src/polaris/administration/dynamicRoute/customRoute/detail/PageDuck'
+const CustomRouteDetail = connectWithDuck(CustomRouteDetailPage, CustomRouteDetailPageDuck as any)
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1])
@@ -230,6 +233,7 @@ export default function root() {
               <Route exact path='/accesslimit' component={AccessLimiting} />
               <Route exact path='/custom-route' component={CustomRoute} />
               <Route exact path='/custom-route-create' component={CustomRouteCreate} />
+              <Route exact path='/custom-route-detail' component={CustomRouteDetail} />
             </Switch>
           </Content>
         </Body>

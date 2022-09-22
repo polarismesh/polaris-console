@@ -1,7 +1,7 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
-import { Form, Select, Text, Icon, Bubble, Button, FormItem, Table, FormControl } from 'tea-component'
+import { Form, Select, Text, Icon, Bubble, Button, FormItem } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'

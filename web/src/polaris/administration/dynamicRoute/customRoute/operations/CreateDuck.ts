@@ -216,6 +216,16 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
           }))
         ruleDetailInfo = result.list[0]
         yield put(ducks.form.creators.setValues(ruleDetailInfo))
+        yield put({
+          type: ducks.form.types.SET_SOURCE_SERVICE,
+          payload: ruleDetailInfo.source.service,
+          noCheckValid: true,
+        })
+        yield put({
+          type: ducks.form.types.SET_DESTINATION_SERVICE,
+          payload: ruleDetailInfo.destination.service,
+          noCheckValid: true,
+        })
       }
     })
 
@@ -230,7 +240,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
         return
       }
       const { data } = selector(yield select())
-      if (!data?.serviceList?.find(item => item.value === action.payload)) {
+      if (!data?.serviceList?.find(item => item.value === action.payload) && !action.noCheckValid) {
         return
       }
       const values = ducks.form.selectors.values(yield select())
@@ -426,16 +436,9 @@ export class RouteCreateDuck extends Form {
         ],
       },
       source: {
-        service: '',
-        namespace: '',
-        arguments: [
-          {
-            type: RoutingArgumentsType.CUSTOM,
-            key: '',
-            value: '',
-            value_type: RouteLabelMatchType.EXACT,
-          },
-        ],
+        service: '*',
+        namespace: '*',
+        arguments: [],
       },
     }
   }

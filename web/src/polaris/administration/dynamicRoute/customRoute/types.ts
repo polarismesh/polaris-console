@@ -29,6 +29,10 @@ export const RouteLabelMatchTypeOptions = [
     text: '不包含',
   },
 ]
+export const RouteLabelTextMap = RouteLabelMatchTypeOptions.reduce((map, curr) => {
+  map[curr.value] = curr.text
+  return map
+}, {})
 
 // 匹配规则类型
 export enum RoutingArgumentsType {
@@ -71,3 +75,7 @@ export const RoutingArgumentsTypeOptions = [
     text: '路径',
   },
 ]
+export const RouteArgumentTextMap = RoutingArgumentsTypeOptions.reduce((map, curr) => {
+  map[curr.value] = curr.text
+  return map
+}, {})

@@ -16,7 +16,7 @@ export default ({ creators }: AccessLimitingDuck): Column<CustomRoute>[] => [
     render: x => (
       <>
         <Text theme='primary' overflow>
-          <Link to={`/custom-route-create?id=${x.id}`}>{x.id}</Link>
+          <Link to={`/custom-route-detail?id=${x.id}`}>{x.id}</Link>
           <Copy text={x.id} />
         </Text>
         <br />
