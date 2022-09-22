@@ -377,7 +377,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   {
                                     key: 'value_type',
                                     header: 'value_type',
-                                    width: 80,
+                                    width: 120,
                                     render: item => {
                                       const { value_type } = item.getFields(['value_type'])
                                       return (
