@@ -186,7 +186,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                             <Card key={index} bordered>
                               <Card.Body title={name} operation={<></>}>
                                 <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                                  <Form.Item label='实例标签' align='middle'>
+                                  <Form.Item label='实例标签' align='middle' tips={'相同的标签键，只有最后出现的生效'} >
                                     {labels?.length > 0 && (
                                       <Table
                                         verticalTop
