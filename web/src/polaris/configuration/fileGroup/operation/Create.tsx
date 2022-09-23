@@ -41,7 +41,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   return (
     <>
       <Form>
-        <FormField field={name} label={'命名空间'} required>
+        <FormField field={namespace} label={'命名空间'} required>
           <Select
             value={namespace.getValue()}
             options={options.namespaceList}
