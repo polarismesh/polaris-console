@@ -107,4 +107,7 @@ const validator = CreateForm.combineValidators<Values, any>({
   name(v) {
     if (!v) return '请填写分组名'
   },
+  namespace(v) {
+    if (!v) return '请填写命名空间'
+  },
 })
