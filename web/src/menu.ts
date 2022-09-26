@@ -58,6 +58,12 @@ export const MenuConfig: MenuItemConfig = {
               icon: '/static/img/dynamic-route.svg',
               subMenus: null,
             },
+            {
+              id: 'gray-publish',
+              title: '灰度发布',
+              icon: '/static/img/dynamic-route.svg',
+              subMenus: null,
+            },
           ],
         },
         {

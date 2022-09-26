@@ -75,6 +75,7 @@ import { cacheCheckAuth } from './polaris/auth/model'
 const ServiceAlias = connectWithDuck(ServiceAliasPage, ServiceAliasPageDuck)
 
 import TestEnvRoutePage from '@src/polaris/administration/dynamicRoute/testEnvRoute/Page'
+import GrayPublishPage from '@src/polaris/administration/dynamicRoute/grayPublish/Page'
 
 import AccessLimitingPage from '@src/polaris/administration/accessLimiting/Page'
 import AccessLimitingPageDuck from '@src/polaris/administration/accessLimiting/PageDuck'
@@ -230,6 +231,7 @@ export default function root() {
               <Route exact path='/policy-create' component={PolicyCreate} />
               <Route exact path='/alias' component={ServiceAlias} />
               <Route exact path='/test-env-route' component={TestEnvRoutePage} />
+              <Route exact path='/gray-publish' component={GrayPublishPage} />
               <Route exact path='/accesslimit' component={AccessLimiting} />
               <Route exact path='/custom-route' component={CustomRoute} />
               <Route exact path='/custom-route-create' component={CustomRouteCreate} />
