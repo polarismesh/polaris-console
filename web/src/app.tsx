@@ -98,7 +98,7 @@ import CustomRouteDetailPageDuck from '@src/polaris/administration/dynamicRoute/
 const CustomRouteDetail = connectWithDuck(CustomRouteDetailPage, CustomRouteDetailPageDuck as any)
 export default function root() {
   const history = useHistory()
-  const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1])
+  const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1] || 'service')
   const getMenuItemProps = id => ({
     selected: selected === id,
     onClick: () => {
