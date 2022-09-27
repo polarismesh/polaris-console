@@ -84,6 +84,11 @@ export const tabConfigs: RouteTabConfigInfo = {
         linkAddress:
           'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83.html#%E9%98%B6%E6%AE%B5%E4%BA%8C-%E9%83%A8%E7%BD%B2%E5%BA%94%E7%94%A8',
       },
+      {
+        style: { top: '77.2%', left: '37%' },
+        linkAddress:
+          'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83.html#%E9%98%B6%E6%AE%B5%E4%B8%89-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B7%AF%E7%94%B1',
+      },
     ],
   },
   [RouteTabId.FullLinkGray]: {
