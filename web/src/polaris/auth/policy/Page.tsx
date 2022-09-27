@@ -36,7 +36,7 @@ export enum AuthSubjectType {
 export enum AuthResourceType {
   NAMESPACE = 'namespaces',
   SERVICE = 'services',
-  CONFIGURATION = 'config',
+  CONFIGURATION = 'config_groups',
 }
 export const AUTH_SUBJECT_TYPE_MAP = {
   [AuthSubjectType.USER]: { text: '用户', urlKey: 'user' },
