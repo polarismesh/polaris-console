@@ -13,7 +13,6 @@ import {
   enableCustomRoute,
 } from './model'
 import getColumns from './getColumns'
-import LimitRuleCreatePageDuck from './operations/CreateDuck'
 import { ComposedId } from '@src/polaris/service/detail/types'
 import { RuleStatus, SwitchStatusAction } from '../../accessLimiting/types'
 import { SortBy } from 'tea-component/lib/table/addons'
@@ -80,7 +79,6 @@ export default class CustomRouteDuck extends GridPageDuck {
   get quickDucks() {
     return {
       ...super.quickDucks,
-      createLimitRule: LimitRuleCreatePageDuck,
     }
   }
 
