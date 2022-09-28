@@ -25,6 +25,7 @@ import Input from '@src/polaris/common/duckComponents/form/Input'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { Namespace, Service } from '@src/polaris/service/types'
 import router from '@src/polaris/common/util/router'
+import { ConfigFileGroup } from '@src/polaris/configuration/fileGroup/types'
 const steps = [
   { id: '1', label: '选择用户' },
   { id: '2', label: '授权' },
@@ -37,9 +38,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
   const composedId = selectors.composedId(store)
   const { id } = composedId
   const [step, setStep] = React.useState('1')
-  const { name, useAllNamespace, useAllService, comment } = ducks.form
+  const { name, useAllNamespace, useAllService, useAllConfigGroup, comment } = ducks.form
     .getAPI(store, dispatch)
-    .getFields(['name', 'useAllNamespace', 'useAllService', 'comment'])
+    .getFields(['name', 'useAllNamespace', 'useAllService', 'useAllConfigGroup', 'comment'])
   const isModify = !!id
 
   const [showAuthSubjectType, setShowAuthSubjectType] = React.useState(AuthSubjectType.USER)
@@ -50,6 +51,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
     userGroup: { selection: userGroupSelection },
     namespace: { selection: namespaceSelection },
     service: { selection: serviceSelection },
+    configGroup: { selection: configGroupSelection },
     originPolicy,
   } = selector(store)
   return (
@@ -163,6 +165,28 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       />
                     )}
                   </TabPanel>
+                  <TabPanel id={AuthResourceType.CONFIGURATION}>
+                    <RadioGroup
+                      value={useAllConfigGroup.getValue() ? 'all' : 'partial'}
+                      onChange={value => {
+                        useAllConfigGroup.setValue(value === 'all')
+                      }}
+                      style={{ marginTop: '10px' }}
+                    >
+                      <Radio name={'all'}>{'全部命名空间（含后续新增）'}</Radio>
+                      <Radio name={'partial'}>{'指定命名空间'}</Radio>
+                    </RadioGroup>
+                    {!useAllConfigGroup.getValue() && (
+                      <SearchableTransfer
+                        style={{ marginTop: '10px' }}
+                        title={'请选择配置分组'}
+                        duck={ducks.configGroup}
+                        store={store}
+                        dispatch={dispatch}
+                        itemRenderer={(record: ConfigFileGroup) => <Text overflow>{record.name}</Text>}
+                      />
+                    )}
+                  </TabPanel>
                 </Tabs>
               </FormItem>
               <FormItem label={'操作'}>
@@ -213,6 +237,24 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     ) : (
                       <Table
                         records={serviceSelection}
+                        columns={[
+                          {
+                            key: 'name',
+                            header: '名称',
+                            render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
+                          },
+                          { key: 'auth', header: '权限', render: () => '读｜写' },
+                        ]}
+                        addons={[autotip({})]}
+                      />
+                    )}
+                  </TabPanel>
+                  <TabPanel id={AuthResourceType.CONFIGURATION}>
+                    {useAllService.getValue() ? (
+                      <FormText>{'全部服务（含后续新增）'}</FormText>
+                    ) : (
+                      <Table
+                        records={configGroupSelection}
                         columns={[
                           {
                             key: 'name',

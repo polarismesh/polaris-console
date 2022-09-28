@@ -5,6 +5,11 @@ import Form from '@src/polaris/common/ducks/Form'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
 import { modifyConfigFileGroup, createConfigFileGroup } from '../model'
+import { UserSelectDuck } from '@src/polaris/auth/userGroup/operation/CreateDuck'
+import { UserGroupSelectDuck } from '@src/polaris/auth/user/operation/AttachUserGroupDuck'
+import { DescribeStrategyOption } from '@src/polaris/auth/constants'
+import { AuthStrategy, describeGovernanceStrategies } from '@src/polaris/auth/model'
+import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -28,21 +33,43 @@ export default class CreateDuck extends FormDialog {
   get quickDucks() {
     return {
       ...super.quickDucks,
+      userSelect: UserSelectDuck,
+      userGroupSelect: UserGroupSelectDuck,
     }
   }
   *onSubmit() {
     const {
       selectors,
-      ducks: { form },
+      ducks: { form, userGroupSelect, userSelect },
     } = this
+    const userIds = userSelect.selector(yield select()).selection.map(user => user.id)
+    const groupIds = userGroupSelect.selector(yield select()).selection.map(group => group.id)
+    const { userIds: originUserIds, groupIds: originGroupIds } = selectors.data(yield select())
     const options = selectors.options(yield select())
 
     const { name, comment, namespace } = form.selectors.values(yield select())
+    const { removeArray: removeUserIds } = diffAddRemoveArray(originUserIds, userIds)
+    const { removeArray: removeGroupIds } = diffAddRemoveArray(originGroupIds, groupIds)
+
     if (options.isModify) {
-      const { configFileGroup } = yield modifyConfigFileGroup({ namespace, name, comment })
+      const { configFileGroup } = yield modifyConfigFileGroup({
+        namespace,
+        name,
+        comment,
+        user_ids: userIds,
+        group_ids: groupIds,
+        remove_user_ids: removeUserIds,
+        remove_group_ids: removeGroupIds,
+      })
       return configFileGroup.name
     } else {
-      const { configFileGroup } = yield createConfigFileGroup({ namespace, name, comment })
+      const { configFileGroup } = yield createConfigFileGroup({
+        namespace,
+        name,
+        comment,
+        user_ids: userIds,
+        group_ids: groupIds,
+      })
       return configFileGroup.name
     }
   }
@@ -60,7 +87,7 @@ export default class CreateDuck extends FormDialog {
     yield* super.onShow()
     const {
       selectors,
-      ducks: { form },
+      ducks: { form, userGroupSelect, userSelect },
       types,
     } = this
     const options = selectors.options(yield select())
@@ -69,6 +96,32 @@ export default class CreateDuck extends FormDialog {
       listKey: 'namespaces',
       totalKey: 'amount',
     })({})
+    yield put(userGroupSelect.creators.load({}))
+    yield put(userSelect.creators.load({}))
+    if (options.isModify) {
+      const { list: allStrategies } = yield getAllList(describeGovernanceStrategies, { listKey: 'content' })({
+        res_id: data.id,
+        res_type: 'config_group',
+        default: DescribeStrategyOption.Default,
+        show_detail: true,
+      })
+      const users = []
+      const groups = []
+      allStrategies.forEach((strategy: AuthStrategy) => {
+        users.push(...strategy.principals.users)
+        groups.push(...strategy.principals.groups)
+      })
+      yield put(userGroupSelect.creators.select(groups))
+      yield put(userSelect.creators.select(users))
+      yield put({
+        type: types.UPDATE,
+        payload: {
+          ...data,
+          userIds: users.map(user => user.id),
+          groupIds: groups.map(group => group.id),
+        },
+      })
+    }
     yield put({
       type: types.SET_OPTIONS,
       payload: {
@@ -95,6 +148,8 @@ export interface Values {
   namespace: string
   comment: string
   name: string
+  userIds?: string[]
+  groupIds?: string[]
 }
 class CreateForm extends Form {
   Values: Values

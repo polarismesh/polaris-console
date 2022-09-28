@@ -27,6 +27,8 @@ export interface CreateConfigFileGroupParams {
   namespace: string
   comment?: string
   createBy?: string
+  user_ids?: string[]
+  group_ids?: string[]
 }
 export interface CreateConfigFileGroupResult {
   configFileGroup: ConfigFileGroup
@@ -42,6 +44,10 @@ export interface ModifyConfigFileGroupParams {
   name: string
   namespace: string
   comment?: string
+  user_ids?: string[]
+  group_ids?: string[]
+  remove_user_ids?: string[]
+  remove_group_ids?: string[]
 }
 export interface ModifyConfigFileGroupResult {
   configFileGroup: ConfigFileGroup

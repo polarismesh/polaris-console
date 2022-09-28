@@ -8,12 +8,14 @@ import { StrategyResourceEntry } from '../model'
 const ResourceOptions = [
   { text: '命名空间', value: 'namespaces' },
   { text: '服务', value: 'services' },
+  { text: '配置分组', value: 'config_groups' },
 ]
 
 interface Props {
   resources: {
     namespaces: StrategyResourceEntry[]
     services: StrategyResourceEntry[]
+    configGroups: StrategyResourceEntry[]
   }
 }
 export default purify(function(props: Props) {
