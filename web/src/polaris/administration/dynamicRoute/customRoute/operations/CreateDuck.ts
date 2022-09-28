@@ -375,12 +375,12 @@ const validator = Form.combineValidators<Values>({
           }
         },
         weight(v, data, meta) {
-          const weightSum = meta?.destination?.instanceGroups.reduce((sum, curr) => {
+          const weightSum = meta?.destination?.instanceGroups.filter(item=>item.priority === data.priority).reduce((sum, curr) => {
             sum += curr.weight
             return sum
           }, 0)
           if (weightSum !== 100) {
-            return '所有实例分组权重加和必须为100'
+            return '同优先级下所有实例分组权重加和必须为100'
           }
         },
         labels: [
