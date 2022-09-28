@@ -24,7 +24,7 @@ interface Data {
   serviceList: { value: string; text: string; namespace: string }[]
 }
 
-export default class LimitRuleCreatePageDuck extends DetailPage {
+export default class CustomRouteCreatePageDuck extends DetailPage {
   ComposedId: ComposedId
   Data: Data
 
@@ -105,10 +105,24 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
       destinationLabelList: reduceFromPayload(types.SET_DESTINATION_LABEL_LIST, []),
     }
   }
-
+  *getLabelList(namespace, service, type) {
+    if (!namespace || !service) return
+    try {
+      const labelData = (yield describeInstanceLabels({
+        namespace: namespace,
+        service: service,
+      })) as Record<string, { values: string[] }>
+      const labelList = Object.entries(labelData).map(([key, { values }]) => {
+        return { text: key, value: key, valueOptions: values.map(item => ({ text: item, value: item })) }
+      })
+      yield put({ type: type, payload: labelList })
+    } catch (e) {
+      yield put({ type: type, payload: [] })
+    }
+  }
   *saga() {
     yield* super.saga()
-    const { types, ducks, selectors, selector } = this
+    const { types, ducks, selectors, selector, getLabelList } = this
 
     // 规则创建
     yield takeLatest(types.SUBMIT, function*() {
@@ -228,7 +242,10 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
         })
       }
     })
-
+    yield takeLatest(types.SET_SERVICE, function*(action) {
+      const { namespace } = selector(yield select())
+      yield* getLabelList(namespace, action.payload, types.SET_DESTINATION_LABEL_LIST)
+    })
     yield takeEvery([ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE], function*(action) {
       const type = action.type === ducks.form.types.SET_SOURCE_SERVICE ? 'source' : 'destination'
       const setLabelListType =
@@ -244,18 +261,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
         return
       }
       const values = ducks.form.selectors.values(yield select())
-      try {
-        const labelData = (yield describeInstanceLabels({
-          namespace: values[type].namespace,
-          service: action.payload,
-        })) as Record<string, { values: string[] }>
-        const labelList = Object.entries(labelData).map(([key, { values }]) => {
-          return { text: key, value: key, valueOptions: values.map(item => ({ text: item, value: item })) }
-        })
-        yield put({ type: setLabelListType, payload: labelList })
-      } catch (e) {
-        yield put({ type: setLabelListType, payload: [] })
-      }
+      yield* getLabelList(values[type].namespace, action.payload, setLabelListType)
     })
   }
 
@@ -375,12 +381,12 @@ const validator = Form.combineValidators<Values>({
           }
         },
         weight(v, data, meta) {
-          const weightSum = meta?.destination?.instanceGroups.filter(item=>item.priority === data.priority).reduce((sum, curr) => {
+          const weightSum = meta?.destination?.instanceGroups.reduce((sum, curr) => {
             sum += curr.weight
             return sum
           }, 0)
-          if (weightSum !== 100) {
-            return '同优先级下所有实例分组权重加和必须为100'
+          if (!(weightSum > 0)) {
+            return '所有实例分组权重加和必须大于0'
           }
         },
         labels: [
