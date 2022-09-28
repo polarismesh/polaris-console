@@ -726,7 +726,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               onClick={() => {
                 if (composedId?.namespace) {
                   router.navigate(
-                    `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=${TAB.AccessLimit}`,
+                    `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=${TAB.Route}`,
                   )
                 } else {
                   router.navigate(`/custom-route`)
