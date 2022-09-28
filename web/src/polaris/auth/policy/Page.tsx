@@ -36,6 +36,7 @@ export enum AuthSubjectType {
 export enum AuthResourceType {
   NAMESPACE = 'namespaces',
   SERVICE = 'services',
+  CONFIGURATION = 'config_groups',
 }
 export const AUTH_SUBJECT_TYPE_MAP = {
   [AuthSubjectType.USER]: { text: '用户', urlKey: 'user' },
@@ -46,7 +47,14 @@ export const AUTH_RESOURCE_TYPE_MAP = {
     text: '命名空间',
     columnsRender: x => x.name,
   },
-  [AuthResourceType.SERVICE]: { text: '服务', columnsRender: x => `${x.name}（${x.namespace}）` },
+  [AuthResourceType.SERVICE]: {
+    text: '服务',
+    columnsRender: x => `${x.name}（${x.namespace}）`,
+  },
+  [AuthResourceType.CONFIGURATION]: {
+    text: '配置分组',
+    columnsRender: x => x.name,
+  },
 }
 export const AuthSubjectTabs = Object.keys(AUTH_SUBJECT_TYPE_MAP).map(id => ({
   id,
@@ -258,6 +266,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                         resources={{
                           namespaces: currentAuthItem?.resources?.['namespaces'],
                           services: currentAuthItem?.resources?.['services'],
+                          configGroups: currentAuthItem?.resources?.config_groups,
                         }}
                       />
                     </Card.Body>
