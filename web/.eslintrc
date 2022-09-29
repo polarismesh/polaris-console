@@ -1,6 +1,6 @@
 {
   "extends": ["plugin:react/recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
-  "plugins": ["react", "@typescript-eslint", "prettier"],
+  "plugins": ["react", "@typescript-eslint", "prettier","i18n"],
   "settings": {
     "react": {
       "pragma": "React",
@@ -61,6 +61,7 @@
         "ignoreRestSiblings": false
       }
     ],
+    "i18n/no-chinese-character": "error",
     "@typescript-eslint/indent": 0,
     "@typescript-eslint/member-delimiter-style": [
       2,
