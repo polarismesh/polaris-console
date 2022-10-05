@@ -1,7 +1,7 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
-import { Form, Select, FormItem, Table, FormControl, Button } from 'tea-component'
+import { Form, Select, FormItem, Table, FormControl, Button, InputAdornment } from 'tea-component'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
@@ -80,7 +80,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           <Select
             searchable
             value={group.getValue()}
-            options={options.configFileGroupList?.map(item => ({ text: item.name, value: item.name }))}
+            options={options.configFileGroupList}
             onChange={value => group.setValue(value)}
             type={'simulate'}
             appearance={'button'}
@@ -94,23 +94,29 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           required
           message={'可通过/分隔符创建文件夹，强烈建议文件名带上后缀，如：datasource/master.json'}
         >
-          <Input
-            field={name}
-            disabled={options.isModify}
-            maxLength={128}
-            onChange={val => {
-              const suffix = val.substring(val.lastIndexOf('.') + 1)
-              FileFormatOptions.forEach(item => {
-                if (suffix === item.text) {
+          <InputAdornment after={"文件格式: " + (format.getValue() === null ? "text" : format.getValue())}>
+            <Input
+              field={name}
+              disabled={options.isModify}
+              maxLength={128}
+              onChange={val => {
+                if (val.lastIndexOf('.') === -1) {
+                  format.setValue("text")
+                  return
+                }
+                const suffix = val.substring(val.lastIndexOf('.') + 1)
+                if (suffix === "") {
+                  format.setValue("text")
+                } else {
                   format.setValue(suffix)
                 }
-              })
-            }}
-            placeholder={'允许数字、英文字母、.、-、_，限制128个字符'}
-            size={'l'}
-          />
+              }}
+              placeholder={'允许数字、英文字母、.、-、_，限制128个字符'}
+              size={'l'}
+            />
+          </InputAdornment>
         </FormField>
-        <FormField field={format} label={'文件格式'} required>
+        {/* <FormField field={format} label={'文件格式'} required>
           <Select
             value={format.getValue()}
             options={FileFormatOptions}
@@ -118,7 +124,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             type={'simulate'}
             appearance={'button'}
           ></Select>
-        </FormField>
+        </FormField> */}
         <FormField field={comment} label={'备注'}>
           <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
         </FormField>

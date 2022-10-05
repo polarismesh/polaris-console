@@ -8,6 +8,7 @@ export interface ConfigFileGroup {
   modifyTime: string
   modifyBy: string
   fileCount: number
+  editable: boolean
 }
 export interface ConfigFile {
   name: string

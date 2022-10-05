@@ -42,8 +42,16 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
     render: x => {
       return (
         <React.Fragment>
-          <Action fn={dispatch => dispatch(creators.edit(x))}>{'编辑'}</Action>
-          <Action fn={dispatch => dispatch(creators.remove(x))}>{'删除'}</Action>
+          <Action
+            fn={dispatch => dispatch(creators.edit(x))}
+            disabled={!x.editable}
+            tip={!x.editable ? '无权限' : '编辑'}
+          >{'编辑'}</Action>
+          <Action
+            fn={dispatch => dispatch(creators.remove(x))}
+            disabled={!x.editable}
+            tip={!x.editable ? '无权限' : '编辑'}
+          >{'删除'}</Action>
         </React.Fragment>
       )
     },

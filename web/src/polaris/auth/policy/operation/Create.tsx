@@ -173,8 +173,8 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       }}
                       style={{ marginTop: '10px' }}
                     >
-                      <Radio name={'all'}>{'全部命名空间（含后续新增）'}</Radio>
-                      <Radio name={'partial'}>{'指定命名空间'}</Radio>
+                      <Radio name={'all'}>{'全部配置分组（含后续新增）'}</Radio>
+                      <Radio name={'partial'}>{'指定配置分组'}</Radio>
                     </RadioGroup>
                     {!useAllConfigGroup.getValue() && (
                       <SearchableTransfer

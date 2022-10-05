@@ -3,6 +3,7 @@ import { Modal, Table } from 'tea-component'
 import React from 'react'
 import { scrollable } from 'tea-component/lib/table/addons'
 import LabelTable from '../common/components/LabelTable'
+import { ConfigFileGroup } from '../configuration/fileGroup/types'
 
 export const isReadOnly = (namespace: string) => {
   return READ_ONLY_NAMESPACE.indexOf(namespace) !== -1
@@ -10,6 +11,10 @@ export const isReadOnly = (namespace: string) => {
 
 export const isReadOnlyNamespace = (namespace: Namespace) => {
   return !namespace.editable
+}
+
+export const isReadOnlyConfigGroup = (group: ConfigFileGroup) => {
+  return !group.editable
 }
 
 export const showAllLabels = (labels) => {
