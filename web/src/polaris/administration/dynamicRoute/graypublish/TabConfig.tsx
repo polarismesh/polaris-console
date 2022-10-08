@@ -43,7 +43,7 @@ export const tabConfigs: RouteTabConfigInfo = {
       {
         style: { top: '27%', left: '29.8%' },
         linkAddress:
-          'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83.html#%E6%89%93%E6%A0%87%E5%AE%9E%E4%BE%8B%E7%89%88%E6%9C%AC%E5%8F%B7',
+          'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83.html#envoy-proxy-%E6%8E%A5%E5%85%A5',
       },
       {
         style: { top: '45.1%', left: '11.4%' },
@@ -77,7 +77,7 @@ export const tabConfigs: RouteTabConfigInfo = {
       {
         style: { top: '38.5%', left: '29.8%' },
         linkAddress:
-          'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83.html#%E9%98%B6%E6%AE%B5%E4%B8%80-%E5%AE%9E%E4%BE%8B%E6%89%93%E6%A0%87',
+          'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83.html#envoy-proxy-%E6%8E%A5%E5%85%A5',
       },
       {
         style: { top: '59%', left: '11.5%' },
@@ -171,7 +171,7 @@ export const tabConfigs: RouteTabConfigInfo = {
         </Text>
         <List>
           <List.Item>应用场景一：金丝雀环境和稳定环境有独立的域名进行隔离，实现全链路灰度。</List.Item>
-          <List.Item>应用场景二：使用相同域名，通过染色进行全链路灰度。</List.Item>
+          <List.Item>应用场景二：使用相同域名，基于请求标签实现全链路灰度。</List.Item>
         </List>
       </>
     ),
