@@ -13,6 +13,7 @@ import {
 } from '@src/polaris/configuration/fileGroup/model'
 import { reduceFromPayload } from 'saga-duck'
 import { notification } from 'tea-component'
+import { isReadOnlyConfigGroup, isReadOnlyNamespace } from '@src/polaris/service/utils'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -114,7 +115,7 @@ export default class CreateDuck extends FormDialog {
       selectors,
     } = this
     super.saga()
-    yield takeLatest(form.types.SET_VALUE, function*(action) {
+    yield takeLatest(form.types.SET_VALUE, function* (action) {
       if (!action.path || action.path?.indexOf('namespace') === -1) {
         return
       }
@@ -125,7 +126,20 @@ export default class CreateDuck extends FormDialog {
         },
       } = selector(yield select())
       const { list } = yield getAllList(describeConfigFileGroups, {})({ namespace })
-      yield put({ type: types.SET_OPTIONS, payload: { ...options, configFileGroupList: list } })
+      yield put({
+        type: types.SET_OPTIONS, payload: {
+          ...options, configFileGroupList: list.map(item => {
+            const disabled = isReadOnlyConfigGroup(item)
+            return {
+              ...item,
+              text: item.name,
+              value: item.name,
+              disabled,
+              tooltip: disabled && '该配置分组为只读配置分组',
+            }
+          })
+        }
+      })
     })
   }
   *onShow() {
@@ -150,13 +164,25 @@ export default class CreateDuck extends FormDialog {
       payload: {
         ...options,
         namespaceList: namespaceList.map(item => {
+          const disabled = isReadOnlyNamespace(item)
           return {
             ...item,
             text: item.name,
             value: item.name,
+            disabled,
+            tooltip: disabled && '该命名空间为只读命名空间',
           }
         }),
-        configFileGroupList,
+        configFileGroupList: configFileGroupList.map(item => {
+          const disabled = isReadOnlyConfigGroup(item)
+          return {
+            ...item,
+            text: item.name,
+            value: item.name,
+            disabled,
+            tooltip: disabled && '该配置分组为只读配置分组',
+          }
+        }),
       },
     })
     yield put(form.creators.setMeta(options))

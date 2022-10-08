@@ -10,6 +10,7 @@ import { UserGroupSelectDuck } from '@src/polaris/auth/user/operation/AttachUser
 import { DescribeStrategyOption } from '@src/polaris/auth/constants'
 import { AuthStrategy, describeGovernanceStrategies } from '@src/polaris/auth/model'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
+import { isReadOnlyNamespace } from '@src/polaris/service/utils'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -127,9 +128,13 @@ export default class CreateDuck extends FormDialog {
       payload: {
         ...options,
         namespaceList: namespaceList.map(item => {
+          const disabled = isReadOnlyNamespace(item)
           return {
             ...item,
+            text: item.name,
             value: item.name,
+            disabled,
+            tooltip: disabled && '该命名空间为只读命名空间',
           }
         }),
       },
