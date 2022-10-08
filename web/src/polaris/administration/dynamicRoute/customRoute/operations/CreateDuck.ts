@@ -330,7 +330,7 @@ export interface Values {
 const validator = Form.combineValidators<Values>({
   name(v) {
     if (!v) {
-      return '请填写限流规则名称'
+      return '请填写路由规则名称'
     }
   },
   source: {
