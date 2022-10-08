@@ -29,6 +29,7 @@ import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
 import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
 import { Link } from 'react-router-dom'
+import { FileFormat } from './operation/Create'
 
 export const NoSearchResultKey = '__NO_SEARCH_RESULT__'
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
@@ -74,6 +75,18 @@ insertCSS(
   }
 `,
 )
+
+function toHighlightLanguage(format?: string) {
+  if (!format) {
+    return FileFormat.TEXT
+  }
+  // monaco 对 .properties 格式需要将语言转为 ini
+  // @see https://github.com/microsoft/monaco-editor/blob/main/src/basic-languages/ini/ini.contribution.ts
+  if (format === FileFormat.PROPERTIES) {
+    return 'ini'
+  }
+  return format
+}
 
 export default function Page(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -287,7 +300,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 <FileDiff
                                   original={currentHistoryDuck.selector(store).selected?.content}
                                   now={currentNode?.content}
-                                  format={currentNode?.format}
+                                  format={toHighlightLanguage(currentNode?.format)}
                                 />
                               </section>
                             ) : (
@@ -298,7 +311,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                       ) : (
                         <section style={{ border: '1px solid #cfd5de', width: '100%' }}>
                           <MonacoEditor
-                            language={currentNode?.format}
+                            language={toHighlightLanguage(currentNode?.format)}
                             value={editing ? editContent : currentNode?.content}
                             options={{ readOnly: !editing }}
                             height={700}
