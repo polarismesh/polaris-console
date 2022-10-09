@@ -85,6 +85,9 @@ function toHighlightLanguage(format?: string) {
   if (format === FileFormat.PROPERTIES) {
     return 'ini'
   }
+  if (format === 'yml') {
+    return FileFormat.YAML
+  }
   return format
 }
 
