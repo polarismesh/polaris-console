@@ -33,7 +33,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
   const { ruleDetail } = selector(store)
   const { name, description, source, destination, priority } = ruleDetail as Values
   const backRoute = composedId?.namespace
-    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`
+    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=route`
     : `/custom-route`
   if (!data) {
     return <noscript />
@@ -186,7 +186,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                             <Card key={index} bordered>
                               <Card.Body title={name} operation={<></>}>
                                 <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                                  <Form.Item label='实例标签' align='middle' tips={'相同的标签键，只有最后出现的生效'} >
+                                  <Form.Item label='实例标签' align='middle' tips={'相同的标签键，只有最后出现的生效'}>
                                     {labels?.length > 0 && (
                                       <Table
                                         verticalTop

@@ -45,7 +45,14 @@ function TabContentComp(props: TabContentInfo) {
       <Card.Body style={{ position: 'relative', padding: '1%' }}>
         <img src={imagePath} alt={alt} style={{ width: '100%', display: 'block' }} />
         {imageLinks.map(o => (
-          <a key={o.linkAddress} style={o.style} className={`link-style`} href={o.linkAddress} target='_blank' rel='noreferrer'></a>
+          <a
+            key={o.linkAddress}
+            style={o.style}
+            className={`link-style`}
+            href={o.linkAddress}
+            target='_blank'
+            rel='noreferrer'
+          ></a>
         ))}
       </Card.Body>
     </Card>

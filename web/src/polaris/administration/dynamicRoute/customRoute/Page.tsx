@@ -7,12 +7,13 @@ import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import { filterable, sortable } from 'tea-component/lib/table/addons'
 import { StatusOptions } from '../../accessLimiting/types'
+import getColumns from './getColumns'
 
 export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimitingDuck>) {
   const { duck, store, dispatch } = props
   const { selector, creators } = duck
-  const { loadData, fullColumns: columns, status, sort } = selector(store)
-
+  const { loadData, status, sort } = selector(store)
+  const columns = getColumns(duck, store)
   const handlers = React.useMemo(
     () => ({
       changeNamespace: namespace => dispatch(creators.changeNamespace(namespace)),

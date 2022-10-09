@@ -12,7 +12,6 @@ import {
   disableCustomRoute,
   enableCustomRoute,
 } from './model'
-import getColumns from './getColumns'
 import { ComposedId } from '@src/polaris/service/detail/types'
 import { RuleStatus, SwitchStatusAction } from '../../accessLimiting/types'
 import { SortBy } from 'tea-component/lib/table/addons'
@@ -30,7 +29,7 @@ export default class CustomRouteDuck extends GridPageDuck {
   Item: CustomRoute
 
   get baseUrl() {
-    return 'accesslimit'
+    return 'custom-route'
   }
 
   get initialFetch() {
@@ -52,6 +51,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       DELETE,
       SWITCH_STATUS,
       SET_SORT,
+      SET_IN_DETAIL,
     }
     return {
       ...super.quickTypes,
@@ -92,6 +92,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       status: reduceFromPayload<string>(types.SET_STATUS, ''),
       name: reduceFromPayload<string>(types.SET_NAME, ''),
       sort: reduceFromPayload<SortBy[]>(types.SET_SORT, []),
+      inDetail: reduceFromPayload<boolean>(types.SET_IN_DETAIL, false),
     }
   }
 
@@ -203,10 +204,6 @@ export default class CustomRouteDuck extends GridPageDuck {
     ]
   }
 
-  *getColumns() {
-    return getColumns(this)
-  }
-
   *saga() {
     const { types, creators } = this
     yield* super.saga()
@@ -215,6 +212,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       if (data) {
         yield put(creators.changeNamespace(data.namespace))
         yield put(creators.changeService(data.name))
+        yield put({ type: types.SET_IN_DETAIL, payload: true })
       }
     })
   }
@@ -256,6 +254,8 @@ export default class CustomRouteDuck extends GridPageDuck {
       result.totalCount > 0 &&
       result.list.map(item => ({
         ...item,
+        namespace,
+        service,
       }))
     return result
   }

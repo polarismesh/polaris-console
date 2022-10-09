@@ -105,7 +105,7 @@ export const tabConfigs: RouteTabConfigInfo = {
           {
             style: { top: '33.4%', left: '29.8%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1.html#envoy-proxy-%E6%8E%A5%E5%85%A5',
+              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1.html#%E6%89%93%E6%A0%87%E7%81%B0%E5%BA%A6%E6%A0%87%E7%AD%BE%E9%80%8F%E4%BC%A0',
           },
           {
             style: { top: '59.2%', left: '11.6%' },
@@ -131,12 +131,12 @@ export const tabConfigs: RouteTabConfigInfo = {
           {
             style: { top: '30.9%', left: '29.8%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2.html#spring-cloud-tencent-%E6%8E%A5%E5%85%A5',
+              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2.html#%E9%98%B6%E6%AE%B5%E4%B8%80-%E5%AE%9E%E4%BE%8B%E6%89%93%E6%A0%87',
           },
           {
             style: { top: '38%', left: '29.8%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2.html#envoy-proxy-%E6%8E%A5%E5%85%A5',
+              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2.html#%E6%89%93%E6%A0%87%E7%81%B0%E5%BA%A6%E6%A0%87%E7%AD%BE%E9%80%8F%E4%BC%A0',
           },
           {
             style: { top: '52.85%', left: '11.4%' },
