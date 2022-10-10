@@ -160,7 +160,7 @@ export const tabConfigs: RouteTabConfigInfo = {
     title: '全链路灰度发布',
     description: (
       <>
-        <Text theme={'weak'} parent={'div'} style={{ paddingBottom: '10px' }}>
+        <Text parent={'div'} style={{ paddingBottom: '10px' }}>
           微服务架构下，有些开发需求，微服务调用链路上的多个微服务同时发生了改动，
           通常每个微服务都会有灰度环境或分组来接收灰度流量。此时希望通过进入上游灰度环境的流量，
           也能进入下游灰度的环境中，确保1个请求始终在灰度环境中传递，即使这个调用链路上有一些微服务没有灰度环境，
