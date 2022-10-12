@@ -65,7 +65,6 @@ export function TagTable(props: ITagTableProps) {
             return (
               <>
                 <Button
-                  disabled={length < 2}
                   title={'删除'}
                   icon={'close'}
                   onClick={() => props.tags.asArray().remove(index)}
