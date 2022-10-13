@@ -1,6 +1,6 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
-import AccessLimitingDuck from './PageDuck'
+import CustomRouteDuck from './PageDuck'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
 import { Card, Table, Justify, Button, SearchBox } from 'tea-component'
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
@@ -8,7 +8,7 @@ import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagin
 import { filterable, sortable } from 'tea-component/lib/table/addons'
 import { StatusOptions } from '../../accessLimiting/types'
 
-export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimitingDuck>) {
+export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDuck>) {
   const { duck, store, dispatch } = props
   const { selector, creators } = duck
   const { loadData, fullColumns: columns, status, sort } = selector(store)
