@@ -26,3 +26,4 @@ oaAuthority:
   enableOAAuth: false
 hrData:
   enableHrData: false
+futures: ${POLARIS_FUTURES}
