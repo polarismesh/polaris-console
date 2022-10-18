@@ -117,8 +117,7 @@ export class CreateFormDuck extends Form {
         window.localStorage.setItem(LoginRoleKey, loginResponse.role)
         window.localStorage.setItem(LoginUserIdKey, loginResponse.user_id)
         window.localStorage.setItem(LoginUserOwnerIdKey, loginResponse.owner_id)
-        window.location.href = '/#/service'
-        window.location.reload()
+        window.location.hash = "/service"
       } else {
         throw new Error()
       }
