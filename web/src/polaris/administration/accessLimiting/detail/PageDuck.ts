@@ -1,4 +1,4 @@
-import { createToPayload, reduceFromPayload } from 'saga-duck'
+import { reduceFromPayload } from 'saga-duck'
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'

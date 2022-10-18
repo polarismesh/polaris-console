@@ -81,6 +81,10 @@ import AccessLimitingPage from '@src/polaris/administration/accessLimiting/Page'
 import AccessLimitingPageDuck from '@src/polaris/administration/accessLimiting/PageDuck'
 const AccessLimiting = connectWithDuck(AccessLimitingPage, AccessLimitingPageDuck)
 
+import AccessLimitingDetailPage from '@src/polaris/administration/accessLimiting/detail/Page'
+import AccessLimitingDetailPageDuck from '@src/polaris/administration/accessLimiting/detail/PageDuck'
+const AccessLimitingDetail = connectWithDuck(AccessLimitingDetailPage, AccessLimitingDetailPageDuck)
+
 import LimitRuleCreatePage from '@src/polaris/administration/accessLimiting/operations/Create'
 import LimitRuleCreatePageDuck from '@src/polaris/administration/accessLimiting/operations/CreateDuck'
 const LimitRuleCreate = connectWithDuck(LimitRuleCreatePage, LimitRuleCreatePageDuck)
@@ -233,6 +237,7 @@ export default function root() {
               <Route exact path='/test-env-route' component={TestEnvRoutePage} />
               <Route exact path='/gray-publish' component={GrayPublishPage} />
               <Route exact path='/accesslimit' component={AccessLimiting} />
+              <Route exact path='/accesslimit-detail' component={AccessLimitingDetail} />
               <Route exact path='/custom-route' component={CustomRoute} />
               <Route exact path='/custom-route-create' component={CustomRouteCreate} />
               <Route exact path='/custom-route-detail' component={CustomRouteDetail} />
