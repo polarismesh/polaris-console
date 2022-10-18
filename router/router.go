@@ -38,13 +38,6 @@ func Router(config *bootstrap.Config) {
 	r.LoadHTMLGlob(config.WebServer.WebPath + "index.html")
 	r.GET("/", handlers.PolarisPage(config))
 
-	// 获取部门数据
-	r.GET("/HRFoundation-Unit", handlers.GetDepartment(config))
-	// 通过企业微信名获取部门数据
-	r.GET("/getStaffDept", handlers.ReverseProxyForDepartment(&config.HRData, config))
-	// 查询路由/限流/熔断日志记录
-	r.POST("/log/search/elasticsearch", handlers.ReverseProxyForLogRecord(&config.ZhiYan))
-
 	// 监控请求路由组
 	mv1 := r.Group(config.WebServer.MonitorURL)
 	mv1.GET("/query_range", handlers.ReverseProxyForMonitorServer(&config.MonitorServer))

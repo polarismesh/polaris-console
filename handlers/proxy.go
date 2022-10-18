@@ -43,10 +43,6 @@ type ServiceOwner struct {
 // ReverseProxyForLogin 反向代理
 func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if ok := authority(c, conf); !ok {
-			return
-		}
-
 		c.Request.Header.Add("Polaris-Token", polarisServer.PolarisToken)
 		c.Request.Header.Del("Cookie")
 
@@ -95,14 +91,6 @@ func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstr
 	return func(c *gin.Context) {
 		userID, token, err := parseJWTThenSetToken(c, conf)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": http.StatusProxyAuthRequired,
-				"info": "Proxy Authentication Required",
-			})
-			return
-		}
-
-		if ok := authority(c, conf); !ok {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": http.StatusProxyAuthRequired,
 				"info": "Proxy Authentication Required",
@@ -163,32 +151,6 @@ func ReverseProxyForMonitorServer(monitorServer *bootstrap.MonitorServer) gin.Ha
 			req.URL.Scheme = "http"
 			req.URL.Host = monitorServer.Address
 			req.Host = monitorServer.Address
-		}
-		proxy := &httputil.ReverseProxy{Director: director}
-		proxy.ServeHTTP(c.Writer, c.Request)
-	}
-}
-
-// ReverseProxyForDepartment department的反向代理
-func ReverseProxyForDepartment(hrData *bootstrap.HRData, conf *bootstrap.Config) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if ok := authority(c, conf); !ok {
-			return
-		}
-
-		getStaffDepartment(hrData, c)
-	}
-}
-
-// ReverseProxyForLogRecord 熔断记录查询的反向代理
-func ReverseProxyForLogRecord(zhiyan *bootstrap.ZhiYan) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		director := func(req *http.Request) {
-			req.URL.Scheme = "http"
-			req.URL.Host = zhiyan.Host
-			req.Host = zhiyan.Host
-			req.Header.Set("token", zhiyan.Token)
-			req.Header.Set("projectname", zhiyan.ProjectName)
 		}
 		proxy := &httputil.ReverseProxy{Director: director}
 		proxy.ServeHTTP(c.Writer, c.Request)
