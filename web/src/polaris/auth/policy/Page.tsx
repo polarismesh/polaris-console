@@ -145,12 +145,12 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
               {principalType === AuthSubjectType.USER ? (
                 <img
                   style={{ verticalAlign: 'middle' }}
-                  src={isActive ? '/static/img/user-icon-active.svg' : '/static/img/user-icon.svg'}
+                  src={isActive ? 'static/img/user-icon-active.svg' : 'static/img/user-icon.svg'}
                 />
               ) : (
                 <img
                   style={{ verticalAlign: 'middle' }}
-                  src={isActive ? '/static/img/usergroup-icon-active.svg' : '/static/img/usergroup-icon.svg'}
+                  src={isActive ? 'static/img/usergroup-icon-active.svg' : 'static/img/usergroup-icon.svg'}
                 />
               )}
             </Bubble>

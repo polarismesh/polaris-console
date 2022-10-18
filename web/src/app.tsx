@@ -145,7 +145,7 @@ export default function root() {
             left={
               <>
                 <NavMenu.Item type='logo' style={{ width: '185px' }}>
-                  <img src={'/static/img/logo-polaris.png'} alt='logo' style={{ height: '27px' }} />
+                  <img src={'static/img/logo-polaris.png'} alt='logo' style={{ height: '27px' }} />
                 </NavMenu.Item>
                 <NavMenu.Item></NavMenu.Item>
               </>

@@ -24,11 +24,11 @@ export default purify(function(props: DuckCmpProps<Duck>) {
   const licenseToolTip = preError && 'License已超过最大过期时间'
   return (
     <div
-      style={{ background: 'url(/static/img/login-background.png)', backgroundSize: '100% 100%' }}
+      style={{ background: 'url(static/img/login-background.png)', backgroundSize: '100% 100%' }}
       className={'login-background'}
     >
       <img
-        src={'/static/img/logo-polaris.png'}
+        src={'static/img/logo-polaris.png'}
         style={{ width: '200px', position: 'absolute', top: 0, left: 0, padding: '15px' }}
       />
       <Row style={{ margin: '30vh 0 30vh 0', height: '40vh' }}>
