@@ -2,7 +2,7 @@ import React from 'react'
 import { Layout, Card, Tabs, TabPanel, Text } from 'tea-component'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { tabs, tabConfigs, RouteTabContentInfo } from './TabConfig'
-import { t } from 'i18next';
+import { t } from 'i18next'
 const { Body, Content } = Layout
 
 insertCSS(
@@ -34,7 +34,7 @@ function TabContentComp(props: RouteTabContentInfo) {
         {typeof imagePath === 'string' && (
           <>
             <img src={imagePath} alt={alt} style={{ width: '100%', display: 'block' }} />
-            {imageLinks.map(o => (
+            {imageLinks.map((o) => (
               <a
                 key={o.linkAddress}
                 style={o.style}
@@ -49,12 +49,12 @@ function TabContentComp(props: RouteTabContentInfo) {
           </>
         )}
         {typeof imagePath === 'object' && (
-          <Tabs tabs={imagePath.map(item => ({ id: item.title, label: item.title }))}>
-            {imagePath.map(item => {
+          <Tabs tabs={imagePath.map((item) => ({ id: item.title, label: item.title }))}>
+            {imagePath.map((item) => {
               return (
                 <TabPanel id={item.title} key={item.title}>
                   <img src={item.path} alt={alt} style={{ width: '100%', display: 'block' }} />
-                  {item.imageLinks.map(o => (
+                  {item.imageLinks.map((o) => (
                     <a
                       key={o.linkAddress}
                       style={o.style}
@@ -84,7 +84,7 @@ export default function TestEnvRoutePage() {
           <Content.Header title={t('灰度发布')} />
           <Content.Body>
             <Tabs tabs={tabs} ceiling>
-              {tabs.map(tab => {
+              {tabs.map((tab) => {
                 const tabContent = tabConfigs[tab.id]
                 return (
                   <TabPanel id={tab.id} key={tab.id}>

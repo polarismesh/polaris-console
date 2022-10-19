@@ -12,7 +12,7 @@ import { TAB } from '@src/polaris/service/detail/types'
 import { createCustomRoute, CustomRoute, describeCustomRoute, modifyCustomRoute } from '../model'
 import { RouteLabelMatchType, RoutingArgumentsType } from '../types'
 import { describeInstanceLabels } from '@src/polaris/service/detail/instance/model'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface ComposedId {
   id: string
@@ -114,7 +114,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
         service: service,
       })) as Record<string, { values: string[] }>
       const labelList = Object.entries(labelData).map(([key, { values }]) => {
-        return { text: key, value: key, valueOptions: values.map(item => ({ text: item, value: item })) }
+        return { text: key, value: key, valueOptions: values.map((item) => ({ text: item, value: item })) }
       })
       yield put({ type: type, payload: labelList })
     } catch (e) {
@@ -126,7 +126,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
     const { types, ducks, selectors, selector, getLabelList } = this
 
     // 规则创建
-    yield takeLatest(types.SUBMIT, function*() {
+    yield takeLatest(types.SUBMIT, function* () {
       try {
         yield* ducks.form.submit()
       } catch (e) {
@@ -135,7 +135,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
       const values = ducks.form.selectors.values(yield select())
       const { id, namespace, service } = yield select(selectors.composedId)
 
-      const handledDestination = values.destination.instanceGroups.map(item => {
+      const handledDestination = values.destination.instanceGroups.map((item) => {
         return {
           ...item,
           labels: item.labels.reduce((map, curr) => {
@@ -148,7 +148,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
         }
       })
 
-      const handledArguments = values.source.arguments.map(item => ({
+      const handledArguments = values.source.arguments.map((item) => ({
         type: item.type,
         key: item.key,
         value: {
@@ -193,7 +193,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
     })
 
     // 规则编辑
-    yield takeLatest(types.SET_ID, function*(action) {
+    yield takeLatest(types.SET_ID, function* (action) {
       if (action.payload) {
         let ruleDetailInfo: Values = null
         const result = yield describeCustomRoute({
@@ -207,7 +207,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
             ...item,
             source: {
               ...item.routing_config.sources?.[0],
-              arguments: item.routing_config.sources?.[0].arguments.map(item => {
+              arguments: item.routing_config.sources?.[0].arguments.map((item) => {
                 return {
                   type: item.type,
                   key: item.key,
@@ -219,7 +219,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
             destination: {
               service: item.routing_config.destinations?.[0]?.service,
               namespace: item.routing_config.destinations?.[0]?.namespace,
-              instanceGroups: item.routing_config.destinations.map(instanceGroup => {
+              instanceGroups: item.routing_config.destinations.map((instanceGroup) => {
                 delete instanceGroup.namespace
                 delete instanceGroup.service
                 return {
@@ -243,27 +243,30 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
         })
       }
     })
-    yield takeLatest(types.SET_SERVICE, function*(action) {
+    yield takeLatest(types.SET_SERVICE, function* (action) {
       const { namespace } = selector(yield select())
       yield* getLabelList(namespace, action.payload, types.SET_DESTINATION_LABEL_LIST)
     })
-    yield takeEvery([ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE], function*(action) {
-      const type = action.type === ducks.form.types.SET_SOURCE_SERVICE ? 'source' : 'destination'
-      const setLabelListType =
-        action.type === ducks.form.types.SET_SOURCE_SERVICE
-          ? types.SET_SOURCE_LABEL_LIST
-          : types.SET_DESTINATION_LABEL_LIST
-      if (action.payload === '*' || !action.payload) {
-        yield put({ type: setLabelListType, payload: [] })
-        return
-      }
-      const { data } = selector(yield select())
-      if (!data?.serviceList?.find(item => item.value === action.payload) && !action.noCheckValid) {
-        return
-      }
-      const values = ducks.form.selectors.values(yield select())
-      yield* getLabelList(values[type].namespace, action.payload, setLabelListType)
-    })
+    yield takeEvery(
+      [ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE],
+      function* (action) {
+        const type = action.type === ducks.form.types.SET_SOURCE_SERVICE ? 'source' : 'destination'
+        const setLabelListType =
+          action.type === ducks.form.types.SET_SOURCE_SERVICE
+            ? types.SET_SOURCE_LABEL_LIST
+            : types.SET_DESTINATION_LABEL_LIST
+        if (action.payload === '*' || !action.payload) {
+          yield put({ type: setLabelListType, payload: [] })
+          return
+        }
+        const { data } = selector(yield select())
+        if (!data?.serviceList?.find((item) => item.value === action.payload) && !action.noCheckValid) {
+          return
+        }
+        const values = ducks.form.selectors.values(yield select())
+        yield* getLabelList(values[type].namespace, action.payload, setLabelListType)
+      },
+    )
   }
 
   async getData() {
@@ -275,12 +278,12 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
       getAllList(describeServices, {})({}),
     ])
 
-    const namespaceList = namespaceOptions.list.map(item => ({
+    const namespaceList = namespaceOptions.list.map((item) => ({
       text: item.name,
       value: item.name,
     }))
 
-    const serviceList = serviceOptions.list.map(item => ({
+    const serviceList = serviceOptions.list.map((item) => ({
       text: item.name,
       value: item.name,
       namespace: item.namespace,

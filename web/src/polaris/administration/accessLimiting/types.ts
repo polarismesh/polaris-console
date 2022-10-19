@@ -1,5 +1,5 @@
 import { Values } from './operations/CreateDuck'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface Lists {
   namespaceList: []

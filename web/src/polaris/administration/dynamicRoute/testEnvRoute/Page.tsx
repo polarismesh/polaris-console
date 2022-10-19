@@ -2,8 +2,8 @@ import React from 'react'
 import { Layout, Card, Tabs, TabPanel } from 'tea-component'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { tabs, tabConfigs, TabContentInfo } from './TabConfig'
-import { t } from 'i18next';
 const { Body, Content } = Layout
+import { t } from 'i18next'
 
 insertCSS(
   'imageLink',
@@ -65,7 +65,7 @@ function TabContentComp(props: TabContentInfo) {
     <Card style={{ maxWidth: 1200 }}>
       <Card.Body style={{ position: 'relative', padding: '1%' }}>
         <img src={imagePath} alt={alt} style={{ width: '100%', display: 'block' }} />
-        {imageLinks.map(o => (
+        {imageLinks.map((o) => (
           <a key={o.linkAddress} className={o.style} href={o.linkAddress} target='_blank' rel='noreferrer'></a>
         ))}
       </Card.Body>
@@ -81,7 +81,7 @@ export default function TestEnvRoutePage() {
           <Content.Header title={t('测试环境路由')} />
           <Content.Body>
             <Tabs tabs={tabs} ceiling>
-              {tabs.map(tab => {
+              {tabs.map((tab) => {
                 const tabContent = tabConfigs[tab.id]
                 return (
                   <TabPanel id={tab.id} key={tab.id}>

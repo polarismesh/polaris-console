@@ -61,7 +61,6 @@
         "ignoreRestSiblings": false
       }
     ],
-    "i18n/no-chinese-character": "error",
     "@typescript-eslint/indent": 0,
     "@typescript-eslint/member-delimiter-style": [
       2,

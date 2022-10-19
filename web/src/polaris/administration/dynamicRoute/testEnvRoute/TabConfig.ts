@@ -1,4 +1,4 @@
-import { t } from 'i18next';
+import { t } from 'i18next'
 enum TabId {
   client = 'client',
   dynamic = 'dynamic',

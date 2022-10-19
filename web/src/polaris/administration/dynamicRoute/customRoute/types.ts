@@ -1,6 +1,6 @@
 // 接口类型
 // 接口类型
-import { t } from 'i18next';
+import { t } from 'i18next'
 export enum RouteLabelMatchType {
   EXACT = 'EXACT',
   REGEX = 'REGEX',

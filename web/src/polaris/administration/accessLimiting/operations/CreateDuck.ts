@@ -20,7 +20,7 @@ import { takeLatest } from 'redux-saga-catch'
 import { delay } from 'redux-saga'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface ComposedId {
   id: string
@@ -204,7 +204,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
     const { types, ducks, selectors } = this
 
     // 规则创建
-    yield takeLatest(types.SUBMIT, function*() {
+    yield takeLatest(types.SUBMIT, function* () {
       try {
         yield* ducks.form.submit()
       } catch (e) {
@@ -218,12 +218,12 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
        * amounts中的统计窗口时间是需要拼接数值+单位的
        * arguments要变更为LimitArgumentsConfig结构, value是一个复杂类型。。
        */
-      const handledAmounts = values.amounts.map(item => ({
+      const handledAmounts = values.amounts.map((item) => ({
         maxAmount: item.maxAmount,
         validDuration: `${item.validDurationNum}${item.validDurationUnit}`,
       }))
 
-      const handledArguments = values.arguments.map(item => ({
+      const handledArguments = values.arguments.map((item) => ({
         type: item.type,
         key: item.key,
         value: {
@@ -258,7 +258,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
     })
 
     // 规则编辑
-    yield takeLatest(types.SET_ID, function*(action) {
+    yield takeLatest(types.SET_ID, function* (action) {
       if (action.payload) {
         let ruleDetailInfo: Values = null
         const result = yield describeLimitRules({
@@ -273,7 +273,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
             disable: item.disable === false ? true : false,
             amounts:
               item.amounts?.length > 0
-                ? item.amounts.map(o => ({
+                ? item.amounts.map((o) => ({
                     id: `${Math.round(Math.random() * 10000)}`,
                     maxAmount: o.maxAmount,
                     validDurationNum: Number(o.validDuration.substring(0, o.validDuration.length - 1)),
@@ -282,7 +282,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
                 : [],
             arguments:
               item.arguments?.length > 0
-                ? item.arguments.map(o => ({
+                ? item.arguments.map((o) => ({
                     id: `${Math.round(Math.random() * 10000)}`,
                     type: o.type,
                     key: o.key,
@@ -306,12 +306,12 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
       getAllList(describeServices, {})({}),
     ])
 
-    const namespaceList = namespaceOptions.list.map(item => ({
+    const namespaceList = namespaceOptions.list.map((item) => ({
       text: item.name,
       value: item.name,
     }))
 
-    const serviceList = serviceOptions.list.map(item => ({
+    const serviceList = serviceOptions.list.map((item) => ({
       text: item.name,
       value: item.name,
       namespace: item.namespace,

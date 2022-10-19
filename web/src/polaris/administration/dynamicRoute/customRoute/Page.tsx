@@ -7,21 +7,20 @@ import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import { filterable, sortable } from 'tea-component/lib/table/addons'
 import { StatusOptions } from '../../accessLimiting/types'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimitingDuck>) {
   const { duck, store, dispatch } = props
   const { selector, creators } = duck
   const { loadData, fullColumns: columns, status, sort } = selector(store)
-
   const handlers = React.useMemo(
     () => ({
-      changeNamespace: namespace => dispatch(creators.changeNamespace(namespace)),
-      changeService: service => dispatch(creators.changeService(service)),
-      changeStatus: status => dispatch(creators.changeStatus(status)),
-      changeName: name => dispatch(creators.changeName(name)),
+      changeNamespace: (namespace) => dispatch(creators.changeNamespace(namespace)),
+      changeService: (service) => dispatch(creators.changeService(service)),
+      changeStatus: (status) => dispatch(creators.changeStatus(status)),
+      changeName: (name) => dispatch(creators.changeName(name)),
       jumpToCreateRulePage: () => dispatch(creators.create()),
-      setSort: sort => dispatch(creators.setSort(sort)),
+      setSort: (sort) => dispatch(creators.setSort(sort)),
     }),
     [],
   )
@@ -45,7 +44,7 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
             <>
               <SearchBox
                 placeholder={t('请输入规则名过滤')}
-                onSearch={value => handlers.changeName(value)}
+                onSearch={(value) => handlers.changeName(value)}
                 onClear={() => handlers.changeName('')}
               />
             </>
@@ -57,13 +56,13 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
           duck={duck}
           dispatch={dispatch}
           store={store}
-          columns={!!loadData ? columns.filter(item => item.key !== 'namespace' && item.key !== 'service') : columns}
+          columns={!!loadData ? columns.filter((item) => item.key !== 'namespace' && item.key !== 'service') : columns}
           addons={[
             filterable({
               type: 'single',
               column: 'enable',
               value: status,
-              onChange: value => handlers.changeStatus(value),
+              onChange: (value) => handlers.changeStatus(value),
               all: {
                 value: '',
                 text: t('全部'),
@@ -73,7 +72,7 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
             sortable({
               columns: ['priority'],
               value: sort,
-              onChange: value => handlers.setSort(value.length ? value : []),
+              onChange: (value) => handlers.setSort(value.length ? value : []),
             }),
           ]}
         />

@@ -12,8 +12,7 @@ import { describeServices } from '@src/polaris/service/model'
 import { RuleStatus, SwitchStatusAction } from './types'
 import LimitRuleCreatePageDuck from './operations/CreateDuck'
 import { ComposedId } from '@src/polaris/service/detail/types'
-import { t } from 'i18next';
-
+import { t } from 'i18next'
 interface Filter {
   namespace: string
   service: string
@@ -132,7 +131,7 @@ export default class AccessLimitingDuck extends GridPageDuck {
       {
         type: OperationType.NO_TARGET,
         watch: types.CREATE,
-        fn: function*() {
+        fn: function* () {
           const loadData = selector(yield select())?.loadData
           if (loadData) {
             router.navigate(`/accesslimit-create?ns=${loadData.namespace}&service=${loadData.name}`)
@@ -146,7 +145,7 @@ export default class AccessLimitingDuck extends GridPageDuck {
       {
         type: OperationType.SINGLE,
         watch: types.MODIFY,
-        fn: function*(item) {
+        fn: function* (item) {
           const loadData = selector(yield select())?.loadData
           if (loadData) {
             router.navigate(`/accesslimit-create?id=${item.id}&ns=${loadData.namespace}&service=${loadData.name}`)
@@ -159,7 +158,7 @@ export default class AccessLimitingDuck extends GridPageDuck {
       {
         type: OperationType.SINGLE,
         watch: types.DELETE,
-        fn: function*(item) {
+        fn: function* (item) {
           const confirm = yield Modal.confirm({
             message: t('确认删除限流规则 {{attr0}} 吗？', { attr0: item.name }),
             description: t('删除后，无法恢复'),
@@ -174,7 +173,7 @@ export default class AccessLimitingDuck extends GridPageDuck {
       {
         type: OperationType.SINGLE,
         watch: types.SWITCH_STATUS,
-        fn: function*(item: any) {
+        fn: function* (item: any) {
           const ops = item.swtichStatusAction === SwitchStatusAction.disable ? t('禁用') : t('启用')
           const disable = item.swtichStatusAction === SwitchStatusAction.disable ? true : false
           const confirm = yield Modal.confirm({
@@ -197,7 +196,7 @@ export default class AccessLimitingDuck extends GridPageDuck {
     const { types, creators } = this
     yield* super.saga()
     yield fork([this, this.sagaOnFetchLists])
-    yield takeLatest(types.LOAD, function*(action) {
+    yield takeLatest(types.LOAD, function* (action) {
       const data = action.payload
       if (data) {
         yield put(creators.changeNamespace(data.namespace))
@@ -208,7 +207,7 @@ export default class AccessLimitingDuck extends GridPageDuck {
 
   *sagaOnFetchLists() {
     const { types } = this
-    yield takeLatest(types.ROUTE_INITIALIZED, function*() {
+    yield takeLatest(types.ROUTE_INITIALIZED, function* () {
       const [namespaceList, serviceList] = yield all([
         getAllList(describeComplicatedNamespaces, {
           listKey: 'namespaces',
@@ -217,12 +216,12 @@ export default class AccessLimitingDuck extends GridPageDuck {
         getAllList(describeServices, {})({}),
       ])
 
-      const namespaceOptions = namespaceList.list.map(item => ({
+      const namespaceOptions = namespaceList.list.map((item) => ({
         text: item.name,
         value: item.name,
       }))
 
-      const serviceOptions = serviceList.list.map(item => ({
+      const serviceOptions = serviceList.list.map((item) => ({
         text: item.name,
         value: item.name,
         namespace: item.namespace,
@@ -272,7 +271,7 @@ export default class AccessLimitingDuck extends GridPageDuck {
 
     result.list =
       result.totalCount > 0 &&
-      result.list.map(item => ({
+      result.list.map((item) => ({
         ...item,
         //disable字段为false则为状态【启用】
         disable: item.disable === false ? true : false,

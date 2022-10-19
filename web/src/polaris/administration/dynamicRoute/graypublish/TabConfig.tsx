@@ -1,6 +1,7 @@
 import React from 'react'
 import { List, Text } from 'tea-component'
-
+import i18next from 'i18next'
+const { t } = i18next
 enum RouteTabId {
   BlueGreen = 'BlueGreen',
   Canary = 'Canary',
@@ -66,8 +67,9 @@ export const tabConfigs: RouteTabConfigInfo = {
     imagePath: '/static/img/canary-publish.png',
     alt: t('金丝雀发布路由'),
     title: t('金丝雀发布'),
-    description:
-      t('针对是单个服务的服务灰度验证，金丝雀发布允许引流一小部分流量到服务的新版本（比如按灰度用户引流），充分验证微服务新版本的稳定性，验证没问题后，再升级原来的稳定版本。'),
+    description: t(
+      '针对是单个服务的服务灰度验证，金丝雀发布允许引流一小部分流量到服务的新版本（比如按灰度用户引流），充分验证微服务新版本的稳定性，验证没问题后，再升级原来的稳定版本。',
+    ),
     imageLinks: [
       {
         style: { top: '28.7%', left: '29.8%' },
@@ -161,10 +163,10 @@ export const tabConfigs: RouteTabConfigInfo = {
     description: (
       <>
         <Text theme={'weak'} parent={'div'} style={{ paddingBottom: '10px' }}>
-          {t('微服务架构下，有些开发需求，微服务调用链路上的多个微服务同时发生了改动，
+          {t(`微服务架构下，有些开发需求，微服务调用链路上的多个微服务同时发生了改动，
           通常每个微服务都会有灰度环境或分组来接收灰度流量。此时希望通过进入上游灰度环境的流量，
           也能进入下游灰度的环境中，确保1个请求始终在灰度环境中传递，即使这个调用链路上有一些微服务没有灰度环境，
-          这些应用请求在下游的时候依然能够回到灰度环境中。')}
+          这些应用请求在下游的时候依然能够回到灰度环境中。`)}
         </Text>
         <Text reset style={{ paddingBottom: '10px' }}>
           {t('实现方案的两个场景：')}

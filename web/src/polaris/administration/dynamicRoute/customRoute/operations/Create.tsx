@@ -32,7 +32,7 @@ import {
   RoutingArgumentsType,
 } from '../types'
 import { MatchingLabelTips } from '@src/polaris/administration/accessLimiting/operations/Create'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 insertCSS(
   'create-rule-form',
@@ -62,24 +62,23 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
   const { name, priority, description, destination, source } = form
     .getAPI(store, dispatch)
     .getFields(['name', 'enable', 'description', 'destination', 'source', 'priority'])
-  const { namespace: sourceNamespace, service: sourceService, arguments: argumentsField } = source.getFields([
-    'namespace',
-    'service',
-    'arguments',
-  ])
-  const { namespace: destinationNamespace, service: destinationService, instanceGroups } = destination.getFields([
-    'namespace',
-    'service',
-    'instanceGroups',
-  ])
+  const {
+    namespace: sourceNamespace,
+    service: sourceService,
+    arguments: argumentsField,
+  } = source.getFields(['namespace', 'service', 'arguments'])
+  const {
+    namespace: destinationNamespace,
+    service: destinationService,
+    instanceGroups,
+  } = destination.getFields(['namespace', 'service', 'instanceGroups'])
   const { sourceLabelList, destinationLabelList } = selector(store)
-  const filterSourceLabelList = sourceLabelList.map(item => {
-    if (argumentsField.getValue().find(argument => argument.key === item.value)) {
+  const filterSourceLabelList = sourceLabelList.map((item) => {
+    if (argumentsField.getValue().find((argument) => argument.key === item.value)) {
       return { ...item, disabled: true }
     }
     return item
   })
-
   function getArgumentsKeyComp(
     recordField: FieldAPI<RouteSourceArgument | RouteDestinationArgument>,
     type: string,
@@ -88,7 +87,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     const { key: keyField, value: valueField, type: labelType } = recordField.getFields(['key', 'value', 'type'])
     const keyValidate = keyField.getTouched() && keyField.getError()
     const labelList = [
-      ...(keyField.getValue() ? [{ text: t('(输入值){{attr0}}', { attr0: keyField.getValue() }), value: keyField.getValue() }] : []),
+      ...(keyField.getValue()
+        ? [{ text: t('(输入值){{attr0}}', { attr0: keyField.getValue() }), value: keyField.getValue() }]
+        : []),
       ...filteredLabelList,
     ]
     let keyComponent
@@ -97,18 +98,18 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
         <AutoComplete
           options={labelList}
           tips={t('没有匹配的标签键')}
-          onChange={value => {
+          onChange={(value) => {
             if (value !== keyField.getValue()) {
               valueField.setValue('')
             }
             keyField.setValue(value)
           }}
         >
-          {ref => (
+          {(ref) => (
             <TeaInput
               ref={ref}
               value={keyField.getValue()}
-              onChange={value => {
+              onChange={(value) => {
                 keyField.setValue(value)
               }}
               placeholder={t('请输入标签键')}
@@ -127,7 +128,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       keyField.setValue('$path')
       keyComponent = <TeaInput placeholder='$path' disabled />
     } else {
-      keyComponent = <Input placeholder={t('请输入Key值')} field={keyField} onChange={key => keyField.setValue(key)} />
+      keyComponent = (
+        <Input placeholder={t('请输入Key值')} field={keyField} onChange={(key) => keyField.setValue(key)} />
+      )
     }
     return (
       <Bubble content={keyField.getValue()}>
@@ -147,9 +150,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     const { value: valueField, key: keyField, type: labelType } = recordField.getFields(['value', 'key', 'type'])
     const valueValidate = valueField.getTouched() && valueField.getError()
     const labelList = type === 'source' ? sourceLabelList : destinationLabelList
-    const valueOptions = labelList.find(item => item.value === keyField.getValue())?.valueOptions || []
+    const valueOptions = labelList.find((item) => item.value === keyField.getValue())?.valueOptions || []
     const options = [
-      ...(valueField.getValue() ? [{ text: t('(输入值){{attr0}}', { attr0: valueField.getValue() }), value: valueField.getValue() }] : []),
+      ...(valueField.getValue()
+        ? [{ text: t('(输入值){{attr0}}', { attr0: valueField.getValue() }), value: valueField.getValue() }]
+        : []),
       ...valueOptions,
     ]
     let valueComponent
@@ -158,15 +163,15 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
         <AutoComplete
           options={options}
           tips={t('没有匹配的标签值')}
-          onChange={value => {
+          onChange={(value) => {
             valueField.setValue(value)
           }}
         >
-          {ref => (
+          {(ref) => (
             <TeaInput
               ref={ref}
               value={valueField.getValue()}
-              onChange={value => {
+              onChange={(value) => {
                 valueField.setValue(value)
               }}
               placeholder={t('请输入标签值')}
@@ -177,7 +182,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       )
     } else {
       valueComponent = (
-        <Input placeholder={t('请输入Value值')} field={valueField} onChange={value => valueField.setValue(value)} />
+        <Input placeholder={t('请输入Value值')} field={valueField} onChange={(value) => valueField.setValue(value)} />
       )
     }
     return (
@@ -274,10 +279,14 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             <Select
                               value={sourceNamespace.getValue()}
                               options={[
-                                { text: t('全部命名空间'), value: '*', disabled: destinationNamespace.getValue() === '*' },
+                                {
+                                  text: t('全部命名空间'),
+                                  value: '*',
+                                  disabled: destinationNamespace.getValue() === '*',
+                                },
                                 ...(data?.namespaceList || []),
                               ]}
-                              onChange={value => {
+                              onChange={(value) => {
                                 if (value === '*') {
                                   sourceNamespace.setValue('*')
                                   sourceService.setValue('*')
@@ -300,23 +309,28 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 ...new Set([
                                   { text: t('全部服务'), value: '*' },
                                   ...(sourceService.getValue()
-                                    ? [{ text: t('(输入值){{attr0}}', { attr0: sourceService.getValue() }), value: sourceService.getValue() }]
+                                    ? [
+                                        {
+                                          text: t('(输入值){{attr0}}', { attr0: sourceService.getValue() }),
+                                          value: sourceService.getValue(),
+                                        },
+                                      ]
                                     : []),
-                                  ...(data?.serviceList.filter(o => {
+                                  ...(data?.serviceList.filter((o) => {
                                     return o.namespace === sourceNamespace.getValue()
                                   }) || []),
                                 ]),
                               ]}
                               tips={t('没有匹配的服务名称')}
-                              onChange={value => {
+                              onChange={(value) => {
                                 sourceService.setValue(value)
                               }}
                             >
-                              {ref => (
+                              {(ref) => (
                                 <TeaInput
                                   ref={ref}
                                   value={sourceService.getValue() === '*' ? t('全部服务') : sourceService.getValue()}
-                                  onChange={value => {
+                                  onChange={(value) => {
                                     sourceService.setValue(value)
                                   }}
                                 />
@@ -338,11 +352,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   {
                                     key: 'type',
                                     header: t('类型'),
-                                    render: item => {
+                                    render: (item) => {
                                       const { type, key } = item.getFields(['type', 'key'])
                                       const validate = type.getTouched() && type.getError()
                                       const option = RoutingArgumentsTypeOptions.find(
-                                        item => item.value === type.getValue(),
+                                        (item) => item.value === type.getValue(),
                                       )
                                       return (
                                         <Bubble content={option?.text}>
@@ -355,7 +369,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                             <Select
                                               options={RoutingArgumentsTypeOptions}
                                               value={type.getValue()}
-                                              onChange={value => {
+                                              onChange={(value) => {
                                                 type.setValue(RoutingArgumentsType[value])
                                                 key.setValue('')
                                               }}
@@ -371,7 +385,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   {
                                     key: 'key',
                                     header: 'key',
-                                    render: item => {
+                                    render: (item) => {
                                       return getArgumentsKeyComp(item, 'source', filterSourceLabelList)
                                     },
                                   },
@@ -379,13 +393,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                     key: 'value_type',
                                     header: 'value_type',
                                     width: 120,
-                                    render: item => {
+                                    render: (item) => {
                                       const { value_type } = item.getFields(['value_type'])
                                       return (
                                         <Select
                                           options={RouteLabelMatchTypeOptions}
                                           value={value_type.getValue()}
-                                          onChange={value => value_type.setValue(value)}
+                                          onChange={(value) => value_type.setValue(value)}
                                           type={'simulate'}
                                           appearance={'button'}
                                           matchButtonWidth
@@ -396,7 +410,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   {
                                     key: 'value',
                                     header: 'value',
-                                    render: item => {
+                                    render: (item) => {
                                       return getArgumentsValueComp(item, 'source')
                                     },
                                   },
@@ -473,7 +487,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 { text: t('全部命名空间'), value: '*', disabled: sourceNamespace.getValue() === '*' },
                                 ...(data?.namespaceList || []),
                               ]}
-                              onChange={value => {
+                              onChange={(value) => {
                                 if (value === '*') {
                                   destinationNamespace.setValue('*')
                                   destinationService.setValue('*')
@@ -503,23 +517,25 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                         },
                                       ]
                                     : []),
-                                  ...(data?.serviceList.filter(o => {
+                                  ...(data?.serviceList.filter((o) => {
                                     return o.namespace === destinationNamespace.getValue()
                                   }) || []),
                                 ]),
                               ]}
                               tips={t('没有匹配的服务名称')}
-                              onChange={value => {
+                              onChange={(value) => {
                                 destinationService.setValue(value)
                               }}
                             >
-                              {ref => (
+                              {(ref) => (
                                 <TeaInput
                                   ref={ref}
                                   value={
-                                    destinationService.getValue() === '*' ? t('全部服务') : destinationService.getValue()
+                                    destinationService.getValue() === '*'
+                                      ? t('全部服务')
+                                      : destinationService.getValue()
                                   }
-                                  onChange={value => {
+                                  onChange={(value) => {
                                     destinationService.setValue(value)
                                   }}
                                   disabled={destinationNamespace.getValue() === '*'}
@@ -538,8 +554,8 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             'labels',
                             'isolate',
                           ])
-                          const filterDestinationLabelList = destinationLabelList.map(item => {
-                            if (labels.getValue().find(label => label.key === item.value)) {
+                          const filterDestinationLabelList = destinationLabelList.map((item) => {
+                            if (labels.getValue().find((label) => label.key === item.value)) {
                               return { ...item, disabled: true }
                             }
                             return item
@@ -557,7 +573,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   >
                                     <TeaInput
                                       value={name.getValue()}
-                                      onChange={v => name.setValue(v)}
+                                      onChange={(v) => name.setValue(v)}
                                       placeholder={t('请输入实例分组名称')}
                                     ></TeaInput>
                                   </FormControl>
@@ -586,7 +602,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                           {
                                             key: 'key',
                                             header: 'key',
-                                            render: item => {
+                                            render: (item) => {
                                               return getArgumentsKeyComp(
                                                 item,
                                                 'destination',
@@ -598,13 +614,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                             key: 'type',
                                             header: 'type',
                                             width: 120,
-                                            render: item => {
+                                            render: (item) => {
                                               const { type } = item.getFields(['type'])
                                               return (
                                                 <Select
                                                   options={RouteLabelMatchTypeOptions}
                                                   value={type.getValue()}
-                                                  onChange={value => type.setValue(value)}
+                                                  onChange={(value) => type.setValue(value)}
                                                   type={'simulate'}
                                                   appearance={'button'}
                                                 />
@@ -614,7 +630,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                           {
                                             key: 'value',
                                             header: 'value',
-                                            render: item => {
+                                            render: (item) => {
                                               return getArgumentsValueComp(item, 'destination')
                                             },
                                           },

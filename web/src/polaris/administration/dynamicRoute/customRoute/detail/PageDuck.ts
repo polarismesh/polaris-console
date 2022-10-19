@@ -106,7 +106,7 @@ export default class RouteDetailPageDuck extends DetailPage {
     yield* super.saga()
     const { types } = this
     // 规则编辑
-    yield takeLatest(types.SET_ID, function*(action) {
+    yield takeLatest(types.SET_ID, function* (action) {
       if (action.payload) {
         let ruleDetailInfo = null
         const result = yield describeCustomRoute({
@@ -120,7 +120,7 @@ export default class RouteDetailPageDuck extends DetailPage {
             ...item,
             source: {
               ...item.routing_config.sources?.[0],
-              arguments: item.routing_config.sources?.[0].arguments.map(item => {
+              arguments: item.routing_config.sources?.[0].arguments.map((item) => {
                 return {
                   type: item.type,
                   key: item.key,
@@ -132,7 +132,7 @@ export default class RouteDetailPageDuck extends DetailPage {
             destination: {
               service: item.routing_config.destinations?.[0]?.service,
               namespace: item.routing_config.destinations?.[0]?.namespace,
-              instanceGroups: item.routing_config.destinations.map(instanceGroup => {
+              instanceGroups: item.routing_config.destinations.map((instanceGroup) => {
                 delete instanceGroup.namespace
                 delete instanceGroup.service
                 return {
@@ -157,12 +157,12 @@ export default class RouteDetailPageDuck extends DetailPage {
       getAllList(describeServices, {})({}),
     ])
 
-    const namespaceList = namespaceOptions.list.map(item => ({
+    const namespaceList = namespaceOptions.list.map((item) => ({
       text: item.name,
       value: item.name,
     }))
 
-    const serviceList = serviceOptions.list.map(item => ({
+    const serviceList = serviceOptions.list.map((item) => ({
       text: item.name,
       value: item.name,
       namespace: item.namespace,

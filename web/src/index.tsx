@@ -12,6 +12,7 @@ import { Router, Switch, Route } from 'react-router-dom'
 import LoginPage from '@src/polaris/auth/login/Page'
 import LoginPageDuck from '@src/polaris/auth/login/PageDuck'
 import { connectWithDuck } from './polaris/common/helpers'
+import '../locales/i18n'
 
 const Login = connectWithDuck(LoginPage, LoginPageDuck as any)
 export default function render() {
