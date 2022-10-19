@@ -8,6 +8,7 @@ import {
 } from 'tea-component'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import insertCSS from '../helpers/insertCSS'
+import { t } from 'i18next';
 insertCSS(
   'monaco-section',
   `
@@ -103,7 +104,7 @@ export default function MonacoEditor({ style, ...props }: MonacoEditorProps) {
       description={
         <>
           <Icon type='loading' />
-          &nbsp;{'编辑器正在加载中...'}
+          &nbsp;{t('编辑器正在加载中...')}
         </>
       }
       className={FontSizeReset}

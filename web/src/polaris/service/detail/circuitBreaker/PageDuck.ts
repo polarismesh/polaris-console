@@ -14,6 +14,7 @@ import { put, select, take } from 'redux-saga/effects'
 import { Modal } from 'tea-component'
 import { DynamicCircuitBreakerCreateDuck } from './operations/CreateDuck'
 import { Service } from '../../types'
+import { t } from 'i18next';
 
 interface Filter extends BaseFilter {
   namespace: string
@@ -148,7 +149,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: '新建熔断规则',
+          title: t('新建熔断规则'),
           visible: true,
           createId,
           ruleIndex,
@@ -181,7 +182,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: '编辑规则',
+          title: t('编辑规则'),
           visible: true,
           createId,
           ruleIndex,
@@ -203,8 +204,8 @@ export default class ServicePageDuck extends GridPageDuck {
     })
     yield takeLatest(types.REMOVE, function* (action) {
       const confirm = yield Modal.confirm({
-        message: `确认删除规则`,
-        description: '删除后，无法恢复',
+        message: t(`确认删除规则`),
+        description: t('删除后，无法恢复'),
       })
       if (confirm) {
         const removeIndex = action.payload

@@ -8,6 +8,7 @@ import { DuckCmpProps, purify, memorize } from 'saga-duck'
 import Duck from '../ducks/SearchableMultiSelect'
 import { TransferProps, Transfer, SearchBox, Table, StatusTipProps, StatusTip } from 'tea-component'
 import { scrollable, selectable, removeable } from 'tea-component/lib/table/addons'
+import { t } from 'i18next';
 
 interface MyDuck<T> extends Duck {
   Item: T
@@ -66,12 +67,12 @@ function SearchableTransfer<T>(props: Props<T>) {
     duck,
     store,
     dispatch,
-    title: header = '请选择',
+    title: header = t('请选择'),
     idHeader,
     itemDisabled = o => false,
     itemRenderer = o => duck.getId(o),
     itemTip = o => undefined,
-    searchPlaceholder = '输入关键字搜索',
+    searchPlaceholder = t('输入关键字搜索'),
     Left = DefaultLeft,
     Right = DefaultRight,
     ...rest
@@ -95,7 +96,7 @@ function SearchableTransfer<T>(props: Props<T>) {
     statusTip = (
       <CompactStatusTip
         status='found'
-        foundText={list && list.length > 0 ? `找到${totalCount}条结果` : `搜索"${keyword}"暂无数据`}
+        foundText={list && list.length > 0 ? t('找到{{totalCount}}条结果', { totalCount }) : t('搜索"{{keyword}}"暂无数据', { keyword })}
         onClear={handlers.clearKeyword}
       />
     )
@@ -132,7 +133,7 @@ function SearchableTransfer<T>(props: Props<T>) {
         </Transfer.Cell>
       }
       rightCell={
-        <Transfer.Cell title={`已选择 (${(selection && selection.length) || 0})`}>
+        <Transfer.Cell title={t('已选择 ({{attr0}})', { attr0: (selection && selection.length) || 0 })}>
           <Right duck={duck} store={store} dispatch={dispatch} itemRenderer={itemRenderer} idHeader={idHeader} />
         </Transfer.Cell>
       }

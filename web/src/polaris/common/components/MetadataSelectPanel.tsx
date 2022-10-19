@@ -2,6 +2,7 @@ import * as React from 'react'
 import { purify } from 'saga-duck'
 import { Card, Input, Button } from 'tea-component'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
+import { t } from 'i18next';
 
 interface Props {
   metadata: KeyValuePair[]
@@ -17,7 +18,7 @@ export default purify(function(props: Props) {
         {metadata.map((x, recordIndex) => (
           <section key={recordIndex}>
             <Input
-              placeholder={'请输入标签键'}
+              placeholder={t('请输入标签键')}
               value={x.key}
               onChange={value => {
                 const newMetadata = [...metadata]
@@ -34,7 +35,7 @@ export default purify(function(props: Props) {
             {!tagKeyOnly && (
               <Input
                 size={'m'}
-                placeholder={'请输入标签值'}
+                placeholder={t('请输入标签值')}
                 value={x.value}
                 onChange={value => {
                   const newMetadata = [...metadata]
@@ -57,9 +58,9 @@ export default purify(function(props: Props) {
           }}
           style={{ marginTop: '20px' }}
           disabled={!metadata?.[0]?.key || (!tagKeyOnly && !metadata?.[0]?.value)}
-          tooltip={!metadata?.[0]?.key || (!tagKeyOnly && !metadata?.[0]?.value) ? '请输入完整键值对' : ''}
+          tooltip={!metadata?.[0]?.key || (!tagKeyOnly && !metadata?.[0]?.value) ? t('请输入完整键值对') : ''}
         >
-          {'确认'}
+          {t('确认')}
         </Button>
       </Card.Body>
     </Card>

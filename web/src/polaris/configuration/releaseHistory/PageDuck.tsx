@@ -13,6 +13,7 @@ import { describeConfigFileReleaseHistories } from './model'
 import { describeConfigFileGroups } from '../fileGroup/model'
 import React from 'react'
 import FileDiff from '../fileGroup/detail/file/FileDiff'
+import { t } from 'i18next';
 
 export interface ConfigFileReleaseHistoryItem extends ConfigFileReleaseHistory {
   id: string
@@ -189,7 +190,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
 
       const modal = Modal.show({
         size: 'xl',
-        caption: '内容对比',
+        caption: t('内容对比'),
         children: <FileDiff original={previousRelease?.[0]?.content || ''} now={content || ''} format={format} />,
         destroyOnClose: true,
         onClose: () => modal.destroy(),
@@ -209,7 +210,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
           attr: {
             type: 'single',
             key: GroupNameTagKey,
-            name: '分组',
+            name: t('分组'),
             values: configFileGroupList,
           },
           values: [option],
@@ -220,7 +221,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
           attr: {
             type: 'input',
             key: FileNameTagKey,
-            name: '配置文件名',
+            name: t('配置文件名'),
           },
           values: [{ name: routes.fileName }],
         })

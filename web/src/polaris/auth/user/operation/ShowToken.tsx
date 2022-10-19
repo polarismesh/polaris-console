@@ -1,6 +1,7 @@
 import React from 'react'
 import { Form, FormItem, Button, FormText, Text } from 'tea-component'
 import CopyableText from '@src/polaris/common/components/CopyableText'
+import { t } from 'i18next';
 
 export default function ShowToken(props: { token: string; name: string }) {
   const { token, name } = props
@@ -9,7 +10,7 @@ export default function ShowToken(props: { token: string; name: string }) {
 
   return (
     <Form style={{ marginLeft: '20px' }}>
-      <FormItem label={'用户'}>
+      <FormItem label={t('用户')}>
         <FormText>{name}</FormText>
       </FormItem>
       <FormItem

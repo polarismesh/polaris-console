@@ -32,6 +32,7 @@ import {
   RoutingArgumentsType,
 } from '../types'
 import { MatchingLabelTips } from '@src/polaris/administration/accessLimiting/operations/Create'
+import { t } from 'i18next';
 
 insertCSS(
   'create-rule-form',
@@ -87,7 +88,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     const { key: keyField, value: valueField, type: labelType } = recordField.getFields(['key', 'value', 'type'])
     const keyValidate = keyField.getTouched() && keyField.getError()
     const labelList = [
-      ...(keyField.getValue() ? [{ text: `(输入值)${keyField.getValue()}`, value: keyField.getValue() }] : []),
+      ...(keyField.getValue() ? [{ text: t('(输入值){{attr0}}', { attr0: keyField.getValue() }), value: keyField.getValue() }] : []),
       ...filteredLabelList,
     ]
     let keyComponent
@@ -95,7 +96,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       keyComponent = (
         <AutoComplete
           options={labelList}
-          tips='没有匹配的标签键'
+          tips={t('没有匹配的标签键')}
           onChange={value => {
             if (value !== keyField.getValue()) {
               valueField.setValue('')
@@ -110,7 +111,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               onChange={value => {
                 keyField.setValue(value)
               }}
-              placeholder={'请输入标签键'}
+              placeholder={t('请输入标签键')}
               size={'full'}
             />
           )}
@@ -126,7 +127,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       keyField.setValue('$path')
       keyComponent = <TeaInput placeholder='$path' disabled />
     } else {
-      keyComponent = <Input placeholder='请输入Key值' field={keyField} onChange={key => keyField.setValue(key)} />
+      keyComponent = <Input placeholder={t('请输入Key值')} field={keyField} onChange={key => keyField.setValue(key)} />
     }
     return (
       <Bubble content={keyField.getValue()}>
@@ -148,7 +149,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     const labelList = type === 'source' ? sourceLabelList : destinationLabelList
     const valueOptions = labelList.find(item => item.value === keyField.getValue())?.valueOptions || []
     const options = [
-      ...(valueField.getValue() ? [{ text: `(输入值)${valueField.getValue()}`, value: valueField.getValue() }] : []),
+      ...(valueField.getValue() ? [{ text: t('(输入值){{attr0}}', { attr0: valueField.getValue() }), value: valueField.getValue() }] : []),
       ...valueOptions,
     ]
     let valueComponent
@@ -156,7 +157,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       valueComponent = (
         <AutoComplete
           options={options}
-          tips='没有匹配的标签值'
+          tips={t('没有匹配的标签值')}
           onChange={value => {
             valueField.setValue(value)
           }}
@@ -168,7 +169,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               onChange={value => {
                 valueField.setValue(value)
               }}
-              placeholder={'请输入标签值'}
+              placeholder={t('请输入标签值')}
               size={'full'}
             />
           )}
@@ -176,7 +177,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       )
     } else {
       valueComponent = (
-        <Input placeholder='请输入Value值' field={valueField} onChange={value => valueField.setValue(value)} />
+        <Input placeholder={t('请输入Value值')} field={valueField} onChange={value => valueField.setValue(value)} />
       )
     }
     return (
@@ -215,19 +216,19 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       store={store}
       duck={duck}
       dispatch={dispatch}
-      title={composedId?.id ? '编辑服务路由规则' : '新建服务路由规则'}
+      title={composedId?.id ? t('编辑服务路由规则') : t('新建服务路由规则')}
       backRoute={backRoute}
     >
       <Card>
         <Card.Body>
           <Form>
-            <FormField label='路由规则名称' field={name} message='最长64个字符' required>
+            <FormField label={t('路由规则名称')} field={name} message={t('最长64个字符')} required>
               <Input field={name} maxLength={64} size='l' />
             </FormField>
-            <FormField label='描述' field={description}>
+            <FormField label={t('描述')} field={description}>
               <Input field={description} maxLength={64} size='l' multiple />
             </FormField>
-            <Form.Item label='路由规则详情' className='compact-form-control'>
+            <Form.Item label={t('路由规则详情')} className='compact-form-control'>
               <Form style={{ position: 'relative' }}>
                 <div
                   style={{
@@ -252,7 +253,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                     style={{ position: 'absolute', left: 'calc(50% + -14px)', top: '-14px' }}
                   ></Button>
                   <Text reset theme={'label'} style={{ position: 'absolute', left: 'calc(50% + -55px)', top: '5px' }}>
-                    点击切换主被调服务
+                    {t('点击切换主被调服务')}
                   </Text>
                   <Icon type={'arrowright'} style={{ position: 'absolute', right: '-9px', top: '-9px' }} />
                 </div>
@@ -260,20 +261,20 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   <Col span={12}>
                     <div style={{ margin: '10px 0' }}>
                       <Text parent={'div'} style={{ width: '100%', textAlign: 'center', fontWeight: 'bolder' }}>
-                        来源服务
+                        {t('来源服务')}
                       </Text>
                       <Text parent={'div'} theme={'label'} style={{ width: '100%', textAlign: 'center' }}>
-                        主调请求按照匹配规则匹配成功后，将按照当前规则进行目标服务路由
+                        {t('主调请求按照匹配规则匹配成功后，将按照当前规则进行目标服务路由')}
                       </Text>
                     </div>
                     <Card bordered>
-                      <Card.Body title='主调服务'>
+                      <Card.Body title={t('主调服务')}>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                          <FormField field={sourceNamespace} label='命名空间' required>
+                          <FormField field={sourceNamespace} label={t('命名空间')} required>
                             <Select
                               value={sourceNamespace.getValue()}
                               options={[
-                                { text: '全部命名空间', value: '*', disabled: destinationNamespace.getValue() === '*' },
+                                { text: t('全部命名空间'), value: '*', disabled: destinationNamespace.getValue() === '*' },
                                 ...(data?.namespaceList || []),
                               ]}
                               onChange={value => {
@@ -289,24 +290,24 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               type={'simulate'}
                               appearance={'button'}
                               matchButtonWidth
-                              placeholder='请选择命名空间'
+                              placeholder={t('请选择命名空间')}
                               size='m'
                             />
                           </FormField>
-                          <FormField field={sourceService} label='服务名称' required>
+                          <FormField field={sourceService} label={t('服务名称')} required>
                             <AutoComplete
                               options={[
                                 ...new Set([
-                                  { text: '全部服务', value: '*' },
+                                  { text: t('全部服务'), value: '*' },
                                   ...(sourceService.getValue()
-                                    ? [{ text: `(输入值)${sourceService.getValue()}`, value: sourceService.getValue() }]
+                                    ? [{ text: t('(输入值){{attr0}}', { attr0: sourceService.getValue() }), value: sourceService.getValue() }]
                                     : []),
                                   ...(data?.serviceList.filter(o => {
                                     return o.namespace === sourceNamespace.getValue()
                                   }) || []),
                                 ]),
                               ]}
-                              tips='没有匹配的服务名称'
+                              tips={t('没有匹配的服务名称')}
                               onChange={value => {
                                 sourceService.setValue(value)
                               }}
@@ -314,7 +315,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               {ref => (
                                 <TeaInput
                                   ref={ref}
-                                  value={sourceService.getValue() === '*' ? '全部服务' : sourceService.getValue()}
+                                  value={sourceService.getValue() === '*' ? t('全部服务') : sourceService.getValue()}
                                   onChange={value => {
                                     sourceService.setValue(value)
                                   }}
@@ -324,9 +325,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                           </FormField>
                         </Form>
                       </Card.Body>
-                      <Card.Body title='请求标签'>
+                      <Card.Body title={t('请求标签')}>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                          <Form.Item label='请求匹配规则' align='middle' tips={MatchingLabelTips}>
+                          <Form.Item label={t('请求匹配规则')} align='middle' tips={MatchingLabelTips}>
                             {argumentsField?.getValue()?.length > 0 && (
                               <Table
                                 hideHeader
@@ -336,7 +337,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 columns={[
                                   {
                                     key: 'type',
-                                    header: '类型',
+                                    header: t('类型'),
                                     render: item => {
                                       const { type, key } = item.getFields(['type', 'key'])
                                       const validate = type.getTouched() && type.getError()
@@ -437,14 +438,14 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   })
                                 }
                               >
-                                添加
+                                {t('添加')}
                               </Button>
                               {argumentsField?.getValue()?.length > 0 && (
                                 <Button
                                   type='link'
                                   onClick={() => argumentsField.asArray().splice(0, argumentsField?.getValue()?.length)}
                                 >
-                                  删除所有
+                                  {t('删除所有')}
                                 </Button>
                               )}
                             </div>
@@ -456,20 +457,20 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   <Col span={12}>
                     <div style={{ margin: '10px 0' }}>
                       <Text parent={'div'} style={{ width: '100%', textAlign: 'center', fontWeight: 'bolder' }}>
-                        目标服务
+                        {t('目标服务')}
                       </Text>
                       <Text parent={'div'} theme={'label'} style={{ width: '100%', textAlign: 'center' }}>
-                        请求会按照规则路由到目标服务分组
+                        {t('请求会按照规则路由到目标服务分组')}
                       </Text>
                     </div>
                     <Card bordered>
-                      <Card.Body title='被调服务'>
+                      <Card.Body title={t('被调服务')}>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                          <FormField field={destinationNamespace} label='命名空间' required>
+                          <FormField field={destinationNamespace} label={t('命名空间')} required>
                             <Select
                               value={destinationNamespace.getValue()}
                               options={[
-                                { text: '全部命名空间', value: '*', disabled: sourceNamespace.getValue() === '*' },
+                                { text: t('全部命名空间'), value: '*', disabled: sourceNamespace.getValue() === '*' },
                                 ...(data?.namespaceList || []),
                               ]}
                               onChange={value => {
@@ -485,19 +486,19 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               type={'simulate'}
                               appearance={'button'}
                               matchButtonWidth
-                              placeholder='请选择命名空间'
+                              placeholder={t('请选择命名空间')}
                               size='m'
                             />
                           </FormField>
-                          <FormField field={destinationService} label='服务名称' required>
+                          <FormField field={destinationService} label={t('服务名称')} required>
                             <AutoComplete
                               options={[
                                 ...new Set([
-                                  { text: '全部服务', value: '*' },
+                                  { text: t('全部服务'), value: '*' },
                                   ...(destinationService.getValue()
                                     ? [
                                         {
-                                          text: `(输入值)${destinationService.getValue()}`,
+                                          text: t('(输入值){{attr0}}', { attr0: destinationService.getValue() }),
                                           value: destinationService.getValue(),
                                         },
                                       ]
@@ -507,7 +508,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   }) || []),
                                 ]),
                               ]}
-                              tips='没有匹配的服务名称'
+                              tips={t('没有匹配的服务名称')}
                               onChange={value => {
                                 destinationService.setValue(value)
                               }}
@@ -516,7 +517,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 <TeaInput
                                   ref={ref}
                                   value={
-                                    destinationService.getValue() === '*' ? '全部服务' : destinationService.getValue()
+                                    destinationService.getValue() === '*' ? t('全部服务') : destinationService.getValue()
                                   }
                                   onChange={value => {
                                     destinationService.setValue(value)
@@ -528,7 +529,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                           </FormField>
                         </Form>
                       </Card.Body>
-                      <Card.Body title='实例分组'>
+                      <Card.Body title={t('实例分组')}>
                         {[...instanceGroups.asArray()].map((instanceGroup, index) => {
                           const { name, weight, priority, labels, isolate } = instanceGroup.getFields([
                             'name',
@@ -557,7 +558,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                     <TeaInput
                                       value={name.getValue()}
                                       onChange={v => name.setValue(v)}
-                                      placeholder={'请输入实例分组名称'}
+                                      placeholder={t('请输入实例分组名称')}
                                     ></TeaInput>
                                   </FormControl>
                                 }
@@ -574,7 +575,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 }
                               >
                                 <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                                  <Form.Item label='实例标签' align='middle'>
+                                  <Form.Item label={t('实例标签')} align='middle'>
                                     {labels?.getValue()?.length > 0 && (
                                       <Table
                                         hideHeader
@@ -655,30 +656,30 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                           })
                                         }
                                       >
-                                        添加
+                                        {t('添加')}
                                       </Button>
                                       {labels?.getValue()?.length > 0 && (
                                         <Button
                                           type='link'
                                           onClick={() => labels.asArray().splice(0, labels?.getValue()?.length)}
                                         >
-                                          删除所有
+                                          {t('删除所有')}
                                         </Button>
                                       )}
                                     </div>
                                   </Form.Item>
-                                  <FormField label='权重' field={weight} required>
+                                  <FormField label={t('权重')} field={weight} required>
                                     <InputNumber min={0} max={100} field={weight} />
                                   </FormField>
                                   <FormField
-                                    label='优先级'
+                                    label={t('优先级')}
                                     field={priority}
                                     required
-                                    tips={'优先级数字设置越小，匹配顺序越靠前'}
+                                    tips={t('优先级数字设置越小，匹配顺序越靠前')}
                                   >
                                     <InputNumber min={0} max={10} field={priority} />
                                   </FormField>
-                                  <FormField label='是否隔离' field={isolate} required>
+                                  <FormField label={t('是否隔离')} field={isolate} required>
                                     <Switch field={isolate} />
                                   </FormField>
                                 </Form>
@@ -702,11 +703,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               weight: 100,
                               priority: 0,
                               isolate: false,
-                              name: `实例分组${instanceGroups.getValue()?.length + 1}`,
+                              name: t('实例分组{{attr0}}', { attr0: instanceGroups.getValue()?.length + 1 }),
                             })
                           }
                         >
-                          添加
+                          {t('添加')}
                         </Button>
                       </Card.Body>
                     </Card>
@@ -714,13 +715,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Row>
               </Form>
             </Form.Item>
-            <FormField label='优先级' field={priority} tips={'优先级数字设置越小，匹配顺序越靠前'} required>
+            <FormField label={t('优先级')} field={priority} tips={t('优先级数字设置越小，匹配顺序越靠前')} required>
               <InputNumber min={0} max={10} field={priority} />
             </FormField>
           </Form>
           <Form.Action>
             <Button type='primary' onClick={() => dispatch(creators.submit())}>
-              提交
+              {t('提交')}
             </Button>
             <Button
               onClick={() => {
@@ -733,7 +734,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 }
               }}
             >
-              取消
+              {t('取消')}
             </Button>
           </Form.Action>
         </Card.Body>

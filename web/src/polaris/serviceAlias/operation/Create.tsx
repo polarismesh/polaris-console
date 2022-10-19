@@ -5,6 +5,7 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import { Form, Select } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
+import { t } from 'i18next';
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -15,7 +16,7 @@ export default function Create(props: DuckCmpProps<Duck>) {
   }
   const data = selectors.data(store)
   return (
-    <Dialog duck={duck} store={store} dispatch={dispatch} size='l' title={data.alias ? '编辑服务' : '新建服务'}>
+    <Dialog duck={duck} store={store} dispatch={dispatch} size='l' title={data.alias ? t('编辑服务') : t('新建服务')}>
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
   )
@@ -39,17 +40,17 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   return (
     <>
       <Form>
-        <FormField field={alias} label={'服务别名'} required>
+        <FormField field={alias} label={t('服务别名')} required>
           <Input
             field={alias}
             maxLength={128}
-            placeholder={'允许数字、英文字母、.、-、_，限制128个字符'}
+            placeholder={t('允许数字、英文字母、.、-、_，限制128个字符')}
             size={'l'}
             disabled={options.isModify}
           />
         </FormField>
 
-        <FormField field={alias_namespace} label={'别名所在命名空间'} required>
+        <FormField field={alias_namespace} label={t('别名所在命名空间')} required>
           <Select
             value={alias_namespace.getValue()}
             options={options.namespaceList}
@@ -61,7 +62,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           ></Select>
         </FormField>
 
-        <FormField field={service} label={'指向服务'} required>
+        <FormField field={service} label={t('指向服务')} required>
           <Select
             value={service.getValue()}
             options={options.serviceList}
@@ -76,8 +77,8 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           ></Select>
         </FormField>
 
-        <FormField field={comment} label={'描述'}>
-          <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
+        <FormField field={comment} label={t('描述')}>
+          <Input field={comment} maxLength={1024} placeholder={t('长度不超过1024个字符')} size={'l'} />
         </FormField>
       </Form>
     </>

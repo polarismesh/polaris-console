@@ -15,6 +15,7 @@ import {
 import { autotip } from "tea-component/lib/table/addons";
 import BaseInfoDuck from "./PageDuck";
 import { enableNearbyString } from "../../operation/CreateDuck";
+import { t } from 'i18next';
 
 export default function BaseInfo(props: DuckCmpProps<BaseInfoDuck>) {
   const { duck, store } = props;
@@ -33,36 +34,36 @@ export default function BaseInfo(props: DuckCmpProps<BaseInfoDuck>) {
           <Form layout="inline">
             <Row>
               <Col>
-                <FormItem label={"命名空间"}>
+                <FormItem label={t('命名空间')}>
                   <FormText>{data.namespace}</FormText>
                 </FormItem>
-                <FormItem label={"服务名"}>
+                <FormItem label={t('服务名')}>
                   <FormText>{data.name}</FormText>
                 </FormItem>
-                <FormItem label={"部门"}>
+                <FormItem label={t('部门')}>
                   <FormText>{data.department || "-"}</FormText>
                 </FormItem>
-                <FormItem label={"业务"}>
+                <FormItem label={t('业务')}>
                   <FormText>{data.business || "-"}</FormText>
                 </FormItem>
-                <FormItem label={"创建时间"}>
+                <FormItem label={t('创建时间')}>
                   <FormText>{data.ctime}</FormText>
                 </FormItem>
-                <FormItem label={"修改时间"}>
+                <FormItem label={t('修改时间')}>
                   <FormText>{data.mtime}</FormText>
                 </FormItem>
-                <FormItem label={"版本号"}>
+                <FormItem label={t('版本号')}>
                   <FormText>{data.revision}</FormText>
                 </FormItem>
-                <FormItem label={`服务标签(${serviceTags.length}个)`}>
+                <FormItem label={t('服务标签({{attr0}}个)', { attr0: serviceTags.length })}>
                   <FormText>{serviceTags.join(" ; ") || "-"}</FormText>
                 </FormItem>
-                <FormItem label={"描述"}>
+                <FormItem label={t('描述')}>
                   <FormText>{data.comment || "-"}</FormText>
                 </FormItem>
-                <FormItem label={"就近访问"}>
+                <FormItem label={t('就近访问')}>
                   <FormText>
-                    {data.metadata?.[enableNearbyString] ? "开启" : "关闭"}
+                    {data.metadata?.[enableNearbyString] ? t('开启') : t('关闭')}
                   </FormText>
                 </FormItem>
               </Col>

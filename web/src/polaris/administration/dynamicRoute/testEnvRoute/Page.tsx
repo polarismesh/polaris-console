@@ -2,6 +2,7 @@ import React from 'react'
 import { Layout, Card, Tabs, TabPanel } from 'tea-component'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { tabs, tabConfigs, TabContentInfo } from './TabConfig'
+import { t } from 'i18next';
 const { Body, Content } = Layout
 
 insertCSS(
@@ -77,7 +78,7 @@ export default function TestEnvRoutePage() {
     <Layout>
       <Body>
         <Content>
-          <Content.Header title='测试环境路由' />
+          <Content.Header title={t('测试环境路由')} />
           <Content.Body>
             <Tabs tabs={tabs} ceiling>
               {tabs.map(tab => {

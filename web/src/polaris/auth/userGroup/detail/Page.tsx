@@ -10,6 +10,7 @@ import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { getUin, isOwner } from '@src/polaris/common/util/common'
 import CopyableText from '@src/polaris/common/components/CopyableText'
 import UseableResource from '../../common/UseableResource'
+import { t } from 'i18next';
 
 export default purify(function(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -28,19 +29,19 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       store={store}
       duck={duck}
       dispatch={dispatch}
-      title={`用户组详情(${data?.name})`}
+      title={t('用户组详情({{attr0}})', { attr0: data?.name })}
       backRoute={'/usergroup'}
     >
       <Card>
         <Card.Body>
           <Form>
-            <FormItem label={'用户组名'}>
+            <FormItem label={t('用户组名')}>
               <FormText>{data?.name}</FormText>
             </FormItem>
-            <FormItem label={'用户组ID'}>
+            <FormItem label={t('用户组ID')}>
               <FormText>{composedId?.id}</FormText>
             </FormItem>
-            <FormItem label={'备注'}>
+            <FormItem label={t('备注')}>
               <FormText>
                 {comment || '-'}
                 <Button
@@ -85,26 +86,26 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   },
                   {
                     key: 'token_enable',
-                    header: '状态',
+                    header: t('状态'),
                     render: x =>
                       x.token_enable ? (
-                        <Text theme={'success'}>{'生效中'}</Text>
+                        <Text theme={'success'}>{t('生效中')}</Text>
                       ) : (
-                        <Text theme={'danger'}>{'已失效'}</Text>
+                        <Text theme={'danger'}>{t('已失效')}</Text>
                       ),
                   },
                   ...(isOwner()
                     ? [
                         {
                           key: 'operation',
-                          header: '操作',
+                          header: t('操作'),
                           render: () => (
                             <>
                               <Button type='link' onClick={() => dispatch(creators.toggleToken())}>
-                                {token_enable ? '禁用' : '启用'}
+                                {token_enable ? t('禁用') : t('启用')}
                               </Button>
                               <Button type='link' onClick={() => dispatch(creators.resetToken())}>
-                                {'重置'}
+                                {t('重置')}
                               </Button>
                             </>
                           ),

@@ -13,6 +13,7 @@ import { NamespaceItem } from '@src/polaris/service/PageDuck'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
+import { t } from 'i18next';
 
 export interface ConfigFileGroupItem extends ConfigFileGroup {
   id: string
@@ -179,13 +180,13 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       const { name, namespace } = action.payload
 
       const confirm = yield Modal.confirm({
-        message: `确认删除配置组`,
-        description: '删除配置组也会同时删除配置组下所有配置文件，请谨慎删除。',
-        okText: '删除',
+        message: t(`确认删除配置组`),
+        description: t('删除配置组也会同时删除配置组下所有配置文件，请谨慎删除。'),
+        okText: t('删除'),
       })
       if (confirm) {
         const res = yield deleteConfigFileGroups({ group: name, namespace })
-        if (res) notification.success({ description: '删除成功' })
+        if (res) notification.success({ description: t('删除成功') })
         yield put(creators.reload())
       }
     })

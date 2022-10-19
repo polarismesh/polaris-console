@@ -5,6 +5,7 @@ import { ConfigFile } from '@src/polaris/configuration/fileGroup/types'
 import { describeConfigFileTemplates } from '@src/polaris/configuration/fileGroup/model'
 import { reduceFromPayload } from 'saga-duck'
 import { Modal } from 'tea-component'
+import { t } from 'i18next';
 
 export type DialogOptions = { file: ConfigFile }
 
@@ -43,8 +44,8 @@ export default class GetFileTemplateDuck extends FormDialog {
     const { currentTemplateId } = form.selectors.values(yield select())
     const currentTemplate = templateList.find(item => item.id === currentTemplateId)
     const confirm = yield Modal.confirm({
-      message: '请确认应用模板',
-      description: '应用所选模板将会覆盖当前已编辑的内容',
+      message: t('请确认应用模板'),
+      description: t('应用所选模板将会覆盖当前已编辑的内容'),
     })
     if (!confirm) throw 'not confirm'
     return currentTemplate.content
@@ -125,7 +126,7 @@ const validator = CreateForm.combineValidators<Values, any>({
   currentTemplateId(v, data?, meta?) {
     const currentTemplate = meta?.templateOptions?.find(item => item.id === v)
     if (currentTemplate?.format !== meta?.file?.format) {
-      return '您当前选择的模板与配置文件格式不符，请检查后重试。'
+      return t('您当前选择的模板与配置文件格式不符，请检查后重试。')
     }
   },
 })

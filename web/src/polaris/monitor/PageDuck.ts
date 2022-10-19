@@ -15,6 +15,7 @@ import { put, select } from 'redux-saga/effects'
 import moment from 'moment'
 import { combineVector } from './combvec'
 import { Modal, notification } from 'tea-component'
+import { t } from 'i18next';
 
 export interface MonitorFilter {
   labelKey: MonitorLabelKey
@@ -48,7 +49,7 @@ export default class MonitorDuck extends Page {
     return 'monitor'
   }
   get titleName() {
-    return '监控'
+    return t('监控')
   }
   get initialFetch() {
     return false
@@ -185,10 +186,10 @@ export default class MonitorDuck extends Page {
     let confirmResult = false
     if (queryNumber >= 50) {
       yield Modal.confirm({
-        message: '本次筛选配置将会请求大量数据',
-        description: '请确认是否请求',
-        okText: '确认',
-        cancelText: '取消',
+        message: t('本次筛选配置将会请求大量数据'),
+        description: t('请确认是否请求'),
+        okText: t('确认'),
+        cancelText: t('取消'),
         onOk: () => {
           confirmResult = true
         },
@@ -400,7 +401,7 @@ export default class MonitorDuck extends Page {
     yield takeLatest(types.SAVE_CONFIG, function*() {
       const filterConfig = selectors.filterConfig(yield select())
       window.localStorage.setItem(`${duck.type}MonitorConfigLocalStorageKey`, JSON.stringify(filterConfig))
-      notification.success({ description: '已保存' })
+      notification.success({ description: t('已保存') })
       yield put({
         type: types.SET_FILTER_CONFIG,
         payload: filterConfig,
@@ -424,7 +425,7 @@ export class CircuitBreakerMonitorDuck extends MonitorDuck {
     return '/#/circuitBreaker-monitor'
   }
   get titleName() {
-    return '熔断监控'
+    return t('熔断监控')
   }
   get type() {
     return 'circuit-breaker'
@@ -446,7 +447,7 @@ export class RouteMonitorDuck extends MonitorDuck {
     return '/#/route-monitor'
   }
   get titleName() {
-    return '路由监控'
+    return t('路由监控')
   }
   get type() {
     return 'route'
@@ -468,7 +469,7 @@ export class RatelimitMonitorDuck extends MonitorDuck {
     return '/#/ratelimit-monitor'
   }
   get titleName() {
-    return '限流监控'
+    return t('限流监控')
   }
   get type() {
     return 'ratelimit'

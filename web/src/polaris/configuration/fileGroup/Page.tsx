@@ -7,6 +7,7 @@ import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
+import { t } from 'i18next';
 
 insertCSS(
   'service',
@@ -25,19 +26,19 @@ export const FileNameTagKey = 'fileName'
 export const DefaultGroupTagAttribute = {
   type: 'input',
   key: GroupNameTagKey,
-  name: '分组名',
+  name: t('分组名'),
 }
 function getTagAttributes() {
   return [
     {
       type: 'input',
       key: GroupNameTagKey,
-      name: '分组名',
+      name: t('分组名'),
     },
     {
       type: 'input',
       key: FileNameTagKey,
-      name: '配置文件名',
+      name: t('配置文件名'),
     },
   ]
 }
@@ -56,15 +57,15 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
   const handlers = getHandlers(props)
   const { namespaceList, namespace } = selector(store)
   const namespaceOptions = namespaceList.map(item => ({ text: item.name, value: item.name }))
-  namespaceOptions.unshift({ text: '全部命名空间', value: '' })
+  namespaceOptions.unshift({ text: t('全部命名空间'), value: '' })
   return (
-    <BasicLayout title={'配置分组'} store={store} selectors={duck.selectors} header={<></>}>
+    <BasicLayout title={t('配置分组')} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
         <Justify
           left={
             <>
               <Button type={'primary'} onClick={handlers.create}>
-                {'新建'}
+                {t('新建')}
               </Button>
               {/* <Button type={'primary'} onClick={() => handlers.remove(selection)} disabled={selection?.length === 0}>
                 {'删除'}
@@ -92,7 +93,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                   width: '400px',
                 }}
                 onChange={value => handlers.changeTags(value)}
-                tips={'请选择条件进行过滤'}
+                tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
               <Button type={'icon'} icon={'refresh'} onClick={handlers.reload}></Button>

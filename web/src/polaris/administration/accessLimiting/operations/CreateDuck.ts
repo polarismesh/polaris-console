@@ -20,6 +20,7 @@ import { takeLatest } from 'redux-saga-catch'
 import { delay } from 'redux-saga'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
+import { t } from 'i18next';
 
 interface ComposedId {
   id: string
@@ -40,43 +41,43 @@ export interface Values extends CreateLimitRulesBaseParams {
 const validator = Form.combineValidators<Values>({
   name(v) {
     if (!v) {
-      return '请填写限流规则名称'
+      return t('请填写限流规则名称')
     }
   },
   namespace(v) {
     if (!v) {
-      return '请选择命名空间'
+      return t('请选择命名空间')
     }
   },
   service(v) {
     if (!v) {
-      return '请选择服务名'
+      return t('请选择服务名')
     }
   },
   arguments: [
     {
       type(v) {
         if (!v) {
-          return '请选择类型'
+          return t('请选择类型')
         }
       },
       value(v, data) {
         if (!v && data.type === LimitArgumentsType.CALLER_SERVICE) {
-          return '请选择服务名'
+          return t('请选择服务名')
         }
         if (!v && data.type === LimitArgumentsType.CALLER_IP) {
-          return '请输入IP'
+          return t('请输入IP')
         }
         if (!v && data.type !== LimitArgumentsType.CALLER_IP) {
-          return '请输入value值'
+          return t('请输入value值')
         }
       },
       key(v, data) {
         if (!v && data.type === LimitArgumentsType.CALLER_SERVICE) {
-          return '请选择命名空间'
+          return t('请选择命名空间')
         }
         if (!v) {
-          return '请输入key值'
+          return t('请输入key值')
         }
       },
     },

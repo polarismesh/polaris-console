@@ -12,6 +12,7 @@ import {
 } from "redux-saga/effects";
 import { delay, Task } from "redux-saga";
 import { runAndTakeLatest, takeLatest } from "redux-saga-catch";
+import { t } from 'i18next';
 
 enum Types {
   FETCH,
@@ -190,7 +191,7 @@ export default abstract class Fetcher extends Base {
     } catch (e) {
       yield put({
         type: types.FETCH_FAIL,
-        payload: e || "加载失败",
+        payload: e || t('加载失败'),
       });
       throw e;
     }

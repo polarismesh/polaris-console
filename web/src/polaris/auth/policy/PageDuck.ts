@@ -13,6 +13,7 @@ import { Modal, notification } from 'tea-component'
 import PageDuck from '@src/polaris/common/ducks/Page'
 import router from '@src/polaris/common/util/router'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
+import { t } from 'i18next';
 interface ComposedId {
   principalId?: string
   principalType?: string
@@ -112,16 +113,16 @@ export default abstract class PolicyPageDuck extends PageDuck {
     yield takeLatest(types.DELETE, function*(action) {
       const id = action.payload
       const confirm = yield Modal.confirm({
-        message: '确认删除如下策略？',
-        description: '删除后，策略不可用且无法恢复',
+        message: t('确认删除如下策略？'),
+        description: t('删除后，策略不可用且无法恢复'),
       })
       if (confirm) {
         const result = yield deleteGovernanceStrategies([{ id }])
         if (result) {
-          notification.success({ description: '删除成功' })
+          notification.success({ description: t('删除成功') })
           yield put(creators.reload())
         } else {
-          notification.error({ description: '删除失败' })
+          notification.error({ description: t('删除失败') })
         }
       }
     })

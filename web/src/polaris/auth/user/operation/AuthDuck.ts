@@ -9,6 +9,7 @@ import { resolvePromise } from 'saga-duck/build/helper'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import SearchableMultiSelect from '@src/polaris/common/ducks/SearchableMultiSelect'
 import Form from '@src/polaris/common/ducks/Form'
+import { t } from 'i18next';
 
 export interface DialogOptions {
   id: string
@@ -47,8 +48,8 @@ export default class AuthDuck extends FormDialog {
       selection.map(item => item.id),
     )
     if (addArray.length <= 0 && removeArray.length <= 0) {
-      notification.warning({ description: '未做改动' })
-      throw '未做改动'
+      notification.warning({ description: t('未做改动') })
+      throw t('未做改动')
     }
     const principleName = authSubjectType === AuthSubjectType.USER ? 'users' : 'groups'
     const res = yield* resolvePromise(

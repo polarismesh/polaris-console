@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { notification } from 'tea-component'
 import tips from './tips'
 import { userLogout } from './common'
+import { t } from 'i18next';
 
 export interface APIRequestOption {
   action: string
@@ -41,7 +42,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
             return
           }
           notification.error({
-            title: '请求错误',
+            title: t('请求错误'),
             description: error.response?.data?.info,
           })
         }
@@ -81,7 +82,7 @@ export async function getApiRequest<T>(options: APIRequestOption) {
             return
           }
           notification.error({
-            title: '请求错误',
+            title: t('请求错误'),
             description: error.response?.data?.info,
           })
         }
@@ -119,7 +120,7 @@ export async function putApiRequest<T>(options: APIRequestOption) {
             return
           }
           notification.error({
-            title: '请求错误',
+            title: t('请求错误'),
             description: error.response?.data?.info,
           })
         }
@@ -158,7 +159,7 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
             return
           }
           notification.error({
-            title: '请求错误',
+            title: t('请求错误'),
             description: error.response?.data?.info,
           })
         }

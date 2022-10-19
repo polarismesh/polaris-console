@@ -1,4 +1,5 @@
 //主被调规则的目的地和源类型相反
+import { t } from 'i18next';
 export interface InboundItem {
   destinations: Destination[];
   sources: Source[];
@@ -105,7 +106,7 @@ export enum PolicyName {
 }
 export const PolicyMap = {
   [PolicyName.ErrorRate]: {
-    text: "错误率",
+    text: t('错误率'),
     unit: "%",
   },
   // [PolicyName.SlowRate]: {
@@ -113,8 +114,8 @@ export const PolicyMap = {
   //   unit: "%"
   // },
   [PolicyName.ConsecutiveError]: {
-    text: "连续错误率",
-    unit: "个",
+    text: t('连续错误率'),
+    unit: t('个'),
   },
 };
 export const PolicyNameOptions = [
@@ -129,10 +130,10 @@ export const PolicyNameOptions = [
 ];
 export const BREAK_RESOURCE_TYPE_MAP = {
   [BREAK_RESOURCE_TYPE.INSTANCE]: {
-    text: "实例",
+    text: t('实例'),
   },
   [BREAK_RESOURCE_TYPE.SUBSET]: {
-    text: "实例分组",
+    text: t('实例分组'),
   },
 };
 export const BreakResourceOptions = [
@@ -147,10 +148,10 @@ export const BreakResourceOptions = [
 ];
 export const MATCH_TYPE_MAP = {
   [MATCH_TYPE.EXACT]: {
-    text: "精确",
+    text: t('精确'),
   },
   [MATCH_TYPE.REGEX]: {
-    text: "正则",
+    text: t('正则'),
   },
 };
 
@@ -166,10 +167,10 @@ export enum RuleType {
 
 export const RULE_TYPE_STATUS_MAP = {
   [RuleType.Inbound]: {
-    text: "被调规则",
+    text: t('被调规则'),
   },
   [RuleType.Outbound]: {
-    text: "主调规则",
+    text: t('主调规则'),
   },
 };
 
@@ -201,13 +202,13 @@ export enum OutlierDetectWhen {
 }
 export const OUTLIER_DETECT_MAP = {
   [OutlierDetectWhen.NEVER]: {
-    text: "关闭",
+    text: t('关闭'),
   },
   [OutlierDetectWhen.ON_RECOVER]: {
-    text: "仅用于恢复",
+    text: t('仅用于恢复'),
   },
   [OutlierDetectWhen.ALWAYS]: {
-    text: "用于熔断和恢复",
+    text: t('用于熔断和恢复'),
   },
 };
 

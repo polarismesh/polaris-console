@@ -1,4 +1,5 @@
 import { AuthSubjectType } from './policy/Page'
+import { t } from 'i18next';
 
 export enum TAB {
   USER = 'user',
@@ -17,10 +18,10 @@ export enum DescribeStrategyOption {
   Mix = '',
 }
 const TAB_LABLES_MAP = {
-  [TAB.USER]: '用户',
-  [TAB.USERGROUP]: '用户组',
-  [TAB.POLICY]: '权限策略',
-  [TAB.USEABLE_RESOURCE]: '可操作资源',
+  [TAB.USER]: t('用户'),
+  [TAB.USERGROUP]: t('用户组'),
+  [TAB.POLICY]: t('权限策略'),
+  [TAB.USEABLE_RESOURCE]: t('可操作资源'),
 }
 export const AuthTabs = Object.keys(TAB_LABLES_MAP).map(id => ({
   id,

@@ -10,6 +10,7 @@ import { UserGroupSelectDuck } from '@src/polaris/auth/user/operation/AttachUser
 import { DescribeStrategyOption } from '@src/polaris/auth/constants'
 import { AuthStrategy, describeGovernanceStrategies } from '@src/polaris/auth/model'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
+import { t } from 'i18next';
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -160,9 +161,9 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, any>({
   name(v) {
-    if (!v) return '请填写分组名'
+    if (!v) return t('请填写分组名')
   },
   namespace(v) {
-    if (!v) return '请填写命名空间'
+    if (!v) return t('请填写命名空间')
   },
 })

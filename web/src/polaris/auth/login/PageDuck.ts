@@ -11,6 +11,7 @@ import {
   LoginUserOwnerIdKey,
   LoginUserNameKey,
 } from '@src/polaris/common/util/common'
+import { t } from 'i18next';
 
 export default abstract class CreateDuck extends Page {
   get baseUrl() {
@@ -123,7 +124,7 @@ export class CreateFormDuck extends Form {
         throw new Error()
       }
     } catch (e) {
-      yield put(creators.markInvalid('password', '网络异常或用户名，密码错误'))
+      yield put(creators.markInvalid('password', t('网络异常或用户名，密码错误')))
       throw e
     }
   }
@@ -134,12 +135,12 @@ export class CreateFormDuck extends Form {
 const validator = CreateFormDuck.combineValidators<Fvalues>({
   userName(v) {
     if (!v) {
-      return '请输入用户名'
+      return t('请输入用户名')
     }
   },
   password(v) {
     if (!v) {
-      return '请输入密码'
+      return t('请输入密码')
     }
   },
 })

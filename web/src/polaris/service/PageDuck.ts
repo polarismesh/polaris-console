@@ -14,6 +14,7 @@ import { KeyValuePair } from '../configuration/fileGroup/types'
 import { DefaultServiceTagAttribute, ServiceNameTagKey, MetadataTagKey } from './Page'
 import { PolarisTokenKey } from '../common/util/common'
 import router from '../common/util/router'
+import { t } from 'i18next';
 
 export const EmptyCustomFilter = {
   namespace: '',
@@ -249,8 +250,8 @@ export default class ServicePageDuck extends GridPageDuck {
         })
         .filter(item => item)
       const confirm = yield Modal.confirm({
-        message: `确认删除服务`,
-        description: '删除后，无法恢复',
+        message: t(`确认删除服务`),
+        description: t('删除后，无法恢复'),
       })
       if (confirm) {
         yield deleteService(params)

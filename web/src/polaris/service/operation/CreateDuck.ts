@@ -12,6 +12,7 @@ import { UserGroupSelectDuck } from '@src/polaris/auth/user/operation/AttachUser
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { DescribeStrategyOption } from '@src/polaris/auth/constants'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
+import { t } from 'i18next';
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -160,7 +161,7 @@ export default class CreateDuck extends FormDialog {
             ...item,
             value: item.name,
             disabled,
-            tooltip: disabled && '该命名空间为只读命名空间',
+            tooltip: disabled && t('该命名空间为只读命名空间'),
           }
         }),
       },
@@ -196,9 +197,9 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, {}>({
   name(v) {
-    if (!v) return '请填写名称'
+    if (!v) return t('请填写名称')
   },
   namespace(v) {
-    if (!v) return '请填写命名空间'
+    if (!v) return t('请填写命名空间')
   },
 })

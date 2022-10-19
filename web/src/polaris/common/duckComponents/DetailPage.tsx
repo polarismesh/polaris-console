@@ -4,6 +4,7 @@ import Duck from "../ducks/DetailPage";
 import { Layout, Text, Card, Button, Blank } from "tea-component";
 import BaseLayout from "../components/BaseLayout";
 import { useHistory } from "react-router-dom";
+import { t } from 'i18next';
 
 const TextTip = purify(function TextTip({ children }) {
   return (
@@ -78,14 +79,14 @@ export default purify(function DetailPage({
   let overrideChildren;
   if (loading) {
     // loading最优先
-    overrideChildren = <TextTip>{"加载中..."}</TextTip>;
+    overrideChildren = <TextTip>{t('加载中...')}</TextTip>;
   } else if (error) {
     // 其次错误
     <TextTip>{error.message}</TextTip>;
   } else if (!data) {
     // 其次没有找到
     overrideChildren = (
-      <Blank theme="error" description={"未找到指定资源，请检查资源是否存在"} />
+      <Blank theme="error" description={t('未找到指定资源，请检查资源是否存在')} />
     );
   }
 

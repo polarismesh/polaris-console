@@ -6,6 +6,7 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import ResourcePrincipalAuth from '@src/polaris/auth/user/operation/ResourcePrincipalAuth'
+import { t, Trans } from 'i18next';
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -21,7 +22,7 @@ export default function Create(props: DuckCmpProps<Duck>) {
       store={store}
       dispatch={dispatch}
       size={'l'}
-      title={data.name ? '编辑配置文件组' : '新建配置文件组'}
+      title={data.name ? t('编辑配置文件组') : t('新建配置文件组')}
     >
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
@@ -42,7 +43,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   return (
     <>
       <Form>
-        <FormField field={namespace} label={'命名空间'} required>
+        <FormField field={namespace} label={t('命名空间')} required>
           <Select
             value={namespace.getValue()}
             options={options.namespaceList}
@@ -53,24 +54,24 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             disabled={options.isModify}
           ></Select>
         </FormField>
-        <FormField field={name} label={'分组名'}>
+        <FormField field={name} label={t('分组名')}>
           <Input
             field={name}
             maxLength={128}
-            placeholder={'允许数字、英文字母、.、-、_，限制128个字符'}
+            placeholder={t('允许数字、英文字母、.、-、_，限制128个字符')}
             size={'l'}
             disabled={options?.isModify}
           />
         </FormField>
-        <FormField field={comment} label={'描述'}>
-          <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
+        <FormField field={comment} label={t('描述')}>
+          <Input field={comment} maxLength={1024} placeholder={t('长度不超过1024个字符')} size={'l'} />
         </FormField>
-        <Button type='link' onClick={() => setShowAdvance(!showAdvance)} style={{ cursor: 'pointer' }}>
+        <Button type='link' onClick={() => setShowAdvance(!showAdvance)} style={{ cursor: 'pointer' }}><Trans>
           <Icon type={showAdvance ? 'arrowup' : 'arrowdown'} />
           高级配置
-        </Button>
+        </Trans></Button>
         {showAdvance && (
-          <FormItem label='授权'>
+          <FormItem label={t('授权')}>
             <ResourcePrincipalAuth
               userDuck={userSelect}
               userGroupDuck={userGroupSelect}

@@ -4,11 +4,12 @@ import { Table, Justify, Segment, SearchBox } from 'tea-component'
 import { Link } from 'react-router-dom'
 import { autotip } from 'tea-component/lib/table/addons'
 import { StrategyResourceEntry } from '../model'
+import { t } from 'i18next';
 
 const ResourceOptions = [
-  { text: '命名空间', value: 'namespaces' },
-  { text: '服务', value: 'services' },
-  { text: '配置分组', value: 'config_groups' },
+  { text: t('命名空间'), value: 'namespaces' },
+  { text: t('服务'), value: 'services' },
+  { text: t('配置分组'), value: 'config_groups' },
 ]
 
 interface Props {
@@ -45,10 +46,10 @@ export default purify(function(props: Props) {
         columns={[
           {
             key: 'name',
-            header: '名称',
+            header: t('名称'),
             render: (x: any) => {
               if (x.name === '*') {
-                return filterResourceType === 'namespaces' ? '所有命名空间' : '所有服务'
+                return filterResourceType === 'namespaces' ? t('所有命名空间') : t('所有服务')
               }
               return filterResourceType === 'namespaces' ? (
                 x.name
@@ -59,9 +60,9 @@ export default purify(function(props: Props) {
           },
           {
             key: 'auth',
-            header: '权限',
+            header: t('权限'),
             render: () => {
-              return '读｜写'
+              return t('读｜写')
             },
           },
         ]}

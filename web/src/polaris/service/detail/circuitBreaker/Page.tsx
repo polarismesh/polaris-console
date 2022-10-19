@@ -21,6 +21,7 @@ import {
 import { isReadOnly } from '../../utils'
 import { EDIT_TYPE_OPTION, EditType } from '../route/types'
 import Create from './operations/Create'
+import { t } from 'i18next';
 insertCSS(
   'service-detail-instance',
   `
@@ -68,12 +69,12 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
     <>
       <Table.ActionPanel>
         <Form layout='inline'>
-          <FormItem label={'编辑格式'}>
+          <FormItem label={t('编辑格式')}>
             <Segment options={EDIT_TYPE_OPTION} value={EditType.Table}></Segment>
           </FormItem>
         </Form>
         <Form layout='inline'>
-          <FormItem label={'规则类型'}>
+          <FormItem label={t('规则类型')}>
             <Segment options={RULE_TYPE_OPTIONS} value={ruleType} onChange={handlers.setRuleType}></Segment>
           </FormItem>
         </Form>
@@ -86,10 +87,10 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                   handlers.create(0)
                 }}
                 disabled={isReadOnly(namespace) || !editable}
-                tooltip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : ''}
+                tooltip={isReadOnly(namespace) ? t('该命名空间为只读的') : !editable ? t('无写权限') : ''}
                 style={{ marginTop: '20px' }}
               >
-                新建
+                {t('新建')}
               </Button>
               <Button
                 type={'primary'}
@@ -97,20 +98,20 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 disabled={isReadOnly(namespace) || drawerStatus.visible || !edited || !editable}
                 tooltip={
                   isReadOnly(namespace)
-                    ? '该命名空间为只读的'
+                    ? t('该命名空间为只读的')
                     : !edited
-                    ? '未更改'
+                    ? t('未更改')
                     : !editable
-                    ? '无写权限'
-                    : '向服务器端提交变更'
+                    ? t('无写权限')
+                    : t('向服务器端提交变更')
                 }
                 style={{ marginTop: '20px' }}
               >
-                提交
+                {t('提交')}
               </Button>
               {edited && (
                 <Button onClick={() => handlers.reset()} style={{ marginTop: '20px' }}>
-                  取消
+                  {t('取消')}
                 </Button>
               )}
             </>
@@ -122,8 +123,8 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
         <Card.Header>
           <H3 style={{ padding: '10px', color: 'black' }}>
             {ruleType === RuleType.Inbound
-              ? '当以下服务调用本服务时，遵守下列熔断规则'
-              : '当本服务调用以下服务时，遵守下列熔断规则'}
+              ? t('当以下服务调用本服务时，遵守下列熔断规则')
+              : t('当本服务调用以下服务时，遵守下列熔断规则')}
           </H3>
         </Card.Header>
         <GridPageGrid
@@ -141,51 +142,51 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 return (
                   <>
                     <Form style={{ marginBottom: '15px' }}>
-                      <FormItem label={'如果请求标签匹配，按以下策略熔断'}></FormItem>
+                      <FormItem label={t('如果请求标签匹配，按以下策略熔断')}></FormItem>
                     </Form>
                     <Form key={record.sources.map(source => source.namespace).join(',')}>
                       {record.destinations.map(destination => {
                         return (
                           <>
-                            <FormItem label='熔断条件'>
+                            <FormItem label={t('熔断条件')}>
                               <FormText>
                                 {Object.keys(destination.policy).map((key, index) => {
                                   if (!destination.policy[key]) return
                                   if (key === PolicyName.ErrorRate) {
                                     return (
-                                      <Text parent='p' key={index}>{`当请求个数大于${destination.policy[key]
-                                        ?.requestVolumeThreshold || 10}个，且${PolicyMap[key]?.text ??
-                                        '-'}大于${destination.policy[key]?.errorRateToOpen ?? '-'}%时熔断`}</Text>
+                                      <Text parent='p' key={index}>{t('当请求个数大于{{attr0}}个，且{{attr1}}大于{{attr2}}%时熔断', { attr0: destination.policy[key]
+                                        ?.requestVolumeThreshold || 10, attr1: PolicyMap[key]?.text ??
+                                        '-', attr2: destination.policy[key]?.errorRateToOpen ?? '-' })}</Text>
                                     )
                                   }
                                   if (key === PolicyName.SlowRate) {
                                     return (
-                                      <Text parent='p' key={index}>{`以超过${destination.policy[key]?.maxRt ??
-                                        '-'}的请求作为超时请求，${PolicyMap[key]?.text ?? '-'}大于${destination.policy[
+                                      <Text parent='p' key={index}>{t('以超过{{attr0}}的请求作为超时请求，{{attr1}}大于{{attr2}}%时熔断', { attr0: destination.policy[key]?.maxRt ??
+                                        '-', attr1: PolicyMap[key]?.text ?? '-', attr2: destination.policy[
                                         key
-                                      ]?.slowRateToOpen ?? '-'}%时熔断`}</Text>
+                                      ]?.slowRateToOpen ?? '-' })}</Text>
                                     )
                                   }
                                   if (key === PolicyName.ConsecutiveError) {
                                     return (
-                                      <Text parent='p' key={index}>{`当连续请求错误超过${destination.policy[key]
-                                        ?.consecutiveErrorToOpen ?? '-'}个时熔断`}</Text>
+                                      <Text parent='p' key={index}>{t('当连续请求错误超过{{attr0}}个时熔断', { attr0: destination.policy[key]
+                                        ?.consecutiveErrorToOpen ?? '-' })}</Text>
                                     )
                                   }
                                 })}
                               </FormText>
                             </FormItem>
-                            <FormItem label='半开时间'>
+                            <FormItem label={t('半开时间')}>
                               <FormText>{destination.recover?.sleepWindow ?? '-'}</FormText>
                             </FormItem>
-                            <FormItem label='熔断粒度'>
+                            <FormItem label={t('熔断粒度')}>
                               {/* 默认值 */}
                               <FormText>
                                 {BREAK_RESOURCE_TYPE_MAP[destination?.resource || BREAK_RESOURCE_TYPE.SUBSET]?.text ||
                                   '-'}
                               </FormText>
                             </FormItem>
-                            <FormItem label='主动探测'>
+                            <FormItem label={t('主动探测')}>
                               {/* 默认值 */}
                               <FormText>
                                 {OUTLIER_DETECT_MAP[destination.recover?.outlierDetectWhen || OutlierDetectWhen.NEVER]
@@ -218,13 +219,13 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               onClick={createDuck ? () => handlers.drawerSubmit() : undefined}
               style={{ margin: '0 10px' }}
             >
-              确定
+              {t('确定')}
             </Button>
             <Button
               onClick={createDuck ? () => handlers.setDrawerStatus({ visible: false }) : undefined}
               style={{ margin: '0 10px' }}
             >
-              取消
+              {t('取消')}
             </Button>
           </>
         }

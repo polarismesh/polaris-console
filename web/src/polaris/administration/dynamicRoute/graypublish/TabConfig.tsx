@@ -24,15 +24,15 @@ export interface ImageLinks {
   linkAddress: string
 }
 export const tabs = [
-  { id: RouteTabId.BlueGreen, label: '蓝绿发布' },
-  { id: RouteTabId.Canary, label: '金丝雀发布' },
-  { id: RouteTabId.FullLinkGray, label: '全链路灰度发布' },
+  { id: RouteTabId.BlueGreen, label: t('蓝绿发布') },
+  { id: RouteTabId.Canary, label: t('金丝雀发布') },
+  { id: RouteTabId.FullLinkGray, label: t('全链路灰度发布') },
 ]
 
 export const tabConfigs: RouteTabConfigInfo = {
   [RouteTabId.BlueGreen]: {
     imagePath: '/static/img/bluegreen-publish.png',
-    alt: '蓝绿发布路由',
+    alt: t('蓝绿发布路由'),
     title: '',
     imageLinks: [
       {
@@ -64,10 +64,10 @@ export const tabConfigs: RouteTabConfigInfo = {
   },
   [RouteTabId.Canary]: {
     imagePath: '/static/img/canary-publish.png',
-    alt: '金丝雀发布路由',
-    title: '金丝雀发布',
+    alt: t('金丝雀发布路由'),
+    title: t('金丝雀发布'),
     description:
-      '针对是单个服务的服务灰度验证，金丝雀发布允许引流一小部分流量到服务的新版本（比如按灰度用户引流），充分验证微服务新版本的稳定性，验证没问题后，再升级原来的稳定版本。',
+      t('针对是单个服务的服务灰度验证，金丝雀发布允许引流一小部分流量到服务的新版本（比如按灰度用户引流），充分验证微服务新版本的稳定性，验证没问题后，再升级原来的稳定版本。'),
     imageLinks: [
       {
         style: { top: '28.7%', left: '29.8%' },
@@ -95,7 +95,7 @@ export const tabConfigs: RouteTabConfigInfo = {
     imagePath: [
       {
         path: '/static/img/full-link-gray-publish-scene1.png',
-        title: '场景一',
+        title: t('场景一'),
         imageLinks: [
           {
             style: { top: '27.2%', left: '29.8%' },
@@ -126,7 +126,7 @@ export const tabConfigs: RouteTabConfigInfo = {
       },
       {
         path: '/static/img/full-link-gray-publish-scene2.png',
-        title: '场景二',
+        title: t('场景二'),
         imageLinks: [
           {
             style: { top: '30.9%', left: '29.8%' },
@@ -156,22 +156,22 @@ export const tabConfigs: RouteTabConfigInfo = {
         ],
       },
     ],
-    alt: '全链路灰度发布',
-    title: '全链路灰度发布',
+    alt: t('全链路灰度发布'),
+    title: t('全链路灰度发布'),
     description: (
       <>
         <Text theme={'weak'} parent={'div'} style={{ paddingBottom: '10px' }}>
-          微服务架构下，有些开发需求，微服务调用链路上的多个微服务同时发生了改动，
+          {t('微服务架构下，有些开发需求，微服务调用链路上的多个微服务同时发生了改动，
           通常每个微服务都会有灰度环境或分组来接收灰度流量。此时希望通过进入上游灰度环境的流量，
           也能进入下游灰度的环境中，确保1个请求始终在灰度环境中传递，即使这个调用链路上有一些微服务没有灰度环境，
-          这些应用请求在下游的时候依然能够回到灰度环境中。
+          这些应用请求在下游的时候依然能够回到灰度环境中。')}
         </Text>
         <Text reset style={{ paddingBottom: '10px' }}>
-          实现方案的两个场景：
+          {t('实现方案的两个场景：')}
         </Text>
         <List>
-          <List.Item>应用场景一：金丝雀环境和稳定环境有独立的域名进行隔离，实现全链路灰度。</List.Item>
-          <List.Item>应用场景二：使用相同域名，通过染色进行全链路灰度。</List.Item>
+          <List.Item>{t('应用场景一：金丝雀环境和稳定环境有独立的域名进行隔离，实现全链路灰度。')}</List.Item>
+          <List.Item>{t('应用场景二：使用相同域名，通过染色进行全链路灰度。')}</List.Item>
         </List>
       </>
     ),

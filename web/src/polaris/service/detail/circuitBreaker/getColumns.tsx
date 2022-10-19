@@ -7,6 +7,7 @@ import RoutePageDuck from './PageDuck'
 import { RuleType, MATCH_TYPE_MAP } from './types'
 import { isReadOnly } from '../../utils'
 import { MATCH_TYPE } from '../route/types'
+import { t } from 'i18next';
 export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageDuck>): Column<any>[] => {
   const { ruleType } = selector(store)
   return [
@@ -14,21 +15,21 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
       ? [
           {
             key: 'sourceNamespace',
-            header: '命名空间',
+            header: t('命名空间'),
             render: x => (
               <React.Fragment>
                 <Text>
-                  {x.sources.map(source => (source.namespace === '*' ? '全部' : source.namespace)).join(',') || '-'}
+                  {x.sources.map(source => (source.namespace === '*' ? t('全部') : source.namespace)).join(',') || '-'}
                 </Text>
               </React.Fragment>
             ),
           },
           {
             key: 'sourceService',
-            header: '服务名',
+            header: t('服务名'),
             render: x => (
               <Text>
-                {x.sources.map(source => (source.service === '*' ? '全部' : source.service)).join(',') || '-'}
+                {x.sources.map(source => (source.service === '*' ? t('全部') : source.service)).join(',') || '-'}
               </Text>
             ),
           },
@@ -38,12 +39,12 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
       ? [
           {
             key: 'desNamespace',
-            header: '命名空间',
+            header: t('命名空间'),
             render: x => (
               <React.Fragment>
                 <Text>
                   {x.destinations
-                    .map(destination => (destination.namespace === '*' ? '全部' : destination.namespace))
+                    .map(destination => (destination.namespace === '*' ? t('全部') : destination.namespace))
                     .join(',') || '-'}
                 </Text>
               </React.Fragment>
@@ -51,11 +52,11 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
           },
           {
             key: 'desService',
-            header: '服务名',
+            header: t('服务名'),
             render: x => (
               <Text>
                 {x.destinations
-                  .map(destination => (destination.service === '*' ? '全部' : destination.service))
+                  .map(destination => (destination.service === '*' ? t('全部') : destination.service))
                   .join(',') || '-'}
               </Text>
             ),
@@ -64,15 +65,13 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
       : []),
     {
       key: 'sourceMethod',
-      header: '接口名',
+      header: t('接口名'),
       render: x => (
         <Text>
           {x.destinations
             .map(
               destination =>
-                `${destination.method?.value}（${
-                  MATCH_TYPE_MAP[destination.method?.type || MATCH_TYPE.EXACT].text
-                }匹配）`,
+                t('{{attr0}}（{{attr1}}匹配）', { attr0: destination.method?.value, attr1: MATCH_TYPE_MAP[destination.method?.type || MATCH_TYPE.EXACT].text }),
             )
             .join(',') || '-'}
         </Text>
@@ -80,7 +79,7 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
     },
     {
       key: 'action',
-      header: '操作',
+      header: t('操作'),
       render: x => {
         const {
           data: { namespace, editable },
@@ -90,21 +89,21 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
             <Action
               fn={dispatch => dispatch(creators.edit(x.id))}
               disabled={isReadOnly(namespace) || !editable}
-              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '编辑'}
+              tip={isReadOnly(namespace) ? t('该命名空间为只读的') : !editable ? t('无写权限') : t('编辑')}
             >
               <Icon type={'pencil'}></Icon>
             </Action>
             <Action
               fn={dispatch => dispatch(creators.remove(x.id))}
               disabled={isReadOnly(namespace) || !editable}
-              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '删除'}
+              tip={isReadOnly(namespace) ? t('该命名空间为只读的') : !editable ? t('无写权限') : t('删除')}
             >
               <Icon type={'delete'}></Icon>
             </Action>
             <Action
               fn={dispatch => dispatch(creators.create(x.id))}
               disabled={isReadOnly(namespace) || !editable}
-              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '在该规则前新建规则'}
+              tip={isReadOnly(namespace) ? t('该命名空间为只读的') : !editable ? t('无写权限') : t('在该规则前新建规则')}
             >
               <Icon type={'plus'}></Icon>
             </Action>

@@ -95,11 +95,12 @@ const CustomRouteCreate = connectWithDuck(CustomRouteCreatePage, CustomRouteCrea
 
 import CustomRouteDetailPage from '@src/polaris/administration/dynamicRoute/customRoute/detail/Page'
 import CustomRouteDetailPageDuck from '@src/polaris/administration/dynamicRoute/customRoute/detail/PageDuck'
+import { t } from 'i18next'
 const CustomRouteDetail = connectWithDuck(CustomRouteDetailPage, CustomRouteDetailPageDuck as any)
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1] || 'service')
-  const getMenuItemProps = id => ({
+  const getMenuItemProps = (id) => ({
     selected: selected === id,
     onClick: () => {
       setSelected(id)
@@ -126,7 +127,7 @@ export default function root() {
 
     return menuItem.subMenus ? (
       <Menu.SubMenu title={menuItem.title} icon={menuItem.icon} key={menuItem.id}>
-        {menuItem.subMenus.map(o => recursiveRenderMenuItem(o))}
+        {menuItem.subMenus.map((o) => recursiveRenderMenuItem(o))}
       </Menu.SubMenu>
     ) : (
       <Menu.Item
@@ -160,12 +161,12 @@ export default function root() {
                     target={'_blank'}
                     rel='noreferrer'
                   >
-                    文档
+                    {t('文档')}
                   </a>
                 </NavMenu.Item>
                 <NavMenu.Item
                   type='dropdown'
-                  overlay={close => (
+                  overlay={(close) => (
                     <List type='option'>
                       <List.Item
                         onClick={() => {
@@ -173,7 +174,7 @@ export default function root() {
                           close()
                         }}
                       >
-                        账号信息
+                        {t('账号信息')}
                       </List.Item>
                       <List.Item
                         onClick={() => {
@@ -181,7 +182,7 @@ export default function root() {
                           close()
                         }}
                       >
-                        退出
+                        {t('退出')}
                       </List.Item>
                     </List>
                   )}
@@ -195,11 +196,11 @@ export default function root() {
         <Body>
           <Sider>
             <Menu collapsable theme='dark' title={MenuConfig.title}>
-              {MenuConfig.subMenus.map(o => {
+              {MenuConfig.subMenus.map((o) => {
                 if (o.subMenus) {
                   return (
                     <Menu.Group key={o.id} title={o.title}>
-                      {o.subMenus.map(item => recursiveRenderMenuItem(item))}
+                      {o.subMenus.map((item) => recursiveRenderMenuItem(item))}
                     </Menu.Group>
                   )
                 } else {

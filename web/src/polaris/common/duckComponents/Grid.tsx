@@ -9,6 +9,7 @@ import {
 } from "tea-component/lib/table/addons";
 import { memorize, DuckCmpProps } from "saga-duck";
 import Duck from "../ducks/Grid";
+import { t } from 'i18next';
 
 const { selectable, radioable, autotip } = Table.addons;
 function ErrorTip({ error }) {
@@ -99,7 +100,7 @@ export default function DuckGrid(props: DuckCmpProps<Duck> & Props) {
         onRetry: onRetry,
         foundKeyword: keyword,
         foundCount: totalCount || 0,
-        errorText: showError ? message || "加载失败" : null,
+        errorText: showError ? message || t('加载失败') : null,
         emptyText: emptyTips,
       })
     );

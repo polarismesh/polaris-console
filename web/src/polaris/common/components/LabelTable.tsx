@@ -1,6 +1,7 @@
 import { Table, SearchBox, Text } from 'tea-component'
 import React from 'react'
 import { scrollable, autotip } from 'tea-component/lib/table/addons'
+import { t } from 'i18next';
 
 interface Props {
   labels: Record<string, { value: string } | string>
@@ -11,8 +12,8 @@ export default function (props: Props) {
       <Table
         records={[]}
         columns={[
-          { key: 'key', header: '标签键' },
-          { key: 'key', header: '标签值' },
+          { key: 'key', header: t('标签键') },
+          { key: 'key', header: t('标签值') },
         ]}
         addons={[
           scrollable({
@@ -42,15 +43,15 @@ export default function (props: Props) {
         bordered
         records={records}
         columns={[
-          { key: 'key', header: '标签键', render: (x) => <Text tooltip={x.key}>{x.key}</Text> },
-          { key: 'value', header: '标签值', render: (x) => <Text tooltip={x.value}>{x.value}</Text> },
+          { key: 'key', header: t('标签键'), render: (x) => <Text tooltip={x.key}>{x.key}</Text> },
+          { key: 'value', header: t('标签值'), render: (x) => <Text tooltip={x.value}>{x.value}</Text> },
         ]}
         addons={[
           scrollable({
             maxHeight: '500px',
           }),
           autotip({
-            emptyText: '暂无标签',
+            emptyText: t('暂无标签'),
           }),
         ]}
       ></Table>

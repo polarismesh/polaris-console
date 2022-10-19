@@ -25,6 +25,7 @@ import moment from 'moment'
 import insertCSS from '../common/helpers/insertCSS'
 import TimeSelect from '../common/components/TimeSelect'
 import { TimePickerTab } from './operations/Create'
+import { t, Trans, Slot } from 'i18next';
 const { Body, Content } = Layout
 insertCSS(
   `monitor`,
@@ -73,10 +74,10 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                 <Justify
                   left={
                     <Form layout='inline'>
-                      <FormItem label='指标名'>
+                      <FormItem label={t('指标名')}>
                         <SelectMultiple
                           allOption={{
-                            text: '全部',
+                            text: t('全部'),
                             value: OptionAllKey,
                           }}
                           searchable
@@ -98,8 +99,8 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                           size='m'
                         />
                       </FormItem>
-                      <FormItem label={'时间选择'} className={'modify-form-control'}>
-                        <FormText>
+                      <FormItem label={t('时间选择')} className={'modify-form-control'}>
+                        <FormText><Trans>
                           <TimeSelect
                             tabs={TimePickerTab}
                             style={{ display: 'inline-block' }}
@@ -140,14 +141,14 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                             }}
                           ></InputNumber>
                           &nbsp;秒
-                        </FormText>
+                        </Trans></FormText>
                       </FormItem>
                     </Form>
                   }
                 />
                 {duck.monitorLabels.filter(labelKey => labelKey.indexOf('caller') !== -1).length > 0 && (
                   <Text theme={'label'} parent={'div'} style={{ marginBottom: '10px' }}>
-                    主调方
+                    {t('主调方')}
                   </Text>
                 )}
                 <Justify
@@ -160,7 +161,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                           if (!fetcher) return <noscript />
                           const { data: options, loading } = fetcher.selector(store)
                           return (
-                            <FormItem label={LabelKeyMap[labelKey].text.replace('主调', '')} key={labelKey}>
+                            <FormItem label={LabelKeyMap[labelKey].text.replace(t('主调'), '')} key={labelKey}>
                               {
                                 <InputAdornment
                                   after={
@@ -180,7 +181,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                           })
                                         }}
                                       >
-                                        汇总
+                                        {t('汇总')}
                                       </Button>
                                     ) : (
                                       <noscript />
@@ -188,10 +189,10 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                   }
                                 >
                                   <SelectMultiple
-                                    placeholder={'汇总'}
+                                    placeholder={t('汇总')}
                                     searchable
                                     allOption={{
-                                      text: '全部',
+                                      text: t('全部'),
                                       value: OptionAllKey,
                                     }}
                                     className={'monitor-select-style'}
@@ -225,7 +226,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                 {duck.monitorLabels.filter(labelKey => labelKey.indexOf('callee') !== -1).length > 0 &&
                   duck.type !== 'ratelimit' && (
                     <Text theme={'label'} parent={'div'} style={{ marginBottom: '10px' }}>
-                      被调方
+                      {t('被调方')}
                     </Text>
                   )}
                 <Justify
@@ -238,7 +239,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                           if (!fetcher) return <noscript />
                           const { data: options, loading } = fetcher.selector(store)
                           return (
-                            <FormItem label={LabelKeyMap[labelKey].text.replace('被调', '')} key={labelKey}>
+                            <FormItem label={LabelKeyMap[labelKey].text.replace(t('被调'), '')} key={labelKey}>
                               {
                                 <InputAdornment
                                   after={
@@ -258,7 +259,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                           })
                                         }}
                                       >
-                                        汇总
+                                        {t('汇总')}
                                       </Button>
                                     ) : (
                                       <noscript />
@@ -267,10 +268,10 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                   appearance='pure'
                                 >
                                   <SelectMultiple
-                                    placeholder={'汇总'}
+                                    placeholder={t('汇总')}
                                     searchable
                                     allOption={{
-                                      text: '全部',
+                                      text: t('全部'),
                                       value: OptionAllKey,
                                     }}
                                     className={'monitor-select-style'}
@@ -310,14 +311,14 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                         console.log(event)
                       }}
                     >
-                      查询
+                      {t('查询')}
                     </Button>
                   }
                 />
               </Table.ActionPanel>
               <Card style={{ width: '100%' }}>
                 <Card.Body
-                  title={metricQuerySets.length === 0 ? '暂无图表数据' : '监控曲线'}
+                  title={metricQuerySets.length === 0 ? t('暂无图表数据') : t('监控曲线')}
                   operation={
                     metricQuerySets.length === 0 ? (
                       <noscript />
@@ -328,14 +329,14 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                             duck.baseUrl
                           }?filterConfig=${encodeURIComponent(JSON.stringify(filterConfig))}`}
                         >
-                          <Button type={'link'}>复制分享链接</Button>
+                          <Button type={'link'}>{t('复制分享链接')}</Button>
                         </Copy>
                         <Button type={'link'} onClick={() => handlers.saveConfig()}>
-                          保存当前配置
+                          {t('保存当前配置')}
                         </Button>
                         {window.localStorage.getItem(`${duck.type}MonitorConfigLocalStorageKey`) && (
                           <Button type={'link'} onClick={() => handlers.getFilterConfig()}>
-                            载入保存配置
+                            {t('载入保存配置')}
                           </Button>
                         )}
                       </>
@@ -388,9 +389,9 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                 }
                               >
                                 <>
-                                  <Text parent={'p'} theme={'weak'}>
+                                  <Text parent={'p'} theme={'weak'}><Trans>
                                     筛选条件：
-                                    {monitorFilters?.length > 0
+                                    <Slot content={monitorFilters?.length > 0
                                       ? monitorFilters.map(filter => {
                                           return (
                                             <Text key={filter.labelKey}>
@@ -399,8 +400,8 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                             </Text>
                                           )
                                         })
-                                      : '无'}
-                                  </Text>
+                                      : t('无')} />
+                                  </Trans></Text>
                                   <Text parent={'p'} theme={'weak'}>
                                     {`${startString} - ${endString}`}
                                   </Text>

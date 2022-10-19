@@ -29,6 +29,7 @@ import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
 import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
 import { Link } from 'react-router-dom'
+import { t } from 'i18next';
 
 export const NoSearchResultKey = '__NO_SEARCH_RESULT__'
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
@@ -94,7 +95,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
           left={
             <>
               <Button type={'primary'} onClick={() => handlers.add()}>
-                新增
+                {t('新增')}
               </Button>
               {/* <Button type={'weak'} onClick={() => handlers.delete(selection)}>
                 删除
@@ -110,7 +111,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
               <SearchBox
                 value={searchKeyword}
                 onChange={handlers.setSearchKeyword}
-                placeholder={'请输入文件名搜索'}
+                placeholder={t('请输入文件名搜索')}
                 onSearch={handlers.searchPath}
                 style={{ width: '100%' }}
               />
@@ -167,7 +168,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                           to={`/file-release-history?namespace=${currentNode.namespace}&group=${currentNode.group}&fileName=${currentNode.name}`}
                           target={'_blank'}
                         >
-                          <Text reset>查看发布历史</Text>
+                          <Text reset>{t('查看发布历史')}</Text>
                         </Link>
                         // <Button type={'link'} onClick={() => {}}>
                         //   {showHistoryMap[currentNode?.name] ? '查看当前文件' : '查看发布历史'}
@@ -178,20 +179,20 @@ export default function Page(props: DuckCmpProps<Duck>) {
                       <Form style={{ width: '100%' }}>
                         <Row>
                           <Col span={12}>
-                            <FormItem label='状态'>
+                            <FormItem label={t('状态')}>
                               <FormText>
                                 <Text theme={FileStatusMap[currentNode.status]?.theme}>
                                   {FileStatusMap[currentNode.status]?.text}
                                 </Text>
                               </FormText>
                             </FormItem>
-                            <FormItem label='最后修改时间'>
+                            <FormItem label={t('最后修改时间')}>
                               <FormText>{currentNode.modifyTime || '-'}</FormText>
                             </FormItem>
-                            <FormItem label='最后发布时间'>
+                            <FormItem label={t('最后发布时间')}>
                               <FormText>{currentNode.releaseTime || '-'}</FormText>
                             </FormItem>
-                            <FormItem label='标签'>
+                            <FormItem label={t('标签')}>
                               <FormText>
                                 <Bubble
                                   placement={'right'}
@@ -211,16 +212,16 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             </FormItem>
                           </Col>
                           <Col span={12}>
-                            <FormItem label='最后修改人'>
+                            <FormItem label={t('最后修改人')}>
                               <FormText>{currentNode.modifyBy || '-'}</FormText>
                             </FormItem>
-                            <FormItem label='最后发布人'>
+                            <FormItem label={t('最后发布人')}>
                               <FormText>{currentNode.releaseBy || '-'}</FormText>
                             </FormItem>
-                            <FormItem label='备注'>
+                            <FormItem label={t('备注')}>
                               <FormText>{currentNode.comment || '-'}</FormText>
                             </FormItem>
-                            <FormItem label='格式'>
+                            <FormItem label={t('格式')}>
                               <FormText>{currentNode.format || '-'}</FormText>
                             </FormItem>
                           </Col>
@@ -231,26 +232,26 @@ export default function Page(props: DuckCmpProps<Duck>) {
                         left={
                           <>
                             <Button type={'primary'} disabled={editing} onClick={() => handlers.releaseCurrentFile()}>
-                              发布
+                              {t('发布')}
                             </Button>
 
                             {editing ? (
                               <>
                                 <Button type={'weak'} onClick={() => handlers.getTemplate(currentNode)}>
-                                  应用模板
+                                  {t('应用模板')}
                                 </Button>
                                 <Button type={'weak'} onClick={() => handlers.save()}>
-                                  保存
+                                  {t('保存')}
                                 </Button>
                               </>
                             ) : (
                               <Button type={'weak'} onClick={() => handlers.editCurrentNode()}>
-                                编辑
+                                {t('编辑')}
                               </Button>
                             )}
                             {editing && (
                               <Button type={'weak'} onClick={() => handlers.cancel()}>
-                                取消
+                                {t('取消')}
                               </Button>
                             )}
                           </>
@@ -265,8 +266,8 @@ export default function Page(props: DuckCmpProps<Duck>) {
                               recordKey={'id'}
                               records={currentHistoryDuck.selector(store).data || []}
                               columns={[
-                                { key: 'id', header: '版本' },
-                                { key: 'modifyTime', header: '发布时间' },
+                                { key: 'id', header: t('版本') },
+                                { key: 'modifyTime', header: t('发布时间') },
                               ]}
                               addons={[
                                 scrollable({ maxHeight: '350px' }),
@@ -291,7 +292,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 />
                               </section>
                             ) : (
-                              <Text>请选择发布记录</Text>
+                              <Text>{t('请选择发布记录')}</Text>
                             )}
                           </Col>
                         </Row>
@@ -313,7 +314,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                   </>
                 ) : (
                   <>
-                    <H3>未搜索到对应文件</H3>
+                    <H3>{t('未搜索到对应文件')}</H3>
                   </>
                 ))}
             </div>
@@ -329,7 +330,7 @@ function getFileNameContext(fileName, status) {
   return (
     <>
       <span className='configuration-tree-node-content'>{splitArray[splitArray.length - 1]}</span>
-      {FileStatus.Edited === status && <Badge theme='warning'>待发布</Badge>}
+      {FileStatus.Edited === status && <Badge theme='warning'>{t('待发布')}</Badge>}
     </>
   )
 }
@@ -375,9 +376,9 @@ function renderTree(props, folder, path: string, currPath: string) {
                           handlers.edit(obj.name)
                         }}
                       >
-                        编辑
+                        {t('编辑')}
                       </List.Item>
-                      <List.Item onClick={() => handlers.delete(obj.name)}>删除</List.Item>
+                      <List.Item onClick={() => handlers.delete(obj.name)}>{t('删除')}</List.Item>
                     </List>
                   </Dropdown>
                 </div>

@@ -14,6 +14,7 @@ import { Modal, TagValue } from 'tea-component'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
 import { MetadataTagKey, HealthyTagKey, DefaultHostTagAttribute, HostTagKey, HealthStatusOptions } from './Page'
 import { Service } from '../../types'
+import { t } from 'i18next';
 
 export const EmptyCustomFilter = {
   host: '',
@@ -119,7 +120,7 @@ export default class ServicePageDuck extends GridPageDuck {
           attr: {
             type: 'single',
             key: HealthyTagKey,
-            name: '健康状态',
+            name: t('健康状态'),
             values: HealthStatusOptions,
           },
           values: [HealthStatusOptions[1]], //默认健康
@@ -276,8 +277,8 @@ export default class ServicePageDuck extends GridPageDuck {
     yield takeLatest(types.REMOVE, function*(action) {
       const ids = action.payload
       const confirm = yield Modal.confirm({
-        message: `确认删除实例`,
-        description: '删除后，无法恢复',
+        message: t(`确认删除实例`),
+        description: t('删除后，无法恢复'),
       })
       if (confirm) {
         const res = yield deleteInstances(ids.map(id => ({ id })))

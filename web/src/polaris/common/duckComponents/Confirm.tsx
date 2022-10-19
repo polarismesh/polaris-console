@@ -5,6 +5,7 @@ import * as React from "react";
 import Dialog from "./Dialog";
 import { DuckCmpProps, purify } from "saga-duck";
 import Duck from "../ducks/Confirm";
+import { t } from 'i18next';
 interface Props extends DuckCmpProps<Duck> {
   /** 历史兼容，@deprecated 建议直接使用 ducks/Confirm # show 方法 */
   size?: any;
@@ -12,9 +13,9 @@ interface Props extends DuckCmpProps<Duck> {
 
 export default purify(function Confirm({ duck, store, dispatch }: Props) {
   const {
-    title = "确认",
-    yesText = "确认",
-    noText = "取消",
+    title = t('确认'),
+    yesText = t('确认'),
+    noText = t('取消'),
     content,
     showFooter = true,
     defaultCancel = true,

@@ -11,6 +11,7 @@ import {
   ListItemProps,
   ListProps,
 } from "tea-component";
+import { t } from 'i18next';
 
 interface MyDuck<T> extends Duck {
   Item: T;
@@ -49,8 +50,8 @@ const SearchalbeSelect = purify(function Cmp<T>(props: Props<T>) {
     itemDisabled = (o) => false,
     itemRenderer = (o) => duck.getId(o),
     itemTip = (o) => undefined,
-    placeholder = "请选择...",
-    searchPlaceholder = "输入关键字搜索",
+    placeholder = t('请选择...'),
+    searchPlaceholder = t('输入关键字搜索'),
     size = "m",
     showEmptyItem,
     emptyItem,
@@ -64,7 +65,7 @@ const SearchalbeSelect = purify(function Cmp<T>(props: Props<T>) {
   const selectedItem = selected
     ? itemRenderer(selected)
     : totalCount === 0 && !showEmptyItem
-    ? "暂无数据"
+    ? t('暂无数据')
     : null;
 
   return (
@@ -126,7 +127,7 @@ export function SearchableSearchBox(props: SearchableSearchBoxProps) {
     duck,
     store,
     dispatch,
-    placeholder = "输入关键字搜索",
+    placeholder = t('输入关键字搜索'),
     ...rest
   } = props;
   const { selector } = duck;
@@ -257,8 +258,8 @@ export const handleStatus = (props: SearchableListStatusTipProps) => {
       status: "found",
       foundText:
         list.length > 0
-          ? `找到${totalCount}条结果`
-          : `搜索"${keyword}"暂无数据`,
+          ? t('找到{{totalCount}}条结果', { totalCount })
+          : t('搜索"{{keyword}}"暂无数据', { keyword }),
       onClear: handlers.clearKeyword,
     };
     emptyStatus = false;

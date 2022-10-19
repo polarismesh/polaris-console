@@ -4,6 +4,7 @@
 import { DuckMap } from "saga-duck";
 import { select, put, call, take, fork, cancel } from "redux-saga/effects";
 import { notification } from "tea-component";
+import { t } from 'i18next';
 
 enum Types {
   "SHOW",
@@ -45,7 +46,7 @@ export default abstract class DialogPure extends DuckMap {
           case types.SUBMIT:
             return null;
           case types.SUBMIT_FAIL:
-            return action.payload || new Error("提交失败");
+            return action.payload || new Error(t('提交失败'));
           default:
             return state;
         }

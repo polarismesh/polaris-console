@@ -12,6 +12,7 @@ import { TAB } from '@src/polaris/service/detail/types'
 import { createCustomRoute, CustomRoute, describeCustomRoute, modifyCustomRoute } from '../model'
 import { RouteLabelMatchType, RoutingArgumentsType } from '../types'
 import { describeInstanceLabels } from '@src/polaris/service/detail/instance/model'
+import { t } from 'i18next';
 
 interface ComposedId {
   id: string
@@ -330,33 +331,33 @@ export interface Values {
 const validator = Form.combineValidators<Values>({
   name(v) {
     if (!v) {
-      return '请填写限流规则名称'
+      return t('请填写限流规则名称')
     }
   },
   source: {
     namespace(v) {
       if (!v) {
-        return '请选择命名空间'
+        return t('请选择命名空间')
       }
     },
     service(v) {
       if (!v) {
-        return '请选择服务名'
+        return t('请选择服务名')
       }
     },
     arguments: [
       {
         key(v) {
           if (!v) {
-            return '请输入key值'
+            return t('请输入key值')
           }
         },
         value(v, data) {
           if (!v && data.type === RoutingArgumentsType.CALLER_IP) {
-            return '请输入IP'
+            return t('请输入IP')
           }
           if (!v && data.type !== RoutingArgumentsType.CALLER_IP) {
-            return '请输入value值'
+            return t('请输入value值')
           }
         },
       },
@@ -365,19 +366,19 @@ const validator = Form.combineValidators<Values>({
   destination: {
     namespace(v) {
       if (!v) {
-        return '请选择命名空间'
+        return t('请选择命名空间')
       }
     },
     service(v) {
       if (!v) {
-        return '请选择服务名'
+        return t('请选择服务名')
       }
     },
     instanceGroups: [
       {
         name(v) {
           if (!v) {
-            return '请输入名称'
+            return t('请输入名称')
           }
         },
         weight(v, data, meta) {
@@ -386,19 +387,19 @@ const validator = Form.combineValidators<Values>({
             return sum
           }, 0)
           if (!(weightSum > 0)) {
-            return '所有实例分组权重加和必须大于0'
+            return t('所有实例分组权重加和必须大于0')
           }
         },
         labels: [
           {
             key(v) {
               if (!v) {
-                return '请输入key值'
+                return t('请输入key值')
               }
             },
             value(v) {
               if ((v ?? false) === false) {
-                return '请输入value值'
+                return t('请输入value值')
               }
             },
           },
@@ -437,7 +438,7 @@ export class RouteCreateDuck extends Form {
             weight: 100,
             priority: 0,
             isolate: false,
-            name: '实例分组1',
+            name: t('实例分组1'),
           },
         ],
       },

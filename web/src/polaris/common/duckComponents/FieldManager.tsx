@@ -6,6 +6,7 @@ import DialogDuck from "../ducks/DialogPure";
 import classnames from "classnames";
 import { showDialog } from "../helpers/showDialog";
 import tips from "../util/tips";
+import { t } from 'i18next';
 
 interface Identifiable {
   id: number | string;
@@ -280,7 +281,7 @@ class FieldManager extends Component<MyDialogProps, State> {
   }
   setSelection(selection: string[] = []) {
     this.props.model.setSelection(selection);
-    notification.success({ description: "设置成功" });
+    notification.success({ description: t('设置成功') });
   }
   renderCol() {
     const count = this._countFields();
@@ -337,7 +338,7 @@ class FieldManager extends Component<MyDialogProps, State> {
   renderContent() {
     const count = this._countFields();
     const {
-      tipText = "请选择您想显示的列表详细信息。",
+      tipText = t('请选择您想显示的列表详细信息。'),
       maxLimit = count.count,
       defaultsNum = count.defaultsCount,
     } = this.props;
@@ -351,7 +352,7 @@ class FieldManager extends Component<MyDialogProps, State> {
           {tipText}
           {maxLimit > 0 && (
             <span id="limitTip">
-              {`根据您的分辨率，最多可勾选${maxLimit}个字段，已勾选${count.selectedCount}个。`}
+              {t('根据您的分辨率，最多可勾选{{maxLimit}}个字段，已勾选{{attr0}}个。', { maxLimit, attr0: count.selectedCount })}
             </span>
           )}
         </div>
@@ -366,7 +367,7 @@ class FieldManager extends Component<MyDialogProps, State> {
       dispatch,
       store,
       size = 540,
-      title = "自定义列表字段",
+      title = t('自定义列表字段'),
       onChange = (fields) => {},
       model,
       ...rest
@@ -396,7 +397,7 @@ class FieldManager extends Component<MyDialogProps, State> {
               onChange(fields);
             }}
           >
-            {"确定"}
+            {t('确定')}
           </button>
         </Modal.Footer>
       </Modal>

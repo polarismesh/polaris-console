@@ -3,6 +3,7 @@ import { Modal, Table } from 'tea-component'
 import React from 'react'
 import { scrollable } from 'tea-component/lib/table/addons'
 import LabelTable from '../common/components/LabelTable'
+import { t } from 'i18next';
 
 export const isReadOnly = (namespace: string) => {
   return READ_ONLY_NAMESPACE.indexOf(namespace) !== -1
@@ -14,7 +15,7 @@ export const isReadOnlyNamespace = (namespace: Namespace) => {
 
 export const showAllLabels = (labels) => {
   Modal.confirm({
-    message: `标签展示`,
+    message: t(`标签展示`),
     description: (
       <>
         <LabelTable labels={labels}></LabelTable>

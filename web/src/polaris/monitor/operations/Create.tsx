@@ -11,18 +11,19 @@ import Select from "@src/polaris/common/duckComponents/form/Select";
 import { MetricNameOptions, LabelKeyOptions } from "../types";
 import moment from "moment";
 import TimeSelect from "@src/polaris/common/components/TimeSelect";
+import { t } from 'i18next';
 
 export const TimePickerTab = [
   {
-    text: "近1小时",
+    text: t('近1小时'),
     date: [moment().subtract(1, "h"), moment()],
   },
   {
-    text: "近1天",
+    text: t('近1天'),
     date: [moment().subtract(1, "d"), moment()],
   },
   {
-    text: "近1周",
+    text: t('近1周'),
     date: [moment().subtract(1, "w"), moment()],
   },
 ];
@@ -41,7 +42,7 @@ export default function Create(props: DuckCmpProps<Duck>) {
       store={store}
       dispatch={dispatch}
       size="l"
-      title={"新建监控图表"}
+      title={t('新建监控图表')}
     >
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
@@ -81,7 +82,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   return (
     <div style={{ minHeight: "300px" }}>
       <Form>
-        <FormItem label={"时间选择"}>
+        <FormItem label={t('时间选择')}>
           <TimeSelect
             tabs={TimePickerTab}
             style={{ display: "inline-block" }}
@@ -107,7 +108,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             }
           />
         </FormItem>
-        <FormField field={metricName} label="指标名" required>
+        <FormField field={metricName} label={t('指标名')} required>
           <Select
             type={"simulate"}
             appearance={"button"}
@@ -116,7 +117,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             size="m"
           />
         </FormField>
-        <FormItem label="筛选条件">
+        <FormItem label={t('筛选条件')}>
           <Form>
             {[...monitorFilters.asArray()].map((field, index) => {
               const { labelKey, labelValue } = field.getFields([
@@ -128,7 +129,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                   <FormField
                     showStatusIcon={false}
                     field={labelKey}
-                    label={"条件"}
+                    label={t('条件')}
                   >
                     <Select
                       type={"simulate"}
@@ -142,7 +143,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                   <FormField
                     showStatusIcon={false}
                     field={labelValue}
-                    label={"条件值"}
+                    label={t('条件值')}
                   >
                     <Input field={labelValue} />
                   </FormField>

@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 export enum FileStatus {
   Success = 'success',
   Fail = 'failure',
@@ -5,15 +6,15 @@ export enum FileStatus {
 }
 export const FileStatusMap = {
   [FileStatus.Success]: {
-    text: '发布成功',
+    text: t('发布成功'),
     theme: 'success',
   },
   [FileStatus.Fail]: {
-    text: '发布失败',
+    text: t('发布失败'),
     theme: 'danger',
   },
   [FileStatus.Edited]: {
-    text: '编辑待发布',
+    text: t('编辑待发布'),
     theme: 'warning',
   },
 }

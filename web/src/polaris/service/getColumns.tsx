@@ -6,11 +6,12 @@ import { Link } from 'react-router-dom'
 import { Text, Icon } from 'tea-component'
 import Action from '../common/duckComponents/grid/Action'
 import { isReadOnly } from './utils'
+import { t } from 'i18next';
 
 export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<ServiceItem>[] => [
   {
     key: 'name',
-    header: '服务名',
+    header: t('服务名'),
     render: x => (
       <React.Fragment>
         <Link to={`/service-detail?name=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
@@ -19,22 +20,22 @@ export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<S
   },
   {
     key: 'namespace',
-    header: '命名空间',
+    header: t('命名空间'),
     render: x => <Text>{x.namespace}</Text>,
   },
   {
     key: 'department',
-    header: '部门',
+    header: t('部门'),
     render: x => <Text tooltip={x.department}>{x.department || '-'}</Text>,
   },
   {
     key: 'business',
-    header: '业务',
+    header: t('业务'),
     render: x => <Text tooltip={x.business}>{x.business || '-'}</Text>,
   },
   {
     key: 'health/total',
-    header: '健康实例/总实例数',
+    header: t('健康实例/总实例数'),
     render: x => (
       <Text tooltip={`${x.healthy_instance_count}/${x.total_instance_count}`}>
         {`${x.healthy_instance_count ?? '-'}/${x.total_instance_count ?? '-'}`}
@@ -43,17 +44,17 @@ export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<S
   },
   {
     key: 'ctime',
-    header: '创建时间',
+    header: t('创建时间'),
     render: x => <Text tooltip={x.ctime}>{x.ctime || '-'}</Text>,
   },
   {
     key: 'mtime',
-    header: '修改时间',
+    header: t('修改时间'),
     render: x => <Text tooltip={x.mtime}>{x.mtime || '-'}</Text>,
   },
   {
     key: 'action',
-    header: '操作',
+    header: t('操作'),
     render: x => {
       const disabled = isReadOnly(x.namespace)
       return (
@@ -61,14 +62,14 @@ export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<S
           <Action
             fn={dispatch => dispatch(creators.edit(x))}
             disabled={disabled || !x.editable}
-            tip={disabled ? '该命名空间为只读的' : !x.editable ? '无权限' : '编辑'}
+            tip={disabled ? t('该命名空间为只读的') : !x.editable ? t('无权限') : t('编辑')}
           >
             <Icon type={'pencil'}></Icon>
           </Action>
           <Action
             fn={dispatch => dispatch(creators.remove([x]))}
             disabled={disabled || !x.editable}
-            tip={disabled ? '该命名空间为只读的' : !x.editable ? '无权限' : '删除'}
+            tip={disabled ? t('该命名空间为只读的') : !x.editable ? t('无权限') : t('删除')}
           >
             <Icon type={'delete'}></Icon>
           </Action>

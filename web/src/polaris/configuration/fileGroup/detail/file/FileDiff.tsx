@@ -4,6 +4,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 
 import { debounce } from '../../../utils'
+import { t } from 'i18next';
 
 const { DiffEditor } = MonacoEditor
 interface Props {
@@ -96,8 +97,8 @@ export default function FileDiff(props: Props) {
   return (
     <section className='monaco-section-file-diff'>
       <Row style={{ margin: '10px 0px' }}>
-        <Col>历史发布</Col>
-        <Col>当前发布</Col>
+        <Col>{t('历史发布')}</Col>
+        <Col>{t('当前发布')}</Col>
 
         <Col style={{ position: 'relative' }}>
           <Icon

@@ -7,6 +7,7 @@ import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import { filterable } from 'tea-component/lib/table/addons'
 import { StatusOptions } from './types'
+import { t } from 'i18next';
 
 export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimitingDuck>) {
   const { duck, store, dispatch } = props
@@ -31,7 +32,7 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
 
   return (
     <BasicLayout
-      title={'访问限流'}
+      title={t('访问限流')}
       store={store}
       selectors={duck.selectors}
       header={<></>}
@@ -41,13 +42,13 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
         <Justify
           left={
             <Button type='primary' onClick={handlers.jumpToCreateRulePage}>
-              新建限流规则
+              {t('新建限流规则')}
             </Button>
           }
           right={
             <>
               <SearchBox
-                placeholder='请输入规则名过滤'
+                placeholder={t('请输入规则名过滤')}
                 onSearch={value => handlers.changeName(value)}
                 onClear={() => handlers.changeName('')}
               />
@@ -72,7 +73,7 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
               },
               all: {
                 value: '',
-                text: '全部',
+                text: t('全部'),
               },
               options: namespaceList,
             }),
@@ -83,7 +84,7 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
               onChange: value => handlers.changeService(value),
               all: {
                 value: '',
-                text: '全部',
+                text: t('全部'),
               },
               options: filteredServiceList,
             }),
@@ -94,7 +95,7 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
               onChange: value => handlers.changeStatus(value),
               all: {
                 value: '',
-                text: '全部',
+                text: t('全部'),
               },
               options: StatusOptions,
             }),

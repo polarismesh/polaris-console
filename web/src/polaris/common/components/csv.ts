@@ -2,6 +2,7 @@
  * csv导出相关
  * Created by cluezhang on 2016/6/7.
  */
+import { t } from 'i18next';
 export interface CsvColumn<
   TRecord = any,
   TProperty extends keyof TRecord = keyof TRecord
@@ -121,7 +122,7 @@ export function save(
       /Chrome\/\d+/.test(navigator.userAgent) &&
       dataURI.length > chromeMaxSize
     ) {
-      message = "因为浏览器限制，此文件仅保存了部分内容";
+      message = t('因为浏览器限制，此文件仅保存了部分内容');
       if (!onExceedTruncate) {
         return message;
       }

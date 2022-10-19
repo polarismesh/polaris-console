@@ -3,6 +3,7 @@ import React from 'react'
 import { Button, Table, FormControl } from 'tea-component'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { FieldAPI } from '../ducks/Form'
+import { t } from 'i18next';
 
 export interface ITagTableProps {
   tags: FieldAPI<KeyValuePair[]>
@@ -16,7 +17,7 @@ export function TagTable(props: ITagTableProps) {
       columns={[
         {
           key: 'tagName',
-          header: '标签名',
+          header: t('标签名'),
           width: '150px',
           render: item => {
             const { key } = item.getFields(['key'])
@@ -29,7 +30,7 @@ export function TagTable(props: ITagTableProps) {
                   showStatusIcon={false}
                   style={{ padding: 0, display: 'block' }}
                 >
-                  <Input size='m' field={key} placeholder='key 最长不超过128个字符' />
+                  <Input size='m' field={key} placeholder={t('key 最长不超过128个字符')} />
                 </FormControl>
               </>
             )
@@ -37,7 +38,7 @@ export function TagTable(props: ITagTableProps) {
         },
         {
           key: 'tagValue',
-          header: '标签值',
+          header: t('标签值'),
           render: item => {
             const { value } = item.getFields(['value'])
             const validate = value.getTouched() && value.getError()
@@ -49,7 +50,7 @@ export function TagTable(props: ITagTableProps) {
                   showStatusIcon={false}
                   style={{ padding: 0, display: 'block' }}
                 >
-                  <Input size='m' field={value} placeholder='value 最长不超过4096个字符' />
+                  <Input size='m' field={value} placeholder={t('value 最长不超过4096个字符')} />
                 </FormControl>
               </>
             )
@@ -57,7 +58,7 @@ export function TagTable(props: ITagTableProps) {
         },
         {
           key: 'close',
-          header: '删除',
+          header: t('删除'),
           width: '80px',
           render: (item, rowKey, recordIndex) => {
             const index = Number(recordIndex)
@@ -66,7 +67,7 @@ export function TagTable(props: ITagTableProps) {
               <>
                 <Button
                   disabled={length < 2}
-                  title={'删除'}
+                  title={t('删除')}
                   icon={'close'}
                   onClick={() => props.tags.asArray().remove(index)}
                 />
@@ -86,7 +87,7 @@ export function TagTable(props: ITagTableProps) {
             })
           }}
         >
-          新增
+          {t('新增')}
         </Button>
       }
     />

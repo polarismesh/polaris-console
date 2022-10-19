@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, Icon, Text } from "tea-component";
 import ReactDOM from "react-dom";
+import { t } from 'i18next';
 
 interface TipProps {
   text: string;
@@ -21,7 +22,7 @@ function Tip(props: TipProps) {
     >
       <Card.Body style={{ padding: 10 }}>
         <Icon type={icon}></Icon>
-        <Text>{text || "加载中..."}</Text>
+        <Text>{text || t('加载中...')}</Text>
       </Card.Body>
     </Card>
   );
@@ -92,7 +93,7 @@ export default {
     if (tipHandler) {
       return;
     }
-    const { text = "加载中", duration = 2000 } = options;
+    const { text = t('加载中'), duration = 2000 } = options;
 
     tipHandler = showReactDialog(<Tip icon="loading" text={text} />);
   },

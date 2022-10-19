@@ -22,6 +22,7 @@ import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/Gr
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import ShowToken from '../user/operation/ShowToken'
+import { t } from 'i18next';
 
 interface Filter extends BaseFilter {
   name?: string
@@ -164,27 +165,27 @@ export default class PageDuck extends GridPageDuck {
         }),
       )
       if (result) {
-        notification.success({ description: '关联成功' })
+        notification.success({ description: t('关联成功') })
         yield put(creators.reload())
       }
     })
     yield takeLatest(types.DELETE, function*(action) {
       const group = action.payload as UserGroup
       const confirm = yield Modal.confirm({
-        message: '确认删除用户组？',
+        message: t('确认删除用户组？'),
         description: (
           <>
-            <Text>{'删除后，用户组不可用且无法恢复'}</Text>
+            <Text>{t('删除后，用户组不可用且无法恢复')}</Text>
           </>
         ),
       })
       if (confirm) {
         const result = yield deleteGovernanceGroups([{ id: group.id }])
         if (result) {
-          notification.success({ description: '删除成功' })
+          notification.success({ description: t('删除成功') })
           yield put(creators.reload())
         } else {
-          notification.error({ description: '删除失败' })
+          notification.error({ description: t('删除失败') })
         }
       }
     })
@@ -211,7 +212,7 @@ export default class PageDuck extends GridPageDuck {
         }),
       )
       if (result) {
-        notification.success({ description: '编辑成功' })
+        notification.success({ description: t('编辑成功') })
         yield put(creators.reload())
       }
     })
@@ -236,7 +237,7 @@ export default class PageDuck extends GridPageDuck {
         }),
       )
       if (result) {
-        notification.success({ description: '编辑成功' })
+        notification.success({ description: t('编辑成功') })
         yield put(creators.reload())
       }
     })
@@ -247,7 +248,7 @@ export default class PageDuck extends GridPageDuck {
       } = yield describeGovernanceGroupToken({ id })
       const { destroy } = Modal.show({
         size: 'xl',
-        caption: `查看${name}的token`,
+        caption: t('查看{{name}}的token', { name }),
         children: <ShowToken token={auth_token} name={name}></ShowToken>,
         onClose: () => destroy(),
       })

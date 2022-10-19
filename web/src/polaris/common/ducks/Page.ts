@@ -12,6 +12,7 @@ import { describeLicenseStatus, LicenseStatus } from '../util/license'
 import buildConfig from '@src/buildConfig'
 import insertCSS from '../helpers/insertCSS'
 import React from 'react'
+import { t } from 'i18next';
 
 insertCSS(
   `license-notification`,
@@ -362,7 +363,7 @@ get preSagas(){
         case LicenseStatus.LICENSE_LEFT_30_DAY:
           if (!window.sessionStorage.getItem(`license_status_closed${licenseResult.code}`)) {
             notification.warning({
-              title: '请注意License即将到期',
+              title: t('请注意License即将到期'),
               description: licenseResult.warnMsg,
               duration: 0,
               unique: true,
@@ -374,7 +375,7 @@ get preSagas(){
           return true
         case LicenseStatus.LICENSE_EXPIRE_30_DAY:
           notification.error({
-            title: '请注意License已过期',
+            title: t('请注意License已过期'),
             description: licenseResult.warnMsg,
             duration: 0,
             unique: true,
@@ -386,7 +387,7 @@ get preSagas(){
             userLogout()
           }
           notification.error({
-            title: 'License已超过最大过期时间',
+            title: t('License已超过最大过期时间'),
             description: licenseResult.warnMsg,
             duration: 0,
             unique: true,

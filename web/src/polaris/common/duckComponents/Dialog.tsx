@@ -3,6 +3,7 @@ import * as classnames from "classnames";
 import { Modal, ModalProps, Icon, Button } from "tea-component";
 import { DuckCmpProps, memorize, purify } from "saga-duck";
 import Duck from "../ducks/DialogPure";
+import { t } from 'i18next';
 export interface DialogProps {
   size?: ModalProps["size"];
   title?: string | JSX.Element;
@@ -52,11 +53,11 @@ export default purify(function DuckDialog({
   disableEscape = true,
   disableCloseIcon = false,
   defaultSubmit = true,
-  defaultSubmitText = "提交",
+  defaultSubmitText = t('提交'),
   onSubmit,
   onClose,
   defaultCancel = true,
-  defaultCancelText = "关闭",
+  defaultCancelText = t('关闭'),
   showFooter = true,
   submitTooltip,
 }: DuckCmpProps<Duck> & DialogProps) {

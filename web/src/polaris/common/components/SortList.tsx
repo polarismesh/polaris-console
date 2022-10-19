@@ -1,6 +1,7 @@
 import * as React from "react";
 import insertCSS from "../helpers/insertCSS";
 import { getClosest } from "../util/common";
+import { t } from 'i18next';
 
 insertCSS(
   "sortlist",
@@ -73,12 +74,12 @@ export default class SortList<T> extends React.Component<
           <p className="sort-opt">
             {!sortMode && (
               <a href="javascript:void(0)" onClick={sort}>
-                {"排序"}
+                {t('排序')}
               </a>
             )}
             {sortMode && (
               <a href="javascript:void(0)" onClick={finish}>
-                {"完成"}
+                {t('完成')}
               </a>
             )}
           </p>

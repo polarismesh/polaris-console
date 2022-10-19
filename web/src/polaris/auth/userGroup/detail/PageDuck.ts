@@ -19,6 +19,7 @@ import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import { notification } from 'tea-component'
 import { delay } from 'redux-saga'
 import UseableResourceFetcher from '../../common/UseableResourceFetcher'
+import { t } from 'i18next';
 
 interface ComposedId {
   id: string
@@ -108,10 +109,10 @@ export default abstract class CreateDuck extends DetailPage {
       const data = selectors.data(yield select())
       const result = yield IModifyCommentDuck.show({ comment: data.comment, instanceId, regionId, id })
       if (result) {
-        notification.success({ description: '修改成功' })
+        notification.success({ description: t('修改成功') })
         yield put(creators.reload())
       } else {
-        notification.error({ description: '修改失败' })
+        notification.error({ description: t('修改失败') })
       }
     })
     yield takeLatest(types.TOGGLE_TOKEN, function*() {
@@ -121,11 +122,11 @@ export default abstract class CreateDuck extends DetailPage {
       } = selector(yield select())
       const result = yield modifyGovernanceGroupToken({ id, token_enable: !token_enable })
       if (result) {
-        notification.success({ description: `${token_enable ? '禁用' : '启用'}成功` })
+        notification.success({ description: t('{{attr0}}成功', { attr0: token_enable ? t('禁用') : t('启用') }) })
         yield delay(3000) // token refresh has a delay
         yield put(creators.reload())
       } else {
-        notification.error({ description: `${token_enable ? '禁用' : '启用'}失败` })
+        notification.error({ description: t('{{attr0}}失败', { attr0: token_enable ? t('禁用') : t('启用') }) })
       }
     })
     yield takeLatest(types.RESET_TOKEN, function*() {
@@ -133,10 +134,10 @@ export default abstract class CreateDuck extends DetailPage {
 
       const result = yield resetGovernanceGroupToken({ id })
       if (result) {
-        notification.success({ description: '重置成功' })
+        notification.success({ description: t('重置成功') })
         yield put(creators.reload())
       } else {
-        notification.error({ description: '重置失败' })
+        notification.error({ description: t('重置失败') })
       }
     })
   }

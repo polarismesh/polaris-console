@@ -1,6 +1,6 @@
 {
   "extends": ["plugin:react/recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
-  "plugins": ["react", "@typescript-eslint", "prettier","i18n"],
+  "plugins": ["react", "@typescript-eslint", "prettier"],
   "settings": {
     "react": {
       "pragma": "React",

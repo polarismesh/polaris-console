@@ -8,6 +8,7 @@ import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import { isOwner } from '@src/polaris/common/util/common'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
+import { t } from 'i18next';
 
 insertCSS(
   'service',
@@ -42,12 +43,12 @@ export default function ServicePage(props: DuckCmpProps<Duck>) {
             <>
               {!isInDetailpage && isOwner() && (
                 <Button type={'primary'} onClick={handlers.create}>
-                  {'新建用户组'}
+                  {t('新建用户组')}
                 </Button>
               )}
               {isInDetailpage && isOwner() && (
                 <Button type={'primary'} onClick={handlers.attachGroup}>
-                  {'编辑'}
+                  {t('编辑')}
                 </Button>
               )}
             </>
@@ -68,7 +69,7 @@ export default function ServicePage(props: DuckCmpProps<Duck>) {
   return isInDetailpage ? (
     contentElement
   ) : (
-    <BasicLayout title={'用户组'} store={store} selectors={duck.selectors} header={<></>}>
+    <BasicLayout title={t('用户组')} store={store} selectors={duck.selectors} header={<></>}>
       {contentElement}
     </BasicLayout>
   )

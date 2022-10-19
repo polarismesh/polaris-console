@@ -5,6 +5,7 @@ import { resolvePromise } from 'saga-duck/build/helper'
 import { createInstances, CreateInstanceParams, modifyInstances, ModifyInstanceParams } from '../model'
 import { Instance, BATCH_EDIT_TYPE, InstanceLocation } from '../types'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
+import { t } from 'i18next';
 
 export interface DialogOptions {
   isModify: boolean
@@ -277,17 +278,17 @@ class CreateForm extends Form {
 const validator = CreateForm.combineValidators<Values, {}>({
   host(v) {
     if (!v) {
-      return '请填写IP'
+      return t('请填写IP')
     }
   },
   port(v) {
     if (!v) {
-      return '请填写端口'
+      return t('请填写端口')
     }
   },
   weight(v) {
     if (v === undefined) {
-      return '请填写权重'
+      return t('请填写权重')
     }
   },
   healthCheckMethod(v, meta) {
@@ -295,7 +296,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
       return
     }
     if (!v) {
-      return '请选择检查方式'
+      return t('请选择检查方式')
     }
   },
   ttl(v, meta) {
@@ -303,7 +304,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
       return
     }
     if (!v) {
-      return '请填写TTL'
+      return t('请填写TTL')
     }
   },
 })

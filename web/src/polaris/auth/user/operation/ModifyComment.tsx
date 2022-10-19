@@ -5,6 +5,7 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import { Form } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
+import { t } from 'i18next';
 
 export default purify(function(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -17,14 +18,14 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       duck={duck}
       store={store}
       dispatch={dispatch}
-      title={'修改备注'}
+      title={t('修改备注')}
       size={300}
-      defaultSubmitText={'确定'}
-      defaultCancelText={'取消'}
+      defaultSubmitText={t('确定')}
+      defaultCancelText={t('取消')}
     >
       <Form>
-        <FormField field={comment} label={'备注'}>
-          <Input placeholder={'请输入备注'} field={comment} size={'m'} />
+        <FormField field={comment} label={t('备注')}>
+          <Input placeholder={t('请输入备注')} field={comment} size={'m'} />
         </FormField>
       </Form>
     </Dialog>
