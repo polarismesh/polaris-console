@@ -13,4 +13,4 @@ src/polaris/administration
 
 ## Todo
 
-t()函数标记支持双大括号模板，<Trans>组件支持使用<Slot>标记变量
+<Trans>组件支持使用<Slot>标记变量
