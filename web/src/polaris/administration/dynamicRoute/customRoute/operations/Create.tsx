@@ -88,7 +88,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     const keyValidate = keyField.getTouched() && keyField.getError()
     const labelList = [
       ...(keyField.getValue() ? [{ text: `(输入值)${keyField.getValue()}`, value: keyField.getValue() }] : []),
-      ...filteredLabelList,
+      ...filteredLabelList.filter((item) => item.text.indexOf(keyField.getValue()) > -1),
     ]
     let keyComponent
     if (labelType.getValue() === RoutingArgumentsType.CUSTOM || type === 'destination') {
@@ -149,7 +149,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     const valueOptions = labelList.find((item) => item.value === keyField.getValue())?.valueOptions || []
     const options = [
       ...(valueField.getValue() ? [{ text: `(输入值)${valueField.getValue()}`, value: valueField.getValue() }] : []),
-      ...valueOptions,
+      ...valueOptions.filter((item) => item.text.indexOf(valueField.getValue()) > -1),
     ]
     let valueComponent
     if (labelType.getValue() === RoutingArgumentsType.CUSTOM || type === 'destination') {
