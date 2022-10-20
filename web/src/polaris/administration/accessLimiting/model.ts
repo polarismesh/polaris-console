@@ -154,3 +154,11 @@ export async function enableRateLimit(params: EnableRateLimitParams[]) {
   })
   return res
 }
+
+export async function checkGlobalRateLimitAvailable() {
+  const { data } = await getApiRequest<any>({
+    action: 'console/ability',
+    data: {},
+  })
+  return data?.indexOf('distributed_limit') > -1
+}
