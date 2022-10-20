@@ -1,5 +1,6 @@
 import i18n from 'i18next'
 import detector from 'i18next-browser-languagedetector'
+import React from 'react'
 import { initReactI18next } from 'react-i18next'
 
 import en from './en/translation.json'
@@ -21,3 +22,7 @@ i18n
   })
 
 export default i18n
+
+export function Slot(props: { content: React.ReactNode }) {
+  return React.createElement(React.Fragment, null, props.content)
+}
