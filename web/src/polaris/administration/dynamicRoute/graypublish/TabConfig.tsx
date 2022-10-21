@@ -31,7 +31,7 @@ export const tabs = [
 
 export const tabConfigs: RouteTabConfigInfo = {
   [RouteTabId.BlueGreen]: {
-    imagePath: '/static/img/bluegreen-publish.png',
+    imagePath: 'static/img/bluegreen-publish.png',
     alt: '蓝绿发布路由',
     title: '',
     imageLinks: [
@@ -63,7 +63,7 @@ export const tabConfigs: RouteTabConfigInfo = {
     ],
   },
   [RouteTabId.Canary]: {
-    imagePath: '/static/img/canary-publish.png',
+    imagePath: 'static/img/canary-publish.png',
     alt: '金丝雀发布路由',
     title: '金丝雀发布',
     description:
@@ -94,7 +94,7 @@ export const tabConfigs: RouteTabConfigInfo = {
   [RouteTabId.FullLinkGray]: {
     imagePath: [
       {
-        path: '/static/img/full-link-gray-publish-scene1.png',
+        path: 'static/img/full-link-gray-publish-scene1.png',
         title: '场景一',
         imageLinks: [
           {
@@ -125,7 +125,7 @@ export const tabConfigs: RouteTabConfigInfo = {
         ],
       },
       {
-        path: '/static/img/full-link-gray-publish-scene2.png',
+        path: 'static/img/full-link-gray-publish-scene2.png',
         title: '场景二',
         imageLinks: [
           {

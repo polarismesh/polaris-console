@@ -44,7 +44,7 @@ export interface GetLabelDataParams {
 }
 export async function getMonitorData(params: GetMonitorDataParams) {
   const res = await getPromethusApiRequest<{ result: MonitorFetcherData[] }>({
-    action: `/api/v1/query_range`,
+    action: `api/v1/query_range`,
     data: new URLSearchParams(params as any),
   })
   return res.data.result
@@ -58,7 +58,7 @@ export async function getLabelData(params: GetLabelDataParams) {
     searchParams.append('end', params.end.toString())
   }
   const res = await getPromethusApiRequest<string[]>({
-    action: `/api/v1/label/${params.labelKey}/values`,
+    action: `api/v1/label/${params.labelKey}/values`,
     data: searchParams,
   })
   return res.data

@@ -27,7 +27,7 @@ export const tabs = [
 
 export const tabConfigs: TabConfigInfo = {
   [TabId.client]: {
-    imagePath: '/static/img/testEnvRoute-client.png',
+    imagePath: 'static/img/testEnvRoute-client.png',
     alt: '客户端染色流程指引',
     imageLinks: [
       {
@@ -43,7 +43,7 @@ export const tabConfigs: TabConfigInfo = {
     ],
   },
   [TabId.dynamic]: {
-    imagePath: '/static/img/testEnvRoute-dynamic.png',
+    imagePath: 'static/img/testEnvRoute-dynamic.png',
     alt: '网关动态染色流程指引',
     imageLinks: [
       {
@@ -64,7 +64,7 @@ export const tabConfigs: TabConfigInfo = {
     ],
   },
   [TabId.static]: {
-    imagePath: '/static/img/testEnvRoute-static.png',
+    imagePath: 'static/img/testEnvRoute-static.png',
     alt: '网关静态染色流程指引',
     imageLinks: [
       {
