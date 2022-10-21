@@ -1,14 +1,14 @@
 /**
  * Confirm确认框，单实例可复用
  */
-import * as React from "react";
-import Dialog from "./Dialog";
-import { DuckCmpProps, purify } from "saga-duck";
-import Duck from "../ducks/Confirm";
-import { t } from 'i18next';
+import * as React from 'react'
+import Dialog from './Dialog'
+import { DuckCmpProps, purify } from 'saga-duck'
+import Duck from '../ducks/Confirm'
+import { t } from 'i18next'
 interface Props extends DuckCmpProps<Duck> {
   /** 历史兼容，@deprecated 建议直接使用 ducks/Confirm # show 方法 */
-  size?: any;
+  size?: any
 }
 
 export default purify(function Confirm({ duck, store, dispatch }: Props) {
@@ -20,7 +20,7 @@ export default purify(function Confirm({ duck, store, dispatch }: Props) {
     showFooter = true,
     defaultCancel = true,
     ...rest
-  } = duck.selectors.data(store);
+  } = duck.selectors.data(store)
   return (
     <Dialog
       duck={duck}
@@ -35,5 +35,5 @@ export default purify(function Confirm({ duck, store, dispatch }: Props) {
     >
       {content}
     </Dialog>
-  );
-});
+  )
+})

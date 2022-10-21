@@ -8,7 +8,7 @@ import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import { isOwner } from '@src/polaris/common/util/common'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 insertCSS(
   'service',
@@ -22,8 +22,8 @@ insertCSS(
 `,
 )
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
-  inputKeyword: keyword => dispatch(creators.inputKeyword(keyword)),
-  search: keyword => dispatch(creators.search(keyword)),
+  inputKeyword: (keyword) => dispatch(creators.inputKeyword(keyword)),
+  search: (keyword) => dispatch(creators.search(keyword)),
   clearKeyword: () => dispatch(creators.inputKeyword('')),
   reload: () => dispatch(creators.reload()),
   create: () => dispatch(creators.create()),

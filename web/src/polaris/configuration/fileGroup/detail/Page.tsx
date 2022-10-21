@@ -4,14 +4,14 @@ import ServiceDetailDuck from './PageDuck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { Tab, TabPanel, Tabs } from 'tea-component'
 import File from './file/Page'
-import { t } from 'i18next';
+import { t } from 'i18next'
 export enum TAB {
   File = 'file',
 }
 export const TAB_LABLES = {
   [TAB.File]: t('配置文件'),
 }
-const tabs: Array<Tab> = [TAB.File].map(id => ({
+const tabs: Array<Tab> = [TAB.File].map((id) => ({
   id,
   label: TAB_LABLES[id],
 }))

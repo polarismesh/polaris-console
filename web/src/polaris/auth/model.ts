@@ -29,7 +29,7 @@ export interface DeleteGovernanceStrategiesResult {
 /** 删除治理中心的用户 */
 export async function deleteGovernanceUsers(params: DeleteGovernanceUsersParams[]) {
   const result = await apiRequest<DeleteGovernanceUsersResult>({ action: 'core/v1/users/delete', data: params })
-  return result.responses.every(item => Number(item.code) === SuccessCode)
+  return result.responses.every((item) => Number(item.code) === SuccessCode)
 }
 /** **DeleteGovernanceUsers入参**
 
@@ -194,7 +194,7 @@ export async function modifyGovernanceStrategy(params: ModifyGovernanceStrategyP
     action: 'core/v1/auth/strategies',
     data: params,
   })
-  return result.responses.every(item => Number(item.code) === SuccessCode)
+  return result.responses.every((item) => Number(item.code) === SuccessCode)
 }
 /** **ModifyGovernanceStrategy入参**
 
@@ -332,7 +332,7 @@ export interface CreateGovernanceStrategyResult {
 /** 批量创建治理中心用户 */
 export async function createGovernanceUsers(params: CreateGovernanceUsersParams[]) {
   const result = await apiRequest<CreateGovernanceUsersResult>({ action: 'core/v1/users', data: params })
-  return result.responses.every(item => Number(item.code) === SuccessCode)
+  return result.responses.every((item) => Number(item.code) === SuccessCode)
 }
 /** **CreateGovernanceUsers入参**
 
@@ -381,7 +381,7 @@ export interface CreateGovernanceGroupResult {
 /** 修改治理中心用户组信息 */
 export async function modifyGovernanceGroup(params: ModifyGovernanceGroupParams[]) {
   const result = await putApiRequest<ModifyGovernanceGroupResult>({ action: 'core/v1/usergroups', data: params })
-  return result.responses.every(item => Number(item.code) === SuccessCode)
+  return result.responses.every((item) => Number(item.code) === SuccessCode)
 }
 /** **ModifyGovernanceGroup入参**
 

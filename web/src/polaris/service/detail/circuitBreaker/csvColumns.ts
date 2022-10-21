@@ -1,4 +1,4 @@
-import { t } from 'i18next';
+import { t } from 'i18next'
 export default [
   {
     name: t('服务名'),

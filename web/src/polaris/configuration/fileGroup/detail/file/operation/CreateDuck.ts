@@ -13,7 +13,7 @@ import {
 } from '@src/polaris/configuration/fileGroup/model'
 import { reduceFromPayload } from 'saga-duck'
 import { notification } from 'tea-component'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -58,7 +58,7 @@ export default class CreateDuck extends FormDialog {
     const data = selectors.data(yield select())
     const parsedName = name
       .split('/')
-      .filter(item => item !== '')
+      .filter((item) => item !== '')
       .join('/')
 
     if (options.isModify) {
@@ -115,7 +115,7 @@ export default class CreateDuck extends FormDialog {
       selectors,
     } = this
     super.saga()
-    yield takeLatest(form.types.SET_VALUE, function*(action) {
+    yield takeLatest(form.types.SET_VALUE, function* (action) {
       if (!action.path || action.path?.indexOf('namespace') === -1) {
         return
       }
@@ -150,7 +150,7 @@ export default class CreateDuck extends FormDialog {
       type: types.SET_OPTIONS,
       payload: {
         ...options,
-        namespaceList: namespaceList.map(item => {
+        namespaceList: namespaceList.map((item) => {
           return {
             ...item,
             text: item.name,
@@ -204,7 +204,7 @@ const validator = CreateForm.combineValidators<Values, any>({
   name(v) {
     if (!v) return t('请填写文件名')
 
-    if (v.split('/').filter(item => !item).length > 1) {
+    if (v.split('/').filter((item) => !item).length > 1) {
       return t('文件夹名字不可为空')
     }
   },

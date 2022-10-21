@@ -7,7 +7,7 @@ import { UserGroupSelectDuck } from './AttachUserGroupDuck'
 import { UserSelectDuck } from '../../userGroup/operation/CreateDuck'
 import SearchableTransfer from '@src/polaris/common/duckComponents/SearchableTransfer'
 import { getOwnerUin } from '@src/polaris/common/util/common'
-import { t } from 'i18next';
+import { t } from 'i18next'
 interface Props {
   userDuck: UserSelectDuck
   userGroupDuck: UserGroupSelectDuck
@@ -19,14 +19,14 @@ export default function ResourcePrincipalAuth(props: Props & DuckCmpProps<Duck>)
     <Tabs
       tabs={AuthSubjectTabs}
       activeId={showAuthSubjectType}
-      onActive={tab => setShowAuthSubjectType(tab.id as AuthSubjectType)}
+      onActive={(tab) => setShowAuthSubjectType(tab.id as AuthSubjectType)}
     >
       <Alert type={'info'} style={{ margin: '20px 0px 0px 0px' }}>
         {t('授予权限的用户或者用户组，具有该命名空间的读写权限，所有用户具有读权限')}
       </Alert>
       <TabPanel id={AuthSubjectType.USER}>
         <SearchableTransfer
-          title={t('请选择用户')}
+          title={t<string>('请选择用户')}
           duck={userSelect}
           store={store}
           dispatch={dispatch}
@@ -40,7 +40,7 @@ export default function ResourcePrincipalAuth(props: Props & DuckCmpProps<Duck>)
       </TabPanel>
       <TabPanel id={AuthSubjectType.USERGROUP}>
         <SearchableTransfer
-          title={t('请选择用户组')}
+          title={t<string>('请选择用户组')}
           duck={userGroupSelect}
           store={store}
           dispatch={dispatch}

@@ -6,9 +6,9 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { isOwner } from '@src/polaris/common/util/common'
-import { t } from 'i18next';
+import { t } from 'i18next'
 export const passwordRuleText = t('请输入6至17位的密码')
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks, selector } = duck
   const { options } = selector(store)

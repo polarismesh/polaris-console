@@ -7,7 +7,7 @@ import { DynamicRouteCreateDuck } from './operations/CreateDuck'
 import { put, select, take } from 'redux-saga/effects'
 import { Modal } from 'tea-component'
 import { Service } from '../../types'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface Filter extends BaseFilter {
   namespace: string
@@ -135,7 +135,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types, creators, selector, ducks } = this
     yield* this.sagaInitLoad()
     yield* super.saga()
-    yield takeLatest(types.CREATE, function*(action) {
+    yield takeLatest(types.CREATE, function* (action) {
       const {
         data: { name, namespace },
         routeData,
@@ -168,7 +168,7 @@ export default class ServicePageDuck extends GridPageDuck {
         }),
       )
     })
-    yield takeLatest(types.EDIT, function*(action) {
+    yield takeLatest(types.EDIT, function* (action) {
       const {
         data: { name, namespace },
         ruleType,
@@ -212,12 +212,12 @@ export default class ServicePageDuck extends GridPageDuck {
     //   }
     //   yield put(creators.reload());
     // });
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
       const { routeData, originData } = action.payload
       yield put({ type: types.SET_ROUTE_DATA, payload: routeData })
       yield put({ type: types.SET_ORIGIN_DATA, payload: originData })
     })
-    yield takeLatest(types.RESET_DATA, function*() {
+    yield takeLatest(types.RESET_DATA, function* () {
       const { originData } = selector(yield select())
       yield put({ type: types.SET_ROUTE_DATA, payload: originData })
       yield put({
@@ -226,7 +226,7 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(types.SUBMIT, function*() {
+    yield takeLatest(types.SUBMIT, function* () {
       const {
         originData,
         routeData,
@@ -251,7 +251,7 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(types.DRAWER_SUBMIT, function*() {
+    yield takeLatest(types.DRAWER_SUBMIT, function* () {
       const {
         drawerStatus: { createId, ruleType, ruleIndex, isEdit },
         routeData,
@@ -261,10 +261,9 @@ export default class ServicePageDuck extends GridPageDuck {
       if (!formValue) return
       const originData = routeData || ({ service: name, namespace, inbounds: [], outbounds: [] } as Routing)
       if (ruleType === RuleType.Inbound) {
-        let newArray
         const tempArray = [...originData.inbounds] || []
         tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue)
-        newArray = tempArray
+        const newArray = tempArray
         yield put({
           type: types.SET_ROUTE_DATA,
           payload: {
@@ -274,10 +273,9 @@ export default class ServicePageDuck extends GridPageDuck {
           },
         })
       } else {
-        let newArray
         const tempArray = [...originData?.outbounds] || []
         tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue)
-        newArray = tempArray
+        const newArray = tempArray
         yield put({
           type: types.SET_ROUTE_DATA,
           payload: {
@@ -299,7 +297,7 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(types.REMOVE, function*(action) {
+    yield takeLatest(types.REMOVE, function* (action) {
       const confirm = yield Modal.confirm({
         message: t(`确认删除路由规则`),
         description: t('删除后，无法恢复'),

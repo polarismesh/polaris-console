@@ -26,14 +26,14 @@ import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { Namespace, Service } from '@src/polaris/service/types'
 import router from '@src/polaris/common/util/router'
 import { ConfigFileGroup } from '@src/polaris/configuration/fileGroup/types'
-import { t } from 'i18next';
+import { t } from 'i18next'
 const steps = [
   { id: '1', label: t('选择用户') },
   { id: '2', label: t('授权') },
   { id: '3', label: t('预览') },
 ]
 
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { selectors, ducks, selector, creators } = duck
   const composedId = selectors.composedId(store)
@@ -79,11 +79,11 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   <Tabs
                     tabs={AuthSubjectTabs}
                     activeId={showAuthSubjectType}
-                    onActive={tab => setShowAuthSubjectType(tab.id as AuthSubjectType)}
+                    onActive={(tab) => setShowAuthSubjectType(tab.id as AuthSubjectType)}
                   >
                     <TabPanel id={AuthSubjectType.USER}>
                       <SearchableTransfer
-                        title={t('请选择用户')}
+                        title={t<string>('请选择用户')}
                         duck={ducks.user}
                         store={store}
                         dispatch={dispatch}
@@ -96,7 +96,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     </TabPanel>
                     <TabPanel id={AuthSubjectType.USERGROUP}>
                       <SearchableTransfer
-                        title={t('请选择用户组')}
+                        title={t<string>('请选择用户组')}
                         duck={ducks.userGroup}
                         store={store}
                         dispatch={dispatch}
@@ -116,12 +116,12 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 <Tabs
                   tabs={AuthResourceTabs}
                   activeId={showAuthResourceType}
-                  onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
+                  onActive={(tab) => setShowAuthResourceType(tab.id as AuthResourceType)}
                 >
                   <TabPanel id={AuthResourceType.NAMESPACE}>
                     <RadioGroup
                       value={useAllNamespace.getValue() ? 'all' : 'partial'}
-                      onChange={value => {
+                      onChange={(value) => {
                         useAllNamespace.setValue(value === 'all')
                       }}
                       style={{ marginTop: '10px' }}
@@ -132,7 +132,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     {!useAllNamespace.getValue() && (
                       <SearchableTransfer
                         style={{ marginTop: '10px' }}
-                        title={t('请选择命名空间')}
+                        title={t<string>('请选择命名空间')}
                         duck={ducks.namespace}
                         store={store}
                         dispatch={dispatch}
@@ -143,7 +143,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   <TabPanel id={AuthResourceType.SERVICE}>
                     <RadioGroup
                       value={useAllService.getValue() ? 'all' : 'partial'}
-                      onChange={value => {
+                      onChange={(value) => {
                         useAllService.setValue(value === 'all')
                       }}
                       style={{ marginTop: '10px' }}
@@ -154,7 +154,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     {!useAllService.getValue() && (
                       <SearchableTransfer
                         style={{ marginTop: '10px' }}
-                        title={t('请选择服务')}
+                        title={t<string>('请选择服务')}
                         duck={ducks.service}
                         store={store}
                         dispatch={dispatch}
@@ -169,7 +169,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   <TabPanel id={AuthResourceType.CONFIGURATION}>
                     <RadioGroup
                       value={useAllConfigGroup.getValue() ? 'all' : 'partial'}
-                      onChange={value => {
+                      onChange={(value) => {
                         useAllConfigGroup.setValue(value === 'all')
                       }}
                       style={{ marginTop: '10px' }}
@@ -180,7 +180,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     {!useAllConfigGroup.getValue() && (
                       <SearchableTransfer
                         style={{ marginTop: '10px' }}
-                        title={t('请选择配置分组')}
+                        title={t<string>('请选择配置分组')}
                         duck={ducks.configGroup}
                         store={store}
                         dispatch={dispatch}
@@ -201,18 +201,20 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 <FormText>{name.getValue()}</FormText>
               </FormItem>
               <FormItem label={t('用户')}>
-                <FormText>{userSelection.map(item => `${item.name}(${item.id})`).join(',' || t('无选中用户'))}</FormText>
+                <FormText>
+                  {userSelection.map((item) => `${item.name}(${item.id})`).join(',' || t('无选中用户'))}
+                </FormText>
               </FormItem>
               <FormItem label={t('用户组')}>
                 <FormText>
-                  {userGroupSelection.map(item => `${item.name}(${item.id})`).join(',' || t('无选中用户组'))}
+                  {userGroupSelection.map((item) => `${item.name}(${item.id})`).join(',' || t('无选中用户组'))}
                 </FormText>
               </FormItem>
               <FormItem label={t('资源')}>
                 <Tabs
                   tabs={AuthResourceTabs}
                   activeId={showAuthResourceType}
-                  onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
+                  onActive={(tab) => setShowAuthResourceType(tab.id as AuthResourceType)}
                 >
                   <TabPanel id={AuthResourceType.NAMESPACE}>
                     {useAllNamespace.getValue() ? (

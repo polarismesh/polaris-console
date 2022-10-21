@@ -5,7 +5,7 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import { Form, Select } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -54,7 +54,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           <Select
             value={alias_namespace.getValue()}
             options={options.namespaceList}
-            onChange={value => alias_namespace.setValue(value)}
+            onChange={(value) => alias_namespace.setValue(value)}
             type={'simulate'}
             appearance={'button'}
             size={'l'}

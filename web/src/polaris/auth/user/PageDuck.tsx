@@ -24,7 +24,7 @@ import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/Gr
 import { resolvePromise } from 'saga-duck/build/helper'
 import CreateUser from './operation/CreateUser'
 import CreateUserDuck from './operation/CreateUserDuck'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface Filter extends BaseFilter {
   name?: string
@@ -116,12 +116,12 @@ export default class PageDuck extends GridPageDuck {
   *saga() {
     const { types, selector, creators } = this
     yield* super.saga()
-    yield takeLatest(types.LOAD, function*(action) {
+    yield takeLatest(types.LOAD, function* (action) {
       const { composedId } = action.payload
       yield put({ type: types.SET_COMPOSE_ID, payload: composedId })
       yield put({ type: types.FETCH_DATA, payload: composedId })
     })
-    yield takeLatest(types.DELETE, function*(action) {
+    yield takeLatest(types.DELETE, function* (action) {
       const users = action.payload
       const confirm = yield Modal.confirm({
         message: t('确认删除用户？'),
@@ -132,7 +132,7 @@ export default class PageDuck extends GridPageDuck {
         ),
       })
       if (confirm) {
-        const result = yield deleteGovernanceUsers(users.map(item => ({ id: item.id })))
+        const result = yield deleteGovernanceUsers(users.map((item) => ({ id: item.id })))
         if (result) {
           notification.success({ description: t('删除成功') })
           yield put(creators.reload())
@@ -141,10 +141,10 @@ export default class PageDuck extends GridPageDuck {
         }
       }
     })
-    yield takeLatest(types.CREATE, function*() {
+    yield takeLatest(types.CREATE, function* () {
       const result = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(CreateUser, CreateUserDuck, function*(duck: CreateUserDuck) {
+        new Promise((resolve) => {
+          showDialog(CreateUser, CreateUserDuck, function* (duck: CreateUserDuck) {
             try {
               resolve(
                 yield* duck.execute(
@@ -164,14 +164,14 @@ export default class PageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.MODIFY_GROUP, function*() {
+    yield takeLatest(types.MODIFY_GROUP, function* () {
       const {
         composedId: { groupId },
       } = selector(yield select())
       const { userGroup } = yield describeGovernanceGroupDetail({ id: groupId })
       const result = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(
                 yield* duck.execute(userGroup, {
@@ -191,12 +191,12 @@ export default class PageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.ATTACH_GROUP, function*(action) {
+    yield takeLatest(types.ATTACH_GROUP, function* (action) {
       const { id } = action.payload
 
       const result = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(AttachUserGroup, AttachUserGroupDuck, function*(duck: AttachUserGroupDuck) {
+        new Promise((resolve) => {
+          showDialog(AttachUserGroup, AttachUserGroupDuck, function* (duck: AttachUserGroupDuck) {
             try {
               resolve(
                 yield* duck.execute(
@@ -217,11 +217,11 @@ export default class PageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.AUTH_USER, function*(action) {
+    yield takeLatest(types.AUTH_USER, function* (action) {
       const { id, name } = action.payload
       const result = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Auth, AuthDuck, function*(duck: AuthDuck) {
+        new Promise((resolve) => {
+          showDialog(Auth, AuthDuck, function* (duck: AuthDuck) {
             try {
               resolve(
                 yield* duck.execute(
@@ -245,7 +245,7 @@ export default class PageDuck extends GridPageDuck {
       }
     })
 
-    yield takeLatest(types.SHOW_TOKEN, function*(action) {
+    yield takeLatest(types.SHOW_TOKEN, function* (action) {
       const { id, name } = action.payload
       const {
         user: { auth_token },
@@ -268,7 +268,7 @@ export default class PageDuck extends GridPageDuck {
       return {
         totalCount: userGroup.relation.users.length,
         list:
-          userGroup.relation.users?.map(item => ({
+          userGroup.relation.users?.map((item) => ({
             ...item,
             id: item.id,
           })) || [],
@@ -281,7 +281,7 @@ export default class PageDuck extends GridPageDuck {
       return {
         totalCount: result.totalCount,
         list:
-          result.content?.map(item => ({
+          result.content?.map((item) => ({
             ...item,
             id: item.id,
           })) || [],

@@ -14,7 +14,7 @@ import { put, select, take } from 'redux-saga/effects'
 import { Modal } from 'tea-component'
 import { DynamicCircuitBreakerCreateDuck } from './operations/CreateDuck'
 import { Service } from '../../types'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface Filter extends BaseFilter {
   namespace: string
@@ -234,12 +234,11 @@ export default class ServicePageDuck extends GridPageDuck {
       const formValue = yield* ducks.dynamicCreateDuck.getDuck(createId).submit()
       if (!formValue) return
       const originData =
-        circuitBreaker || (({ service: name, namespace, inbounds: [], outbounds: [] } as unknown) as CircuitBreaker)
+        circuitBreaker || ({ service: name, namespace, inbounds: [], outbounds: [] } as unknown as CircuitBreaker)
       if (ruleType === RuleType.Inbound) {
-        let newArray
         const tempArray = [...originData.inbounds] || []
         tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue)
-        newArray = tempArray
+        const newArray = tempArray
         yield put({
           type: types.SET_CIRCUIT_BREAKER,
           payload: {
@@ -249,10 +248,9 @@ export default class ServicePageDuck extends GridPageDuck {
           },
         })
       } else {
-        let newArray
         const tempArray = [...originData?.outbounds] || []
         tempArray.splice(ruleIndex, isEdit ? 1 : 0, formValue)
-        newArray = tempArray
+        const newArray = tempArray
         yield put({
           type: types.SET_CIRCUIT_BREAKER,
           payload: {
@@ -303,17 +301,20 @@ export default class ServicePageDuck extends GridPageDuck {
       if (originData?.ctime) {
         if (params.inbounds.length === 0 && params.outbounds.length === 0) {
           // 如果出入都没有了，删除熔断规则
-          yield unbindServiceCircuitBreaker([{
-            service: {
-              name: service,
-              namespace,
-            }, circuitBreaker: {
-              id: originData.id,
-              name: service,
-              namespace: namespace,
-              version: originData.version,
-            }
-          }])
+          yield unbindServiceCircuitBreaker([
+            {
+              service: {
+                name: service,
+                namespace,
+              },
+              circuitBreaker: {
+                id: originData.id,
+                name: service,
+                namespace: namespace,
+                version: originData.version,
+              },
+            },
+          ])
         } else {
           const version = new Date().getTime().toString()
           // 只是更新熔断规则，直接创建出新的版本并直接 release
@@ -362,7 +363,7 @@ export default class ServicePageDuck extends GridPageDuck {
     })
   }
 
-  *sagaInitLoad() { }
+  *sagaInitLoad() {}
   async getData(filters: this['Filter']) {
     const { page, count, namespace, service, ruleType } = filters
     let circuitBreaker = filters.circuitBreaker

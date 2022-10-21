@@ -12,7 +12,7 @@ import { getAllList } from '../common/util/apiRequest'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '../common/helpers/showDialog'
 import { describeComplicatedNamespaces } from '../namespace/model'
-import { t } from 'i18next';
+import { t } from 'i18next'
 const EmptyCustomFilter = {
   alias: '',
   service: '',
@@ -129,7 +129,7 @@ export default class ServiceAliasPageDuck extends GridPageDuck {
       listKey: 'namespaces',
       totalKey: 'amount',
     })({})
-    const options = namespaceList.map(item => ({
+    const options = namespaceList.map((item) => ({
       ...item,
       text: item.name,
       value: item.name,
@@ -147,32 +147,32 @@ export default class ServiceAliasPageDuck extends GridPageDuck {
     const { types, creators, selector, ducks } = this
     const duck = this
     yield* super.saga()
-    yield takeLatest(types.CHANGE_TAGS, function*(action) {
+    yield takeLatest(types.CHANGE_TAGS, function* (action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
-      const validTags = tags.map(item => {
+      const validTags = tags.map((item) => {
         if (item.attr) return item
         else return { ...item, attr: DefaultAliasTagAttribute }
       })
       yield put({ type: types.SET_TAGS, payload: validTags })
-      validTags.forEach(tag => {
+      validTags.forEach((tag) => {
         const key = tag?.attr?.key || AliasTagKey
         if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
         else customFilters[key] = tag.values[0].key
       })
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
       const { list } = action.payload
       const { selection } = selector(yield select())
-      const validSelection = selection.filter(id => !!list.find(item => item.id === id))
+      const validSelection = selection.filter((id) => !!list.find((item) => item.id === id))
       yield put(creators.setSelection(validSelection))
       yield* duck.loadNamespaceList()
     })
-    yield takeLatest(types.CREATE, function*() {
+    yield takeLatest(types.CREATE, function* () {
       const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute({}, { isModify: false }))
             } finally {
@@ -185,11 +185,11 @@ export default class ServiceAliasPageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.EDIT, function*(action) {
+    yield takeLatest(types.EDIT, function* (action) {
       const data = action.payload
       const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute(data, { isModify: true }))
             } finally {
@@ -202,9 +202,9 @@ export default class ServiceAliasPageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.REMOVE, function*(action) {
+    yield takeLatest(types.REMOVE, function* (action) {
       const data = action.payload
-      const aliases = data.map(item => {
+      const aliases = data.map((item) => {
         const [alias_namespace, alias] = item.split('#')
         return { alias_namespace, alias }
       })
@@ -233,7 +233,7 @@ export default class ServiceAliasPageDuck extends GridPageDuck {
     return {
       totalCount: result.totalCount,
       list:
-        result.content?.map(item => ({
+        result.content?.map((item) => ({
           ...item,
           id: `${item.alias_namespace}#${item.alias}`,
         })) || [],

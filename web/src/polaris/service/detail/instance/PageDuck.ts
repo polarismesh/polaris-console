@@ -1,7 +1,7 @@
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/GridPage'
 import { Instance, BATCH_EDIT_TYPE } from './types'
-import { describeInstances, deleteInstances } from './model'
+import { describeInstances } from './model'
 import { takeLatest } from 'redux-saga-catch'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
@@ -14,7 +14,7 @@ import { Modal, TagValue } from 'tea-component'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
 import { MetadataTagKey, HealthyTagKey, DefaultHostTagAttribute, HostTagKey, HealthStatusOptions } from './Page'
 import { Service } from '../../types'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export const EmptyCustomFilter = {
   host: '',
@@ -165,13 +165,13 @@ export default class ServicePageDuck extends GridPageDuck {
   *saga() {
     const { types, creators, selector, ducks } = this
     yield* super.saga()
-    yield takeLatest(types.CREATE, function*() {
+    yield takeLatest(types.CREATE, function* () {
       const {
         data: { name, namespace },
       } = selector(yield select())
       const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute({}, { isModify: false, service: name, namespace }))
             } finally {
@@ -184,14 +184,14 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.EDIT, function*(action) {
+    yield takeLatest(types.EDIT, function* (action) {
       const {
         data: { name, namespace },
       } = selector(yield select())
       const data = action.payload
       const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(
                 yield* duck.execute(data, {
@@ -211,18 +211,18 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.CHANGE_TAGS, function*(action) {
+    yield takeLatest(types.CHANGE_TAGS, function* (action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
-      const validTags = tags.map(item => {
+      const validTags = tags.map((item) => {
         if (item.attr) return item
         else return { ...item, attr: DefaultHostTagAttribute }
       })
       yield put({ type: types.SET_TAGS, payload: validTags })
-      validTags.forEach(tag => {
+      validTags.forEach((tag) => {
         const key = tag?.attr?.key || HostTagKey
         if (key === MetadataTagKey) {
-          customFilters[key] = tag.values.map(item => ({ key: item.key, value: item.value || '' }))?.[0]
+          customFilters[key] = tag.values.map((item) => ({ key: item.key, value: item.value || '' }))?.[0]
         } else {
           if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
           else customFilters[key] = tag.values[0].key
@@ -230,58 +230,59 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
       const { searchParams, list } = action.payload
       const { selection } = selector(yield select())
-      const validSelection = selection.filter(id => !!list.find(item => item.id === id))
+      const validSelection = selection.filter((id) => !!list.find((item) => item.id === id))
       yield put(creators.setSelection(validSelection))
       yield put({ type: types.SET_LAST_SEARCH_PARAMS, payload: JSON.stringify(searchParams) })
     })
-    yield takeLatest([types.MODIFY_ISOLATE_STATUS, types.MODIFY_HEALTH_STATUS, types.MODIFY_WEIGHT], function*(action) {
-      const batchEditType =
-        action.type === types.MODIFY_WEIGHT
-          ? BATCH_EDIT_TYPE.WEIGHT
-          : action.type === types.MODIFY_ISOLATE_STATUS
-          ? BATCH_EDIT_TYPE.ISOLATE
-          : BATCH_EDIT_TYPE.HEALTHY
-      const {
-        data: { name, namespace },
-      } = selector(yield select())
-      const list = ducks.grid.selectors.list(yield select())
-      const ids = action.payload
-      const instances = ids.map(id => list.find(instance => instance.id === id))
-      const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
-            try {
-              resolve(
-                yield* duck.execute(instances[0], {
-                  isModify: true,
-                  service: name,
-                  namespace,
-                  batchEditType,
-                  instance: instances[0],
-                  instances,
-                }),
-              )
-            } finally {
-              resolve(false)
-            }
-          })
-        }),
-      )
-      if (res) {
-        yield put(creators.reload())
-      }
-    })
-    yield takeLatest(types.REMOVE, function*(action) {
-      const ids = action.payload
+    yield takeLatest(
+      [types.MODIFY_ISOLATE_STATUS, types.MODIFY_HEALTH_STATUS, types.MODIFY_WEIGHT],
+      function* (action) {
+        const batchEditType =
+          action.type === types.MODIFY_WEIGHT
+            ? BATCH_EDIT_TYPE.WEIGHT
+            : action.type === types.MODIFY_ISOLATE_STATUS
+            ? BATCH_EDIT_TYPE.ISOLATE
+            : BATCH_EDIT_TYPE.HEALTHY
+        const {
+          data: { name, namespace },
+        } = selector(yield select())
+        const list = ducks.grid.selectors.list(yield select())
+        const ids = action.payload
+        const instances = ids.map((id) => list.find((instance) => instance.id === id))
+        const res = yield* resolvePromise(
+          new Promise((resolve) => {
+            showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
+              try {
+                resolve(
+                  yield* duck.execute(instances[0], {
+                    isModify: true,
+                    service: name,
+                    namespace,
+                    batchEditType,
+                    instance: instances[0],
+                    instances,
+                  }),
+                )
+              } finally {
+                resolve(false)
+              }
+            })
+          }),
+        )
+        if (res) {
+          yield put(creators.reload())
+        }
+      },
+    )
+    yield takeLatest(types.REMOVE, function* () {
       const confirm = yield Modal.confirm({
         message: t(`确认删除实例`),
         description: t('删除后，无法恢复'),
       })
       if (confirm) {
-        const res = yield deleteInstances(ids.map(id => ({ id })))
         yield put(creators.reload())
       }
     })

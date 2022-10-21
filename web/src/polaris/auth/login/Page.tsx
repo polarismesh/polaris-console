@@ -7,7 +7,7 @@ import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, Copy, Bubble
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import buildConfig from '@src/buildConfig'
-import { t, Trans } from 'i18next';
+import { t } from 'i18next'
 insertCSS(
   'login',
   `.login-background{
@@ -17,7 +17,7 @@ overflow:hidden;
 
 }`,
 )
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks, creators, selector } = duck
   const { userName, password } = ducks.form.getAPI(store, dispatch).getFields(['userName', 'password'])
@@ -51,7 +51,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     {t('北极星服务治理中心')}
                   </Text>
                   <Text parent={'div'} style={{ color: 'rgba(255, 255, 255, 0.6)', width: '450px' }}>
-                    {t('一个支持多语言、多框架和异构基础设施的服务治理中心，提供服务发现、流量调度、熔断降级、限流鉴权和可观测性等服务治理功能。北极星治理中心默认提供服务注册功能，也可以搭配其他服务注册中心使用。')}
+                    {t(
+                      '一个支持多语言、多框架和异构基础设施的服务治理中心，提供服务发现、流量调度、熔断降级、限流鉴权和可观测性等服务治理功能。北极星治理中心默认提供服务注册功能，也可以搭配其他服务注册中心使用。',
+                    )}
                   </Text>
                 </Card.Body>
               </Card>
@@ -78,9 +80,10 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   {buildConfig.useDefaultPwd && (
                     <Row>
                       <Col>
-                        <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}><Trans>
-                          初始用户名和密码为<Copy text={'polaris'}>polaris</Copy>/<Copy text={'polaris'}>polaris</Copy>
-                        </Trans></Text>
+                        <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
+                          {t('初始用户名和密码为')}
+                          <Copy text={'polaris'}>polaris</Copy>/<Copy text={'polaris'}>polaris</Copy>
+                        </Text>
                       </Col>
                     </Row>
                   )}
@@ -92,7 +95,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       <TeaInput.Password
                         value={password.getValue() || ''}
                         size={'full'}
-                        onChange={v => {
+                        onChange={(v) => {
                           password.setValue(v)
                           password.setTouched(true)
                           password.setError('')

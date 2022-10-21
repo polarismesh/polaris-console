@@ -19,7 +19,7 @@ import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import { notification } from 'tea-component'
 import { delay } from 'redux-saga'
 import UseableResourceFetcher from '../../common/UseableResourceFetcher'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface ComposedId {
   id: string
@@ -98,13 +98,13 @@ export default abstract class CreateDuck extends DetailPage {
       selector,
       creators,
     } = this
-    yield takeLatest(types.FETCH_DONE, function*() {
+    yield takeLatest(types.FETCH_DONE, function* () {
       const { id } = selectors.composedId(yield select())
       yield put(policy.creators.load({ principalId: id, principalType: AuthSubjectType.USERGROUP }))
       yield put(user.creators.load({ groupId: id }, {}))
       yield put(useableResource.creators.fetch({ principal_id: id, principal_type: AuthSubjectType.USERGROUP }))
     })
-    yield takeLatest(types.MODIFY_COMMENT, function*() {
+    yield takeLatest(types.MODIFY_COMMENT, function* () {
       const { regionId, instanceId, id } = yield select(selectors.composedId)
       const data = selectors.data(yield select())
       const result = yield IModifyCommentDuck.show({ comment: data.comment, instanceId, regionId, id })
@@ -115,7 +115,7 @@ export default abstract class CreateDuck extends DetailPage {
         notification.error({ description: t('修改失败') })
       }
     })
-    yield takeLatest(types.TOGGLE_TOKEN, function*() {
+    yield takeLatest(types.TOGGLE_TOKEN, function* () {
       const { id } = selectors.composedId(yield select())
       const {
         data: { token_enable },
@@ -129,7 +129,7 @@ export default abstract class CreateDuck extends DetailPage {
         notification.error({ description: t('{{attr0}}失败', { attr0: token_enable ? t('禁用') : t('启用') }) })
       }
     })
-    yield takeLatest(types.RESET_TOKEN, function*() {
+    yield takeLatest(types.RESET_TOKEN, function* () {
       const { id } = selectors.composedId(yield select())
 
       const result = yield resetGovernanceGroupToken({ id })
@@ -158,9 +158,9 @@ class IModifyCommentDuck extends ModifyCommentDuck {
     }
   }
   static show(data: any) {
-    return new Promise(resolve => {
-      showDialog(ModifyComment, IModifyCommentDuck, function*(duck) {
-        yield duck.show(data, function*() {
+    return new Promise((resolve) => {
+      showDialog(ModifyComment, IModifyCommentDuck, function* (duck) {
+        yield duck.show(data, function* () {
           resolve(yield duck.ducks.form.submit())
         })
       })

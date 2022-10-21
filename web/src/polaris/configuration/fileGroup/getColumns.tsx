@@ -5,13 +5,13 @@ import { Text } from 'tea-component'
 import { Column } from '@src/polaris/common/ducks/GridPage'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
 import { Link } from 'react-router-dom'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Column<ConfigFileGroupItem>[] => [
   {
     key: 'name',
     header: t('名称'),
-    render: x => (
+    render: (x) => (
       <Text>
         <Link to={`/filegroup-detail?group=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
       </Text>
@@ -20,31 +20,31 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
   {
     key: 'namespace',
     header: t('命名空间'),
-    render: x => <Text tooltip={x.namespace}>{x.namespace || '-'}</Text>,
+    render: (x) => <Text tooltip={x.namespace}>{x.namespace || '-'}</Text>,
   },
   {
     key: 'comment',
     header: t('备注'),
-    render: x => <Text tooltip={x.comment}>{x.comment || '-'}</Text>,
+    render: (x) => <Text tooltip={x.comment}>{x.comment || '-'}</Text>,
   },
   {
     key: 'config',
     header: t('配置文件数'),
-    render: x => <Text tooltip={x.fileCount}>{x.fileCount || '-'}</Text>,
+    render: (x) => <Text tooltip={x.fileCount}>{x.fileCount || '-'}</Text>,
   },
   {
     key: 'ctime',
     header: t('创建时间'),
-    render: x => <Text>{x.createTime}</Text>,
+    render: (x) => <Text>{x.createTime}</Text>,
   },
   {
     key: 'action',
     header: t('操作'),
-    render: x => {
+    render: (x) => {
       return (
         <React.Fragment>
-          <Action fn={dispatch => dispatch(creators.edit(x))}>{t('编辑')}</Action>
-          <Action fn={dispatch => dispatch(creators.remove(x))}>{t('删除')}</Action>
+          <Action fn={(dispatch) => dispatch(creators.edit(x))}>{t('编辑')}</Action>
+          <Action fn={(dispatch) => dispatch(creators.remove(x))}>{t('删除')}</Action>
         </React.Fragment>
       )
     },

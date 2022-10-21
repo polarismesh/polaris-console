@@ -1,7 +1,7 @@
 // i18next-parser.config.js
 export default {
   lexers: {
-    ts: ["JavascriptLexer"],
-    tsx: ["JsxLexer"],
+    ts: ['JavascriptLexer'],
+    tsx: ['JsxLexer'],
   },
-};
+}

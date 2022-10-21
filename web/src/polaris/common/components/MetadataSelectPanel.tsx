@@ -2,14 +2,14 @@ import * as React from 'react'
 import { purify } from 'saga-duck'
 import { Card, Input, Button } from 'tea-component'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface Props {
   metadata: KeyValuePair[]
   onOk: Function
   tagKeyOnly?: boolean
 }
-export default purify(function(props: Props) {
+export default purify(function (props: Props) {
   const { metadata: originMetadata, onOk = () => {}, tagKeyOnly = false } = props
   const [metadata, setMetadata] = React.useState(originMetadata)
   return (
@@ -20,7 +20,7 @@ export default purify(function(props: Props) {
             <Input
               placeholder={t('请输入标签键')}
               value={x.key}
-              onChange={value => {
+              onChange={(value) => {
                 const newMetadata = [...metadata]
                 const kv = metadata[recordIndex]
                 newMetadata.splice(recordIndex, 1, {
@@ -37,7 +37,7 @@ export default purify(function(props: Props) {
                 size={'m'}
                 placeholder={t('请输入标签值')}
                 value={x.value}
-                onChange={value => {
+                onChange={(value) => {
                   const newMetadata = [...metadata]
                   const kv = metadata[recordIndex]
                   newMetadata.splice(recordIndex, 1, {
@@ -54,7 +54,7 @@ export default purify(function(props: Props) {
         <Button
           type={'primary'}
           onClick={() => {
-            onOk(metadata.map(item => ({ ...item, name: `${item.key}${item.value ? ':' + item.value : ''}` })))
+            onOk(metadata.map((item) => ({ ...item, name: `${item.key}${item.value ? ':' + item.value : ''}` })))
           }}
           style={{ marginTop: '20px' }}
           disabled={!metadata?.[0]?.key || (!tagKeyOnly && !metadata?.[0]?.value)}

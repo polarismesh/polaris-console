@@ -25,7 +25,7 @@ import { HEALTH_STATUS, HEALTH_STATUS_MAP, ISOLATE_STATUS_MAP, ISOLATE_STATUS, H
 import { isReadOnly, showAllLabels } from '../../utils'
 import MetadataSelectPanel from '@src/polaris/common/components/MetadataSelectPanel'
 import { replaceTags } from '@src/polaris/configuration/utils'
-import { t, Trans, Slot } from 'i18next';
+import { t } from 'i18next'
 
 insertCSS(
   'service-detail-instance',
@@ -147,7 +147,7 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
         return (
           <MetadataSelectPanel
             metadata={[customFilters.metadata] || []}
-            onOk={newMetadata => {
+            onOk={(newMetadata) => {
               onSelect(newMetadata)
             }}
           ></MetadataSelectPanel>
@@ -164,16 +164,16 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
       reload: () => dispatch(creators.reload()),
       export: () => dispatch(creators.export(csvColumns, 'service-list')),
       search: () => dispatch(creators.search('')),
-      setCustomFilters: filters => dispatch(creators.setCustomFilters(filters)),
+      setCustomFilters: (filters) => dispatch(creators.setCustomFilters(filters)),
       clear: () => dispatch(creators.setCustomFilters(EmptyCustomFilter)),
       create: () => dispatch(creators.create()),
-      select: payload => dispatch(creators.setSelection(payload)),
-      remove: payload => dispatch(creators.remove(payload)),
-      setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
-      modifyWeight: payload => dispatch(creators.modifyWeight(payload)),
-      modifyHealthStatus: payload => dispatch(creators.modifyHealthStatus(payload)),
-      modifyIsolateStatus: payload => dispatch(creators.modifyIsolateStatus(payload)),
-      changeTags: payload => dispatch(creators.changeTags(payload)),
+      select: (payload) => dispatch(creators.setSelection(payload)),
+      remove: (payload) => dispatch(creators.remove(payload)),
+      setExpandedKeys: (payload) => dispatch(creators.setExpandedKeys(payload)),
+      modifyWeight: (payload) => dispatch(creators.modifyWeight(payload)),
+      modifyHealthStatus: (payload) => dispatch(creators.modifyHealthStatus(payload)),
+      modifyIsolateStatus: (payload) => dispatch(creators.modifyIsolateStatus(payload)),
+      changeTags: (payload) => dispatch(creators.changeTags(payload)),
     }),
     [],
   )
@@ -221,17 +221,20 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 }
                 appearance='pure'
               >
-                {close => (
+                {(close) => (
                   <List type='option'>
                     {selection?.length === 0 ? (
-                      <List.Item disabled={selection?.length === 0} tooltip={selection?.length === 0 && t('请选择实例')}>
+                      <List.Item
+                        disabled={selection?.length === 0}
+                        tooltip={selection?.length === 0 && t('请选择实例')}
+                      >
                         {t('复制IP')}
                       </List.Item>
                     ) : (
                       <Copy
                         text={selection
-                          .map(id => {
-                            const item = list.find(item => id === item.id)
+                          .map((id) => {
+                            const item = list.find((item) => id === item.id)
                             return `${item?.host}`
                           })
                           .join('\n')}
@@ -292,7 +295,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                   width: '400px',
                 }}
                 value={tags}
-                onChange={value => handlers.changeTags(value)}
+                onChange={(value) => handlers.changeTags(value)}
                 tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
@@ -318,7 +321,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               type: 'single',
               column: 'healthy',
               value: customFilters.healthy,
-              onChange: value => {
+              onChange: (value) => {
                 const replacedTags = replaceTags(HealthyTagKey, value, tags, HealthStatusOptions, {
                   type: 'single',
                   key: 'healthy',
@@ -335,7 +338,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               type: 'single',
               column: 'isolate',
               value: customFilters.isolate,
-              onChange: value => {
+              onChange: (value) => {
                 const replacedTags = replaceTags(IsolateTagKey, value, tags, IsolateStatusOptions, {
                   type: 'single',
                   key: 'isolate',
@@ -352,8 +355,8 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               // 已经展开的产品
               expandedKeys,
               // 发生展开行为时，回调更新展开键值
-              onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
-              render: record => {
+              onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
+              render: (record) => {
                 const labelList = Object.keys(record.metadata || {})
                 return (
                   <>
@@ -368,18 +371,18 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                       </FormItem>
                       {record.healthCheck?.type && (
                         <FormItem label={t('健康检查方式')}>
-                          <FormText><Trans>
-                            检查方式：
-                            <Slot content={HEALTH_CHECK_METHOD_MAP[record.healthCheck?.type].text} />; TTL：
-                            <Slot content={t('{{attr0}}秒', { attr0: record.healthCheck?.heartbeat?.ttl })} />
-                          </Trans></FormText>
+                          <FormText>
+                            {t('检查方式：')}
+                            {HEALTH_CHECK_METHOD_MAP[record.healthCheck?.type].text}; TTL：
+                            {`${record.healthCheck?.heartbeat?.ttl}${t('秒')}`}
+                          </FormText>
                         </FormItem>
                       )}
                       <FormItem label={t('实例标签')}>
                         <FormText>
                           {labelList
                             .slice(0, 6)
-                            .map(item => `${item}:${record.metadata[item]}`)
+                            .map((item) => `${item}:${record.metadata[item]}`)
                             .join(' ; ') || '-'}
                           {labelList.length > 5 && '...'}
                           {labelList.length > 5 && (

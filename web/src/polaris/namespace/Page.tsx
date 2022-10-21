@@ -7,7 +7,7 @@ import { Justify, Table, Button, SearchBox, Card } from 'tea-component'
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import BasicLayout from '../common/components/BaseLayout'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 insertCSS(
   'service',
@@ -21,8 +21,8 @@ insertCSS(
 `,
 )
 const getHandlers = memorize(({ creators }: NamespaceDuck, dispatch) => ({
-  inputKeyword: keyword => dispatch(creators.inputKeyword(keyword)),
-  search: keyword => dispatch(creators.search(keyword)),
+  inputKeyword: (keyword) => dispatch(creators.inputKeyword(keyword)),
+  search: (keyword) => dispatch(creators.search(keyword)),
   clearKeyword: () => dispatch(creators.inputKeyword('')),
   reload: () => dispatch(creators.reload()),
   create: () => dispatch(creators.create()),

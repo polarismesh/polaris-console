@@ -1,33 +1,22 @@
 import React, { useRef } from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import CreateRouteDuck from './CreateDuck'
-import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
-import { Card, Form, FormItem, Segment, H3, Button, H4, Justify, MonacoEditor, Text } from 'tea-component'
-import { RULE_TYPE_OPTIONS, MATCH_TYPE_OPTIONS, MATCH_TYPE, RuleType } from '../types'
+import { Form, FormItem, H3, Button, H4, Justify, MonacoEditor, Text } from 'tea-component'
+import { MATCH_TYPE_OPTIONS, MATCH_TYPE, RuleType } from '../types'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Select from '@src/polaris/common/duckComponents/form/Select'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
-import { t, Trans, Slot } from 'i18next';
+import { t } from 'i18next'
 
 export enum EditType {
   Manual = 'Manual',
   Json = 'Json',
 }
-const EditTypeOptions = [
-  {
-    text: t('手动配置'),
-    value: EditType.Manual,
-  },
-  {
-    text: t('JSON配置'),
-    value: EditType.Json,
-  },
-]
 
-const addMetadata = field => {
+const addMetadata = (field) => {
   field.setValue([...field.getValue(), { key: '', value: '', type: MATCH_TYPE.EXACT }])
 }
 const removeArrayFieldValue = (field, index) => {
@@ -48,11 +37,11 @@ const addDestination = (field, service, namespace) => {
     },
   ])
 }
-const getMetadataForm = field => {
+const getMetadataForm = (field) => {
   return [...field.asArray()].map((metadataField, index) => {
     const { key, value, type } = metadataField.getFields(['key', 'value', 'type'])
     return (
-      <Form layout={'inline'}>
+      <Form layout={'inline'} key={index}>
         <FormField showStatusIcon={false} field={key} label={t('标签键')}>
           <Input field={key} />
         </FormField>
@@ -71,17 +60,15 @@ const getMetadataForm = field => {
   })
 }
 
-const renderInboundRule = props => {
+const renderInboundRule = (props) => {
   const { duck, store, dispatch } = props
   const {
     selector,
-    creators,
     ducks: { form },
   } = duck
   const {
     service,
     namespace,
-    form: { values },
     data: { ruleType },
   } = selector(store)
   const formApi = form.getAPI(store, dispatch)
@@ -90,7 +77,6 @@ const renderInboundRule = props => {
     inboundSources,
     outboundDestinations,
     outboundSources,
-    editType,
     inboundNamespace,
     inboundService,
     outboundNamespace,
@@ -114,7 +100,9 @@ const renderInboundRule = props => {
   return (
     <>
       <FormItem
-        label={<H4 style={{ margin: '10px 0' }}>{isInbound ? t('当以下服务调用本服务时') : t('当本服务调用以下服务时')}</H4>}
+        label={
+          <H4 style={{ margin: '10px 0' }}>{isInbound ? t('当以下服务调用本服务时') : t('当本服务调用以下服务时')}</H4>
+        }
       ></FormItem>
       <Form>
         <Form style={{ width: '850px' }}>
@@ -128,7 +116,7 @@ const renderInboundRule = props => {
           </Form>
         </Form>
       </Form>
-      {[...sources.asArray()].map(field => {
+      {[...sources.asArray()].map((field) => {
         const { metadata } = field.getFields(['namespace', 'service', 'metadata'])
         return (
           <>
@@ -142,7 +130,7 @@ const renderInboundRule = props => {
       <FormItem label={<H3 style={{ margin: '10px 0' }}>{t('按权重和优先级路由到以下实例分组')}</H3>}></FormItem>
 
       {[...destinations.asArray()].map((field, index) => {
-        const { namespace, service, metadata, priority, weight, isolate } = field.getFields([
+        const { metadata, priority, weight, isolate } = field.getFields([
           'namespace',
           'service',
           'metadata',
@@ -156,7 +144,12 @@ const renderInboundRule = props => {
             <Form style={{ width: '100%', marginBottom: '20px' }}>
               <Form style={{ width: '850px' }}>
                 <Justify
-                  left={<H4 style={{ margin: '10px' }}><Trans>实例分组<Slot content={index + 1} /></Trans></H4>}
+                  left={
+                    <H4 style={{ margin: '10px' }}>
+                      {t('实例分组')}
+                      {index + 1}
+                    </H4>
+                  }
                   right={
                     destinations.getValue().length > 1 && (
                       <Button
@@ -196,14 +189,9 @@ const renderInboundRule = props => {
 export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>) {
   const { duck, store, dispatch } = props
   const {
-    selector,
-    creators,
     ducks: { form },
   } = duck
-  const {
-    data: { service, namespace, ruleIndex },
-    form: { values },
-  } = selector(store)
+
   const formApi = form.getAPI(store, dispatch)
   const { editType, ruleType, inboundJsonValue, outboundJsonValue } = formApi.getFields([
     'editType',
@@ -211,14 +199,8 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
     'inboundJsonValue',
     'outboundJsonValue',
   ])
-  const handlers = React.useMemo(
-    () => ({
-      submit: () => dispatch(duck.creators.submit()),
-    }),
-    [],
-  )
+
   const ref = useRef(null)
-  const isEdit = Number(ruleIndex) !== -1
   const currentJsonValue = ruleType.getValue() === RuleType.Inbound ? inboundJsonValue : outboundJsonValue
   return (
     <>
@@ -252,7 +234,7 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
                 width={1000}
                 language='json'
                 value={currentJsonValue.getValue()}
-                onChange={value => {
+                onChange={(value) => {
                   currentJsonValue.setTouched(true)
                   currentJsonValue.setValue(value)
                 }}

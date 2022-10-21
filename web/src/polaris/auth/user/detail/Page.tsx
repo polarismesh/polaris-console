@@ -10,9 +10,9 @@ import Policy from '../../policy/Page'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { isOwner, getUin, getOwnerUin } from '@src/polaris/common/util/common'
 import UseableResource from '../../common/UseableResource'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { selectors, selector, creators, ducks } = duck
   const composedId = selectors.composedId(store)
@@ -104,7 +104,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                           />
                         </>
                       ),
-                      render: x => (
+                      render: (x) => (
                         <CopyableText
                           text={tokenVisible ? x.auth_token : '*'.repeat(x.auth_token?.length)}
                           copyText={x.auth_token}
@@ -114,7 +114,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     {
                       key: 'token_enable',
                       header: t('状态'),
-                      render: x =>
+                      render: (x) =>
                         x.token_enable ? (
                           <Text theme={'success'}>{t('生效中')}</Text>
                         ) : (
@@ -124,7 +124,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     {
                       key: 'operation',
                       header: t('操作'),
-                      render: x => (
+                      render: (x) => (
                         <>
                           {getOwnerUin().toString() !== x.id && isOwner() && (
                             <Button type='link' onClick={() => dispatch(creators.toggleToken())}>
@@ -150,9 +150,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
         <Card>
           <Card.Body>
             <Tabs
-              tabs={AuthTabs.filter(item => item.id !== TAB.USER)}
+              tabs={AuthTabs.filter((item) => item.id !== TAB.USER)}
               activeId={showAuthTabType}
-              onActive={tab => setShowAuthTabType(tab.id as TAB)}
+              onActive={(tab) => setShowAuthTabType(tab.id as TAB)}
             >
               <TabPanel id={TAB.USERGROUP}>
                 <UserGroup duck={ducks.userGroup} store={store} dispatch={dispatch} />

@@ -1,9 +1,8 @@
 import { Namespace, READ_ONLY_NAMESPACE } from './types'
-import { Modal, Table } from 'tea-component'
+import { Modal } from 'tea-component'
 import React from 'react'
-import { scrollable } from 'tea-component/lib/table/addons'
 import LabelTable from '../common/components/LabelTable'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export const isReadOnly = (namespace: string) => {
   return READ_ONLY_NAMESPACE.indexOf(namespace) !== -1

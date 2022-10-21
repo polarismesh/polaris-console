@@ -11,7 +11,7 @@ import { Modal, notification } from 'tea-component'
 import { Namespace } from '../service/types'
 import { deleteNamespace, describeComplicatedNamespaces } from './model'
 import { checkAuth } from '../auth/model'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface NamespaceItem extends Namespace {
   id: string
@@ -91,15 +91,15 @@ export default class ServicePageDuck extends GridPageDuck {
     yield* super.saga()
     const authOpen = yield checkAuth({})
     yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
-    yield takeLatest(types.LOAD, function*(action) {
+    yield takeLatest(types.LOAD, function* (action) {
       const { composedId } = action.payload
       yield put({ type: types.SET_COMPOSE_ID, payload: composedId })
     })
-    yield takeLatest(types.CREATE, function*() {
+    yield takeLatest(types.CREATE, function* () {
       const { authOpen } = selector(yield select())
       const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute({}, { isModify: false, authOpen }))
             } finally {
@@ -112,11 +112,11 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.EDIT, function*(action) {
+    yield takeLatest(types.EDIT, function* (action) {
       const data = action.payload
       const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute(data, { isModify: true, authOpen }))
             } finally {
@@ -129,7 +129,7 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.REMOVE, function*(action) {
+    yield takeLatest(types.REMOVE, function* (action) {
       const { name } = action.payload
 
       const confirm = yield Modal.confirm({
@@ -155,7 +155,7 @@ export default class ServicePageDuck extends GridPageDuck {
     return {
       totalCount: result.amount,
       list:
-        result.namespaces?.map(item => ({
+        result.namespaces?.map((item) => ({
           ...item,
           id: item.name,
         })) || [],

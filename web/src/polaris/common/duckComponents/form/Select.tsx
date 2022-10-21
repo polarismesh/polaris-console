@@ -2,7 +2,7 @@
 import * as React from 'react'
 import { FieldAPI } from '../../ducks/Form'
 import { Select as TeaSelect, SelectProps, SelectOptionWithGroup } from 'tea-component'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export type Item = SelectOptionWithGroup
 type Props = SelectProps & {
@@ -26,7 +26,7 @@ function Select(props: Props) {
       type={type}
       options={list}
       value={isUndefOrNull ? '' : String(field.getValue())}
-      onChange={value => {
+      onChange={(value) => {
         if (typeof beforeChange === 'function') {
           if (beforeChange(value) === false) {
             return

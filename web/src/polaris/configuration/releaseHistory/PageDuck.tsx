@@ -13,7 +13,7 @@ import { describeConfigFileReleaseHistories } from './model'
 import { describeConfigFileGroups } from '../fileGroup/model'
 import React from 'react'
 import FileDiff from '../fileGroup/detail/file/FileDiff'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface ConfigFileReleaseHistoryItem extends ConfigFileReleaseHistory {
   id: string
@@ -135,7 +135,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       listKey: 'namespaces',
       totalKey: 'amount',
     })({})
-    const options = namespaceList.map(item => ({
+    const options = namespaceList.map((item) => ({
       ...item,
       text: item.name,
       value: item.name,
@@ -150,7 +150,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
     const { list } = yield getAllList(describeConfigFileGroups, {})({})
     yield put({
       type: this.types.SET_GROUP_LIST,
-      payload: list.map(item => ({
+      payload: list.map((item) => ({
         ...item,
         text: item.name,
         value: item.name,
@@ -161,15 +161,15 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
   }
   *saga() {
     const { types, selector } = this
-    yield takeLatest(types.CHANGE_TAGS, function*(action) {
+    yield takeLatest(types.CHANGE_TAGS, function* (action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
-      const validTags = tags.map(item => {
+      const validTags = tags.map((item) => {
         if (item.attr) return item
         else return { ...item, attr: DefaultGroupTagAttribute }
       })
       yield put({ type: types.SET_TAGS, payload: validTags })
-      validTags.forEach(tag => {
+      validTags.forEach((tag) => {
         const key = tag?.attr?.key || GroupNameTagKey
 
         if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
@@ -177,7 +177,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       })
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
-    yield takeLatest(types.SHOW_DIFF, function*(action) {
+    yield takeLatest(types.SHOW_DIFF, function* (action) {
       const { namespace, group, name, content, format, id } = action.payload
       const { list: previousRelease } = yield describeConfigFileReleaseHistories({
         namespace,
@@ -196,7 +196,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
         onClose: () => modal.destroy(),
       })
     })
-    yield takeLatest(types.ROUTE_INITIALIZED, function*() {
+    yield takeLatest(types.ROUTE_INITIALIZED, function* () {
       yield take([types.SET_NAMESPACE_LIST, types.SET_GROUP_LIST])
       yield take([types.SET_NAMESPACE_LIST, types.SET_GROUP_LIST])
       const { routes, configFileGroupList } = selector(yield select())
@@ -205,7 +205,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
         yield put({ type: types.SET_NAMESPACE, payload: routes.namespace })
       }
       if (routes.group) {
-        const option = configFileGroupList.find(item => item.key === routes.group)
+        const option = configFileGroupList.find((item) => item.key === routes.group)
         tags.push({
           attr: {
             type: 'single',
@@ -246,7 +246,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
     return {
       totalCount: result.totalCount,
       list:
-        result.list?.map(item => ({
+        result.list?.map((item) => ({
           ...item,
         })) || [],
     }

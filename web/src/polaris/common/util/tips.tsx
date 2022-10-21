@@ -1,20 +1,20 @@
-import React from "react";
-import { Card, Icon, Text } from "tea-component";
-import ReactDOM from "react-dom";
-import { t } from 'i18next';
+import React from 'react'
+import { Card, Icon, Text } from 'tea-component'
+import ReactDOM from 'react-dom'
+import { t } from 'i18next'
 
 interface TipProps {
-  text: string;
-  icon: string;
+  text: string
+  icon: string
 }
 
 function Tip(props: TipProps) {
-  const { icon, text } = props;
+  const { icon, text } = props
   return (
     <Card
       style={{
-        position: "fixed",
-        top: "25px",
+        position: 'fixed',
+        top: '25px',
         left: 0,
         right: 0,
         maxWidth: 200,
@@ -25,28 +25,28 @@ function Tip(props: TipProps) {
         <Text>{text || t('加载中...')}</Text>
       </Card.Body>
     </Card>
-  );
+  )
 }
 
 // 唯一dom
 function _getDialogRootDom() {
-  const id = "__atom_tips";
-  let el = document.getElementById(id);
+  const id = '__atom_tips'
+  let el = document.getElementById(id)
   if (!el) {
-    el = document.createElement("div");
-    el.id = id;
-    document.body.appendChild(el);
+    el = document.createElement('div')
+    el.id = id
+    document.body.appendChild(el)
   }
-  return el;
+  return el
 }
 
-let tipVisible = false;
-type Watcher = (visible: boolean) => any;
-const duckDialogVisibleWatchers = new Set<Watcher>();
+let tipVisible = false
+type Watcher = (visible: boolean) => any
+const duckDialogVisibleWatchers = new Set<Watcher>()
 function fireVisibleChange(visible: boolean) {
-  tipVisible = visible;
-  for (let watcher of duckDialogVisibleWatchers) {
-    watcher(visible);
+  tipVisible = visible
+  for (const watcher of duckDialogVisibleWatchers) {
+    watcher(visible)
   }
 }
 
@@ -55,58 +55,58 @@ function fireVisibleChange(visible: boolean) {
  * @param element
  */
 export function showReactDialog(element: React.ReactElement) {
-  const el = _getDialogRootDom();
-  ReactDOM.render(element, el);
-  fireVisibleChange(true);
+  const el = _getDialogRootDom()
+  ReactDOM.render(element, el)
+  fireVisibleChange(true)
 
   return () => {
-    fireVisibleChange(false);
+    fireVisibleChange(false)
     // 有时unmount会报错，进行try...catch防止中止新弹窗
     try {
-      ReactDOM.unmountComponentAtNode(el);
+      ReactDOM.unmountComponentAtNode(el)
     } catch (e) {
       // 打印出来方便定位
-      console.error(e);
+      console.error(e)
     }
-  };
+  }
 }
 
-let tipHandler = null;
-let tipTimer = null;
+let tipHandler = null
+let tipTimer = null
 
 interface TipOption {
-  duration?: number;
-  text?: string;
+  duration?: number
+  text?: string
 }
 
 function clearTipTask() {
   if (tipTimer) {
-    clearTimeout(tipTimer);
+    clearTimeout(tipTimer)
   }
   if (tipHandler) {
-    tipHandler();
-    tipHandler = null;
+    tipHandler()
+    tipHandler = null
   }
 }
 export default {
   showLoading(options: TipOption) {
     if (tipHandler) {
-      return;
+      return
     }
-    const { text = t('加载中'), duration = 2000 } = options;
+    const { text = t('加载中'), duration = 2000 } = options
 
-    tipHandler = showReactDialog(<Tip icon="loading" text={text} />);
+    tipHandler = showReactDialog(<Tip icon='loading' text={text} />)
   },
   hideLoading() {
-    clearTipTask();
+    clearTipTask()
   },
   info(options: TipOption) {
-    clearTipTask();
-    const { text = "", duration = 2000 } = options;
-    tipHandler = showReactDialog(<Tip icon="info" text={text} />);
+    clearTipTask()
+    const { text = '', duration = 2000 } = options
+    tipHandler = showReactDialog(<Tip icon='info' text={text} />)
     tipTimer = setTimeout(() => {
-      if (tipHandler) tipHandler();
-      tipHandler = null;
-    }, duration);
+      if (tipHandler) tipHandler()
+      tipHandler = null
+    }, duration)
   },
-};
+}

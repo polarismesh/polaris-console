@@ -6,7 +6,7 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import ResourcePrincipalAuth from '@src/polaris/auth/user/operation/ResourcePrincipalAuth'
-import { t, Trans } from 'i18next';
+import { t } from 'i18next'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -47,7 +47,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           <Select
             value={namespace.getValue()}
             options={options.namespaceList}
-            onChange={value => namespace.setValue(value)}
+            onChange={(value) => namespace.setValue(value)}
             type={'simulate'}
             appearance={'button'}
             size='l'
@@ -66,10 +66,10 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         <FormField field={comment} label={t('描述')}>
           <Input field={comment} maxLength={1024} placeholder={t('长度不超过1024个字符')} size={'l'} />
         </FormField>
-        <Button type='link' onClick={() => setShowAdvance(!showAdvance)} style={{ cursor: 'pointer' }}><Trans>
+        <Button type='link' onClick={() => setShowAdvance(!showAdvance)} style={{ cursor: 'pointer' }}>
           <Icon type={showAdvance ? 'arrowup' : 'arrowdown'} />
-          高级配置
-        </Trans></Button>
+          {t('高级配置')}
+        </Button>
         {showAdvance && (
           <FormItem label={t('授权')}>
             <ResourcePrincipalAuth

@@ -4,7 +4,7 @@ import { Table, Justify, Segment, SearchBox } from 'tea-component'
 import { Link } from 'react-router-dom'
 import { autotip } from 'tea-component/lib/table/addons'
 import { StrategyResourceEntry } from '../model'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 const ResourceOptions = [
   { text: t('命名空间'), value: 'namespaces' },
@@ -19,7 +19,7 @@ interface Props {
     configGroups: StrategyResourceEntry[]
   }
 }
-export default purify(function(props: Props) {
+export default purify(function (props: Props) {
   const { resources } = props
   const [filterResourceType, setFilterResourceType] = React.useState('namespaces')
   const [keyword, setKeyword] = React.useState('')
@@ -31,16 +31,16 @@ export default purify(function(props: Props) {
             <Segment
               value={filterResourceType}
               options={ResourceOptions}
-              onChange={v => setFilterResourceType(v)}
+              onChange={(v) => setFilterResourceType(v)}
             ></Segment>
           }
-          right={<SearchBox value={keyword} onChange={v => setKeyword(v)} />}
+          right={<SearchBox value={keyword} onChange={(v) => setKeyword(v)} />}
         ></Justify>
       </Table.ActionPanel>
       <Table
         bordered
         recordKey={'id'}
-        records={resources[filterResourceType]?.filter(item =>
+        records={resources[filterResourceType]?.filter((item) =>
           item.name === '*' ? true : item?.name?.indexOf(keyword) > -1,
         )}
         columns={[

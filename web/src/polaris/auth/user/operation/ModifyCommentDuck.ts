@@ -40,9 +40,9 @@ export default class ModifyCommentDuck extends DialogPure {
     yield put(ducks.form.creators.setValues(data, true))
   }
   static show(data: any) {
-    return new Promise(resolve => {
-      showDialog(ModifyComment, ModifyCommentDuck, function*(duck) {
-        yield duck.show(data, function*() {
+    return new Promise((resolve) => {
+      showDialog(ModifyComment, ModifyCommentDuck, function* (duck) {
+        yield duck.show(data, function* () {
           resolve(yield duck.ducks.form.submit())
         })
       })

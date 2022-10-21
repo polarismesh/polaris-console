@@ -1,16 +1,16 @@
-import { t } from 'i18next';
+import { t } from 'i18next'
 export enum MetricName {
-  UpstreamRqTotal = "upstream_rq_total", //总请求数
-  UpstreamRqSuccess = "upstream_rq_success", //总成功数
-  UpstreamRqTimeout = "upstream_rq_timeout", //总时延
-  UpstreamRqMaxTimeout = "upstream_rq_max_timeout", //最大时延
+  UpstreamRqTotal = 'upstream_rq_total', //总请求数
+  UpstreamRqSuccess = 'upstream_rq_success', //总成功数
+  UpstreamRqTimeout = 'upstream_rq_timeout', //总时延
+  UpstreamRqMaxTimeout = 'upstream_rq_max_timeout', //最大时延
 
-  RatelimitRqTotal = "ratelimit_rq_total", //总请求数（求和）
-  RatelimitRqPass = "ratelimit_rq_pass", //总成功数
-  RatelimitRqLimit = "ratelimit_rq_limit", //总限流数
+  RatelimitRqTotal = 'ratelimit_rq_total', //总请求数（求和）
+  RatelimitRqPass = 'ratelimit_rq_pass', //总成功数
+  RatelimitRqLimit = 'ratelimit_rq_limit', //总限流数
 
-  CircuitbreakerOpen = "circuitbreaker_open", //熔断数
-  CircuitbreakerHalfopen = "circuitbreaker_halfopen", //半开数
+  CircuitbreakerOpen = 'circuitbreaker_open', //熔断数
+  CircuitbreakerHalfopen = 'circuitbreaker_halfopen', //半开数
 }
 
 export const MetricNameMap = {
@@ -24,11 +24,11 @@ export const MetricNameMap = {
   },
   [MetricName.UpstreamRqMaxTimeout]: {
     text: t('最大时延'),
-    unit: "ms",
+    unit: 'ms',
   },
   [MetricName.UpstreamRqTimeout]: {
     text: t('平均时延'),
-    unit: "ms",
+    unit: 'ms',
   },
   [MetricName.RatelimitRqTotal]: {
     text: t('总请求数'),
@@ -50,35 +50,35 @@ export const MetricNameMap = {
     text: t('半开数'),
     unit: t('个'),
   },
-};
+}
 export enum MonitorLabelKey {
-  Namespace = "callee_namespace", //被调命名空间
+  Namespace = 'callee_namespace', //被调命名空间
 
-  Service = "callee_service", //被调服务名
+  Service = 'callee_service', //被调服务名
 
-  Method = "callee_method", //被调接口
+  Method = 'callee_method', //被调接口
 
-  Subset = "callee_subset", //被调实例分组
+  Subset = 'callee_subset', //被调实例分组
 
-  Instance = "callee_instance", //被调实例（IP:PORT格式）
+  Instance = 'callee_instance', //被调实例（IP:PORT格式）
 
-  RetCode = "callee_result_code", //返回码
+  RetCode = 'callee_result_code', //返回码
 
-  CalleeLabels = "callee_labels", //被调请求标签
+  CalleeLabels = 'callee_labels', //被调请求标签
 
-  CallerLabels = "caller_labels", //主调请求标签
+  CallerLabels = 'caller_labels', //主调请求标签
 
-  CallerNamespace = "caller_namespace", //主调命名空间
+  CallerNamespace = 'caller_namespace', //主调命名空间
 
-  CallerService = "caller_service", //主调服务名
+  CallerService = 'caller_service', //主调服务名
 
-  CallerIp = "caller_ip", //主调IP
+  CallerIp = 'caller_ip', //主调IP
 }
 
 export const MetricNameOptions = Object.keys(MetricNameMap).map((key) => ({
   text: MetricNameMap[key].text,
   value: key,
-}));
+}))
 
 export const LabelKeyMap = {
   [MonitorLabelKey.Namespace]: {
@@ -114,12 +114,12 @@ export const LabelKeyMap = {
   [MonitorLabelKey.CallerLabels]: {
     text: t('主调请求标签'),
   },
-};
+}
 
 export const LabelKeyOptions = Object.keys(LabelKeyMap).map((key) => ({
   text: LabelKeyMap[key].text,
   value: key,
-}));
+}))
 
-export const OptionSumKey = "__SUM__";
-export const OptionAllKey = "__ALL__";
+export const OptionSumKey = '__SUM__'
+export const OptionAllKey = '__ALL__'

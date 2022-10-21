@@ -10,15 +10,15 @@ import { replaceTags } from '../configuration/utils'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import { useFieldManager } from '../common/components/UseFieldManager'
 import BasicLayout from '../common/components/BaseLayout'
-import { t } from 'i18next';
+import { t } from 'i18next'
 const getHandlers = memorize(({ creators }: ServiceAliasDuck, dispatch) => ({
   reload: () => dispatch(creators.reload()),
   create: () => dispatch(creators.create()),
-  edit: payload => dispatch(creators.edit(payload)),
-  remove: payload => dispatch(creators.remove(payload)),
-  setSelection: payload => dispatch(creators.setSelection(payload)),
-  setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
-  changeTags: payload => dispatch(creators.changeTags(payload)),
+  edit: (payload) => dispatch(creators.edit(payload)),
+  remove: (payload) => dispatch(creators.remove(payload)),
+  setSelection: (payload) => dispatch(creators.setSelection(payload)),
+  setExpandedKeys: (payload) => dispatch(creators.setExpandedKeys(payload)),
+  changeTags: (payload) => dispatch(creators.changeTags(payload)),
 }))
 const alias_namespaceTagKey = 'alias_namespace'
 function getTagAttributes(props: DuckCmpProps<ServiceAliasDuck>) {
@@ -45,10 +45,12 @@ export default function ServiceAliasPage(props: DuckCmpProps<ServiceAliasDuck>) 
   const { composedId } = selector(store)
   const columns = React.useMemo(() => getColumns(props), [composedId])
   const { selection, namespaceList, tags, customFilters } = selector(store)
-  const { filterColumns, reload: reloadColumns, fullColumns, key } = useFieldManager(
-    columns,
-    'tse_service_alias_custom_columns',
-  )
+  const {
+    filterColumns,
+    reload: reloadColumns,
+    fullColumns,
+    key,
+  } = useFieldManager(columns, 'tse_service_alias_custom_columns')
   return (
     <BasicLayout title={t('服务别名')} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
@@ -78,7 +80,7 @@ export default function ServiceAliasPage(props: DuckCmpProps<ServiceAliasDuck>) 
                   width: '400px',
                 }}
                 value={tags}
-                onChange={value => handlers.changeTags(value)}
+                onChange={(value) => handlers.changeTags(value)}
                 tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
@@ -104,7 +106,7 @@ export default function ServiceAliasPage(props: DuckCmpProps<ServiceAliasDuck>) 
               type: 'single',
               column: 'alias_namespace',
               value: customFilters.alias_namespace,
-              onChange: value => {
+              onChange: (value) => {
                 const replacedTags = replaceTags(alias_namespaceTagKey, value, tags, namespaceList, {
                   type: 'single',
                   key: alias_namespaceTagKey,

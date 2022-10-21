@@ -14,7 +14,7 @@ import { KeyValuePair } from '../configuration/fileGroup/types'
 import { DefaultServiceTagAttribute, ServiceNameTagKey, MetadataTagKey } from './Page'
 import { PolarisTokenKey } from '../common/util/common'
 import router from '../common/util/router'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export const EmptyCustomFilter = {
   namespace: '',
@@ -121,7 +121,7 @@ export default class ServicePageDuck extends GridPageDuck {
           payload: {
             ...payload,
             enableNearby: payload.metadata && !!payload.metadata[enableNearbyString],
-            metadata: convertMetaData(payload.metadata).filter(item => item.key !== enableNearbyString),
+            metadata: convertMetaData(payload.metadata).filter((item) => item.key !== enableNearbyString),
           },
         }
       },
@@ -156,7 +156,7 @@ export default class ServicePageDuck extends GridPageDuck {
   }
   *loadNamespaceList() {
     const namespaceList = yield describeNamespaces()
-    const options = namespaceList.map(item => ({
+    const options = namespaceList.map((item) => ({
       ...item,
       text: item.name,
       value: item.name,
@@ -179,17 +179,17 @@ export default class ServicePageDuck extends GridPageDuck {
     } else {
       yield* this.loadNamespaceList()
     }
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
       const { list } = action.payload
       const { selection } = selector(yield select())
-      const validSelection = selection.filter(id => !!list.find(item => item.id === id))
+      const validSelection = selection.filter((id) => !!list.find((item) => item.id === id))
       yield put(creators.setSelection(validSelection))
     })
-    yield takeLatest(types.CREATE, function*() {
+    yield takeLatest(types.CREATE, function* () {
       const { authOpen } = selector(yield select())
       const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute({}, { isModify: false, authOpen }))
             } finally {
@@ -202,18 +202,18 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.CHANGE_TAGS, function*(action) {
+    yield takeLatest(types.CHANGE_TAGS, function* (action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
-      const validTags = tags.map(item => {
+      const validTags = tags.map((item) => {
         if (item.attr) return item
         else return { ...item, attr: DefaultServiceTagAttribute }
       })
       yield put({ type: types.SET_TAGS, payload: validTags })
-      validTags.forEach(tag => {
+      validTags.forEach((tag) => {
         const key = tag?.attr?.key || ServiceNameTagKey
         if (key === MetadataTagKey) {
-          customFilters[key] = tag.values.map(item => ({ key: item.key, value: item.value }))
+          customFilters[key] = tag.values.map((item) => ({ key: item.key, value: item.value }))
         } else {
           if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
           else customFilters[key] = tag.values[0].key || tag.values[0].value
@@ -221,11 +221,11 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
-    yield takeLatest(types.EDIT, function*(action) {
+    yield takeLatest(types.EDIT, function* (action) {
       const data = action.payload
       const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute(data, { isModify: true, authOpen }))
             } finally {
@@ -238,17 +238,17 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.REMOVE, function*(action) {
+    yield takeLatest(types.REMOVE, function* (action) {
       const data = action.payload
       const params = data
-        .map(item => {
+        .map((item) => {
           if (!item) {
             return
           }
           const { namespace, name } = item
           return { namespace, name }
         })
-        .filter(item => item)
+        .filter((item) => item)
       const confirm = yield Modal.confirm({
         message: t(`确认删除服务`),
         description: t('删除后，无法恢复'),
@@ -278,7 +278,7 @@ export default class ServicePageDuck extends GridPageDuck {
     return {
       totalCount: result.totalCount,
       list:
-        result.list?.map(item => ({
+        result.list?.map((item) => ({
           ...item,
           id: item.id || `${item.namespace}#${item.name}`,
         })) || [],

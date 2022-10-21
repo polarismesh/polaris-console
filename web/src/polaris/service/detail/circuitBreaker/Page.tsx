@@ -21,7 +21,7 @@ import {
 import { isReadOnly } from '../../utils'
 import { EDIT_TYPE_OPTION, EditType } from '../route/types'
 import Create from './operations/Create'
-import { t } from 'i18next';
+import { t } from 'i18next'
 insertCSS(
   'service-detail-instance',
   `
@@ -45,11 +45,11 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
       export: () => dispatch(creators.export(csvColumns, 'service-list')),
       search: () => dispatch(creators.search('')),
       drawerSubmit: () => dispatch(creators.drawerSubmit()),
-      create: payload => dispatch(creators.create(payload)),
-      remove: payload => dispatch(creators.remove(payload)),
-      setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
-      setRuleType: payload => dispatch(creators.setRuleType(payload)),
-      setDrawerStatus: payload => dispatch(creators.setDrawerStatus(payload)),
+      create: (payload) => dispatch(creators.create(payload)),
+      remove: (payload) => dispatch(creators.remove(payload)),
+      setExpandedKeys: (payload) => dispatch(creators.setExpandedKeys(payload)),
+      setRuleType: (payload) => dispatch(creators.setRuleType(payload)),
+      setDrawerStatus: (payload) => dispatch(creators.setDrawerStatus(payload)),
     }),
     [],
   )
@@ -137,15 +137,15 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               // 已经展开的产品
               expandedKeys,
               // 发生展开行为时，回调更新展开键值
-              onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
-              render: record => {
+              onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
+              render: (record) => {
                 return (
                   <>
                     <Form style={{ marginBottom: '15px' }}>
                       <FormItem label={t('如果请求标签匹配，按以下策略熔断')}></FormItem>
                     </Form>
-                    <Form key={record.sources.map(source => source.namespace).join(',')}>
-                      {record.destinations.map(destination => {
+                    <Form key={record.sources.map((source) => source.namespace).join(',')}>
+                      {record.destinations.map((destination) => {
                         return (
                           <>
                             <FormItem label={t('熔断条件')}>
@@ -154,23 +154,33 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                                   if (!destination.policy[key]) return
                                   if (key === PolicyName.ErrorRate) {
                                     return (
-                                      <Text parent='p' key={index}>{t('当请求个数大于{{attr0}}个，且{{attr1}}大于{{attr2}}%时熔断', { attr0: destination.policy[key]
-                                        ?.requestVolumeThreshold || 10, attr1: PolicyMap[key]?.text ??
-                                        '-', attr2: destination.policy[key]?.errorRateToOpen ?? '-' })}</Text>
+                                      <Text parent='p' key={index}>
+                                        {t('当请求个数大于{{attr0}}个，且{{attr1}}大于{{attr2}}%时熔断', {
+                                          attr0: destination.policy[key]?.requestVolumeThreshold || 10,
+                                          attr1: PolicyMap[key]?.text ?? '-',
+                                          attr2: destination.policy[key]?.errorRateToOpen ?? '-',
+                                        })}
+                                      </Text>
                                     )
                                   }
                                   if (key === PolicyName.SlowRate) {
                                     return (
-                                      <Text parent='p' key={index}>{t('以超过{{attr0}}的请求作为超时请求，{{attr1}}大于{{attr2}}%时熔断', { attr0: destination.policy[key]?.maxRt ??
-                                        '-', attr1: PolicyMap[key]?.text ?? '-', attr2: destination.policy[
-                                        key
-                                      ]?.slowRateToOpen ?? '-' })}</Text>
+                                      <Text parent='p' key={index}>
+                                        {t('以超过{{attr0}}的请求作为超时请求，{{attr1}}大于{{attr2}}%时熔断', {
+                                          attr0: destination.policy[key]?.maxRt ?? '-',
+                                          attr1: PolicyMap[key]?.text ?? '-',
+                                          attr2: destination.policy[key]?.slowRateToOpen ?? '-',
+                                        })}
+                                      </Text>
                                     )
                                   }
                                   if (key === PolicyName.ConsecutiveError) {
                                     return (
-                                      <Text parent='p' key={index}>{t('当连续请求错误超过{{attr0}}个时熔断', { attr0: destination.policy[key]
-                                        ?.consecutiveErrorToOpen ?? '-' })}</Text>
+                                      <Text parent='p' key={index}>
+                                        {t('当连续请求错误超过{{attr0}}个时熔断', {
+                                          attr0: destination.policy[key]?.consecutiveErrorToOpen ?? '-',
+                                        })}
+                                      </Text>
                                     )
                                   }
                                 })}

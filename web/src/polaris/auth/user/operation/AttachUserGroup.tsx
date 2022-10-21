@@ -5,9 +5,9 @@ import { Form, Text, FormItem } from 'tea-component'
 import { UserGroup } from '../../model'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import SearchableTransfer from '@src/polaris/common/duckComponents/SearchableTransfer'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks } = duck
 
@@ -24,7 +24,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       <Form>
         <FormItem label={t('用户组')}>
           <SearchableTransfer
-            title={t('请选择用户组')}
+            title={t<string>('请选择用户组')}
             duck={ducks.userGroup}
             store={store}
             dispatch={dispatch}

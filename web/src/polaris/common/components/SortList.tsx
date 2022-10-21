@@ -1,10 +1,10 @@
-import * as React from "react";
-import insertCSS from "../helpers/insertCSS";
-import { getClosest } from "../util/common";
-import { t } from 'i18next';
+import * as React from 'react'
+import insertCSS from '../helpers/insertCSS'
+import { getClosest } from '../util/common'
+import { t } from 'i18next'
 
 insertCSS(
-  "sortlist",
+  'sortlist',
   `
     li.sortlist_item {
       cursor: move;
@@ -26,70 +26,67 @@ insertCSS(
     .dragMask .sortlist_item .param-box{
       margin:0;
     }
-  `
-);
+  `,
+)
 export interface SortListProps<T> {
-  list: Array<T>;
-  canSort?: boolean;
-  getSummery?(item: T, index: number): string;
-  renderItem(list: Array<T>, item: T, index: number): string;
-  onChange?(list: ReadonlyArray<T>): void;
-  onSave?(list: ReadonlyArray<T>): void;
+  list: Array<T>
+  canSort?: boolean
+  getSummery?(item: T, index: number): string
+  renderItem(list: Array<T>, item: T, index: number): string
+  onChange?(list: ReadonlyArray<T>): void
+  onSave?(list: ReadonlyArray<T>): void
 }
 
 interface SortListState<T> {
-  sortMode?: boolean;
-  isDragging?: boolean;
-  leftOffset?: number;
-  clickOffset?: number;
-  dragIndex?: number;
-  maskTop?: number;
+  sortMode?: boolean
+  isDragging?: boolean
+  leftOffset?: number
+  clickOffset?: number
+  dragIndex?: number
+  maskTop?: number
 }
 
-export default class SortList<T> extends React.Component<
-  SortListProps<T>,
-  SortListState<T>
-> {
+export default class SortList<T> extends React.Component<SortListProps<T>, SortListState<T>> {
   constructor(props: SortListProps<T>) {
-    super(props);
+    super(props)
 
     this.state = {
       sortMode: false,
       isDragging: false,
-    };
+    }
   }
 
   getSummery(item, index) {
-    const { renderItem } = this.props;
-    return renderItem(this.props.list, item, index);
+    const { renderItem } = this.props
+    return renderItem(this.props.list, item, index)
   }
   render() {
-    const { list, canSort = true } = this.props;
-    const { isDragging, sortMode, dragIndex, leftOffset, maskTop } = this.state;
-    const sort = this.sort.bind(this);
-    const finish = this.finish.bind(this);
+    const { list, canSort = true } = this.props
+    const { isDragging, sortMode, dragIndex, leftOffset, maskTop } = this.state
+    const sort = this.sort.bind(this)
+    const finish = this.finish.bind(this)
     return (
-      <div className="sortlist">
+      <div className='sortlist'>
         {canSort && (
-          <p className="sort-opt">
+          <p className='sort-opt'>
             {!sortMode && (
-              <a href="javascript:void(0)" onClick={sort}>
+              <a href='javascript:void(0)' onClick={sort}>
                 {t('排序')}
               </a>
             )}
             {sortMode && (
-              <a href="javascript:void(0)" onClick={finish}>
+              <a href='javascript:void(0)' onClick={finish}>
                 {t('完成')}
               </a>
             )}
           </p>
         )}
-        <ul className="sortlist_ul">{this.renderList(list, sortMode, true)}</ul>
+        <ul className='sortlist_ul'>{this.renderList(list, sortMode, true)}</ul>
         {isDragging && (
           <ul
-            className="dragMask"
+            className='dragMask'
             style={{
-              position: "fixed",
+              position: 'fixed',
               top: maskTop,
               left: leftOffset,
               opacity: 1,
@@ -99,60 +96,57 @@ export default class SortList<T> extends React.Component<
           </ul>
         )}
       </div>
-    );
+    )
   }
   renderList(list, sortMode, mark) {
-    const { getSummery = this.getSummery.bind(this), renderItem } = this.props;
+    const { getSummery = this.getSummery.bind(this), renderItem } = this.props
     return list.map((item, key) =>
       sortMode ? (
         <li
           key={key}
-          id={"" + key}
-          className="sortlist_item"
+          id={'' + key}
+          className='sortlist_item'
           onMouseDown={this.dragStart.bind(this)}
           style={{
-            visibility:
-              mark && this.state.isDragging && this.state.dragIndex === key
-                ? "hidden"
-                : "visible",
+            visibility: mark && this.state.isDragging && this.state.dragIndex === key ? 'hidden' : 'visible',
 
-            marginTop: "20px",
+            marginTop: '20px',
           }}
         >
           <div>{getSummery(item, key)}</div>
         </li>
       ) : (
-        <li style={{ marginTop: "20px" }} key={key}>
+        <li style={{ marginTop: '20px' }} key={key}>
           <div>{renderItem(this.props.list, item, key)}</div>
         </li>
-      )
-    );
+      ),
+    )
   }
 
   dragStart(event) {
-    event.preventDefault();
+    event.preventDefault()
 
-    const { isDragging } = this.state;
+    const { isDragging } = this.state
     // 获取数据
     if (isDragging) {
-      return;
+      return
     }
 
     // 获取拖拽行位置
-    let $targetRow;
-    if ($(event.target).closest && $(event.target).closest(".sortlist_item")) {
-      $targetRow = $(event.target).closest(".sortlist_item");
+    let $targetRow
+    if ($(event.target).closest && $(event.target).closest('.sortlist_item')) {
+      $targetRow = $(event.target).closest('.sortlist_item')
     } else {
-      $targetRow = getClosest($(event.target), ".sortlist_item");
+      $targetRow = getClosest($(event.target), '.sortlist_item')
     }
-    const dragIndex = +$targetRow.attr("id");
+    const dragIndex = +$targetRow.attr('id')
 
     if (dragIndex === -1) {
-      return;
+      return
     }
     // 计算位置
-    const clickOffset = event.clientY - $targetRow.offset().top;
-    const clientY = event.clientY;
+    const clickOffset = event.clientY - $targetRow.offset().top
+    const clientY = event.clientY
     this.setState(
       {
         isDragging: true,
@@ -161,40 +155,38 @@ export default class SortList<T> extends React.Component<
         clickOffset,
       },
       () => {
-        this.updateMask(clientY);
+        this.updateMask(clientY)
         // 监听鼠标移动&释放
         $(document)
-          .on("mouseup.SortList", (event) => {
+          .on('mouseup.SortList', (event) => {
             if (this.state.isDragging) {
-              this.dragEnd(event);
+              this.dragEnd(event)
             }
-            this.setState((preState) =>
-              Object.assign(preState, { isDragging: false })
-            );
+            this.setState((preState) => Object.assign(preState, { isDragging: false }))
           })
-          .on("mousemove.SortList", (event) => {
+          .on('mousemove.SortList', (event) => {
             if (this.state.isDragging) {
-              this.dragMove(event);
+              this.dragMove(event)
             }
-          });
-      }
-    );
+          })
+      },
+    )
   }
   dragEnd(event) {
-    event.preventDefault();
-    this.setState((preState) => Object.assign(preState, { isDragging: false }));
+    event.preventDefault()
+    this.setState((preState) => Object.assign(preState, { isDragging: false }))
   }
   dragMove(event) {
-    event.preventDefault();
-    this.updateMask(event.clientY);
-    this.exchangeData(event);
+    event.preventDefault()
+    this.updateMask(event.clientY)
+    this.exchangeData(event)
   }
   /**
    * 更新拖动缩略图
    * @param event 数据移动事件
    */
   updateMask(clientY) {
-    this.setState({ maskTop: clientY - this.state.clickOffset });
+    this.setState({ maskTop: clientY - this.state.clickOffset })
   }
 
   /**
@@ -202,50 +194,50 @@ export default class SortList<T> extends React.Component<
    * @param event 鼠标移动事件
    */
   exchangeData(event) {
-    const { dragIndex } = this.state;
+    const { dragIndex } = this.state
     if (dragIndex === -1) {
-      return;
+      return
     }
-    const targetRow = $(`.sortlist_ul #${dragIndex}.sortlist_item`);
+    const targetRow = $(`.sortlist_ul #${dragIndex}.sortlist_item`)
     const targetRowOffset = {
       top: targetRow.offset().top,
       bottom: targetRow.offset().top + targetRow.outerHeight(),
-    };
-    const { list } = this.props;
+    }
+    const { list } = this.props
     if (event.clientY < targetRowOffset.top) {
-      if (dragIndex - 1 < 0) return;
-      this._moveData(-1);
+      if (dragIndex - 1 < 0) return
+      this._moveData(-1)
     }
     if (event.clientY > targetRowOffset.bottom) {
-      if (dragIndex + 1 >= list.length) return;
-      this._moveData(+1);
+      if (dragIndex + 1 >= list.length) return
+      this._moveData(+1)
     }
-    this._onChange();
+    this._onChange()
   }
   sort() {
-    this.setState({ sortMode: true });
+    this.setState({ sortMode: true })
   }
   finish() {
-    const { onSave } = this.props;
-    onSave && onSave(this.props.list);
+    const { onSave } = this.props
+    onSave && onSave(this.props.list)
     this.setState({
       sortMode: false,
-    });
+    })
   }
   _moveData(offset: number) {
-    const { dragIndex } = this.state;
-    const { list } = this.props;
+    const { dragIndex } = this.state
+    const { list } = this.props
 
-    const tmp = list[dragIndex];
-    list[dragIndex] = list[dragIndex + offset];
-    list[dragIndex + offset] = tmp;
+    const tmp = list[dragIndex]
+    list[dragIndex] = list[dragIndex + offset]
+    list[dragIndex + offset] = tmp
 
     this.setState({
       dragIndex: dragIndex + offset,
-    });
+    })
   }
   _onChange() {
-    const { onChange, list } = this.props;
-    onChange && onChange(Object.freeze(list));
+    const { onChange, list } = this.props
+    onChange && onChange(Object.freeze(list))
   }
 }

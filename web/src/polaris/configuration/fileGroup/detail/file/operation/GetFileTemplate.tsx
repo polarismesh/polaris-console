@@ -7,7 +7,7 @@ import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import { ConfigFileTemplate } from '../../../model'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export default function GetFileTemplate(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -17,7 +17,14 @@ export default function GetFileTemplate(props: DuckCmpProps<Duck>) {
     return <noscript />
   }
   return (
-    <Dialog duck={duck} store={store} dispatch={dispatch} size={'l'} title={t('应用模板')} defaultSubmitText={t('应用')}>
+    <Dialog
+      duck={duck}
+      store={store}
+      dispatch={dispatch}
+      size={'l'}
+      title={t('应用模板')}
+      defaultSubmitText={t('应用')}
+    >
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
   )
@@ -33,7 +40,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   const formApi = form.getAPI(store, dispatch)
   const { currentTemplateId } = formApi.getFields(['currentTemplateId'])
   const { templateList, options } = selector(store)
-  const currentTemplate = templateList.find(item => item.id === currentTemplateId.getValue()) as ConfigFileTemplate
+  const currentTemplate = templateList.find((item) => item.id === currentTemplateId.getValue()) as ConfigFileTemplate
   return (
     <>
       <Form>
@@ -48,7 +55,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             searchable
             value={currentTemplateId.getValue()}
             options={templateList}
-            onChange={value => {
+            onChange={(value) => {
               currentTemplateId.setValue(value)
             }}
             type={'simulate'}

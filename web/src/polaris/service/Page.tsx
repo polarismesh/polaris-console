@@ -13,7 +13,7 @@ import { enableNearbyString } from './operation/CreateDuck'
 import { isReadOnly, showAllLabels } from './utils'
 import MetadataSelectPanel from '../common/components/MetadataSelectPanel'
 import { replaceTags } from '../configuration/utils'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 insertCSS(
   'service',
@@ -74,7 +74,7 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
         return (
           <MetadataSelectPanel
             metadata={[customFilters.serviceTag] || []}
-            onOk={newMetadata => {
+            onOk={(newMetadata) => {
               onSelect(newMetadata)
             }}
           ></MetadataSelectPanel>
@@ -91,13 +91,13 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
       reload: () => dispatch(creators.reload()),
       export: () => dispatch(creators.export(csvColumns, 'service-list')),
       search: () => dispatch(creators.search('')),
-      setCustomFilters: filters => dispatch(creators.setCustomFilters(filters)),
+      setCustomFilters: (filters) => dispatch(creators.setCustomFilters(filters)),
       clear: () => dispatch(creators.setCustomFilters(EmptyCustomFilter)),
       create: () => dispatch(creators.create()),
-      select: payload => dispatch(creators.setSelection(payload)),
-      remove: payload => dispatch(creators.remove(payload)),
-      setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
-      changeTags: payload => dispatch(creators.changeTags(payload)),
+      select: (payload) => dispatch(creators.setSelection(payload)),
+      remove: (payload) => dispatch(creators.remove(payload)),
+      setExpandedKeys: (payload) => dispatch(creators.setExpandedKeys(payload)),
+      changeTags: (payload) => dispatch(creators.changeTags(payload)),
     }),
     [],
   )
@@ -120,7 +120,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                 {t('新建')}
               </Button>
               <Button
-                onClick={() => handlers.remove(selection.map(id => list.find(service => id === service.id)))}
+                onClick={() => handlers.remove(selection.map((id) => list.find((service) => id === service.id)))}
                 disabled={selection.length === 0}
               >
                 {t('删除')}
@@ -137,7 +137,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                   width: '400px',
                 }}
                 value={tags}
-                onChange={value => handlers.changeTags(value)}
+                onChange={(value) => handlers.changeTags(value)}
                 tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
@@ -163,8 +163,8 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               // 已经展开的产品
               expandedKeys,
               // 发生展开行为时，回调更新展开键值
-              onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
-              render: record => {
+              onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
+              render: (record) => {
                 const labelList = Object.keys(record.metadata || {})
                 return (
                   <Form>
@@ -172,7 +172,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                       <FormText>
                         {labelList
                           .slice(0, 5)
-                          .map(item => `${item}:${record.metadata[item]}`)
+                          .map((item) => `${item}:${record.metadata[item]}`)
                           .join(' ; ' || '-')}
                         {labelList.length > 5 && '...'}
                         {labelList.length > 5 && (
@@ -196,7 +196,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               type: 'single',
               column: 'namespace',
               value: customFilters.namespace,
-              onChange: value => {
+              onChange: (value) => {
                 const replacedTags = replaceTags(NamespaceTagKey, value, tags, namespaceList, {
                   type: 'single',
                   key: NamespaceTagKey,

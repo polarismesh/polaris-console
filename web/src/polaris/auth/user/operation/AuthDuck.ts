@@ -9,7 +9,7 @@ import { resolvePromise } from 'saga-duck/build/helper'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import SearchableMultiSelect from '@src/polaris/common/ducks/SearchableMultiSelect'
 import Form from '@src/polaris/common/ducks/Form'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface DialogOptions {
   id: string
@@ -45,7 +45,7 @@ export default class AuthDuck extends FormDialog {
     const { selection } = policy.selector(yield select())
     const { addArray, removeArray } = diffAddRemoveArray(
       originStrategies,
-      selection.map(item => item.id),
+      selection.map((item) => item.id),
     )
     if (addArray.length <= 0 && removeArray.length <= 0) {
       notification.warning({ description: t('未做改动') })
@@ -54,8 +54,8 @@ export default class AuthDuck extends FormDialog {
     const principleName = authSubjectType === AuthSubjectType.USER ? 'users' : 'groups'
     const res = yield* resolvePromise(
       modifyGovernanceStrategy([
-        ...addArray.map(strategyId => ({ add_principals: { [principleName]: [{ id: subjectId }] }, id: strategyId })),
-        ...removeArray.map(strategyId => ({
+        ...addArray.map((strategyId) => ({ add_principals: { [principleName]: [{ id: subjectId }] }, id: strategyId })),
+        ...removeArray.map((strategyId) => ({
           remove_principals: { [principleName]: [{ id: subjectId }] },
           id: strategyId,
         })),
@@ -78,10 +78,10 @@ export default class AuthDuck extends FormDialog {
       principal_type: PrincipalTypeMap[options.authSubjectType],
       default: DescribeStrategyOption.NoDefault,
     })
-    const originStrategies = list.filter(item => !item.default)
+    const originStrategies = list.filter((item) => !item.default)
     yield put({
       type: types.SET_OPTIONS,
-      payload: { ...options, originStrategies: originStrategies.map(item => item.id) },
+      payload: { ...options, originStrategies: originStrategies.map((item) => item.id) },
     })
     yield put(policy.creators.load({ regionId, instanceId }))
     yield put(policy.creators.select(originStrategies))

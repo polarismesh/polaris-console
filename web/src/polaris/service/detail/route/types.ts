@@ -1,5 +1,5 @@
 //主被调规则的目的地和源类型相反
-import { t } from 'i18next';
+import { t } from 'i18next'
 export interface InboundItem {
   destinations: Destination[]
   sources: Source[]
@@ -101,7 +101,7 @@ export const EDIT_TYPE_MAP = {
   // },
 }
 
-export const EDIT_TYPE_OPTION = Object.keys(EDIT_TYPE_MAP).map(key => ({
+export const EDIT_TYPE_OPTION = Object.keys(EDIT_TYPE_MAP).map((key) => ({
   text: EDIT_TYPE_MAP[key].text,
   value: key,
 }))
