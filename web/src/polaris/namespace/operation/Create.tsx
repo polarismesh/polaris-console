@@ -6,7 +6,7 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import ResourcePrincipalAuth from '@src/polaris/auth/user/operation/ResourcePrincipalAuth'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -37,7 +37,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   } = duck
 
   const formApi = form.getAPI(store, dispatch)
-  const { name, comment, owners } = formApi.getFields(['name', 'comment', 'owners'])
+  const { name, comment } = formApi.getFields(['name', 'comment', 'owners'])
   const options = selectors.options(store)
   const [showAdvance, setShowAdvance] = React.useState(false)
 

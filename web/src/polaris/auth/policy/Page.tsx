@@ -28,7 +28,7 @@ import router from '@src/polaris/common/util/router'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
 import { AuthStrategy } from '../model'
 import UseableResource from '../common/UseableResource'
-import { t, Trans, Slot } from 'i18next';
+import { t } from 'i18next'
 
 export enum AuthSubjectType {
   USER = 'user',
@@ -46,22 +46,22 @@ export const AUTH_SUBJECT_TYPE_MAP = {
 export const AUTH_RESOURCE_TYPE_MAP = {
   [AuthResourceType.NAMESPACE]: {
     text: t('命名空间'),
-    columnsRender: x => x.name,
+    columnsRender: (x) => x.name,
   },
   [AuthResourceType.SERVICE]: {
     text: t('服务'),
-    columnsRender: x => `${x.name}（${x.namespace}）`,
+    columnsRender: (x) => `${x.name}（${x.namespace}）`,
   },
   [AuthResourceType.CONFIGURATION]: {
     text: t('配置分组'),
-    columnsRender: x => x.name,
+    columnsRender: (x) => x.name,
   },
 }
-export const AuthSubjectTabs = Object.keys(AUTH_SUBJECT_TYPE_MAP).map(id => ({
+export const AuthSubjectTabs = Object.keys(AUTH_SUBJECT_TYPE_MAP).map((id) => ({
   id,
   label: AUTH_SUBJECT_TYPE_MAP[id].text,
 }))
-export const AuthResourceTabs = Object.keys(AUTH_RESOURCE_TYPE_MAP).map(id => ({
+export const AuthResourceTabs = Object.keys(AUTH_RESOURCE_TYPE_MAP).map((id) => ({
   id,
   label: AUTH_RESOURCE_TYPE_MAP[id].text,
 }))
@@ -86,11 +86,11 @@ const formatPolicyName = (name: string) => {
 
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   create: () => dispatch(creators.create()),
-  fetchCurrentAuthItem: v => dispatch(creators.fetchCurrentAuthItem(v)),
-  modify: v => dispatch(creators.modify(v)),
-  search: v => dispatch(creators.search(v)),
-  setSearchword: v => dispatch(creators.setSearchword(v)),
-  delete: v => dispatch(creators.delete(v)),
+  fetchCurrentAuthItem: (v) => dispatch(creators.fetchCurrentAuthItem(v)),
+  modify: (v) => dispatch(creators.modify(v)),
+  search: (v) => dispatch(creators.search(v)),
+  setSearchword: (v) => dispatch(creators.setSearchword(v)),
+  delete: (v) => dispatch(creators.delete(v)),
   reload: () => dispatch(creators.reload()),
 }))
 
@@ -105,12 +105,12 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
 
   const handlers = getHandlers(props)
   const isInDetailpage = !!composedId?.principalId
-  const countedAuthSubjectTabs = AuthSubjectTabs.map(item => ({
+  const countedAuthSubjectTabs = AuthSubjectTabs.map((item) => ({
     ...item,
     label: `${item.label}(${currentAuthItem?.principals?.[`${item.id}s`]?.length ?? 0})`,
   }))
-  const defaultList = authList.filter(item => item.default_strategy)
-  const customList = authList.filter(item => !item.default_strategy)
+  const defaultList = authList.filter((item) => item.default_strategy)
+  const customList = authList.filter((item) => !item.default_strategy)
   const isCurrAuthItemOwnerDefaultPrinciple =
     currentAuthItem?.default_strategy &&
     currentAuthItem?.principals?.users?.length === 1 &&
@@ -203,10 +203,10 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                 }}
                 className={'auth-item'}
                 current={false}
-              ><Trans>
+              >
                 <Icon type={collapseDefault ? 'arrowdown' : 'arrowup'} />
-                默认策略（<Slot content={defaultList.length} />）
-              </Trans></ListItem>
+                {t('默认策略')}（{defaultList.length}）
+              </ListItem>
               {defaultList.filter(() => collapseDefault).map(renderListItem)}
             </List>
             <List type={'option'} style={{ maxHeight: '50%' }}>
@@ -217,10 +217,10 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                 }}
                 className={'auth-item'}
                 current={false}
-              ><Trans>
+              >
                 <Icon type={collapseCustom ? 'arrowdown' : 'arrowup'} />
-                自定义策略（<Slot content={customList.length} />）
-              </Trans></ListItem>
+                {t('自定义策略')}({customList.length})
+              </ListItem>
               {customList.filter(() => collapseCustom).map(renderListItem)}
             </List>
           </section>
@@ -279,10 +279,10 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                         <Tabs
                           tabs={countedAuthSubjectTabs}
                           activeId={showAuthSubjectType}
-                          onActive={tab => setShowAuthSubjectType(tab.id as AuthSubjectType)}
+                          onActive={(tab) => setShowAuthSubjectType(tab.id as AuthSubjectType)}
                         >
                           {currentAuthItem.principals[`${showAuthSubjectType}s`]?.length > 0 ? ( //这里加s是为了适配接口
-                            currentAuthItem.principals[`${showAuthSubjectType}s`].map(userItem => {
+                            currentAuthItem.principals[`${showAuthSubjectType}s`].map((userItem) => {
                               return isOwner() ? (
                                 <Button
                                   type='link'
@@ -315,13 +315,15 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                         <Tabs
                           tabs={AuthResourceTabs}
                           activeId={showAuthResourceType}
-                          onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
+                          onActive={(tab) => setShowAuthResourceType(tab.id as AuthResourceType)}
                           style={{ marginBottom: '20px' }}
                         >
                           {currentAuthItem.resources[showAuthResourceType].length === 1 &&
                           currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
                             <section style={{ margin: '20px 10px' }}>
-                              {t('全部{{attr0}}（含后续新增）', { attr0: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text })}
+                              {t('全部{{attr0}}（含后续新增）', {
+                                attr0: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text,
+                              })}
                             </section>
                           ) : (
                             <Table

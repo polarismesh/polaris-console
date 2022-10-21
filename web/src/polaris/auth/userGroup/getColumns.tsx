@@ -6,7 +6,7 @@ import { Text, Button, Dropdown, List, ListItem } from 'tea-component'
 import { UserGroup } from '../model'
 import { Column } from '@src/polaris/common/ducks/GridPage'
 import { isOwner } from '@src/polaris/common/util/common'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export default ({ duck: { creators, selector }, store, dispatch }: DuckCmpProps<Duck>): Column<UserGroup>[] => {
   const { composedId } = selector(store)
@@ -15,7 +15,7 @@ export default ({ duck: { creators, selector }, store, dispatch }: DuckCmpProps<
     {
       key: 'name',
       header: t('用户组名称'),
-      render: x => (
+      render: (x) => (
         <a style={{ display: 'block' }} data-event={'nav'} href={`/#/usergroup-detail?id=${x.id}`}>
           <Text>{x.name}</Text>
         </a>
@@ -25,17 +25,17 @@ export default ({ duck: { creators, selector }, store, dispatch }: DuckCmpProps<
     {
       key: 'userCount',
       header: t('用户数量'),
-      render: x => <Text>{x.user_count}</Text>,
+      render: (x) => <Text>{x.user_count}</Text>,
     },
     {
       key: 'comment',
       header: t('备注'),
-      render: x => <Text>{x.comment}</Text>,
+      render: (x) => <Text>{x.comment}</Text>,
     },
     {
       key: 'createTime',
       header: t('创建时间'),
-      render: x => <Text>{x.ctime}</Text>,
+      render: (x) => <Text>{x.ctime}</Text>,
     },
     ...(isInDetailpage
       ? []
@@ -43,7 +43,7 @@ export default ({ duck: { creators, selector }, store, dispatch }: DuckCmpProps<
           {
             key: 'operation',
             header: t('操作'),
-            render: x => (
+            render: (x) => (
               <>
                 {isOwner() && (
                   <Button type='link' onClick={() => dispatch(creators.edit(x))}>

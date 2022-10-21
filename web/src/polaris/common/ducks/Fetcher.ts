@@ -1,18 +1,9 @@
 // 仅用于加载单项数据的Duck
-import { DuckMap as Base, createToPayload, reduceFromPayload } from "saga-duck";
-import {
-  select,
-  put,
-  call,
-  fork,
-  join,
-  take,
-  race,
-  spawn,
-} from "redux-saga/effects";
-import { delay, Task } from "redux-saga";
-import { runAndTakeLatest, takeLatest } from "redux-saga-catch";
-import { t } from 'i18next';
+import { DuckMap as Base, reduceFromPayload } from 'saga-duck'
+import { put, call, join, race, spawn } from 'redux-saga/effects'
+import { delay, Task } from 'redux-saga'
+import { runAndTakeLatest, takeLatest } from 'redux-saga-catch'
+import { t } from 'i18next'
 
 enum Types {
   FETCH,
@@ -26,29 +17,29 @@ enum Types {
 
 export default abstract class Fetcher extends Base {
   /** 查询参数类型定义，仅供声明及获取类型 */
-  abstract Param;
+  abstract Param
   /** 查询结果类型定义，仅供声明及获取类型 */
-  abstract Data;
+  abstract Data
   get quickTypes() {
     return {
       ...super.quickTypes,
       ...Types,
-    };
+    }
   }
   get reducers() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.reducers,
-      filter: reduceFromPayload<this["Param"]>(types.FETCH_START, null),
-      data: (state = null, action): this["Data"] => {
+      filter: reduceFromPayload<this['Param']>(types.FETCH_START, null),
+      data: (state = null, action): this['Data'] => {
         switch (action.type) {
           case types.RESET:
           case types.FETCH_FAIL:
-            return null;
+            return null
           case types.FETCH_DONE:
-            return action.payload;
+            return action.payload
           default:
-            return state;
+            return state
         }
       },
       error: (state = null, action): any => {
@@ -56,33 +47,33 @@ export default abstract class Fetcher extends Base {
           case types.RESET:
           case types.FETCH:
           case types.FETCH_DONE:
-            return null;
+            return null
           case types.FETCH_FAIL:
-            return action.payload;
+            return action.payload
           default:
-            return state;
+            return state
         }
       },
       loading: (state = false, action): boolean => {
         switch (action.type) {
           case types.FETCH_START:
             // 开启deferLoading
-            return this.deferLoading <= 0;
+            return this.deferLoading <= 0
           case types.SET_LOADING:
-            return action.payload;
+            return action.payload
           case types.RESET:
           case types.FETCH_DONE:
           case types.FETCH_FAIL:
-            return false;
+            return false
           default:
-            return state;
+            return state
         }
       },
-    };
+    }
   }
   get creators() {
-    type Param = this["Param"];
-    const { types } = this;
+    type Param = this['Param']
+    const { types } = this
     return {
       ...super.creators,
       /** 按指定过滤条件加载数据 */
@@ -91,10 +82,10 @@ export default abstract class Fetcher extends Base {
       reset: () => ({ type: types.RESET }),
       /** 重试  注意，reload只有在fetch action后才能使用，直接使用duck.fetch()是不行的 */
       reload: () => ({ type: types.RELOAD }),
-    };
+    }
   }
   get rawSelectors() {
-    type State = this["State"];
+    type State = this['State']
     return {
       ...super.rawSelectors,
       filter: (state: State) => state.filter,
@@ -102,11 +93,11 @@ export default abstract class Fetcher extends Base {
       error: (state: State) => state.error,
       loading: (state: State) => state.loading,
       fetched: (state: State) => state.error !== null || state.data !== null,
-    };
+    }
   }
   /** 请求缓冲，在此缓冲时间内不会调用 getData/getDataAsync 方法，避免重复请求 */
   get buffer() {
-    return 10;
+    return 10
   }
   /**
    * 是否开启延迟loading展示
@@ -115,16 +106,16 @@ export default abstract class Fetcher extends Base {
    *
    * 默认为0，即不开启 */
   get deferLoading() {
-    return 0;
+    return 0
   }
   *saga() {
-    yield* super.saga();
-    const duck = this;
-    const { types, fetch, buffer } = duck;
+    yield* super.saga()
+    const duck = this
+    const { types, fetch, buffer } = duck
 
     yield takeLatest(types.FETCH, function* (action) {
-      yield call([duck, duck.fetchAndWatchReload], action.payload);
-    });
+      yield call([duck, duck.fetchAndWatchReload], action.payload)
+    })
   }
 
   /**
@@ -135,65 +126,65 @@ export default abstract class Fetcher extends Base {
    * **注意：请勿与`creators.fetch()`一起使用，否则会导致存在多套监听逻辑**
    * @param param
    */
-  public *fetchAndWatchReload(param: this["Param"]) {
-    const duck = this;
-    const { types } = duck;
+  public *fetchAndWatchReload(param: this['Param']) {
+    const duck = this
+    const { types } = duck
     // 刷新
     yield runAndTakeLatest(types.RELOAD, function* () {
-      yield* duck.fetch(param);
-    });
+      yield* duck.fetch(param)
+    })
   }
   /**
    * 除creators外的另一种调用方法，用于在其它duck内插入逻辑
    * @param param
    */
-  public *fetch(param: this["Param"]): Generator<any, this["Data"], any> {
-    const duck = this;
-    const { buffer, types, creators, getData, deferLoading } = duck;
+  public *fetch(param: this['Param']): Generator<any, this['Data'], any> {
+    const duck = this
+    const { buffer, types, getData, deferLoading } = duck
     try {
-      yield put({ type: types.FETCH_START, payload: param });
+      yield put({ type: types.FETCH_START, payload: param })
       // 缓冲
       if (buffer > 0) {
-        yield call(delay, buffer);
+        yield call(delay, buffer)
       }
       // 延迟loading
-      const deferTask = deferLoading > 0 ? delay(deferLoading) : null;
+      const deferTask = deferLoading > 0 ? delay(deferLoading) : null
       // 加载数据
       const loadTask: Task = yield spawn(
         {
           fn: getData,
           context: duck,
         },
-        param
-      );
+        param,
+      )
       if (deferTask) {
         try {
           yield race({
             defer: deferTask,
-            load: loadTask.done || loadTask?.["toPromise"]?.(),
-          });
+            load: loadTask.done || loadTask?.['toPromise']?.(),
+          })
         } finally {
           if (loadTask.isRunning()) {
             yield put({
               type: types.SET_LOADING,
               payload: true,
-            });
+            })
           }
         }
       }
-      const data = yield join(loadTask);
+      const data = yield join(loadTask)
       // 展示
       yield put({
         type: types.FETCH_DONE,
         payload: data,
-      });
-      return data;
+      })
+      return data
     } catch (e) {
       yield put({
         type: types.FETCH_FAIL,
         payload: e || t('加载失败'),
-      });
-      throw e;
+      })
+      throw e
     }
   }
   /**
@@ -201,29 +192,29 @@ export default abstract class Fetcher extends Base {
    * 如果为async方法，建议扩展`getDataAsync`
    * @param param
    */
-  protected *getData(param: this["Param"]): Generator<any, this["Data"], any> {
-    return yield call([this, this.getDataAsync], param);
+  protected *getData(param: this['Param']): Generator<any, this['Data'], any> {
+    return yield call([this, this.getDataAsync], param)
   }
   /**
    * 供子类扩展，专为async设计，同时约束返回值
    * @param param
    */
-  protected async getDataAsync(param: this["Param"]): Promise<this["Data"]> {
-    return null;
+  protected async getDataAsync(param: this['Param']): Promise<this['Data']> {
+    return null
   }
 }
 
 export enum FetchState {
   /** indicates the data is up to date and ready to use */
-  Ready = "Ready" as any,
+  Ready = 'Ready' as any,
 
   /** indicates the data is out of date, and the new data is fetching */
-  Fetching = "Fetching" as any,
+  Fetching = 'Fetching' as any,
 
   /**
    * indicates the data is out of date, and the new data fetches failed
    */
-  Failed = "Failed" as any,
+  Failed = 'Failed' as any,
 }
 
 /** state for data fetcher */
@@ -231,29 +222,29 @@ export interface FetcherState<TData> {
   /**
    * current fetch state
    * */
-  fetchState: FetchState;
+  fetchState: FetchState
 
   /**
    * 请求是否已完成
    */
-  fetched?: boolean;
+  fetched?: boolean
 
   /**
    * data fetched from the last time
    * */
-  data?: TData;
+  data?: TData
 
   /**
    * error object when in fail state
    */
-  error?: any;
+  error?: any
 
   /**
    * If the fetch started for a while, the loading will be true.
    * You can specific the duration by passing `loadingTolerance` when generating action creator.
    * If the duration is not specific, loading will be true as well as the fetchState gets to `Fetching`
    * */
-  loading?: boolean;
+  loading?: boolean
 }
 
 export interface QueryState<TFilter> {
@@ -261,35 +252,35 @@ export interface QueryState<TFilter> {
     /**
      * 查询的起始日期
      */
-    from?: string;
+    from?: string
 
     /**
      * 查询的结束日期
      */
-    to?: string;
+    to?: string
 
     /**
      * 跨越的天数
      */
-    length?: number;
+    length?: number
 
     /**
      * 区间的时间粒度
      */
-    stride?: number;
-  };
+    stride?: number
+  }
   paging?: {
     /** 请求的页码，从 1 开始索引 */
-    pageIndex?: number;
+    pageIndex?: number
 
     /** 请求的每页记录数 */
-    pageSize?: number;
-  };
-  search?: string;
-  keyword?: string;
-  filter?: TFilter;
+    pageSize?: number
+  }
+  search?: string
+  keyword?: string
+  filter?: TFilter
   sort?: {
-    by?: string;
-    desc?: boolean;
-  };
+    by?: string
+    desc?: boolean
+  }
 }

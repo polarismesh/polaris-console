@@ -9,7 +9,7 @@ import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import { replaceTags } from '../utils'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 insertCSS(
   'service',
@@ -49,9 +49,9 @@ function getTagAttributes(props: DuckCmpProps<ConfigFileGroupDuck>) {
 }
 const getHandlers = memorize(({ creators }: ConfigFileGroupDuck, dispatch) => ({
   reload: () => dispatch(creators.reload()),
-  changeTags: v => dispatch(creators.changeTags(v)),
-  setCustomFilters: v => dispatch(creators.setCustomFilters(v)),
-  setNamespace: v => dispatch(creators.setNamespace(v)),
+  changeTags: (v) => dispatch(creators.changeTags(v)),
+  setCustomFilters: (v) => dispatch(creators.setCustomFilters(v)),
+  setNamespace: (v) => dispatch(creators.setNamespace(v)),
 }))
 export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
   const { duck, store, dispatch } = props
@@ -59,7 +59,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
   const columns = React.useMemo(() => getColumns(props), [])
   const handlers = getHandlers(props)
   const { tags, customFilters, namespaceList, configFileGroupList, namespace } = selector(store)
-  const namespaceOptions = namespaceList.map(item => ({ text: item.name, value: item.name }))
+  const namespaceOptions = namespaceList.map((item) => ({ text: item.name, value: item.name }))
   namespaceOptions.unshift({ text: t('全部命名空间'), value: '' })
   return (
     <BasicLayout title={t('发布历史')} store={store} selectors={duck.selectors} header={<></>}>
@@ -73,7 +73,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                 options={namespaceOptions}
                 value={namespace}
                 appearance={'button'}
-                onChange={value => {
+                onChange={(value) => {
                   handlers.setNamespace(value)
                 }}
                 style={{ width: '120px' }}
@@ -86,7 +86,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                   width: '400px',
                 }}
                 value={tags}
-                onChange={value => handlers.changeTags(value)}
+                onChange={(value) => handlers.changeTags(value)}
                 tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
@@ -105,7 +105,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
               type: 'single',
               column: 'group',
               value: customFilters.group,
-              onChange: value => {
+              onChange: (value) => {
                 const replacedTags = replaceTags(GroupNameTagKey, value, tags, configFileGroupList, {
                   type: 'single',
                   key: GroupNameTagKey,
@@ -119,7 +119,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                 value: '',
               },
               // 选项列表
-              options: configFileGroupList.map(item => ({ text: item.name, value: item.name })),
+              options: configFileGroupList.map((item) => ({ text: item.name, value: item.name })),
             }),
           ]}
           columns={columns}

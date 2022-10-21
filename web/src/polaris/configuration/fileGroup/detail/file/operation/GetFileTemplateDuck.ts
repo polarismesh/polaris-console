@@ -5,7 +5,7 @@ import { ConfigFile } from '@src/polaris/configuration/fileGroup/types'
 import { describeConfigFileTemplates } from '@src/polaris/configuration/fileGroup/model'
 import { reduceFromPayload } from 'saga-duck'
 import { Modal } from 'tea-component'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export type DialogOptions = { file: ConfigFile }
 
@@ -42,7 +42,7 @@ export default class GetFileTemplateDuck extends FormDialog {
     } = this
     const { templateList } = selector(yield select())
     const { currentTemplateId } = form.selectors.values(yield select())
-    const currentTemplate = templateList.find(item => item.id === currentTemplateId)
+    const currentTemplate = templateList.find((item) => item.id === currentTemplateId)
     const confirm = yield Modal.confirm({
       message: t('请确认应用模板'),
       description: t('应用所选模板将会覆盖当前已编辑的内容'),
@@ -76,7 +76,7 @@ export default class GetFileTemplateDuck extends FormDialog {
       })
     }
     let content = ''
-    yield this.show(data, function*() {
+    yield this.show(data, function* () {
       const state = selector(yield select())
       const values = state.form.values
 
@@ -93,7 +93,7 @@ export default class GetFileTemplateDuck extends FormDialog {
     } = this
     const options = selectors.options(yield select())
     const { configFileTemplates: templateList } = yield describeConfigFileTemplates({})
-    const templateOptions = templateList.map(item => ({
+    const templateOptions = templateList.map((item) => ({
       ...item,
       text: `${item.name}(${item.format})`,
       value: item.id,
@@ -106,7 +106,7 @@ export default class GetFileTemplateDuck extends FormDialog {
     yield put(form.creators.setMeta({ ...options, templateOptions }))
     yield put(
       form.creators.setValues({
-        currentTemplateId: templateOptions.find(item => !item.disabled)?.id || '',
+        currentTemplateId: templateOptions.find((item) => !item.disabled)?.id || '',
       }),
     )
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel
@@ -124,7 +124,7 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, any>({
   currentTemplateId(v, data?, meta?) {
-    const currentTemplate = meta?.templateOptions?.find(item => item.id === v)
+    const currentTemplate = meta?.templateOptions?.find((item) => item.id === v)
     if (currentTemplate?.format !== meta?.file?.format) {
       return t('您当前选择的模板与配置文件格式不符，请检查后重试。')
     }

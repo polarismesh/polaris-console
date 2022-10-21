@@ -13,7 +13,7 @@ import { Modal, notification } from 'tea-component'
 import PageDuck from '@src/polaris/common/ducks/Page'
 import router from '@src/polaris/common/util/router'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
-import { t } from 'i18next';
+import { t } from 'i18next'
 interface ComposedId {
   principalId?: string
   principalType?: string
@@ -66,7 +66,7 @@ export default abstract class PolicyPageDuck extends PageDuck {
     const { types } = this
     return {
       ...super.creators,
-      load: composedId => ({
+      load: (composedId) => ({
         type: types.LOAD,
         payload: { composedId },
       }),
@@ -91,26 +91,26 @@ export default abstract class PolicyPageDuck extends PageDuck {
   *saga() {
     yield* super.saga()
     const { types, selector, creators } = this
-    yield takeLatest(types.LOAD, function*(action) {
+    yield takeLatest(types.LOAD, function* (action) {
       const { composedId } = action.payload
       yield put({ type: types.SET_COMPOSE_ID, payload: composedId })
       yield put({ type: types.FETCH_DATA, payload: composedId })
     })
-    yield takeLatest(types.FETCH_CURRENT_AUTH_ITEM, function*(action) {
+    yield takeLatest(types.FETCH_CURRENT_AUTH_ITEM, function* (action) {
       const id = action.payload
 
       const { strategy } = yield describeGovernanceStrategyDetail({ id })
       yield put({ type: types.SET_CURRENT_AUTH_ITEM, payload: strategy })
     })
-    yield takeLatest(types.CREATE, function*() {
+    yield takeLatest(types.CREATE, function* () {
       router.navigate(`/policy-create`)
     })
-    yield takeLatest(types.MODIFY, function*(action) {
+    yield takeLatest(types.MODIFY, function* (action) {
       const id = action.payload
 
       router.navigate(`/policy-create?id=${id}`)
     })
-    yield takeLatest(types.DELETE, function*(action) {
+    yield takeLatest(types.DELETE, function* (action) {
       const id = action.payload
       const confirm = yield Modal.confirm({
         message: t('确认删除如下策略？'),
@@ -126,7 +126,7 @@ export default abstract class PolicyPageDuck extends PageDuck {
         }
       }
     })
-    yield takeLatest([types.FETCH_DATA, types.RELOAD, types.SEARCH], function*(action) {
+    yield takeLatest([types.FETCH_DATA, types.RELOAD, types.SEARCH], function* (action) {
       const {
         composedId: { principalId, principalType },
         searchword,
@@ -144,7 +144,7 @@ export default abstract class PolicyPageDuck extends PageDuck {
           authList.length > 0 &&
           (!currentAuthItem.id || action.type === types.RELOAD || action.type === types.SEARCH)
         ) {
-          if (authList.find(item => item.id === currentAuthItem.id))
+          if (authList.find((item) => item.id === currentAuthItem.id))
             yield put({ type: types.FETCH_CURRENT_AUTH_ITEM, payload: currentAuthItem.id })
           else yield put({ type: types.FETCH_CURRENT_AUTH_ITEM, payload: authList[0].id })
         }

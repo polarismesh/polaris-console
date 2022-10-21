@@ -22,7 +22,7 @@ import CreateUser from '../operation/CreateUser'
 import { userLogout, getUin } from '@src/polaris/common/util/common'
 import { delay } from 'redux-saga'
 import UseableResourceFetcher from '../../common/UseableResourceFetcher'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface ComposedId {
   id: string
@@ -110,13 +110,13 @@ export default abstract class CreateDuck extends DetailPage {
     } = this
     const authOpen = yield checkAuth({})
     yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
-    yield takeLatest(types.FETCH_DONE, function*() {
+    yield takeLatest(types.FETCH_DONE, function* () {
       const { id } = selectors.composedId(yield select())
       yield put(policy.creators.load({ principalId: id, principalType: AuthSubjectType.USER }))
       yield put(userGroup.creators.load({ userId: id }, {}))
       yield put(useableResource.creators.fetch({ principal_id: id, principal_type: AuthSubjectType.USER }))
     })
-    yield takeLatest(types.MODIFY_COMMENT, function*() {
+    yield takeLatest(types.MODIFY_COMMENT, function* () {
       const { id } = yield select(selectors.composedId)
       const data = selectors.data(yield select())
       const result = yield ModifyCommentDuck.show({ comment: data.comment, id })
@@ -127,11 +127,11 @@ export default abstract class CreateDuck extends DetailPage {
         notification.error({ description: t('修改失败') })
       }
     })
-    yield takeLatest(types.MODIFY, function*() {
+    yield takeLatest(types.MODIFY, function* () {
       const data = yield select(selectors.data)
       const result = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(CreateUser, CreateUserDuck, function*(duck: CreateUserDuck) {
+        new Promise((resolve) => {
+          showDialog(CreateUser, CreateUserDuck, function* (duck: CreateUserDuck) {
             try {
               resolve(
                 yield* duck.execute(data, {
@@ -148,11 +148,11 @@ export default abstract class CreateDuck extends DetailPage {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.MODIFY_PASSWORD, function*() {
+    yield takeLatest(types.MODIFY_PASSWORD, function* () {
       const data = yield select(selectors.data)
       const result = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(CreateUser, CreateUserDuck, function*(duck: CreateUserDuck) {
+        new Promise((resolve) => {
+          showDialog(CreateUser, CreateUserDuck, function* (duck: CreateUserDuck) {
             try {
               resolve(
                 yield* duck.execute(data, {
@@ -170,7 +170,7 @@ export default abstract class CreateDuck extends DetailPage {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.TOGGLE_TOKEN, function*() {
+    yield takeLatest(types.TOGGLE_TOKEN, function* () {
       const { id } = selectors.composedId(yield select())
       const {
         data: { token_enable },
@@ -184,7 +184,7 @@ export default abstract class CreateDuck extends DetailPage {
         notification.error({ description: t('{{attr0}}失败', { attr0: token_enable ? t('禁用') : t('启用') }) })
       }
     })
-    yield takeLatest(types.RESET_TOKEN, function*() {
+    yield takeLatest(types.RESET_TOKEN, function* () {
       const { id } = selectors.composedId(yield select())
 
       const result = yield resetGovernanceUserToken({ id })

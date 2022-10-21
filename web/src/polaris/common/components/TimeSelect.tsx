@@ -3,7 +3,7 @@ import { Component } from 'react'
 import moment, { Moment } from 'moment'
 import { DatePicker, Segment } from 'tea-component'
 import insertCSS from '../helpers/insertCSS'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 const { RangePicker } = DatePicker
 const curDate = new Date()
@@ -219,7 +219,7 @@ export default class TimeSelect extends Component<TimeSelectProps, any> {
           style={{ marginRight: 0 }}
           value={pickerIndex}
           options={this.pickerTabs}
-          onChange={index => {
+          onChange={(index) => {
             this.setPickerIndex(index)
             const dateValue = this.pickerTabs[index].date
             this.setDateValue(dateValue)
@@ -237,7 +237,7 @@ export default class TimeSelect extends Component<TimeSelectProps, any> {
           disabledTime={this.disabledTime.bind(this)}
           range={range ? [range.min, range.max] : null}
           showTime={{ format: 'HH:mm:ss' }}
-          onChange={value => {
+          onChange={(value) => {
             this.setPickerIndex(null)
             this.setDateValue(value)
             this.props.changeDate &&

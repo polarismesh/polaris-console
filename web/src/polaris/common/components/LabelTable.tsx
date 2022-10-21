@@ -1,7 +1,7 @@
 import { Table, SearchBox, Text } from 'tea-component'
 import React from 'react'
 import { scrollable, autotip } from 'tea-component/lib/table/addons'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface Props {
   labels: Record<string, { value: string } | string>

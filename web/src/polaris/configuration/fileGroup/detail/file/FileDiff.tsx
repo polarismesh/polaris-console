@@ -4,7 +4,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 
 import { debounce } from '../../../utils'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 const { DiffEditor } = MonacoEditor
 interface Props {

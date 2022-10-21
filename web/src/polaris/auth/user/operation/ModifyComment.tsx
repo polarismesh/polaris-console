@@ -5,9 +5,9 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import { Form } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks } = duck
   const formApi = ducks.form.getAPI(store, dispatch)

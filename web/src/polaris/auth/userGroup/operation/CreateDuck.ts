@@ -7,7 +7,7 @@ import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import Form from '@src/polaris/common/ducks/Form'
 import { notification } from 'tea-component'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface DialogOptions {
   isModify: boolean
@@ -43,17 +43,17 @@ export default class CreateDuck extends FormDialog {
       user: { selection },
     } = selector(yield select())
     if (isModify) {
-      const selectedIds = selection.map(item => item.id)
+      const selectedIds = selection.map((item) => item.id)
       const { addArray, removeArray } = diffAddRemoveArray(
-        users.map(item => item.id),
+        users.map((item) => item.id),
         selectedIds,
       )
       const result = yield modifyGovernanceGroup([
         {
           id: groupId,
           comment,
-          add_relations: { group_id: groupId, users: addArray.map(item => ({ id: item })) },
-          remove_relations: { group_id: groupId, users: removeArray.map(item => ({ id: item })) },
+          add_relations: { group_id: groupId, users: addArray.map((item) => ({ id: item })) },
+          remove_relations: { group_id: groupId, users: removeArray.map((item) => ({ id: item })) },
         },
       ])
       if (result) {
@@ -66,7 +66,7 @@ export default class CreateDuck extends FormDialog {
       const result = yield createGovernanceGroup({
         name,
         comment,
-        relation: { users: selection.map(item => ({ id: item.id })) },
+        relation: { users: selection.map((item) => ({ id: item.id })) },
       })
       if (result) {
         notification.success({ description: t('创建成功') })

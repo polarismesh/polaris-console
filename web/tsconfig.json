@@ -10,6 +10,7 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "lib": ["es2017", "dom"],
+    "types": ["react", "node", "jquery", "moment"],
     "paths": {
       "@src/*": ["./src/*"],
       "@common/*": ["./src/polaris/common/*"],

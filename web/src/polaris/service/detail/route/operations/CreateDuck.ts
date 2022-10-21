@@ -17,12 +17,12 @@ import { ComposedId } from '../../types'
 import { EditType } from './Create'
 import PageDuck from '@src/polaris/common/ducks/Page'
 import DynamicDuck from '@src/polaris/common/ducks/DynamicDuck'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
-const convertMetadataMapInArray = o => {
-  return o.map(item => {
+const convertMetadataMapInArray = (o) => {
+  return o.map((item) => {
     const metadata = item.metadata
-    const convertedMetadata = Object.keys(metadata).map(key => {
+    const convertedMetadata = Object.keys(metadata).map((key) => {
       return {
         key,
         value: metadata[key].value,
@@ -35,16 +35,16 @@ const convertMetadataMapInArray = o => {
     }
   })
 }
-const convertMetadataArrayToMap = metadataArray => {
+const convertMetadataArrayToMap = (metadataArray) => {
   const metadataMap = {}
-  metadataArray.forEach(metadata => {
+  metadataArray.forEach((metadata) => {
     const { key, value, type } = metadata
     metadataMap[key] = { value, type }
   })
   return metadataMap
 }
 const convertRuleValuesToParams = (ruleValues, namespace, service) => {
-  return ruleValues.map(rule => {
+  return ruleValues.map((rule) => {
     return {
       ...rule,
       metadata: convertMetadataArrayToMap(rule.metadata),
@@ -184,7 +184,7 @@ export default class RouteCreateDuck extends PageDuck {
   *saga() {
     const { types, selector, ducks } = this
     yield* super.saga()
-    yield takeLatest(types.LOAD, function*(action) {
+    yield takeLatest(types.LOAD, function* (action) {
       const values = action.payload
       const {
         data: { ruleIndex, ruleType, service, namespace, isEdit },
@@ -320,7 +320,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
               },
             },
           ])(v, meta)
-          const distinctArray = [...new Set(v?.map(item => item.key))]
+          const distinctArray = [...new Set(v?.map((item) => item.key))]
           if (distinctArray?.length !== v?.length) {
             return t('标签键不能一致')
           }
@@ -347,9 +347,9 @@ const validator = CreateForm.combineValidators<Values, {}>({
               },
             },
           ])(v, meta)
-          const distinctArray = [...new Set(v?.map(item => item.key))]
+          const distinctArray = [...new Set(v?.map((item) => item.key))]
           if (distinctArray?.length !== v?.length) {
-            return res.map(item => ({ ...item, key: t('标签键不能一致') }))
+            return res.map((item) => ({ ...item, key: t('标签键不能一致') }))
           }
           return res
         },
@@ -374,7 +374,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
               },
             },
           ])(v, meta)
-          const distinctArray = [...new Set(v?.map(item => item.key))]
+          const distinctArray = [...new Set(v?.map((item) => item.key))]
           if (distinctArray?.length !== v?.length) {
             return t('标签键不能一致')
           }
@@ -401,7 +401,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
               },
             },
           ])(v, meta)
-          const distinctArray = [...new Set(v?.map(item => item.key))]
+          const distinctArray = [...new Set(v?.map((item) => item.key))]
           if (distinctArray?.length !== v?.length) {
             return t('标签键不能一致')
           }

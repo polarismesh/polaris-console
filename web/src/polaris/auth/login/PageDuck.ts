@@ -11,7 +11,7 @@ import {
   LoginUserOwnerIdKey,
   LoginUserNameKey,
 } from '@src/polaris/common/util/common'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export default abstract class CreateDuck extends Page {
   get baseUrl() {
@@ -49,7 +49,7 @@ export default abstract class CreateDuck extends Page {
     yield* super.saga()
     const duck = this
     const { types, ducks } = duck
-    yield takeLatest(types.SUBMIT, function*() {
+    yield takeLatest(types.SUBMIT, function* () {
       try {
         yield* ducks.form.submit()
       } catch (e) {
@@ -124,7 +124,7 @@ export class CreateFormDuck extends Form {
         throw new Error()
       }
     } catch (e) {
-      yield put(creators.markInvalid('password', t('网络异常或用户名，密码错误')))
+      yield put(creators.markInvalid('password', t<string>('网络异常或用户名，密码错误')))
       throw e
     }
   }

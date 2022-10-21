@@ -3,7 +3,7 @@ import React from 'react'
 import { Button, Table, FormControl } from 'tea-component'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { FieldAPI } from '../ducks/Form'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface ITagTableProps {
   tags: FieldAPI<KeyValuePair[]>
@@ -19,7 +19,7 @@ export function TagTable(props: ITagTableProps) {
           key: 'tagName',
           header: t('标签名'),
           width: '150px',
-          render: item => {
+          render: (item) => {
             const { key } = item.getFields(['key'])
             const validate = key.getTouched() && key.getError()
             return (
@@ -39,7 +39,7 @@ export function TagTable(props: ITagTableProps) {
         {
           key: 'tagValue',
           header: t('标签值'),
-          render: item => {
+          render: (item) => {
             const { value } = item.getFields(['value'])
             const validate = value.getTouched() && value.getError()
             return (

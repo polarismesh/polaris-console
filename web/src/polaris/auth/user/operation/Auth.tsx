@@ -6,9 +6,9 @@ import { AuthStrategy } from '../../model'
 import { AUTH_SUBJECT_TYPE_MAP } from '../../policy/Page'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import SearchableTransfer from '@src/polaris/common/duckComponents/SearchableTransfer'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks, selectors } = duck
   const options = selectors.options(store)
@@ -30,7 +30,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
         </FormItem>
         <FormItem label={t('授权策略')}>
           <SearchableTransfer
-            title={t('请选择策略')}
+            title={t<string>('请选择策略')}
             duck={ducks.policy}
             store={store}
             dispatch={dispatch}

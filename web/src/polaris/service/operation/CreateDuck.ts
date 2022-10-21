@@ -12,7 +12,7 @@ import { UserGroupSelectDuck } from '@src/polaris/auth/user/operation/AttachUser
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { DescribeStrategyOption } from '@src/polaris/auth/constants'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -47,8 +47,8 @@ export default class CreateDuck extends FormDialog {
       selectors,
       ducks: { form, userGroupSelect, userSelect },
     } = this
-    const userIds = userSelect.selector(yield select()).selection.map(item => item.id)
-    const groupIds = userGroupSelect.selector(yield select()).selection.map(item => item.id)
+    const userIds = userSelect.selector(yield select()).selection.map((item) => item.id)
+    const groupIds = userGroupSelect.selector(yield select()).selection.map((item) => item.id)
     const { userIds: originUsers, groupIds: originGroups } = selectors.data(yield select())
     const options = selectors.options(yield select())
     const values = form.selectors.values(yield select())
@@ -148,14 +148,14 @@ export default class CreateDuck extends FormDialog {
       yield put(userSelect.creators.select(users))
       yield put({
         type: types.UPDATE,
-        payload: { ...data, userIds: users.map(item => item.id), groupIds: groups.map(item => item.id) },
+        payload: { ...data, userIds: users.map((item) => item.id), groupIds: groups.map((item) => item.id) },
       })
     }
     yield put({
       type: types.SET_OPTIONS,
       payload: {
         ...options,
-        namespaceList: namespaceList.map(item => {
+        namespaceList: namespaceList.map((item) => {
           const disabled = isReadOnlyNamespace(item)
           return {
             ...item,

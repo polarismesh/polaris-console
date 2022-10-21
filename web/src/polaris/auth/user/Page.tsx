@@ -9,7 +9,7 @@ import { isOwner, getUin } from '@src/polaris/common/util/common'
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 insertCSS(
   'service',

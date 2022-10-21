@@ -29,26 +29,26 @@ import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
 import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
 import { Link } from 'react-router-dom'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export const NoSearchResultKey = '__NO_SEARCH_RESULT__'
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   add: () => dispatch(creators.add()),
   editCurrentNode: () => dispatch(creators.editCurrentNode()),
-  edit: v => dispatch(creators.edit(v)),
-  clickFileItem: path => dispatch(creators.clickFileItem(path)),
-  setExpandedIds: expandedIds => dispatch(creators.setExpandedIds(expandedIds)),
-  delete: path => dispatch(creators.delete(path)),
+  edit: (v) => dispatch(creators.edit(v)),
+  clickFileItem: (path) => dispatch(creators.clickFileItem(path)),
+  setExpandedIds: (expandedIds) => dispatch(creators.setExpandedIds(expandedIds)),
+  delete: (path) => dispatch(creators.delete(path)),
   save: () => dispatch(creators.save()),
-  searchPath: path => dispatch(creators.searchPath(path)),
-  setSearchKeyword: k => dispatch(creators.setSearchKeyword(k)),
-  fetchData: path => dispatch(creators.fetchData(path)),
-  setEditContent: v => dispatch(creators.setEditContent(v)),
+  searchPath: (path) => dispatch(creators.searchPath(path)),
+  setSearchKeyword: (k) => dispatch(creators.setSearchKeyword(k)),
+  fetchData: (path) => dispatch(creators.fetchData(path)),
+  setEditContent: (v) => dispatch(creators.setEditContent(v)),
   releaseCurrentFile: () => dispatch(creators.releaseCurrentFile()),
-  showReleaseHistory: v => dispatch(creators.showReleaseHistory(v)),
-  select: v => dispatch(creators.select(v)),
+  showReleaseHistory: (v) => dispatch(creators.showReleaseHistory(v)),
+  select: (v) => dispatch(creators.select(v)),
   cancel: () => dispatch(creators.cancel()),
-  getTemplate: v => dispatch(creators.getTemplate(v)),
+  getTemplate: (v) => dispatch(creators.getTemplate(v)),
 }))
 
 insertCSS(
@@ -136,7 +136,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                   }}
                   activeIds={currentNode ? [currentNode?.name] : []}
                   expandedIds={expandedIds}
-                  onExpand={expandedIds => {
+                  onExpand={(expandedIds) => {
                     handlers.setExpandedIds(expandedIds)
                   }}
                   fullExpandable
@@ -198,14 +198,14 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                   placement={'right'}
                                   content={
                                     <>
-                                      {currentNode.tags?.map(item => (
+                                      {currentNode.tags?.map((item) => (
                                         <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
                                       ))}
                                     </>
                                   }
                                 >
                                   <Text overflow>
-                                    {currentNode.tags?.map(item => `${item.key}:${item.value}`).join(',') || '-'}
+                                    {currentNode.tags?.map((item) => `${item.key}:${item.value}`).join(',') || '-'}
                                   </Text>
                                 </Bubble>
                               </FormText>
@@ -304,7 +304,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             options={{ readOnly: !editing }}
                             height={700}
                             width={'100%'}
-                            onChange={v => {
+                            onChange={(v) => {
                               handlers.setEditContent(v)
                             }}
                           />
@@ -353,7 +353,7 @@ function renderTree(props, folder, path: string, currPath: string) {
   }
   return (
     <>
-      {Object.keys(node)?.map(childPath => {
+      {Object.keys(node)?.map((childPath) => {
         if (childPath === '__isDir__') return <noscript />
         const obj = node[childPath]
         const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status)
@@ -371,7 +371,7 @@ function renderTree(props, folder, path: string, currPath: string) {
                   <Dropdown appearence='pure' clickClose={true} button={<Button type='icon' icon='more' />}>
                     <List type='option'>
                       <List.Item
-                        onClick={e => {
+                        onClick={(e) => {
                           e.stopPropagation()
                           handlers.edit(obj.name)
                         }}

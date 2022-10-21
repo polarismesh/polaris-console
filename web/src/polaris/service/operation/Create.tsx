@@ -8,7 +8,7 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import ResourcePrincipalAuth from '@src/polaris/auth/user/operation/ResourcePrincipalAuth'
 import { TagTable } from '@src/polaris/common/components/TagTable'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -54,7 +54,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             disabled={options.isModify}
             value={namespace.getValue()}
             options={options.namespaceList}
-            onChange={value => namespace.setValue(value)}
+            onChange={(value) => namespace.setValue(value)}
             type={'simulate'}
             appearance={'button'}
             size='l'

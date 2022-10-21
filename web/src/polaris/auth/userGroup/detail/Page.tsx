@@ -10,9 +10,9 @@ import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { getUin, isOwner } from '@src/polaris/common/util/common'
 import CopyableText from '@src/polaris/common/components/CopyableText'
 import UseableResource from '../../common/UseableResource'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { selectors, selector, creators, ducks } = duck
   const composedId = selectors.composedId(store)
@@ -21,7 +21,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
   const { data } = selector(store)
   if (!data) return <noscript />
   const { comment, auth_token, token_enable } = data
-  const isUserInGroup = !!data?.relation?.users?.find(item => item.id === getUin().toString())
+  const isUserInGroup = !!data?.relation?.users?.find((item) => item.id === getUin().toString())
   const canReadToken = isUserInGroup || isOwner()
   const resourceData = ducks.useableResource.selectors.data(store)
   return (
@@ -77,7 +77,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                         />
                       </>
                     ),
-                    render: x => (
+                    render: (x) => (
                       <CopyableText
                         text={tokenVisible ? x.auth_token : '*'.repeat(x.auth_token?.length)}
                         copyText={x.auth_token}
@@ -87,7 +87,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   {
                     key: 'token_enable',
                     header: t('状态'),
-                    render: x =>
+                    render: (x) =>
                       x.token_enable ? (
                         <Text theme={'success'}>{t('生效中')}</Text>
                       ) : (
@@ -121,9 +121,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       <Card>
         <Card.Body>
           <Tabs
-            tabs={AuthTabs.filter(item => item.id !== TAB.USERGROUP)}
+            tabs={AuthTabs.filter((item) => item.id !== TAB.USERGROUP)}
             activeId={showAuthTabType}
-            onActive={tab => setShowAuthTabType(tab.id as TAB)}
+            onActive={(tab) => setShowAuthTabType(tab.id as TAB)}
           >
             <TabPanel id={TAB.USER}>
               <User duck={ducks.user} store={store} dispatch={dispatch} />

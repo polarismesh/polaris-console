@@ -1,5 +1,5 @@
 import { AuthSubjectType } from './policy/Page'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export enum TAB {
   USER = 'user',
@@ -23,7 +23,7 @@ const TAB_LABLES_MAP = {
   [TAB.POLICY]: t('权限策略'),
   [TAB.USEABLE_RESOURCE]: t('可操作资源'),
 }
-export const AuthTabs = Object.keys(TAB_LABLES_MAP).map(id => ({
+export const AuthTabs = Object.keys(TAB_LABLES_MAP).map((id) => ({
   id,
   label: TAB_LABLES_MAP[id],
 }))

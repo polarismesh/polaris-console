@@ -5,7 +5,7 @@ import { resolvePromise } from 'saga-duck/build/helper'
 import { createInstances, CreateInstanceParams, modifyInstances, ModifyInstanceParams } from '../model'
 import { Instance, BATCH_EDIT_TYPE, InstanceLocation } from '../types'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface DialogOptions {
   isModify: boolean
@@ -28,7 +28,7 @@ function convertLocation(loc: InstanceLocation) {
   }
 }
 
-const generateParams = params => {
+const generateParams = (params) => {
   const {
     host,
     port,
@@ -56,9 +56,9 @@ const generateParams = params => {
   const splitRegex = /,|;|\n|\s/
   const hosts = host.split(splitRegex)
   const ports = port.split(splitRegex)
-  hosts.forEach(host => {
+  hosts.forEach((host) => {
     if (!host) return
-    ports.forEach(port => {
+    ports.forEach((port) => {
       if (!port) return
       operateRequests.push({
         host,
@@ -90,7 +90,7 @@ const generateParams = params => {
   })
   return operateRequests
 }
-const generateModifyParams = params => {
+const generateModifyParams = (params) => {
   const {
     weight,
     protocol,
@@ -144,9 +144,9 @@ const generateModifyParams = params => {
   }
 }
 
-const generateBatchModifyParams = params => {
+const generateBatchModifyParams = (params) => {
   const modifyPart = params[params.batchEditType]
-  const modifyParams = params.instances.map(instance => {
+  const modifyParams = params.instances.map((instance) => {
     const {
       weight,
       protocol,
@@ -239,7 +239,7 @@ export default class CreateDuck extends FormDialog {
         healthy: true,
         enableHealthCheck: false,
         ...data,
-        metadata: convertMetaData(((data.metadata as unknown) as Record<string, string>) || {}),
+        metadata: convertMetaData((data.metadata as unknown as Record<string, string>) || {}),
         ...(options.instance
           ? {
               healthCheckMethod: options.instance.healthCheck?.type,

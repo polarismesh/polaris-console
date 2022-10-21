@@ -1,12 +1,12 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
-import { Form, Select, FormItem, Table, FormControl, Button } from 'tea-component'
+import { Form, Select, FormItem } from 'tea-component'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { TagTable } from '@src/polaris/common/components/TagTable'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -37,7 +37,7 @@ export enum FileFormat {
   PROPERTIES = 'properties',
   TEXT = 'text',
 }
-const FileFormatOptions = Object.values(FileFormat).map(item => ({ text: item, value: item }))
+const FileFormatOptions = Object.values(FileFormat).map((item) => ({ text: item, value: item }))
 
 const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -65,7 +65,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             searchable
             value={namespace.getValue()}
             options={options.namespaceList}
-            onChange={value => {
+            onChange={(value) => {
               if (value !== namespace.getValue()) {
                 group.setValue('')
               }
@@ -81,8 +81,8 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           <Select
             searchable
             value={group.getValue()}
-            options={options.configFileGroupList?.map(item => ({ text: item.name, value: item.name }))}
-            onChange={value => group.setValue(value)}
+            options={options.configFileGroupList?.map((item) => ({ text: item.name, value: item.name }))}
+            onChange={(value) => group.setValue(value)}
             type={'simulate'}
             appearance={'button'}
             size='m'
@@ -99,9 +99,9 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             field={name}
             disabled={options.isModify}
             maxLength={128}
-            onChange={val => {
+            onChange={(val) => {
               const suffix = val.substring(val.lastIndexOf('.') + 1)
-              FileFormatOptions.forEach(item => {
+              FileFormatOptions.forEach((item) => {
                 if (suffix === item.text) {
                   format.setValue(suffix)
                 }
@@ -115,7 +115,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           <Select
             value={format.getValue()}
             options={FileFormatOptions}
-            onChange={value => format.setValue(value)}
+            onChange={(value) => format.setValue(value)}
             type={'simulate'}
             appearance={'button'}
           ></Select>

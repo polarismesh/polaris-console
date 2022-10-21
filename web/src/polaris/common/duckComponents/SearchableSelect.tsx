@@ -11,7 +11,7 @@ import {
   ListItemProps,
   ListProps,
 } from "tea-component";
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface MyDuck<T> extends Duck {
   Item: T;

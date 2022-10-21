@@ -1,4 +1,4 @@
-import { t } from 'i18next';
+import { t } from 'i18next'
 export interface InstanceLocation {
   region: string
   zone: string

@@ -7,7 +7,7 @@ import { getAllList } from '@src/polaris/common/util/apiRequest'
 import Form from '@src/polaris/common/ducks/Form'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
 import { describeServices } from '@src/polaris/service/model'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface DialogOptions {
   serviceList?: ServiceItem[]
@@ -90,13 +90,13 @@ export default class CreateDuck extends FormDialog {
       type: types.SET_OPTIONS,
       payload: {
         ...options,
-        namespaceList: namespaceList.map(item => {
+        namespaceList: namespaceList.map((item) => {
           return {
             ...item,
             value: item.name,
           }
         }),
-        serviceList: serviceList.map(item => {
+        serviceList: serviceList.map((item) => {
           return {
             ...item,
             text: `${item.name}（${item.namespace}）`,

@@ -8,7 +8,7 @@ import {
 } from 'tea-component'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import insertCSS from '../helpers/insertCSS'
-import { t } from 'i18next';
+import { t } from 'i18next'
 insertCSS(
   'monaco-section',
   `

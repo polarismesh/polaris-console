@@ -4,11 +4,11 @@
  * 对应的逻辑Duck为 `ducks/SearchableMultiSelect`
  */
 import * as React from 'react'
-import { DuckCmpProps, purify, memorize } from 'saga-duck'
+import { DuckCmpProps, memorize } from 'saga-duck'
 import Duck from '../ducks/SearchableMultiSelect'
 import { TransferProps, Transfer, SearchBox, Table, StatusTipProps, StatusTip } from 'tea-component'
 import { scrollable, selectable, removeable } from 'tea-component/lib/table/addons'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 interface MyDuck<T> extends Duck {
   Item: T
@@ -52,11 +52,11 @@ interface RightProps<T> {
 }
 
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
-  inputKeyword: keyword => dispatch(creators.inputKeyword(keyword)),
-  search: keyword => dispatch(creators.search(keyword)),
+  inputKeyword: (keyword) => dispatch(creators.inputKeyword(keyword)),
+  search: (keyword) => dispatch(creators.search(keyword)),
   clearKeyword: () => dispatch(creators.search('')),
-  select: selected => dispatch(creators.select(selected)),
-  remove: selected => dispatch(creators.remove(selected)),
+  select: (selected) => dispatch(creators.select(selected)),
+  remove: (selected) => dispatch(creators.remove(selected)),
   more: () => dispatch(creators.more()),
   reload: () => dispatch(creators.reload()),
 }))
@@ -69,15 +69,15 @@ function SearchableTransfer<T>(props: Props<T>) {
     dispatch,
     title: header = t('请选择'),
     idHeader,
-    itemDisabled = o => false,
-    itemRenderer = o => duck.getId(o),
-    itemTip = o => undefined,
+    itemDisabled = () => false,
+    itemRenderer = (o) => duck.getId(o),
+    itemTip = () => undefined,
     searchPlaceholder = t('输入关键字搜索'),
     Left = DefaultLeft,
     Right = DefaultRight,
     ...rest
   } = props
-  const { selector, selectors } = duck
+  const { selector } = duck
   const {
     pendingKeyword,
     keyword,
@@ -96,7 +96,11 @@ function SearchableTransfer<T>(props: Props<T>) {
     statusTip = (
       <CompactStatusTip
         status='found'
-        foundText={list && list.length > 0 ? t('找到{{totalCount}}条结果', { totalCount }) : t('搜索"{{keyword}}"暂无数据', { keyword })}
+        foundText={
+          list && list.length > 0
+            ? t('找到{{totalCount}}条结果', { totalCount })
+            : t('搜索"{{keyword}}"暂无数据', { keyword })
+        }
         onClear={handlers.clearKeyword}
       />
     )
@@ -151,7 +155,7 @@ interface DefaultLeftProps<T> extends LeftProps<T>, DuckCmpProps<Duck> {
 }
 function DefaultLeft<T>(props: DefaultLeftProps<T>) {
   const { duck, store, dispatch, statusTip, itemDisabled, itemRenderer, idHeader } = props
-  const { selector, selectors, creators } = duck
+  const { selector, creators } = duck
   const { list, selection, loadingMore, nomore } = selector(store)
   const getId = duck.getId.bind(duck)
   return (
@@ -162,7 +166,7 @@ function DefaultLeft<T>(props: DefaultLeftProps<T>) {
         {
           header: idHeader || defaultIdHeader,
           key: 'id',
-          render: t => itemRenderer(t),
+          render: (t) => itemRenderer(t),
         },
       ]}
       hideHeader={!idHeader}
@@ -181,19 +185,19 @@ function DefaultLeft<T>(props: DefaultLeftProps<T>) {
         }),
         selectable({
           value: selection.map(getId),
-          onChange: ids => {
+          onChange: (ids) => {
             // 选择的内容
             const idSet = new Set(ids)
             // TODO 这里如果执行了搜索，会把已有的给清空...要考虑下怎么避免
             // 想到一个方案是，只处理当前在列表内的数据，不在列表内的不修改
             // 当前列表的所有内容
             const listMap = new Map<string, T>()
-            list.forEach(record => {
+            list.forEach((record) => {
               listMap.set(getId(record), record)
             })
             // 当前已选的所有内容
             const selectedMap = new Map<string, T>()
-            selection.forEach(record => {
+            selection.forEach((record) => {
               selectedMap.set(getId(record), record)
             })
             const newSelection = new Map<string, T>()
@@ -225,7 +229,7 @@ interface DefaultRightProps<T> extends RightProps<T>, DuckCmpProps<Duck> {
 }
 function DefaultRight<T>(props: DefaultRightProps<T>) {
   const { duck, store, dispatch, itemRenderer, idHeader } = props
-  const { selector, selectors, creators } = duck
+  const { selector, creators } = duck
   const { selection } = selector(store)
   const getId = duck.getId.bind(duck)
   return (
@@ -236,13 +240,13 @@ function DefaultRight<T>(props: DefaultRightProps<T>) {
         {
           header: idHeader || defaultIdHeader,
           key: 'id',
-          render: t => itemRenderer(t),
+          render: (t) => itemRenderer(t),
         },
       ]}
       hideHeader={!idHeader}
       addons={[
         removeable({
-          onRemove: id => dispatch(creators.remove([selection.find(record => getId(record) === id)])),
+          onRemove: (id) => dispatch(creators.remove([selection.find((record) => getId(record) === id)])),
         }),
       ]}
     />

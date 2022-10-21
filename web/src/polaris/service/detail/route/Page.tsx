@@ -26,7 +26,7 @@ import { RULE_TYPE_OPTIONS, EDIT_TYPE_OPTION, EditType, RuleType } from './types
 import { isReadOnly } from '../../utils'
 import Create from './operations/Create'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
-import { t } from 'i18next';
+import { t } from 'i18next'
 insertCSS(
   'service-detail-instance',
   `
@@ -47,15 +47,15 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
       reload: () => dispatch(creators.reload()),
       search: () => dispatch(creators.search('')),
       create: (payload = 0) => dispatch(creators.create(payload)),
-      remove: payload => dispatch(creators.remove(payload)),
+      remove: (payload) => dispatch(creators.remove(payload)),
       drawerSubmit: () => dispatch(creators.drawerSubmit()),
       submit: () => dispatch(creators.submit()),
       reset: () => dispatch(creators.reset()),
-      setDrawerStatus: payload => dispatch(creators.setDrawerStatus(payload)),
-      setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
-      setRuleType: payload => dispatch(creators.setRuleType(payload)),
-      setEditType: payload => dispatch(creators.setEditType(payload)),
-      setJsonValue: payload => dispatch(creators.setJsonValue(payload)),
+      setDrawerStatus: (payload) => dispatch(creators.setDrawerStatus(payload)),
+      setExpandedKeys: (payload) => dispatch(creators.setExpandedKeys(payload)),
+      setRuleType: (payload) => dispatch(creators.setRuleType(payload)),
+      setEditType: (payload) => dispatch(creators.setEditType(payload)),
+      setJsonValue: (payload) => dispatch(creators.setJsonValue(payload)),
     }),
     [],
   )
@@ -147,8 +147,8 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 // 已经展开的产品
                 expandedKeys,
                 // 发生展开行为时，回调更新展开键值
-                onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
-                render: record => {
+                onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
+                render: (record) => {
                   return (
                     <>
                       <Form style={{ marginBottom: '20px' }}>
@@ -158,7 +158,9 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                         return (
                           <Row key={index}>
                             <Col span={2} style={{ paddingTop: '0' }}>
-                              <Text style={{ lineHeight: '30px' }} theme={'label'}>{t('实例分组{{attr0}}', { attr0: index + 1 })}</Text>
+                              <Text style={{ lineHeight: '30px' }} theme={'label'}>
+                                {t('实例分组{{attr0}}', { attr0: index + 1 })}
+                              </Text>
                             </Col>
                             <Col span={22} style={{ paddingTop: '0' }}>
                               <Form layout='inline'>
@@ -171,7 +173,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                                 <FormItem label={t('实例标签')}>
                                   <FormText>
                                     {Object.keys(destination.metadata)
-                                      .map(key => `${key}:${destination.metadata[key].value}`)
+                                      .map((key) => `${key}:${destination.metadata[key].value}`)
                                       .join(' ; ')}
                                   </FormText>
                                 </FormItem>
@@ -207,7 +209,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 height={800}
                 language='json'
                 value={jsonValue}
-                onChange={value => {
+                onChange={(value) => {
                   handlers.setJsonValue(value)
                 }}
               />

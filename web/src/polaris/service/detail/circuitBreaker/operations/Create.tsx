@@ -28,7 +28,7 @@ import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Select from '@src/polaris/common/duckComponents/form/Select'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export const REGEX_STAR_TIPS = t('正则模式下，使用*代表选择所有')
 export enum EditType {
@@ -51,7 +51,7 @@ const removeArrayFieldValue = (field, index) => {
   newValue.splice(index, 1)
   field.setValue([...newValue])
 }
-const addPolicy = field => {
+const addPolicy = (field) => {
   field.setValue([
     ...field.getValue(),
     {
@@ -64,7 +64,7 @@ const addPolicy = field => {
   ])
 }
 
-const renderInboundRule = props => {
+const renderInboundRule = (props) => {
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -119,7 +119,7 @@ const renderInboundRule = props => {
 
       <Form style={{ width: '100%' }}>
         <Form style={{ width: '850px', paddingLeft: '20px' }} layout={'inline'}>
-          {[...destinations.asArray()].map(field => {
+          {[...destinations.asArray()].map((field) => {
             const { method } = field.getFields(['method'])
             const { value: methodValue, type: methodType } = method.getFields(['value', 'type'])
             return (
@@ -136,7 +136,7 @@ const renderInboundRule = props => {
         </Form>
       </Form>
       <FormItem label={<H3 style={{ margin: '10px 0' }}>{t('如果满足以下任意条件，进行熔断')} </H3>}></FormItem>
-      {[...destinations.asArray()].map(field => {
+      {[...destinations.asArray()].map((field) => {
         const { policy, resource, recover } = field.getFields(['policy', 'resource', 'recover', 'resourceSetMark'])
         const { sleepWindow, outlierDetectWhen } = recover.getFields(['sleepWindow', 'outlierDetectWhen'])
         return (
@@ -210,7 +210,7 @@ const renderInboundRule = props => {
                   hideButton
                   unit={t('秒')}
                   min={0}
-                  onChange={value => sleepWindow.setValue(`${value}s`)}
+                  onChange={(value) => sleepWindow.setValue(`${value}s`)}
                 ></TeaInputNumber>
               </FormItem>
 
@@ -218,7 +218,7 @@ const renderInboundRule = props => {
                 <Segment
                   options={BreakResourceOptions}
                   value={resource.getValue()}
-                  onChange={value => resource.setValue(value)}
+                  onChange={(value) => resource.setValue(value)}
                 ></Segment>
               </FormItem>
 
@@ -226,7 +226,7 @@ const renderInboundRule = props => {
                 <Segment
                   options={OUTLIER_DETECT_MAP_OPTIONS}
                   value={outlierDetectWhen.getValue()}
-                  onChange={value => outlierDetectWhen.setValue(value)}
+                  onChange={(value) => outlierDetectWhen.setValue(value)}
                 ></Segment>
               </FormItem>
             </Form>
@@ -261,7 +261,7 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
           <Segment
             options={EditTypeOptions}
             value={editType.getValue()}
-            onChange={value => editType.setValue(value as any)}
+            onChange={(value) => editType.setValue(value as any)}
           ></Segment>
         </FormItem>
         {/* {!isEdit && (
@@ -286,7 +286,7 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
                 width={1000}
                 language='json'
                 value={currentJsonValue.getValue()}
-                onChange={value => {
+                onChange={(value) => {
                   currentJsonValue.setTouched(true)
                   currentJsonValue.setValue(value)
                 }}

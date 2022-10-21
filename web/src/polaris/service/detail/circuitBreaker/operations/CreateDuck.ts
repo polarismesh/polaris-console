@@ -20,11 +20,11 @@ import { ComposedId } from '../../types'
 import { EditType } from './Create'
 
 import DynamicDuck from '@src/polaris/common/ducks/DynamicDuck'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
-const convertPolicyArrayToMap = policyArray => {
+const convertPolicyArrayToMap = (policyArray) => {
   const metadataMap = {}
-  policyArray.forEach(policy => {
+  policyArray.forEach((policy) => {
     const {
       policyName,
       errorRateToOpen,
@@ -46,10 +46,10 @@ const convertPolicyArrayToMap = policyArray => {
   })
   return metadataMap
 }
-const convertPolicyMapToArray = policy => {
+const convertPolicyMapToArray = (policy) => {
   const policyArray = Object.keys(policy)
-    .filter(key => policy[key])
-    .map(key => {
+    .filter((key) => policy[key])
+    .map((key) => {
       return { policyName: key, ...policy[key] }
     })
   return policyArray
@@ -182,14 +182,14 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
         editType === EditType.Json
           ? JSON.parse(inboundJsonValue)
           : {
-              sources: inboundSources.map(source => {
+              sources: inboundSources.map((source) => {
                 return {
                   ...source,
                   namespace: inboundNamespace,
                   service: inboundService,
                 }
               }),
-              destinations: inboundDestinations.map(destination => {
+              destinations: inboundDestinations.map((destination) => {
                 return {
                   ...destination,
                   policy: convertPolicyArrayToMap(destination.policy),
@@ -205,14 +205,14 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
         editType === EditType.Json
           ? JSON.parse(outboundJsonValue)
           : {
-              sources: outboundSources.map(source => {
+              sources: outboundSources.map((source) => {
                 return {
                   ...source,
                   namespace: undefined,
                   service: undefined,
                 }
               }),
-              destinations: outboundDestinations.map(destination => {
+              destinations: outboundDestinations.map((destination) => {
                 return {
                   ...destination,
                   namespace: outboundNamespace,
@@ -227,7 +227,7 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
   *saga() {
     const { types, ducks } = this
     yield* super.saga()
-    yield takeLatest(types.LOAD, function*(action) {
+    yield takeLatest(types.LOAD, function* (action) {
       const { values, ruleIndex, ruleType, service, namespace, isEdit } = action.payload
 
       const emptyRule = {
@@ -316,7 +316,7 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
         return yield put(
           ducks.form.creators.setValues({
             ...emptyRule,
-            [`${formValueKey}Destinations`]: rule.destinations.map(item => ({
+            [`${formValueKey}Destinations`]: rule.destinations.map((item) => ({
               ...item,
               policy: convertPolicyMapToArray(item.policy),
               resource: item.resource ? item.resource : BREAK_RESOURCE_TYPE.INSTANCE,
@@ -327,7 +327,7 @@ export default class CircuitBreakerCreate extends DetailPageDuck {
                   : OutlierDetectWhen.NEVER,
               },
             })),
-            [`${formValueKey}Sources`]: rule.sources.map(item => ({
+            [`${formValueKey}Sources`]: rule.sources.map((item) => ({
               ...item,
             })),
             ruleType,

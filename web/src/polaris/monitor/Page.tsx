@@ -25,7 +25,7 @@ import moment from 'moment'
 import insertCSS from '../common/helpers/insertCSS'
 import TimeSelect from '../common/components/TimeSelect'
 import { TimePickerTab } from './operations/Create'
-import { t, Trans, Slot } from 'i18next';
+import { t } from 'i18next'
 const { Body, Content } = Layout
 insertCSS(
   `monitor`,
@@ -52,12 +52,12 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
   const handlers = React.useMemo(
     () => ({
       create: () => dispatch(creators.createGraph()),
-      modify: payload => dispatch(creators.modifyGraph(payload)),
-      remove: payload => dispatch(creators.removeGraph(payload)),
+      modify: (payload) => dispatch(creators.modifyGraph(payload)),
+      remove: (payload) => dispatch(creators.removeGraph(payload)),
       saveConfig: () => dispatch(creators.saveConfig()),
       search: () => dispatch(creators.search()),
-      changeFilterConfig: payload => dispatch(creators.changeFilterConfig(payload)),
-      fetchLabels: payload => dispatch(creators.fetchLabels(payload)),
+      changeFilterConfig: (payload) => dispatch(creators.changeFilterConfig(payload)),
+      fetchLabels: (payload) => dispatch(creators.fetchLabels(payload)),
       getFilterConfig: () => dispatch(creators.getFilterConfig()),
     }),
     [],
@@ -82,12 +82,12 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                           }}
                           searchable
                           appearance={'button'}
-                          options={duck.metricNames.map(key => ({
+                          options={duck.metricNames.map((key) => ({
                             text: MetricNameMap[key].text,
                             value: key,
                           }))}
                           value={filterConfig.metricNames || []}
-                          onChange={value => {
+                          onChange={(value) => {
                             handlers.changeFilterConfig({
                               filterConfig: {
                                 ...filterConfig,
@@ -100,7 +100,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                         />
                       </FormItem>
                       <FormItem label={t('时间选择')} className={'modify-form-control'}>
-                        <FormText><Trans>
+                        <FormText>
                           <TimeSelect
                             tabs={TimePickerTab}
                             style={{ display: 'inline-block' }}
@@ -132,21 +132,21 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                               maxLength: 3,
                             }}
                           />
-                          &nbsp; 步长 &nbsp;
+                          &nbsp; {t('步长')} &nbsp;
                           <InputNumber
                             hideButton
                             value={step}
-                            onChange={v => {
+                            onChange={(v) => {
                               dispatch(creators.setStep(v))
                             }}
                           ></InputNumber>
-                          &nbsp;秒
-                        </Trans></FormText>
+                          &nbsp;{t('秒')}
+                        </FormText>
                       </FormItem>
                     </Form>
                   }
                 />
-                {duck.monitorLabels.filter(labelKey => labelKey.indexOf('caller') !== -1).length > 0 && (
+                {duck.monitorLabels.filter((labelKey) => labelKey.indexOf('caller') !== -1).length > 0 && (
                   <Text theme={'label'} parent={'div'} style={{ marginBottom: '10px' }}>
                     {t('主调方')}
                   </Text>
@@ -155,8 +155,8 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                   left={
                     <Form layout='inline'>
                       {duck.monitorLabels
-                        .filter(labelKey => labelKey.indexOf('caller') !== -1)
-                        .map(labelKey => {
+                        .filter((labelKey) => labelKey.indexOf('caller') !== -1)
+                        .map((labelKey) => {
                           const fetcher = dynamicLabelFetcher.getDuck(labelKey)
                           if (!fetcher) return <noscript />
                           const { data: options, loading } = fetcher.selector(store)
@@ -199,7 +199,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                     appearance={'button'}
                                     options={options || []}
                                     value={filterConfig.filterLabels?.[labelKey] || []}
-                                    onChange={value => {
+                                    onChange={(value) => {
                                       handlers.changeFilterConfig({
                                         filterConfig: {
                                           ...filterConfig,
@@ -223,7 +223,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                     </Form>
                   }
                 />
-                {duck.monitorLabels.filter(labelKey => labelKey.indexOf('callee') !== -1).length > 0 &&
+                {duck.monitorLabels.filter((labelKey) => labelKey.indexOf('callee') !== -1).length > 0 &&
                   duck.type !== 'ratelimit' && (
                     <Text theme={'label'} parent={'div'} style={{ marginBottom: '10px' }}>
                       {t('被调方')}
@@ -233,8 +233,8 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                   left={
                     <Form layout='inline'>
                       {duck.monitorLabels
-                        .filter(labelKey => labelKey.indexOf('callee') !== -1)
-                        .map(labelKey => {
+                        .filter((labelKey) => labelKey.indexOf('callee') !== -1)
+                        .map((labelKey) => {
                           const fetcher = dynamicLabelFetcher.getDuck(labelKey)
                           if (!fetcher) return <noscript />
                           const { data: options, loading } = fetcher.selector(store)
@@ -278,7 +278,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                     appearance={'button'}
                                     options={options || []}
                                     value={filterConfig.filterLabels?.[labelKey] || []}
-                                    onChange={value => {
+                                    onChange={(value) => {
                                       handlers.changeFilterConfig({
                                         filterConfig: {
                                           ...filterConfig,
@@ -304,13 +304,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                 />
                 <Justify
                   left={
-                    <Button
-                      type={'primary'}
-                      onClick={handlers.search}
-                      onKeyPress={event => {
-                        console.log(event)
-                      }}
-                    >
+                    <Button type={'primary'} onClick={handlers.search} onKeyPress={() => {}}>
                       {t('查询')}
                     </Button>
                   }
@@ -345,7 +339,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                 >
                   <Row>
                     <>
-                      {metricQuerySets.map((querySet, index) => {
+                      {metricQuerySets.map((querySet) => {
                         const { query, metricName, fetcherId, start, end, monitorFilters } = querySet
                         const fetcher = dynamicMonitorFetcher.getDuck(`${encodeURIComponent(query)}-${fetcherId}`)
                         if (!fetcher) return <div style={{ height: '300px' }}></div>
@@ -355,7 +349,7 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                         const labelsTitle =
                           monitorFilters?.length > 0
                             ? monitorFilters
-                                .map(filter => {
+                                .map((filter) => {
                                   return `${filter.labelValue}_`
                                 })
                                 .join('')
@@ -389,10 +383,10 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                 }
                               >
                                 <>
-                                  <Text parent={'p'} theme={'weak'}><Trans>
-                                    筛选条件：
-                                    <Slot content={monitorFilters?.length > 0
-                                      ? monitorFilters.map(filter => {
+                                  <Text parent={'p'} theme={'weak'}>
+                                    {t('筛选条件：')}
+                                    {monitorFilters?.length > 0
+                                      ? monitorFilters.map((filter) => {
                                           return (
                                             <Text key={filter.labelKey}>
                                               {`${LabelKeyMap[filter.labelKey].text}
@@ -400,8 +394,8 @@ export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
                                             </Text>
                                           )
                                         })
-                                      : t('无')} />
-                                  </Trans></Text>
+                                      : t('无')}
+                                  </Text>
                                   <Text parent={'p'} theme={'weak'}>
                                     {`${startString} - ${endString}`}
                                   </Text>

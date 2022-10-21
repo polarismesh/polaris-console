@@ -7,7 +7,7 @@ import { UserSource } from '../../constants'
 import { passwordRuleText } from './CreateUser'
 import { userLogout, getUin, isOwner } from '@src/polaris/common/util/common'
 import { delay } from 'redux-saga'
-import { t } from 'i18next';
+import { t } from 'i18next'
 
 export interface DialogOptions {
   isModify: boolean
