@@ -21,6 +21,10 @@ export interface DescribeCustomRouteParams {
   enable?: boolean
   order_field?: string
   order_type?: string
+  source_service?: string
+  source_namespace?: string
+  destination_service?: string
+  destination_namespace?: string
   offset: number
   limit: number
 }

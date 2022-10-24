@@ -3,7 +3,7 @@ import router from '@src/polaris/common/util/router'
 import { takeLatest } from 'redux-saga-catch'
 import { put, select } from 'redux-saga/effects'
 import GridPageDuck, { Filter as BaseFilter, Operation, OperationType } from '@src/polaris/common/ducks/GridPage'
-import { Modal } from 'tea-component'
+import { TagValue, Modal } from 'tea-component'
 import {
   CustomRoute,
   deleteCustomRoute,
@@ -15,6 +15,7 @@ import {
 import { ComposedId } from '@src/polaris/service/detail/types'
 import { RuleStatus, SwitchStatusAction } from '../../accessLimiting/types'
 import { SortBy } from 'tea-component/lib/table/addons'
+import { TagSearchType } from './Page'
 
 interface Filter {
   namespace: string
@@ -22,6 +23,7 @@ interface Filter {
   status: string
   name: string
   sort: SortBy[]
+  validTags: TagValue[]
 }
 
 export default class CustomRouteDuck extends GridPageDuck {
@@ -52,6 +54,8 @@ export default class CustomRouteDuck extends GridPageDuck {
       SWITCH_STATUS,
       SET_SORT,
       SET_IN_DETAIL,
+      CHANGE_TAGS,
+      SET_TAGS,
     }
     return {
       ...super.quickTypes,
@@ -73,6 +77,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       types.SET_STATUS,
       types.SET_NAME,
       types.SET_SORT,
+      types.SET_TAGS,
     ]
   }
 
@@ -93,6 +98,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       name: reduceFromPayload<string>(types.SET_NAME, ''),
       sort: reduceFromPayload<SortBy[]>(types.SET_SORT, []),
       inDetail: reduceFromPayload<boolean>(types.SET_IN_DETAIL, false),
+      validTags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
     }
   }
 
@@ -118,6 +124,7 @@ export default class CustomRouteDuck extends GridPageDuck {
         },
       }),
       setSort: createToPayload<SortBy[]>(types.SET_SORT),
+      changeTags: createToPayload<TagValue[]>(types.CHANGE_TAGS),
     }
   }
 
@@ -133,6 +140,7 @@ export default class CustomRouteDuck extends GridPageDuck {
         status: state.status,
         name: state.name,
         sort: state.sort,
+        validTags: state.validTags,
       }),
     }
   }
@@ -143,7 +151,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       {
         type: OperationType.NO_TARGET,
         watch: types.CREATE,
-        fn: function*() {
+        fn: function* () {
           const loadData = selector(yield select())?.loadData
           if (loadData) {
             router.navigate(`/custom-route-create?ns=${loadData.namespace}&service=${loadData.name}`)
@@ -157,7 +165,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       {
         type: OperationType.SINGLE,
         watch: types.MODIFY,
-        fn: function*(item) {
+        fn: function* (item) {
           const loadData = selector(yield select())?.loadData
           if (loadData) {
             router.navigate(`/custom-route-create?id=${item.id}&ns=${loadData.namespace}&service=${loadData.name}`)
@@ -170,7 +178,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       {
         type: OperationType.SINGLE,
         watch: types.DELETE,
-        fn: function*(item) {
+        fn: function* (item) {
           const confirm = yield Modal.confirm({
             message: `确认删除路由规则 ${item.name} 吗？`,
             description: '删除后，无法恢复',
@@ -185,7 +193,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       {
         type: OperationType.SINGLE,
         watch: types.SWITCH_STATUS,
-        fn: function*(item: any) {
+        fn: function* (item: any) {
           const ops = item.swtichStatusAction === SwitchStatusAction.disable ? '禁用' : '启用'
           const disable = item.swtichStatusAction === SwitchStatusAction.disable ? true : false
           const confirm = yield Modal.confirm({
@@ -207,7 +215,7 @@ export default class CustomRouteDuck extends GridPageDuck {
   *saga() {
     const { types, creators } = this
     yield* super.saga()
-    yield takeLatest(types.LOAD, function*(action) {
+    yield takeLatest(types.LOAD, function* (action) {
       const data = action.payload
       if (data) {
         yield put(creators.changeNamespace(data.namespace))
@@ -215,13 +223,32 @@ export default class CustomRouteDuck extends GridPageDuck {
         yield put({ type: types.SET_IN_DETAIL, payload: true })
       }
     })
+    yield takeLatest(types.CHANGE_TAGS, function* (action) {
+      const tags = action.payload
+      const validTags = tags.map((item) => {
+        if (item.attr) return item
+        else
+          return {
+            ...item,
+            attr: {
+              type: 'input',
+              key: TagSearchType.RuleName,
+              name: '规则名',
+            },
+          }
+      })
+      yield put({ type: types.SET_TAGS, payload: validTags })
+    })
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, service, status, name, sort } = filters
+    const { page, count, namespace, service, status, name, sort, validTags } = filters
     const params: DescribeCustomRouteParams = {
       offset: (page - 1) * count,
       limit: count,
+    }
+    if (validTags.length) {
+      validTags.forEach((tag) => (params[tag.attr.key] = tag.values?.[0]?.name))
     }
 
     if (namespace) {
@@ -252,7 +279,7 @@ export default class CustomRouteDuck extends GridPageDuck {
 
     result.list =
       result.totalCount > 0 &&
-      result.list.map(item => ({
+      result.list.map((item) => ({
         ...item,
         namespace,
         service,
