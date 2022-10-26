@@ -32,7 +32,7 @@ func Router(config *bootstrap.Config) {
 	r.Static("/static", config.WebServer.WebPath+"static")
 
 	// 加载Swagger UI
-	r.Static("/apidocs", "./swagger-ui")
+	// r.Static("/apidocs", "./swagger-ui")
 
 	// 加载界面
 	r.LoadHTMLGlob(config.WebServer.WebPath + "index.html")

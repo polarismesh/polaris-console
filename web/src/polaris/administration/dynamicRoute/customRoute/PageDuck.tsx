@@ -248,7 +248,13 @@ export default class CustomRouteDuck extends GridPageDuck {
       limit: count,
     }
     if (validTags.length) {
-      validTags.forEach((tag) => (params[tag.attr.key] = tag.values?.[0]?.name))
+      validTags.forEach((tag) => {
+        if (tag.attr.key === "name") {
+          params[tag.attr.key] = `${tag.values?.[0]?.name}*`
+        } else {
+          params[tag.attr.key] = tag.values?.[0]?.name
+        }
+      })
     }
 
     if (namespace) {
@@ -268,8 +274,9 @@ export default class CustomRouteDuck extends GridPageDuck {
     }
 
     if (name) {
-      params.name = name
+      params.name = name ? `${name}*` : undefined
     }
+
     if (sort.length) {
       params.order_field = sort[0].by
       params.order_type = sort[0].order
