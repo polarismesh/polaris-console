@@ -89,7 +89,7 @@ export interface ReleaseServiceCircuitBreakerParams {
 
 export async function releaseServiceCircuitBreaker(params: ReleaseServiceCircuitBreakerParams[]) {
   const res = await apiRequest<any>({
-    action: '/naming/v1/circuitbreakers/release',
+    action: 'naming/v1/circuitbreakers/release',
     data: params,
   })
   return res
@@ -111,7 +111,7 @@ export interface DeleteServiceCircuitBreakerParams {
 
 export async function deleteServiceCircuitBreaker(params: DeleteServiceCircuitBreakerParams[]) {
   const res = await apiRequest<any>({
-    action: '/naming/v1/circuitbreakers/delete',
+    action: 'naming/v1/circuitbreakers/delete',
     data: params,
   })
   return res
@@ -132,7 +132,7 @@ export interface UnbindServiceCircuitBreakerParams {
 
 export async function unbindServiceCircuitBreaker(params: DeleteServiceCircuitBreakerParams[]) {
   const res = await apiRequest<any>({
-    action: '/naming/v1/circuitbreakers/unbind',
+    action: 'naming/v1/circuitbreakers/unbind',
     data: params,
   })
   return res
