@@ -72,22 +72,22 @@ export const tabConfigs: RouteTabConfigInfo = {
       {
         style: { top: '28.7%', left: '29.8%' },
         linkAddress:
-          'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83.html#%E9%98%B6%E6%AE%B5%E4%B8%80-%E5%AE%9E%E4%BE%8B%E6%89%93%E6%A0%87',
+          'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83/#%E9%98%B6%E6%AE%B5%E4%B8%80%E5%AE%9E%E4%BE%8B%E6%89%93%E6%A0%87',
       },
       {
         style: { top: '38.5%', left: '29.8%' },
         linkAddress:
-          'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83.html#envoy-proxy-%E6%8E%A5%E5%85%A5',
+          'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83/#envoy-proxy-%E6%8E%A5%E5%85%A5',
       },
       {
         style: { top: '59%', left: '11.5%' },
         linkAddress:
-          'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83.html#%E9%98%B6%E6%AE%B5%E4%BA%8C-%E9%83%A8%E7%BD%B2%E5%BA%94%E7%94%A8',
+          'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83/#%E9%98%B6%E6%AE%B5%E4%BA%8C-%E9%83%A8%E7%BD%B2%E5%BA%94%E7%94%A8',
       },
       {
         style: { top: '77.2%', left: '37%' },
         linkAddress:
-          'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83.html#%E9%98%B6%E6%AE%B5%E4%B8%89-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B7%AF%E7%94%B1',
+          'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83/#%E9%98%B6%E6%AE%B5%E4%B8%89-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B7%AF%E7%94%B1',
       },
     ],
   },
@@ -100,27 +100,27 @@ export const tabConfigs: RouteTabConfigInfo = {
           {
             style: { top: '27.2%', left: '29.8%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1.html#%E9%98%B6%E6%AE%B5%E4%B8%80-%E5%AE%9E%E4%BE%8B%E6%89%93%E6%A0%87',
+              'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1/#%E9%98%B6%E6%AE%B5%E4%B8%80-%E5%AE%9E%E4%BE%8B%E6%89%93%E6%A0%87',
           },
           {
             style: { top: '33.4%', left: '29.8%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1.html#%E6%89%93%E6%A0%87%E7%81%B0%E5%BA%A6%E6%A0%87%E7%AD%BE%E9%80%8F%E4%BC%A0',
+              'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1/#%E6%89%93%E6%A0%87%E7%81%B0%E5%BA%A6%E6%A0%87%E7%AD%BE%E9%80%8F%E4%BC%A0',
           },
           {
             style: { top: '59.2%', left: '11.6%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1.html#%E9%98%B6%E6%AE%B5%E4%BA%8C-%E9%83%A8%E7%BD%B2%E5%BA%94%E7%94%A8',
+              'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1/#%E9%98%B6%E6%AE%B5%E4%BA%8C-%E9%83%A8%E7%BD%B2%E5%BA%94%E7%94%A8',
           },
           {
             style: { top: '72.1%', left: '19.8%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1.html#%E9%98%B6%E6%AE%B5%E4%B8%89-%E7%BD%91%E5%85%B3%E8%B7%AF%E7%94%B1-%E6%9F%93%E8%89%B2',
+              'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1/#%E9%98%B6%E6%AE%B5%E4%B8%89-%E7%BD%91%E5%85%B3%E8%B7%AF%E7%94%B1-%E6%9F%93%E8%89%B2',
           },
           {
             style: { top: '85%', left: '5.2%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1.html#%E9%98%B6%E6%AE%B5%E5%9B%9B-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B7%AF%E7%94%B1',
+              'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF1/#%E9%98%B6%E6%AE%B5%E5%9B%9B-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B7%AF%E7%94%B1',
           },
         ],
       },
@@ -131,27 +131,27 @@ export const tabConfigs: RouteTabConfigInfo = {
           {
             style: { top: '30.9%', left: '29.8%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2.html#%E9%98%B6%E6%AE%B5%E4%B8%80-%E5%AE%9E%E4%BE%8B%E6%89%93%E6%A0%87',
+              'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2/#%E9%98%B6%E6%AE%B5%E4%B8%80-%E5%AE%9E%E4%BE%8B%E6%89%93%E6%A0%87',
           },
           {
             style: { top: '38%', left: '29.8%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2.html#%E6%89%93%E6%A0%87%E7%81%B0%E5%BA%A6%E6%A0%87%E7%AD%BE%E9%80%8F%E4%BC%A0',
+              'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2/#%E6%89%93%E6%A0%87%E7%81%B0%E5%BA%A6%E6%A0%87%E7%AD%BE%E9%80%8F%E4%BC%A0',
           },
           {
             style: { top: '52.85%', left: '11.4%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2.html#%E9%98%B6%E6%AE%B5%E4%BA%8C-%E9%83%A8%E7%BD%B2%E5%BA%94%E7%94%A8',
+              'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2/#%E9%98%B6%E6%AE%B5%E4%BA%8C-%E9%83%A8%E7%BD%B2%E5%BA%94%E7%94%A8',
           },
           {
             style: { top: '67.8%', left: '16.3%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2.html#%E9%98%B6%E6%AE%B5%E4%B8%89-%E7%BD%91%E5%85%B3%E8%B7%AF%E7%94%B1-%E6%9F%93%E8%89%B2',
+              'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2/#%E9%98%B6%E6%AE%B5%E4%B8%89-%E7%BD%91%E5%85%B3%E8%B7%AF%E7%94%B1-%E6%9F%93%E8%89%B2',
           },
           {
             style: { top: '82.9%', left: '5.2%' },
             linkAddress:
-              'https://polarismesh.cn/zh/doc/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2.html#%E9%98%B6%E6%AE%B5%E5%9B%9B-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B7%AF%E7%94%B1',
+              'https://polarismesh.cn/docs/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/%E5%85%A8%E9%93%BE%E8%B7%AF%E7%81%B0%E5%BA%A6-%E5%9C%BA%E6%99%AF2/#%E9%98%B6%E6%AE%B5%E5%9B%9B-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B7%AF%E7%94%B1',
           },
         ],
       },

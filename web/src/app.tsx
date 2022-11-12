@@ -159,7 +159,7 @@ export default function root() {
                 <NavMenu.Item type='default'>
                   <a
                     href={
-                      'https://polarismesh.cn/zh/doc/%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88/%E7%AE%80%E4%BB%8B.html'
+                      'https://polarismesh.cn/docs/%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88/%E7%AE%80%E4%BB%8B'
                     }
                     target={'_blank'}
                     rel='noreferrer'
