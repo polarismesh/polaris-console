@@ -23,6 +23,8 @@ import {
   Icon,
   Bubble,
   Badge,
+  Modal,
+  notification,
 } from 'tea-component'
 import { FileStatus, FileStatusMap } from './constants'
 import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
@@ -91,6 +93,21 @@ function toHighlightLanguage(format?: string) {
   return format
 }
 
+function fetchConfigFile(props: DuckCmpProps<Duck>) {
+  const { duck, store } = props
+  const { selectors } = duck
+  const handlers = getHandlers(props)
+  const composedId = selectors.composedId(store)
+  const searchKeyword = selectors.searchKeyword(store)
+  handlers.fetchData({
+    namespace: composedId.namespace,
+    group: composedId.group,
+    name: searchKeyword || undefined,
+  })
+  handlers.cancel()
+  notification.success({ description: '刷新成功' })
+}
+
 export default function Page(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { selectors, selector, ducks } = duck
@@ -103,6 +120,37 @@ export default function Page(props: DuckCmpProps<Duck>) {
   const { showHistoryMap, editContent } = selector(store)
   const currentHistoryDuck = ducks.configFileDynamicDuck.getDuck(currentNode?.name)
 
+  function RefreshConfigButton(): JSX.Element {
+    const [modalVisible, setModalVisible] = React.useState(false)
+    const refreshFiles = () => {
+      if (editing) {
+        setModalVisible(true)
+      } else {
+        fetchConfigFile(props)
+        closeModal()
+      }
+    }
+    const closeModal = () => setModalVisible(false)
+    return (
+      <>
+        <Button type={'weak'} onClick={refreshFiles}>
+          刷新配置
+        </Button>
+        <Modal visible={modalVisible} caption={'提示'} onClose={closeModal}>
+          <Modal.Body>注意，刷新会导致丢失当前编辑内容</Modal.Body>
+          <Modal.Footer>
+            <Button type={'primary'} onClick={() => fetchConfigFile(props)}>
+              确定
+            </Button>
+            <Button type={'weak'} onClick={closeModal}>
+              取消
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    )
+  }
+
   return (
     <>
       <Table.ActionPanel>
@@ -112,6 +160,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
               <Button type={'primary'} onClick={() => handlers.add()}>
                 新增
               </Button>
+              <RefreshConfigButton />
               {/* <Button type={'weak'} onClick={() => handlers.delete(selection)}>
                 删除
               </Button> */}
@@ -340,13 +389,13 @@ export default function Page(props: DuckCmpProps<Duck>) {
   )
 }
 
-function getFileNameContext(fileName, status) {
+function getFileNameContext(fileName, status, props) {
   const splitArray = fileName.split('/')
   return (
-    <>
+    <div onClick={() => fetchConfigFile(props)}>
       <span className='configuration-tree-node-content'>{splitArray[splitArray.length - 1]}</span>
       {FileStatus.Edited === status && <Badge theme='warning'>待发布</Badge>}
-    </>
+    </div>
   )
 }
 
@@ -371,7 +420,7 @@ function renderTree(props, folder, path: string, currPath: string) {
       {Object.keys(node)?.map(childPath => {
         if (childPath === '__isDir__') return <noscript />
         const obj = node[childPath]
-        const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status)
+        const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status, props)
         const nextPath = `${currPath}${currPath ? '/' : ''}${childPath}`
         const folderIcon = expandedIds.indexOf(obj.name) > -1 ? 'folderopen' : 'folderclose'
         return (
