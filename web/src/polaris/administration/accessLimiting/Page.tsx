@@ -79,6 +79,7 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
             filterable({
               type: 'single',
               column: 'service',
+              searchable: true,
               value: service,
               onChange: value => handlers.changeService(value),
               all: {
@@ -90,6 +91,7 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
             filterable({
               type: 'single',
               column: 'disable',
+              searchable: true,
               value: status,
               onChange: value => handlers.changeStatus(value),
               all: {
