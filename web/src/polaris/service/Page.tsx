@@ -195,6 +195,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               type: 'single',
               column: 'namespace',
               value: customFilters.namespace,
+              searchable: true,
               onChange: value => {
                 const replacedTags = replaceTags(NamespaceTagKey, value, tags, namespaceList, {
                   type: 'single',
