@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/polarismesh/polaris-console/common/log"
 	"gopkg.in/yaml.v2"
@@ -45,11 +46,13 @@ type MonitorServer struct {
 
 // Config 配置
 type Config struct {
-	Logger        log.Options   `yaml:"logger"`
-	WebServer     WebServer     `yaml:"webServer"`
-	PolarisServer PolarisServer `yaml:"polarisServer"`
-	MonitorServer MonitorServer `yaml:"monitorServer"`
-	Futures       string        `yaml:"futures"`
+	Logger          log.Options     `yaml:"logger"`
+	WebServer       WebServer       `yaml:"webServer"`
+	PolarisServer   PolarisServer   `yaml:"polarisServer"`
+	MonitorServer   MonitorServer   `yaml:"monitorServer"`
+	EventServer     EventServer     `yaml:"eventServer"`
+	OperationServer OperationServer `yaml:"operationServer"`
+	Futures         string          `yaml:"futures"`
 }
 
 // WebServer web server配置
@@ -62,8 +65,19 @@ type WebServer struct {
 	AuthURL     string `yaml:"authURL"`
 	MonitorURL  string `yaml:"monitorURL"`
 	ConfigURL   string `yaml:"configURL"`
+	LogURL      string `yaml:"logURL"`
 	WebPath     string `yaml:"webPath"`
 	JWT         JWT    `yaml:"jwt"`
+}
+
+type EventServer struct {
+	RequestURL string        `yaml:"requestUrl"`
+	Timeout    time.Duration `yaml:"timeout"`
+}
+
+type OperationServer struct {
+	RequestURL string        `yaml:"requestUrl"`
+	Timeout    time.Duration `yaml:"timeout"`
 }
 
 // JWT jwtToken 相关的配置

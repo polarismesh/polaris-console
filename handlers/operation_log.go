@@ -1,0 +1,200 @@
+/**
+ * Tencent is pleased to support the open source community by making Polaris available.
+ *
+ * Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
+ *
+ * Licensed under the BSD 3-Clause License (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://opensource.org/licenses/BSD-3-Clause
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
+
+package handlers
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/polarismesh/polaris-console/bootstrap"
+	httpcommon "github.com/polarismesh/polaris-console/common/http"
+	"github.com/polarismesh/polaris-console/common/model"
+)
+
+// Resource 操作资源
+type Resource string
+
+// 定义包含的资源类型
+const (
+	RNamespace      Resource = "Namespace"
+	RService        Resource = "Service"
+	RRouting        Resource = "Routing"
+	RRoutingV2      Resource = "RoutingV2"
+	RInstance       Resource = "Instance"
+	RRateLimit      Resource = "RateLimit"
+	RCircuitBreaker Resource = "CircuitBreaker"
+	RUser           Resource = "User"
+	RUserGroup      Resource = "UserGroup"
+	RAuthStrategy   Resource = "AuthStrategy"
+	RConfigGroup    Resource = "ConfigGroup"
+)
+
+var (
+	_resourceTypeInfos = map[Resource]string{
+		RNamespace:      "命名空间",
+		RService:        "服务",
+		RInstance:       "服务实例",
+		RRouting:        "路由规则",
+		RRateLimit:      "限流规则",
+		RCircuitBreaker: "熔断规则",
+		RUser:           "用户",
+		RUserGroup:      "用户组",
+		RAuthStrategy:   "鉴权策略",
+		RConfigGroup:    "配置",
+	}
+
+	_searchOperationLogParams = map[string]struct{}{
+		"namespace":        {},
+		"resource_type":    {},
+		"resource_name":    {},
+		"operation_type":   {},
+		"operator":         {},
+		"operation_detail": {},
+		"start_time":       {},
+		"end_time":         {},
+		"limit":            {},
+		"offset":           {},
+		"extend_info":      {},
+	}
+)
+
+type OperationLogResponse struct {
+	Code       uint32            `json:"code"`
+	Info       string            `json:"info"`
+	Total      uint64            `json:"total"`
+	Size       uint32            `json:"size"`
+	HasNext    bool              `json:"has_next"`
+	Results    []OperationRecord `json:"results,omitempty"`
+	ExtendInfo string            `json:"extend_info,omitempty"`
+}
+
+type OperationRecord struct {
+	ResourceType    string `json:"resource_type"`
+	ResourceDesc    string `json:"resource_desc"`
+	Namespace       string `json:"namespace"`
+	OperationType   string `json:"operation_type"`
+	OperationDesc   string `json:"operation_desc"`
+	Operator        string `json:"operator"`
+	OperationDetail string `json:"operation_detail"`
+	HappenTime      string `json:"happen_time"`
+}
+
+func DescribeOperationHistoryLog(conf *bootstrap.Config) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		if !verifyAccessPermission(ctx, conf) {
+			return
+		}
+		reader, err := GetHistoryLogReader(conf)
+		if err != nil {
+			ctx.JSON(http.StatusNotFound, model.Response{
+				Code: 400404,
+				Info: err.Error(),
+			})
+			return
+		}
+		if reader == nil {
+			ctx.JSON(http.StatusOK, model.Response{
+				Code: 200000,
+				Info: "success",
+			})
+			return
+		}
+
+		filters := httpcommon.ParseQueryParams(ctx.Request)
+		param, err := parseHttpQueryToSearchParams(filters, _searchOperationLogParams)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, model.Response{
+				Code: 400000,
+				Info: err.Error(),
+			})
+			return
+		}
+
+		resp := &OperationLogResponse{}
+		if err := reader.Query(context.Background(), param, resp); err != nil {
+			ctx.JSON(http.StatusInternalServerError, model.Response{
+				Code: 500000,
+				Info: err.Error(),
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, model.QueryResponse{
+			Code:   200000,
+			Data:   resp.Results,
+			Size:   resp.Size,
+			Amount: resp.Total,
+		})
+		return
+	}
+}
+
+func DescribeOperationTypes(conf *bootstrap.Config) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ret := make([]TypeInfo, 0, len(_resourceTypeInfos))
+		for k, v := range _resourceTypeInfos {
+			ret = append(ret, TypeInfo{
+				Type: string(k),
+				Desc: v,
+			})
+		}
+
+		ctx.JSON(http.StatusOK, model.Response{
+			Code: 200000,
+			Info: "success",
+			Data: ret,
+		})
+	}
+}
+
+func parseHttpQueryToSearchParams(filters map[string]string, allowSearch map[string]struct{}) (model.LogQueryParam, error) {
+	offset, limit, err := httpcommon.ParseOffsetAndLimit(filters)
+	if err != nil {
+		return model.LogQueryParam{}, err
+	}
+
+	ret := make([]model.QueryFilter, 0, len(filters))
+	for k, v := range filters {
+		if _, ok := allowSearch[k]; !ok {
+			return model.LogQueryParam{}, fmt.Errorf("Query Param : %s Not Support", k)
+		}
+
+		op := model.EqualOperator
+		v, isWild := httpcommon.ParseWildName(v)
+		if isWild {
+			op = model.LikeOperartor
+		}
+
+		ret = append(ret, model.QueryFilter{
+			SearcgKey:   k,
+			SearchValue: v,
+			Operation:   op,
+		})
+	}
+
+	return model.LogQueryParam{
+		Filters: ret,
+		Offset:  offset,
+		Limit:   limit,
+		Options: map[string]string{
+			"": "",
+		},
+	}, nil
+}

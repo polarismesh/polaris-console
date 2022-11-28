@@ -22,8 +22,10 @@ polarisServer:
   polarisToken: "polaris@12345678"
 monitorServer:
   address: "127.0.0.1:9090"
-oaAuthority:
-  enableOAAuth: false
-hrData:
-  enableHrData: false
+eventServer:
+  requestUrl: 
+  timeout: 5s
+operationServer:
+  requestUrl:
+  timeout: 5s
 futures: ${POLARIS_FUTURES}
