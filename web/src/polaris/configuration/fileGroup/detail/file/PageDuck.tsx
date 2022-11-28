@@ -154,7 +154,7 @@ export default class PageDuck extends Base {
     const { types } = this
     return {
       ...super.reducers,
-      data: reduceFromPayload(types.SET_COMPOSE_ID, {} as ConfigFileGroup),
+      data: reduceFromPayload(types.SET_DATA, {} as ConfigFileGroup),
       composedId: reduceFromPayload(types.SET_COMPOSE_ID, {} as ComposedId),
       fileTree: reduceFromPayload(types.SET_FILE_TREE, {}),
       expandedIds: reduceFromPayload(types.SET_EXPANDED_IDS, [] as string[]),
