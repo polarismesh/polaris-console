@@ -102,6 +102,15 @@ func DescribeEventLog(conf *bootstrap.Config) gin.HandlerFunc {
 		if !verifyAccessPermission(ctx, conf) {
 			return
 		}
+		if len(conf.EventServer.RequestURL) == 0 {
+			ctx.JSON(http.StatusOK, model.QueryResponse{
+				Code:     200000,
+				Size:     0,
+				Amount:   0,
+				HashNext: false,
+			})
+			return
+		}
 		reader, err := GetEventLogReader(conf)
 		if err != nil {
 			ctx.JSON(http.StatusNotFound, model.Response{
@@ -137,12 +146,7 @@ func DescribeEventLog(conf *bootstrap.Config) gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, model.QueryResponse{
-			Code:   200000,
-			Data:   resp.Results,
-			Size:   resp.Size,
-			Amount: resp.Total,
-		})
+		ctx.JSON(http.StatusOK, resp)
 		return
 	}
 }

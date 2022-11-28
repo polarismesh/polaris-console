@@ -19,7 +19,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -101,6 +100,15 @@ func DescribeOperationHistoryLog(conf *bootstrap.Config) gin.HandlerFunc {
 		if !verifyAccessPermission(ctx, conf) {
 			return
 		}
+		if len(conf.OperationServer.RequestURL) == 0 {
+			ctx.JSON(http.StatusOK, model.QueryResponse{
+				Code:     200000,
+				Size:     0,
+				Amount:   0,
+				HashNext: false,
+			})
+			return
+		}
 		reader, err := GetHistoryLogReader(conf)
 		if err != nil {
 			ctx.JSON(http.StatusNotFound, model.Response{
@@ -136,16 +144,12 @@ func DescribeOperationHistoryLog(conf *bootstrap.Config) gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, model.QueryResponse{
-			Code:   200000,
-			Data:   resp.Results,
-			Size:   resp.Size,
-			Amount: resp.Total,
-		})
+		ctx.JSON(http.StatusOK, resp)
 		return
 	}
 }
 
+// DescribeOperationTypes describe operation type desc list
 func DescribeOperationTypes(conf *bootstrap.Config) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ret := make([]TypeInfo, 0, len(_resourceTypeInfos))
@@ -162,39 +166,4 @@ func DescribeOperationTypes(conf *bootstrap.Config) gin.HandlerFunc {
 			Data: ret,
 		})
 	}
-}
-
-func parseHttpQueryToSearchParams(filters map[string]string, allowSearch map[string]struct{}) (model.LogQueryParam, error) {
-	offset, limit, err := httpcommon.ParseOffsetAndLimit(filters)
-	if err != nil {
-		return model.LogQueryParam{}, err
-	}
-
-	ret := make([]model.QueryFilter, 0, len(filters))
-	for k, v := range filters {
-		if _, ok := allowSearch[k]; !ok {
-			return model.LogQueryParam{}, fmt.Errorf("Query Param : %s Not Support", k)
-		}
-
-		op := model.EqualOperator
-		v, isWild := httpcommon.ParseWildName(v)
-		if isWild {
-			op = model.LikeOperartor
-		}
-
-		ret = append(ret, model.QueryFilter{
-			SearcgKey:   k,
-			SearchValue: v,
-			Operation:   op,
-		})
-	}
-
-	return model.LogQueryParam{
-		Filters: ret,
-		Offset:  offset,
-		Limit:   limit,
-		Options: map[string]string{
-			"": "",
-		},
-	}, nil
 }

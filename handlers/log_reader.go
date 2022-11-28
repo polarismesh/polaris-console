@@ -21,11 +21,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"sync"
 
 	"github.com/polarismesh/polaris-console/bootstrap"
+	httpcommon "github.com/polarismesh/polaris-console/common/http"
 	"github.com/polarismesh/polaris-console/common/model"
 )
 
@@ -102,4 +104,37 @@ func (r *RemoteLogReader) Query(ctx context.Context, queryParam model.LogQueryPa
 		return err
 	}
 	return nil
+}
+
+func parseHttpQueryToSearchParams(filters map[string]string, allowSearch map[string]struct{}) (model.LogQueryParam, error) {
+	offset, limit, err := httpcommon.ParseOffsetAndLimit(filters)
+	if err != nil {
+		return model.LogQueryParam{}, err
+	}
+
+	ret := make([]model.QueryFilter, 0, len(filters))
+	for k, v := range filters {
+		if _, ok := allowSearch[k]; !ok {
+			return model.LogQueryParam{}, fmt.Errorf("Query Param : %s Not Support", k)
+		}
+
+		op := model.EqualOperator
+		v, isWild := httpcommon.ParseWildName(v)
+		if isWild {
+			op = model.LikeOperartor
+		}
+
+		ret = append(ret, model.QueryFilter{
+			SearcgKey:   k,
+			SearchValue: v,
+			Operation:   op,
+		})
+	}
+
+	return model.LogQueryParam{
+		Filters:    ret,
+		Offset:     offset,
+		Limit:      limit,
+		ExtendInfo: filters["extend_info"],
+	}, nil
 }

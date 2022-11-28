@@ -29,5 +29,6 @@ type QueryResponse struct {
 	Data       interface{} `json:"data"`
 	Size       uint32      `json:"size"`
 	Amount     uint64      `json:"amount,omitempty"`
-	ExtendInfo string      `json:"extendInfo,omitempty"`
+	ExtendInfo string      `json:"extend_info,omitempty"`
+	HashNext   bool        `json:"hash_next,omitempty"`
 }

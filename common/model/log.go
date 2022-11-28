@@ -34,8 +34,8 @@ type QueryFilter struct {
 }
 
 type LogQueryParam struct {
-	Filters []QueryFilter
-	Offset  uint32
-	Limit   uint32
-	Options map[string]string
+	Filters    []QueryFilter `json:"filters"`
+	Offset     uint32        `json:"offset"`
+	Limit      uint32        `json:"limit"`
+	ExtendInfo string        `json:"extend_info,omitempty"`
 }
