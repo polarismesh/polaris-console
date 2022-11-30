@@ -117,7 +117,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
   const searchKeyword = selectors.searchKeyword(store)
   const editing = selectors.editing(store)
   const fileTree = selectors.fileTree(store)
-  const { showHistoryMap, editContent } = selector(store)
+  const { showHistoryMap, editContent, data } = selector(store)
   const currentHistoryDuck = ducks.configFileDynamicDuck.getDuck(currentNode?.name)
 
   function RefreshConfigButton(): JSX.Element {
@@ -157,7 +157,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
         <Justify
           left={
             <>
-              <Button type={'primary'} onClick={() => handlers.add()}>
+              <Button type={'primary'} disabled={!data.editable} onClick={() => handlers.add()}>
                 新增
               </Button>
               <RefreshConfigButton />
@@ -295,7 +295,11 @@ export default function Page(props: DuckCmpProps<Duck>) {
                         style={{ marginBottom: '20px' }}
                         left={
                           <>
-                            <Button type={'primary'} disabled={editing} onClick={() => handlers.releaseCurrentFile()}>
+                            <Button
+                              type={'primary'}
+                              disabled={editing || !data.editable}
+                              onClick={() => handlers.releaseCurrentFile()}
+                            >
                               发布
                             </Button>
 
@@ -309,7 +313,11 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 </Button>
                               </>
                             ) : (
-                              <Button type={'weak'} onClick={() => handlers.editCurrentNode()}>
+                              <Button
+                                disabled={!data.editable}
+                                type={'weak'}
+                                onClick={() => handlers.editCurrentNode()}
+                              >
                                 编辑
                               </Button>
                             )}
