@@ -90,10 +90,9 @@ type OperationLogResponse struct {
 
 type OperationRecord struct {
 	ResourceType    string `json:"resource_type"`
-	ResourceDesc    string `json:"resource_desc"`
+	ResourceName    string `json:"resource_name"`
 	Namespace       string `json:"namespace"`
 	OperationType   string `json:"operation_type"`
-	OperationDesc   string `json:"operation_desc"`
 	Operator        string `json:"operator"`
 	OperationDetail string `json:"operation_detail"`
 	HappenTime      string `json:"happen_time"`

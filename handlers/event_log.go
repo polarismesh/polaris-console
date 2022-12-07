@@ -88,7 +88,6 @@ type EventRecordLogResponse struct {
 
 type EventRecord struct {
 	EventType  string `json:"event_type"`
-	EventDesc  string `json:"event_desc"`
 	Namespace  string `json:"namespace"`
 	Service    string `json:"service"`
 	InstanceID string `json:"instance_id"`
