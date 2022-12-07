@@ -127,7 +127,7 @@ export default class ServicePageDuck extends GridPageDuck {
       type: this.types.SET_NAMESPACE_LIST,
       payload: options,
     })
-    const eventTypeList = yield describeEventType()
+    const { data: eventTypeList } = yield describeEventType()
     const eventTypeOption = eventTypeList.map((item) => ({
       ...item,
       text: item.name,

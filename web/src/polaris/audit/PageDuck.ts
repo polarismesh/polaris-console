@@ -140,7 +140,7 @@ export default class ServicePageDuck extends GridPageDuck {
       type: this.types.SET_NAMESPACE_LIST,
       payload: options,
     })
-    const resourceTypeList = yield describeResourceType()
+    const { data: resourceTypeList } = yield describeResourceType()
     const resourceTypeOption = resourceTypeList.map((item) => ({
       ...item,
       text: item.name,

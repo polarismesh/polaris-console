@@ -107,10 +107,10 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
     [],
   )
   const columns = React.useMemo(() => getColumns(props), [])
-  const { customFilters, namespaceList, tags } = selector(store)
+  const { customFilters, namespaceList, tags, filterTime } = selector(store)
   const [timePickerIndex, setTimePickerIndex] = React.useState('7')
   return (
-    <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
+    <BasicLayout title={'操作记录'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
         <Justify
           left={
@@ -138,6 +138,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                   setTimePickerIndex('-1')
                   handlers.setFilterTime(value)
                 }}
+                value={filterTime}
               />
             </>
           }
