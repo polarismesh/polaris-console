@@ -32,31 +32,35 @@ type Resource string
 
 // 定义包含的资源类型
 const (
-	RNamespace      Resource = "Namespace"
-	RService        Resource = "Service"
-	RRouting        Resource = "Routing"
-	RRoutingV2      Resource = "RoutingV2"
-	RInstance       Resource = "Instance"
-	RRateLimit      Resource = "RateLimit"
-	RCircuitBreaker Resource = "CircuitBreaker"
-	RUser           Resource = "User"
-	RUserGroup      Resource = "UserGroup"
-	RAuthStrategy   Resource = "AuthStrategy"
-	RConfigGroup    Resource = "ConfigGroup"
+	RNamespace         Resource = "Namespace"
+	RService           Resource = "Service"
+	RRouting           Resource = "Routing"
+	RCircuitBreaker    Resource = "CircuitBreaker"
+	RInstance          Resource = "Instance"
+	RRateLimit         Resource = "RateLimit"
+	RUser              Resource = "User"
+	RUserGroup         Resource = "UserGroup"
+	RUserGroupRelation Resource = "UserGroupRelation"
+	RAuthStrategy      Resource = "AuthStrategy"
+	RConfigGroup       Resource = "ConfigGroup"
+	RConfigFile        Resource = "ConfigFile"
+	RConfigFileRelease Resource = "ConfigFileRelease"
 )
 
 var (
 	_resourceTypeInfos = map[Resource]string{
-		RNamespace:      "命名空间",
-		RService:        "服务",
-		RInstance:       "服务实例",
-		RRouting:        "路由规则",
-		RRateLimit:      "限流规则",
-		RCircuitBreaker: "熔断规则",
-		RUser:           "用户",
-		RUserGroup:      "用户组",
-		RAuthStrategy:   "鉴权策略",
-		RConfigGroup:    "配置",
+		RNamespace:         "命名空间",
+		RService:           "服务",
+		RInstance:          "服务实例",
+		RRouting:           "路由规则",
+		RRateLimit:         "限流规则",
+		RCircuitBreaker:    "熔断规则",
+		RUser:              "用户",
+		RUserGroup:         "用户组",
+		RAuthStrategy:      "鉴权策略",
+		RConfigGroup:       "配置分组",
+		RConfigFile:        "配置文件",
+		RConfigFileRelease: "配置发布",
 	}
 
 	_searchOperationLogParams = map[string]struct{}{
