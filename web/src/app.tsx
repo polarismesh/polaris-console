@@ -101,12 +101,12 @@ import CustomRouteDetailPage from '@src/polaris/administration/dynamicRoute/cust
 import CustomRouteDetailPageDuck from '@src/polaris/administration/dynamicRoute/customRoute/detail/PageDuck'
 const CustomRouteDetail = connectWithDuck(CustomRouteDetailPage, CustomRouteDetailPageDuck as any)
 
-import AuditPage from '@src/polaris/service/Page'
-import AuditPageDuck from '@src/polaris/service/PageDuck'
+import AuditPage from '@src/polaris/audit/Page'
+import AuditPageDuck from '@src/polaris/audit/PageDuck'
 const Audit = connectWithDuck(AuditPage, AuditPageDuck)
 
-import EventPage from '@src/polaris/service/Page'
-import EventPageDuck from '@src/polaris/service/PageDuck'
+import EventPage from '@src/polaris/event/Page'
+import EventPageDuck from '@src/polaris/event/PageDuck'
 const Event = connectWithDuck(EventPage, EventPageDuck)
 
 export default function root() {
