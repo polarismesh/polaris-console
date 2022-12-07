@@ -37,7 +37,8 @@ export const OperationTypeList = [
   { text: '删除', value: 'delete' },
 ]
 export const OperationTypeMap = OperationTypeList.reduce((prev, curr) => {
-  return (curr[prev.value] = prev.text)
+  prev[curr.value] = curr.text
+  return prev
 }, {} as any)
 function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
   const { duck, store } = props
