@@ -82,7 +82,7 @@ type EventRecordLogResponse struct {
 	Total      uint64        `json:"total,omitempty"`
 	Size       uint32        `json:"size,omitempty"`
 	HasNext    bool          `json:"has_next"`
-	Results    []EventRecord `json:"results,omitempty"`
+	Data       []EventRecord `json:"data"`
 	ExtendInfo string        `json:"extend_info,omitempty"`
 }
 
