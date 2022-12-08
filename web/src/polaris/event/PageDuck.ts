@@ -130,12 +130,12 @@ export default class ServicePageDuck extends GridPageDuck {
     const { data: eventTypeList } = yield describeEventType()
     const eventTypeOption = eventTypeList.map((item) => ({
       ...item,
-      text: item.name,
+      text: item.desc,
       value: item.type,
-      key: item.name,
+      name: item.desc,
     }))
     yield put({
-      type: this.types.SET_RESOURCE_TYPE_LIST,
+      type: this.types.SET_EVENT_TYPE_LIST,
       payload: eventTypeOption,
     })
   }

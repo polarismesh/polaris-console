@@ -143,9 +143,9 @@ export default class ServicePageDuck extends GridPageDuck {
     const { data: resourceTypeList } = yield describeResourceType()
     const resourceTypeOption = resourceTypeList.map((item) => ({
       ...item,
-      text: item.name,
+      text: item.desc,
       value: item.type,
-      key: item.name,
+      name: item.desc,
     }))
     yield put({
       type: this.types.SET_RESOURCE_TYPE_LIST,
