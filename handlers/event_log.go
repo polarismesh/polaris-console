@@ -92,7 +92,7 @@ type EventRecord struct {
 	Service    string `json:"service"`
 	InstanceID string `json:"instance_id"`
 	Host       string `json:"host"`
-	Port       int    `json:"port"`
+	Port       string `json:"port"`
 	EventTime  string `json:"event_time"`
 }
 
