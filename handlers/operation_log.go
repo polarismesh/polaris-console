@@ -47,20 +47,48 @@ const (
 	RConfigFileRelease Resource = "ConfigFileRelease"
 )
 
+// OperationType 操作类型
+type OperationType string
+
+// 定义包含的操作类型
+const (
+	// OCreate 新建
+	OCreate OperationType = "Create"
+	// ODelete 删除
+	ODelete OperationType = "Delete"
+	// OUpdate 更新
+	OUpdate OperationType = "Update"
+	// OUpdateIsolate 更新隔离状态
+	OUpdateIsolate OperationType = "UpdateIsolate"
+	// OUpdateToken 更新token
+	OUpdateToken OperationType = "UpdateToken"
+	// OUpdateGroup 更新用户-用户组关联关系
+	OUpdateGroup OperationType = "UpdateGroup"
+	// OEnableRateLimit 更新启用状态
+	OUpdateEnable OperationType = "UpdateEnable"
+)
+
 var (
-	_resourceTypeInfos = map[Resource]string{
-		RNamespace:         "命名空间",
-		RService:           "服务",
-		RInstance:          "服务实例",
-		RRouting:           "路由规则",
-		RRateLimit:         "限流规则",
-		RCircuitBreaker:    "熔断规则",
-		RUser:              "用户",
-		RUserGroup:         "用户组",
-		RAuthStrategy:      "鉴权策略",
-		RConfigGroup:       "配置分组",
-		RConfigFile:        "配置文件",
-		RConfigFileRelease: "配置发布",
+	_resourceTypeInfos = map[string]string{
+		string(RNamespace):         "命名空间",
+		string(RService):           "服务",
+		string(RInstance):          "服务实例",
+		string(RRouting):           "路由规则",
+		string(RRateLimit):         "限流规则",
+		string(RCircuitBreaker):    "熔断规则",
+		string(RUser):              "用户",
+		string(RUserGroup):         "用户组",
+		string(RAuthStrategy):      "鉴权策略",
+		string(RConfigGroup):       "配置分组",
+		string(RConfigFile):        "配置文件",
+		string(RConfigFileRelease): "配置发布",
+
+		string(OCreate):        "创建",
+		string(ODelete):        "删除",
+		string(OUpdate):        "更新",
+		string(OUpdateIsolate): "更新实例隔离状态",
+		string(OUpdateGroup):   "更新用户组",
+		string(OUpdateEnable):  "更新启用状态",
 	}
 
 	_searchOperationLogParams = map[string]struct{}{
