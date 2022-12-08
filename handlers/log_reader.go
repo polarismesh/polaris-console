@@ -36,6 +36,7 @@ var (
 	_eventlogReaderOnce sync.Once
 )
 
+// GetEventLogReader 获取事件中心日志数据
 func GetEventLogReader(conf *bootstrap.Config) (*RemoteLogReader, error) {
 	_eventlogReaderOnce.Do(func() {
 		if _eventlogReader != nil {
@@ -44,9 +45,9 @@ func GetEventLogReader(conf *bootstrap.Config) (*RemoteLogReader, error) {
 	})
 
 	_eventlogReader = &RemoteLogReader{
-		requestUrl: conf.OperationServer.RequestURL,
+		requestUrl: conf.EventServer.RequestURL,
 		httpClient: &http.Client{
-			Timeout: conf.OperationServer.Timeout,
+			Timeout: conf.EventServer.Timeout,
 		},
 	}
 
@@ -58,6 +59,7 @@ var (
 	_historylogReaderOnce sync.Once
 )
 
+// GetHistoryLogReader 获取操作记录日志数据
 func GetHistoryLogReader(conf *bootstrap.Config) (*RemoteLogReader, error) {
 	_historylogReaderOnce.Do(func() {
 		if _historylogReader != nil {
