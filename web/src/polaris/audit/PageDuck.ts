@@ -8,6 +8,8 @@ import { DefaultAuditTagAttribute, ResourceNameTag } from './Page'
 import { NamespaceItem } from '../service/PageDuck'
 import { describeNamespaces } from '../service/model'
 import moment from 'moment'
+import { once, ttl } from '../common/helpers/cacheable'
+const cacheDescribeOperationRecord = once(describeOperationRecord, ttl(30 * 60 * 1000))
 
 export const EmptyCustomFilter = {
   namespace: '',
@@ -27,7 +29,7 @@ interface Filter extends BaseFilter {
   operation_detail?: string
   start_time?: string
   end_time?: string
-  extend_info?: string
+  extend_info?: Object
 }
 interface CustomFilters {
   namespace?: string
@@ -89,7 +91,7 @@ export default class ServicePageDuck extends GridPageDuck {
         moment().subtract(7, 'd'),
         moment(),
       ]),
-      extendInfo: reduceFromPayload<string>(types.SET_EXTEND_INFO, ''),
+      extendInfo: reduceFromPayload<Object>(types.SET_EXTEND_INFO, {}),
     }
   }
   get creators() {
@@ -123,7 +125,8 @@ export default class ServicePageDuck extends GridPageDuck {
       namespaceList: (state: State) => state.namespaceList,
       resourceTypeMap: (state: State) => {
         return state.resourceTypeList.reduce((prev, curr) => {
-          return (curr[prev.type] = prev.desc)
+          prev[curr.type] = curr.desc
+          return prev
         }, {} as any)
       },
     }
@@ -161,6 +164,9 @@ export default class ServicePageDuck extends GridPageDuck {
       const { extend_info } = action.payload
       yield put({ type: types.SET_EXTEND_INFO, payload: extend_info })
     })
+    yield takeLatest(types.RELOAD, function* () {
+      yield put(ducks.grid.creators.reset())
+    })
     yield takeLatest(types.CHANGE_TAGS, function* (action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
@@ -193,11 +199,13 @@ export default class ServicePageDuck extends GridPageDuck {
       end_time,
       extend_info,
     } = filters
+    const requestMethod = page === 1 ? describeOperationRecord : cacheDescribeOperationRecord
+
     const {
-      amount,
+      has_next,
       data,
-      extend_info: newExtendInfo,
-    } = await describeOperationRecord({
+      extend_info: nextExtendInfo,
+    } = await requestMethod({
       limit: count,
       offset: (page - 1) * count,
       namespace: namespace || undefined,
@@ -208,12 +216,18 @@ export default class ServicePageDuck extends GridPageDuck {
       operation_detail: operation_detail ? `${operation_detail}*` : undefined,
       start_time: start_time || undefined,
       end_time: end_time || undefined,
-      extend_info: extend_info || undefined,
+      extend_info: extend_info[page] || undefined,
     })
+    if (has_next) {
+      extend_info[page + 1] = nextExtendInfo
+    }
     return {
-      list: data,
-      totalCount: amount,
-      extend_info: newExtendInfo,
+      list: data?.map((item) => ({
+        ...item,
+        id: `${item.happen_time}-${item.operator}-${item.operation_type}-${item.resource_type}-${item.resource_name}-${item.namespace}`,
+      })),
+      totalCount: has_next ? page * count + 1 : data.length - 1,
+      extend_info,
     }
   }
 }

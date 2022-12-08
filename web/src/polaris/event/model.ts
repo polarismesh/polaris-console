@@ -15,6 +15,7 @@ export type DescribeEventCenterRecordResult = {
   size: number
   extend_info: string
   data: EventRecord[]
+  has_next: boolean
 }
 
 export interface EventRecord {

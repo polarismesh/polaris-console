@@ -166,7 +166,16 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
             }),
           ]}
         />
-        <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
+        <GridPagePagination
+          duck={duck}
+          dispatch={dispatch}
+          store={store}
+          stateTextVisible={false}
+          pageSizeVisible={false}
+          pageIndexVisible={false}
+          jumpVisible={true}
+          endJumpVisible={false}
+        />
       </Card>
     </BasicLayout>
   )
