@@ -115,7 +115,8 @@ export default class ServicePageDuck extends GridPageDuck {
       namespaceList: (state: State) => state.namespaceList,
       eventTypeMap: (state: State) => {
         return state.eventTypeList.reduce((prev, curr) => {
-          return (prev[curr.type] = curr.desc)
+          prev[curr.type] = curr.desc
+          return prev
         }, {} as any)
       },
     }
