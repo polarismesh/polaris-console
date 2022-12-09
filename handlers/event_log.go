@@ -79,11 +79,11 @@ var (
 type EventRecordLogResponse struct {
 	Code       uint32        `json:"code"`
 	Info       string        `json:"info"`
-	Total      uint64        `json:"total,omitempty"`
-	Size       uint32        `json:"size,omitempty"`
+	Total      uint64        `json:"total"`
+	Size       uint32        `json:"size"`
 	HasNext    bool          `json:"has_next"`
 	Data       []EventRecord `json:"data"`
-	ExtendInfo string        `json:"extend_info,omitempty"`
+	ExtendInfo string        `json:"extend_info"`
 }
 
 type EventRecord struct {

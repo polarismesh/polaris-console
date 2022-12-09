@@ -112,8 +112,8 @@ type OperationLogResponse struct {
 	Total      uint64            `json:"total"`
 	Size       uint32            `json:"size"`
 	HasNext    bool              `json:"has_next"`
-	Data       []OperationRecord `json:"data,omitempty"`
-	ExtendInfo string            `json:"extend_info,omitempty"`
+	Data       []OperationRecord `json:"data"`
+	ExtendInfo string            `json:"extend_info"`
 }
 
 type OperationRecord struct {
