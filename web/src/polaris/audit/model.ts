@@ -18,6 +18,7 @@ export type DescribeOperationRecordResult = {
   size: number
   extend_info: string
   data: OperationRecord[]
+  has_next: boolean
 }
 
 export interface OperationRecord {

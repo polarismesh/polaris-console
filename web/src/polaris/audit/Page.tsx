@@ -32,9 +32,9 @@ export const DefaultAuditTagAttribute = {
   name: '资源名称',
 }
 export const OperationTypeList = [
-  { text: '创建', value: 'create' },
-  { text: '更新', value: 'update' },
-  { text: '删除', value: 'delete' },
+  { text: '创建', value: 'Create' },
+  { text: '更新', value: 'Update' },
+  { text: '删除', value: 'Delete' },
 ]
 export const OperationTypeMap = OperationTypeList.reduce((prev, curr) => {
   prev[curr.value] = curr.text
@@ -106,11 +106,11 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
     }),
     [],
   )
-  const columns = React.useMemo(() => getColumns(props), [])
-  const { customFilters, namespaceList, tags } = selector(store)
+  const columns = getColumns(props)
+  const { customFilters, namespaceList, tags, filterTime } = selector(store)
   const [timePickerIndex, setTimePickerIndex] = React.useState('7')
   return (
-    <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
+    <BasicLayout title={'操作记录'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
         <Justify
           left={
@@ -138,6 +138,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                   setTimePickerIndex('-1')
                   handlers.setFilterTime(value)
                 }}
+                value={filterTime}
               />
             </>
           }
@@ -190,7 +191,16 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
             }),
           ]}
         />
-        <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
+        <GridPagePagination
+          duck={duck}
+          dispatch={dispatch}
+          store={store}
+          stateTextVisible={false}
+          pageSizeVisible={false}
+          pageIndexVisible={false}
+          jumpVisible={true}
+          endJumpVisible={false}
+        />
       </Card>
     </BasicLayout>
   )
