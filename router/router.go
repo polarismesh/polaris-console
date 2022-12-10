@@ -56,6 +56,9 @@ func Router(config *bootstrap.Config) {
 	// 配置请求
 	ConfigRouter(r, config)
 
+	// 事件日志、操作日志查询
+	LogRouter(r, config)
+
 	address := fmt.Sprintf("%v:%v", config.WebServer.ListenIP, config.WebServer.ListenPort)
 	r.Run(address)
 }
