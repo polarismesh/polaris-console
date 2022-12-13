@@ -400,7 +400,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
 function getFileNameContext(fileName, status, props) {
   const splitArray = fileName.split('/')
   return (
-    <div onClick={() => fetchConfigFile(props)}>
+    <div>
       <span className='configuration-tree-node-content'>{splitArray[splitArray.length - 1]}</span>
       {FileStatus.Edited === status && <Badge theme='warning'>待发布</Badge>}
     </div>
