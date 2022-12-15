@@ -25,72 +25,10 @@ import (
 	"github.com/polarismesh/polaris-console/bootstrap"
 	httpcommon "github.com/polarismesh/polaris-console/common/http"
 	"github.com/polarismesh/polaris-console/common/model"
-)
-
-// Resource 操作资源
-type Resource string
-
-// 定义包含的资源类型
-const (
-	RNamespace         Resource = "Namespace"
-	RService           Resource = "Service"
-	RRouting           Resource = "Routing"
-	RCircuitBreaker    Resource = "CircuitBreaker"
-	RInstance          Resource = "Instance"
-	RRateLimit         Resource = "RateLimit"
-	RUser              Resource = "User"
-	RUserGroup         Resource = "UserGroup"
-	RUserGroupRelation Resource = "UserGroupRelation"
-	RAuthStrategy      Resource = "AuthStrategy"
-	RConfigGroup       Resource = "ConfigGroup"
-	RConfigFile        Resource = "ConfigFile"
-	RConfigFileRelease Resource = "ConfigFileRelease"
-)
-
-// OperationType 操作类型
-type OperationType string
-
-// 定义包含的操作类型
-const (
-	// OCreate 新建
-	OCreate OperationType = "Create"
-	// ODelete 删除
-	ODelete OperationType = "Delete"
-	// OUpdate 更新
-	OUpdate OperationType = "Update"
-	// OUpdateIsolate 更新隔离状态
-	OUpdateIsolate OperationType = "UpdateIsolate"
-	// OUpdateToken 更新token
-	OUpdateToken OperationType = "UpdateToken"
-	// OUpdateGroup 更新用户-用户组关联关系
-	OUpdateGroup OperationType = "UpdateGroup"
-	// OEnableRateLimit 更新启用状态
-	OUpdateEnable OperationType = "UpdateEnable"
+	"github.com/polarismesh/polaris-console/common/operation"
 )
 
 var (
-	_resourceTypeInfos = map[string]string{
-		string(RNamespace):         "命名空间",
-		string(RService):           "服务",
-		string(RInstance):          "服务实例",
-		string(RRouting):           "路由规则",
-		string(RRateLimit):         "限流规则",
-		string(RCircuitBreaker):    "熔断规则",
-		string(RUser):              "用户",
-		string(RUserGroup):         "用户组",
-		string(RAuthStrategy):      "鉴权策略",
-		string(RConfigGroup):       "配置分组",
-		string(RConfigFile):        "配置文件",
-		string(RConfigFileRelease): "配置发布",
-
-		string(OCreate):        "创建",
-		string(ODelete):        "删除",
-		string(OUpdate):        "更新",
-		string(OUpdateIsolate): "更新实例隔离状态",
-		string(OUpdateGroup):   "更新用户组",
-		string(OUpdateEnable):  "更新启用状态",
-	}
-
 	_searchOperationLogParams = map[string]struct{}{
 		"namespace":        {},
 		"resource_type":    {},
@@ -183,8 +121,8 @@ func DescribeOperationHistoryLog(conf *bootstrap.Config) gin.HandlerFunc {
 // DescribeOperationTypes describe operation type desc list
 func DescribeOperationTypes(conf *bootstrap.Config) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ret := make([]TypeInfo, 0, len(_resourceTypeInfos))
-		for k, v := range _resourceTypeInfos {
+		ret := make([]TypeInfo, 0, len(operation.ResourceTypeInfos))
+		for k, v := range operation.ResourceTypeInfos {
 			ret = append(ret, TypeInfo{
 				Type: string(k),
 				Desc: v,

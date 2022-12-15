@@ -15,30 +15,18 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package main
+package alarm
 
-import (
-	"fmt"
+import "errors"
 
-	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/eventhub"
-	"github.com/polarismesh/polaris-console/router"
+var (
+	ErrorAlarmNameInvalid    = errors.New("alarm rule name invalid")
+	ErrorAlarmTopicInvalid   = errors.New("alarm rule topic invalid")
+	ErrorAlarmMessageInvalid = errors.New("alarm rule message invalid")
+	ErrorMonitorTypeInvalid  = errors.New("alarm rule monitor type invalid")
+
+	ErrorExprLabelInvalid = errors.New("alarm expr label invalid")
+
+	ErrorCallbackTypeInvalid = errors.New("alarm callback type invalid")
+	ErrorCallbackInfoInvalid = errors.New("alarm callback info invalid")
 )
-
-func main() {
-	// 加载配置
-	configFilePath := "polaris-console.yaml"
-	config, err := bootstrap.LoadConfig(configFilePath)
-	if err != nil {
-		fmt.Printf("[ERROR] loadConfig fail\n")
-		return
-	}
-	// 初始化相关配置
-	bootstrap.Initialize(config)
-	// 设置模式
-	bootstrap.SetMode(config)
-	// 初始化事件中心
-	eventhub.InitEventHub()
-	// 路由请求
-	router.Router(config)
-}

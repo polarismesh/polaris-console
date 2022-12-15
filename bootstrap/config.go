@@ -25,7 +25,12 @@ import (
 	"time"
 
 	"github.com/polarismesh/polaris-console/common/log"
+	"github.com/polarismesh/polaris-console/store"
 	"gopkg.in/yaml.v2"
+)
+
+var (
+	_globalConfig *Config
 )
 
 // StaffDepartment 回复请求
@@ -52,6 +57,7 @@ type Config struct {
 	MonitorServer   MonitorServer   `yaml:"monitorServer"`
 	EventServer     EventServer     `yaml:"eventServer"`
 	OperationServer OperationServer `yaml:"operationServer"`
+	Store           store.Config    `yaml:"store"`
 	Futures         string          `yaml:"futures"`
 }
 
@@ -114,5 +120,10 @@ func LoadConfig(filePath string) (*Config, error) {
 		fmt.Printf("[ERROR] %v\n", err)
 	}
 
+	_globalConfig = config
 	return config, nil
+}
+
+func GetConfig() *Config {
+	return _globalConfig
 }

@@ -15,30 +15,18 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package main
+package boltdb
 
-import (
-	"fmt"
+type lockStore struct {
+	handle BoltHandler
+}
 
-	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/eventhub"
-	"github.com/polarismesh/polaris-console/router"
-)
+// Lock do lock by key
+func (l *lockStore) Lock(key string) error {
+	return nil
+}
 
-func main() {
-	// 加载配置
-	configFilePath := "polaris-console.yaml"
-	config, err := bootstrap.LoadConfig(configFilePath)
-	if err != nil {
-		fmt.Printf("[ERROR] loadConfig fail\n")
-		return
-	}
-	// 初始化相关配置
-	bootstrap.Initialize(config)
-	// 设置模式
-	bootstrap.SetMode(config)
-	// 初始化事件中心
-	eventhub.InitEventHub()
-	// 路由请求
-	router.Router(config)
+// Unlock do unlock by key
+func (l *lockStore) Unlock(key string) error {
+	return nil
 }

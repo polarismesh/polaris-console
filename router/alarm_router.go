@@ -18,28 +18,29 @@
 package router
 
 import (
-	"net/http"
-	"strings"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/model"
+	"github.com/polarismesh/polaris-console/common/log"
 	"github.com/polarismesh/polaris-console/handlers"
+	"go.uber.org/zap"
 )
 
-// AdminRouter 路由请求
-func AdminRouter(webSvr *gin.Engine, config *bootstrap.Config) {
-	// 后端server路由组
-	v1 := webSvr.Group("/")
-	v1.GET("/license/status", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
-	v1.GET("/apidocs.json", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
-	v1.GET("/console/ability", func(ctx *gin.Context) {
-		futures := strings.Split(config.Futures, ",")
-		resp := model.Response{
-			Code: 200000,
-			Info: "success",
-			Data: futures,
-		}
-		ctx.JSON(http.StatusOK, resp)
-	})
+// AlarmRuleRouter alarm rule router
+// TODO 需要登录态操作
+func AlarmRuleRouter(webSvr *gin.Engine, config *bootstrap.Config) {
+	_, err := handlers.NewAlarmChangeEventSubscriber(config)
+	if err != nil {
+		log.Error("create alarm change event subscriber", zap.Error(err))
+		os.Exit(-1)
+	}
+
+	v1 := webSvr.Group("/alert/v1")
+	v1.POST("/rules", handlers.CreateAlarmRules(config))
+	v1.PUT("/rules", handlers.UpdateAlarmRules(config))
+	v1.POST("/rules/delete", handlers.DeleteAlarmRules(config))
+	v1.PUT("/rules/enable", handlers.EnableAlarmRules(config))
+	v1.GET("/rules", handlers.DescribeAlarmRules(config))
+
 }
