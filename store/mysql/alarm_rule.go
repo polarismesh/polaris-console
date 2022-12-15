@@ -232,6 +232,7 @@ func (a *alarmRuleStore) GetAlarmRules(query map[string]string, offset, limit ui
 
 	countSql += " " + strings.Join(tmps, " AND ")
 	querySql += " " + strings.Join(tmps, " AND ")
+	querySql += " ORDER BY mtime  LIMIT ? , ? "
 
 	var total uint32
 	err := a.master.QueryRow(countSql, args...).Scan(&total)
@@ -243,6 +244,7 @@ func (a *alarmRuleStore) GetAlarmRules(query map[string]string, offset, limit ui
 		return 0, nil, err
 	}
 
+	args = append(args, offset, limit)
 	rows, err := a.master.Query(querySql, args...)
 	if err != nil {
 		return 0, nil, err

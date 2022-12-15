@@ -36,7 +36,7 @@ func AlarmRuleRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 		os.Exit(-1)
 	}
 
-	v1 := webSvr.Group("/alter/v1")
+	v1 := webSvr.Group("/alert/v1")
 	v1.POST("/rules", handlers.CreateAlarmRules(config))
 	v1.PUT("/rules", handlers.UpdateAlarmRules(config))
 	v1.POST("/rules/delete", handlers.DeleteAlarmRules(config))

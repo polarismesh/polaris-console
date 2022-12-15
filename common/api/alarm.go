@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"unicode/utf8"
 
 	"github.com/polarismesh/polaris-console/common/model/alarm"
@@ -9,19 +10,20 @@ import (
 
 // AlarmRule 告警策略
 type AlarmRule struct {
-	ID          string            `json:"id"`
-	Name        string            `json:"name"`
-	Enable      bool              `json:"enable"`
-	MonitorType alarm.MonitorType `json:"monitor_type"`
-	AlterExpr   AlterExpr         `json:"alter_expr"`
-	Interval    string            `json:"interval"`
-	Topic       string            `json:"topic"`
-	Message     string            `json:"message"`
-	Callback    Callback          `json:"callback"`
-	Revision    string            `json:"revision"`
-	CreateTime  string            `json:"create_time"`
-	ModifyTime  string            `json:"modify_time"`
-	EnableTime  string            `json:"enable_time"`
+	ID           string            `json:"id"`
+	Name         string            `json:"name"`
+	Enable       bool              `json:"enable"`
+	MonitorType  alarm.MonitorType `json:"monitor_type"`
+	AlterExpr    AlterExpr         `json:"alter_expr"`
+	Interval     int32             `json:"interval"`
+	IntervalUnit string            `json:"interval_unit"`
+	Topic        string            `json:"topic"`
+	Message      string            `json:"message"`
+	Callback     Callback          `json:"callback"`
+	Revision     string            `json:"revision"`
+	CreateTime   string            `json:"create_time"`
+	ModifyTime   string            `json:"modify_time"`
+	EnableTime   string            `json:"enable_time"`
 }
 
 func (a *AlarmRule) Vaild() error {
@@ -44,7 +46,7 @@ func (a *AlarmRule) Vaild() error {
 	if err := a.Callback.Vaild(); err != nil {
 		return err
 	}
-	_, err := commontime.ParseDuration(a.Interval)
+	_, err := commontime.ParseDuration(fmt.Sprintf("%d%s", a.Interval, a.IntervalUnit))
 	return err
 }
 
@@ -52,7 +54,8 @@ type AlterExpr struct {
 	MetricsName string          `json:"metrics_name"`
 	Expr        alarm.ExprLabel `json:"expr"`
 	Value       string          `json:"value"`
-	For         string          `json:"for"`
+	For         int32           `json:"for"`
+	ForUnit     string          `json:"for_unit"`
 }
 
 func (a AlterExpr) Vaild() error {
@@ -62,20 +65,20 @@ func (a AlterExpr) Vaild() error {
 	default:
 		return alarm.ErrorExprLabelInvalid
 	}
-	_, err := commontime.ParseDuration(a.For)
+	_, err := commontime.ParseDuration(fmt.Sprintf("%d%s", a.For, a.ForUnit))
 	return err
 }
 
 type Callback struct {
 	Type alarm.CallbackType `json:"type"`
-	Info string             `json:"info"`
+	Info map[string]string  `json:"info"`
 }
 
 func (a Callback) Vaild() error {
 	if a.Type != alarm.ClsCallback && a.Type != alarm.WebhookCallback {
 		return alarm.ErrorCallbackTypeInvalid
 	}
-	if utf8.RuneCountInString(a.Info) < 1 || utf8.RuneCountInString(a.Info) > alarm.MaxAlarmCallbackInfoLength {
+	if len(a.Info) < 1 {
 		return alarm.ErrorCallbackInfoInvalid
 	}
 	return nil

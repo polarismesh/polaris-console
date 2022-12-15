@@ -201,12 +201,6 @@ func DeleteAlarmRules(conf *bootstrap.Config) gin.HandlerFunc {
 }
 
 func deleteAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
-	if err := req.Vaild(); err != nil {
-		return model.Response{
-			Code: int32(api.BadRequest),
-			Info: err.Error(),
-		}
-	}
 	if len(req.ID) == 0 {
 		return model.NewResponse(int32(api.InvalidParameter))
 	}

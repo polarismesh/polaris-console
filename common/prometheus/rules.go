@@ -30,7 +30,7 @@ type RuleGroup struct {
 type Rule interface{}
 
 type AlertingRule struct {
-	Alter       string            `yaml:"alter"`
+	Alert       string            `yaml:"alert"`
 	Expr        string            `yaml:"expr"`
 	For         string            `yaml:"for"`
 	Labels      map[string]string `yaml:"labels"`

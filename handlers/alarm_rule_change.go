@@ -19,10 +19,12 @@ package handlers
 
 import (
 	"context"
+	"net/url"
 	"sync/atomic"
 	"time"
 
 	"github.com/polarismesh/polaris-console/bootstrap"
+	"github.com/polarismesh/polaris-console/common/alertmanager"
 	"github.com/polarismesh/polaris-console/common/configfile"
 	"github.com/polarismesh/polaris-console/common/eventhub"
 	"github.com/polarismesh/polaris-console/common/log"
@@ -30,6 +32,7 @@ import (
 	"github.com/polarismesh/polaris-console/common/prometheus"
 	api "github.com/polarismesh/polaris-console/common/prometheus"
 	"github.com/polarismesh/polaris-console/store"
+	"github.com/prometheus/common/model"
 	"go.uber.org/zap"
 	"golang.org/x/sync/singleflight"
 	"gopkg.in/yaml.v3"
@@ -150,13 +153,13 @@ func (s *AlarmChangeEventSubscriber) publishPrometheusRule(rules []*alarm.AlarmR
 		}
 
 		enrichedRule := prometheus.AlertingRule{
-			Alter: rule.Name,
+			Alert: rule.Name,
 			Expr:  rule.AlterExpr.ToPromQL(),
 			For:   rule.AlterExpr.For,
 			Labels: map[string]string{
-				"rule-id":       rule.ID,
-				"monitor-type":  string(rule.MonitorType),
-				"callback-type": string(rule.Callback.Type),
+				"rule_id":       rule.ID,
+				"monitor_type":  string(rule.MonitorType),
+				"callback_type": string(rule.Callback.Type),
 			},
 			Annotations: map[string]string{
 				"topic":   rule.Topic,
@@ -185,11 +188,82 @@ func (s *AlarmChangeEventSubscriber) publishPrometheusRule(rules []*alarm.AlarmR
 
 func (s *AlarmChangeEventSubscriber) publishAlterManagerRule(rules []*alarm.AlarmRule) error {
 
+	cfg := alertmanager.Config{
+		Receivers: make([]*alertmanager.Receiver, 0, 4),
+		Route: &alertmanager.Route{
+			Receiver: "local_alert_history",
+			Routes:   make([]*alertmanager.Route, 0, 4),
+		},
+	}
+	cfg.Receivers = append(cfg.Receivers, &alertmanager.Receiver{
+		Name:           "local_alert_history",
+		CLSConfigs:     []*alertmanager.CLSConfig{},
+		WebhookConfigs: []*alertmanager.WebhookConfig{},
+		LocalLoggerConfigs: []*alertmanager.LocalLoggerConfig{
+			{
+				Path: "/data/alert_history",
+			},
+		},
+	})
+
+	for i := range rules {
+		rule := rules[i]
+		if !rule.Enable {
+			continue
+		}
+
+		interval, _ := model.ParseDuration(rule.Interval)
+		route := &alertmanager.Route{
+			Receiver: rule.ID,
+			Match: map[string]string{
+				"rule_id":       rule.ID,
+				"monitor_type":  string(rule.MonitorType),
+				"callback_type": string(rule.Callback.Type),
+			},
+			Continue: true,
+			Routes: []*alertmanager.Route{
+				{
+					Receiver: "local_alert_history",
+					Match: map[string]string{
+						"rule_id":       rule.ID,
+						"monitor_type":  string(rule.MonitorType),
+						"callback_type": string(rule.Callback.Type),
+					},
+				},
+			},
+			RepeatInterval: &interval,
+		}
+
+		receiver := &alertmanager.Receiver{
+			Name:           rule.ID,
+			WebhookConfigs: []*alertmanager.WebhookConfig{},
+			CLSConfigs:     []*alertmanager.CLSConfig{},
+		}
+
+		// 设置 receivers 列表
+		if rule.Callback.Type == alarm.ClsCallback {
+			receiver.CLSConfigs = append(receiver.CLSConfigs, &alertmanager.CLSConfig{
+				TopicID: rule.Callback.Info["topic_id"],
+			})
+		}
+		if rule.Callback.Type == alarm.WebhookCallback {
+			url, _ := url.Parse(rule.Callback.Info["url"])
+			receiver.WebhookConfigs = append(receiver.WebhookConfigs, &alertmanager.WebhookConfig{
+				URL: &alertmanager.URL{
+					URL: url,
+				},
+			})
+		}
+
+		cfg.Route.Routes = append(cfg.Route.Routes, route)
+		cfg.Receivers = append(cfg.Receivers, receiver)
+	}
+
 	_, err := configfile.PublishConfig(configfile.ConfigFile{
 		Namespace: "Polaris",
 		Group:     "Polaris-System",
-		FileName:  "alter-notify-rules.yml",
-		Content:   "",
+		FileName:  "alert-notify-rules.yml",
+		Content:   cfg.String(),
 		Comment:   "Polaris 告警通知规则",
 	})
 	return err
@@ -206,7 +280,6 @@ func (s *AlarmChangeEventSubscriber) doRetry() {
 		}
 		log.Info("[AlarmRule] do retry publish rule file job")
 
-		s.executor.Do(_publishAlarmRule, s.handle)
-
+		_, _, _ = s.executor.Do(_publishAlarmRule, s.handle)
 	}
 }

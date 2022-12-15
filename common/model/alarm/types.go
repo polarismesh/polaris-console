@@ -111,8 +111,8 @@ func (a AlterExpr) ToPromQL() string {
 }
 
 type Callback struct {
-	Type CallbackType `json:"type"`
-	Info string       `json:"info"`
+	Type CallbackType      `json:"type"`
+	Info map[string]string `json:"info"`
 }
 
 type AlarmChangeEvent struct {
