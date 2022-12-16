@@ -30,4 +30,7 @@ export default class BuildConfig extends BaseConfig {
   get checkGlobalRateLimit() {
     return true
   }
+  get useCls() {
+    return true
+  }
 }
