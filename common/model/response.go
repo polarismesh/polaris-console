@@ -17,10 +17,28 @@
 
 package model
 
+import "github.com/polarismesh/polaris-console/common/api"
+
+func NewResponse(code int32) Response {
+	return Response{
+		Code: code,
+		Info: api.Code2Info(uint32(code)),
+	}
+}
+
 type Response struct {
 	Code int32       `json:"code"`
 	Info string      `json:"info"`
 	Data interface{} `json:"data"`
+}
+
+func NewQueryResponse(code int32) *QueryResponse {
+	return &QueryResponse{
+		Code:   code,
+		Info:   api.Code2Info(uint32(code)),
+		Amount: 0,
+		Size:   0,
+	}
 }
 
 type QueryResponse struct {
@@ -28,7 +46,40 @@ type QueryResponse struct {
 	Info       string      `json:"info"`
 	Data       interface{} `json:"data"`
 	Size       uint32      `json:"size"`
-	Amount     uint64      `json:"amount,omitempty"`
+	Amount     uint64      `json:"amount"`
 	ExtendInfo string      `json:"extend_info,omitempty"`
 	HashNext   bool        `json:"hash_next,omitempty"`
+}
+
+func NewBatchWriteResponse(code int32) *BatchWriteResponse {
+	return &BatchWriteResponse{
+		Code:      code,
+		Info:      api.Code2Info(uint32(code)),
+		Responses: make([]*Response, 0, 4),
+		Size:      0,
+	}
+}
+
+type BatchWriteResponse struct {
+	Code      int32       `json:"code"`
+	Info      string      `json:"info"`
+	Size      int32       `json:"size"`
+	Responses []*Response `json:"responses"`
+}
+
+func (b *BatchWriteResponse) Collect(response *Response) {
+	// 非200的code，都归为异常
+	if CalcCode(response.Code) != 200 {
+		if response.Code >= b.Code {
+			b.Code = response.Code
+			b.Info = api.Code2Info(uint32(b.Code))
+		}
+	}
+
+	b.Size++
+	b.Responses = append(b.Responses, response)
+}
+
+func CalcCode(code int32) int {
+	return int(code / 1000)
 }

@@ -15,30 +15,16 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package main
+package id
 
 import (
-	"fmt"
+	"encoding/hex"
 
-	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/eventhub"
-	"github.com/polarismesh/polaris-console/router"
+	"github.com/google/uuid"
 )
 
-func main() {
-	// 加载配置
-	configFilePath := "polaris-console.yaml"
-	config, err := bootstrap.LoadConfig(configFilePath)
-	if err != nil {
-		fmt.Printf("[ERROR] loadConfig fail\n")
-		return
-	}
-	// 初始化相关配置
-	bootstrap.Initialize(config)
-	// 设置模式
-	bootstrap.SetMode(config)
-	// 初始化事件中心
-	eventhub.InitEventHub()
-	// 路由请求
-	router.Router(config)
+// NewUUID 返回一个随机的UUID
+func NewUUID() string {
+	uuidBytes := uuid.New()
+	return hex.EncodeToString(uuidBytes[:])
 }

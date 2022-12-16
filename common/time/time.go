@@ -15,30 +15,31 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package main
+package time
 
 import (
-	"fmt"
-
-	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/eventhub"
-	"github.com/polarismesh/polaris-console/router"
+	"strconv"
+	"time"
 )
 
-func main() {
-	// 加载配置
-	configFilePath := "polaris-console.yaml"
-	config, err := bootstrap.LoadConfig(configFilePath)
-	if err != nil {
-		fmt.Printf("[ERROR] loadConfig fail\n")
-		return
+// Time2String Convert time.Time to string time
+func Time2String(t time.Time) string {
+	return t.Format("2006-01-02 15:04:05")
+}
+
+// Int64Time2String Convert time stamp of Int64 to string time
+func Int64Time2String(t int64) string {
+	return time.Unix(t, 0).Format("2006-01-02 15:04:05")
+}
+
+func IsValidDuration(s string) bool {
+	unit := s[len(s)-1:]
+	switch unit {
+	case "s", "m", "h", "d":
+		num := s[:len(s)-1]
+		_, err := strconv.ParseInt(num, 10, 64)
+		return err == nil
+	default:
+		return false
 	}
-	// 初始化相关配置
-	bootstrap.Initialize(config)
-	// 设置模式
-	bootstrap.SetMode(config)
-	// 初始化事件中心
-	eventhub.InitEventHub()
-	// 路由请求
-	router.Router(config)
 }

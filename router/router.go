@@ -45,19 +45,17 @@ func Router(config *bootstrap.Config) {
 
 	// 管理接口
 	AdminRouter(r, config)
-
 	// 鉴权请求
 	AuthRouter(r, config)
-
 	// 服务请求
 	DiscoveryV1Router(r, config)
 	DiscoveryV2Router(r, config)
-
 	// 配置请求
 	ConfigRouter(r, config)
-
 	// 事件日志、操作日志查询
 	LogRouter(r, config)
+	// 告警配置接口
+	AlarmRuleRouter(r, config)
 
 	address := fmt.Sprintf("%v:%v", config.WebServer.ListenIP, config.WebServer.ListenPort)
 	r.Run(address)
