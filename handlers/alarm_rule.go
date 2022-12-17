@@ -285,7 +285,7 @@ func DescribeAlarmRules(conf *bootstrap.Config) gin.HandlerFunc {
 
 		offset, limit, err := commonhttp.ParseOffsetAndLimit(filters)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, model.Response{
+			ctx.JSON(model.CalcCode(int32(api.BadRequest)), model.Response{
 				Code: int32(api.BadRequest),
 				Info: err.Error(),
 			})
@@ -335,6 +335,5 @@ func describeAlarmRules(ctx *gin.Context, filters map[string]string, offset, lim
 	}
 
 	resp.Data = rules
-
 	return resp
 }
