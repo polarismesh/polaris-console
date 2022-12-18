@@ -15,28 +15,33 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package main
+package configfile
 
 import (
-	"fmt"
-
-	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/eventhub"
-	"github.com/polarismesh/polaris-console/router"
+	"encoding/json"
+	"testing"
 )
 
-func main() {
-	// 加载配置
-	configFilePath := "polaris-console.yaml"
-	config, err := bootstrap.LoadConfig(configFilePath)
-	if err != nil {
-		fmt.Printf("[ERROR] loadConfig fail\n")
-		return
+func Test_createTempFile(t *testing.T) {
+
+	configFile := map[string]interface{}{
+		"namespace": "file.Namespace",
+		"group":     "file.Group",
+		"name":      "file.FileName",
+		"content":   "file.Content",
+		"comment":   "file.Comment",
+		"tags": []Tag{
+			Tag{
+				Key:   "string",
+				Value: "string",
+			},
+		},
+		"format": "yaml",
 	}
-	// 初始化相关配置
-	bootstrap.Initialize(config)
-	// 设置模式
-	bootstrap.SetMode(config)
-	// 路由请求
-	router.Router(config)
+
+	body, err := json.Marshal(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(string(body))
 }

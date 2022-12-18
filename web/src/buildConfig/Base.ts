@@ -29,4 +29,7 @@ export default class BuildConfig {
   get checkGlobalRateLimit() {
     return false
   }
+  get useCls() {
+    return false
+  }
 }

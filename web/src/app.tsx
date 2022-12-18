@@ -109,6 +109,10 @@ import EventPage from '@src/polaris/event/Page'
 import EventPageDuck from '@src/polaris/event/PageDuck'
 const Event = connectWithDuck(EventPage, EventPageDuck)
 
+import AlertPage from '@src/polaris/alert/Page'
+import AlertPageDuck from '@src/polaris/alert/PageDuck'
+const Alert = connectWithDuck(AlertPage, AlertPageDuck)
+
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1] || 'service')
@@ -252,6 +256,7 @@ export default function root() {
               <Route exact path='/custom-route-detail' component={CustomRouteDetail} />
               <Route exact path='/audit' component={Audit} />
               <Route exact path='/event' component={Event} />
+              <Route exact path='/alert' component={Alert} />
             </Switch>
           </Content>
         </Body>

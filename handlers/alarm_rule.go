@@ -30,6 +30,7 @@ import (
 	"github.com/polarismesh/polaris-console/common/log"
 	"github.com/polarismesh/polaris-console/common/model"
 	"github.com/polarismesh/polaris-console/common/model/alarm"
+	"github.com/polarismesh/polaris-console/common/operation"
 	"github.com/polarismesh/polaris-console/store"
 	"go.uber.org/zap"
 )
@@ -89,6 +90,7 @@ func createAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 			Info: err.Error(),
 		}
 	}
+
 	return model.NewResponse(int32(api.ExecuteSuccess))
 }
 
@@ -159,6 +161,7 @@ func updateAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 			Info: err.Error(),
 		}
 	}
+
 	return model.NewResponse(int32(api.ExecuteSuccess))
 }
 
@@ -216,6 +219,7 @@ func deleteAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 			Info: err.Error(),
 		}
 	}
+
 	return model.NewResponse(int32(api.ExecuteSuccess))
 }
 
@@ -242,6 +246,7 @@ func EnableAlarmRules(conf *bootstrap.Config) gin.HandlerFunc {
 }
 
 func enableAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
+
 	if len(req.ID) == 0 {
 		return model.NewResponse(int32(api.InvalidParameter))
 	}
@@ -276,6 +281,7 @@ func enableAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 			Info: err.Error(),
 		}
 	}
+
 	return model.NewResponse(int32(api.ExecuteSuccess))
 }
 

@@ -15,28 +15,10 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package main
+package eventhub
 
-import (
-	"fmt"
-
-	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/eventhub"
-	"github.com/polarismesh/polaris-console/router"
+// 事件主题
+const (
+	// AlarmRuleChangeEventTopic alarm rule change event
+	AlarmRuleChangeEventTopic = "alarm_change_event"
 )
-
-func main() {
-	// 加载配置
-	configFilePath := "polaris-console.yaml"
-	config, err := bootstrap.LoadConfig(configFilePath)
-	if err != nil {
-		fmt.Printf("[ERROR] loadConfig fail\n")
-		return
-	}
-	// 初始化相关配置
-	bootstrap.Initialize(config)
-	// 设置模式
-	bootstrap.SetMode(config)
-	// 路由请求
-	router.Router(config)
-}
