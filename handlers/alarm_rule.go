@@ -25,7 +25,6 @@ import (
 	"github.com/polarismesh/polaris-console/bootstrap"
 	commonalarm "github.com/polarismesh/polaris-console/common/alarm"
 	"github.com/polarismesh/polaris-console/common/api"
-	"github.com/polarismesh/polaris-console/common/eventhub"
 	commonhttp "github.com/polarismesh/polaris-console/common/http"
 	"github.com/polarismesh/polaris-console/common/id"
 	"github.com/polarismesh/polaris-console/common/log"
@@ -60,7 +59,6 @@ func CreateAlarmRules(conf *bootstrap.Config) gin.HandlerFunc {
 		}
 
 		ctx.JSON(model.CalcCode(batchResp.Code), batchResp)
-		return
 	}
 }
 
@@ -92,12 +90,6 @@ func createAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 			Info: err.Error(),
 		}
 	}
-
-	eventhub.Publish(eventhub.AlarmRuleChangeEventTopic, &alarm.AlarmChangeEvent{
-		RuleID:    saveData.ID,
-		Revision:  saveData.Revision,
-		Operation: operation.OCreate,
-	})
 
 	return model.NewResponse(int32(api.ExecuteSuccess))
 }
@@ -170,11 +162,6 @@ func updateAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 		}
 	}
 
-	eventhub.Publish(eventhub.AlarmRuleChangeEventTopic, &alarm.AlarmChangeEvent{
-		RuleID:    saveData.ID,
-		Revision:  data.Revision,
-		Operation: operation.OUpdate,
-	})
 	return model.NewResponse(int32(api.ExecuteSuccess))
 }
 
@@ -233,11 +220,6 @@ func deleteAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 		}
 	}
 
-	eventhub.Publish(eventhub.AlarmRuleChangeEventTopic, &alarm.AlarmChangeEvent{
-		RuleID:    saveData.ID,
-		Revision:  saveData.Revision,
-		Operation: operation.ODelete,
-	})
 	return model.NewResponse(int32(api.ExecuteSuccess))
 }
 
@@ -264,12 +246,7 @@ func EnableAlarmRules(conf *bootstrap.Config) gin.HandlerFunc {
 }
 
 func enableAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
-	if err := req.Vaild(); err != nil {
-		return model.Response{
-			Code: int32(api.BadRequest),
-			Info: err.Error(),
-		}
-	}
+
 	if len(req.ID) == 0 {
 		return model.NewResponse(int32(api.InvalidParameter))
 	}
@@ -305,11 +282,6 @@ func enableAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 		}
 	}
 
-	eventhub.Publish(eventhub.AlarmRuleChangeEventTopic, &alarm.AlarmChangeEvent{
-		RuleID:    saveData.ID,
-		Revision:  saveData.Revision,
-		Operation: operation.OUpdateEnable,
-	})
 	return model.NewResponse(int32(api.ExecuteSuccess))
 }
 
@@ -319,7 +291,7 @@ func DescribeAlarmRules(conf *bootstrap.Config) gin.HandlerFunc {
 
 		offset, limit, err := commonhttp.ParseOffsetAndLimit(filters)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, model.Response{
+			ctx.JSON(model.CalcCode(int32(api.BadRequest)), model.Response{
 				Code: int32(api.BadRequest),
 				Info: err.Error(),
 			})
@@ -369,6 +341,5 @@ func describeAlarmRules(ctx *gin.Context, filters map[string]string, offset, lim
 	}
 
 	resp.Data = rules
-
 	return resp
 }

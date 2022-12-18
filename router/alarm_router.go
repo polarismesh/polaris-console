@@ -18,6 +18,9 @@
 package router
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/polarismesh/polaris-console/bootstrap"
+	"github.com/polarismesh/polaris-console/handlers"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -30,12 +33,6 @@ import (
 // AlarmRuleRouter alarm rule router
 // TODO 需要登录态操作
 func AlarmRuleRouter(webSvr *gin.Engine, config *bootstrap.Config) {
-	_, err := handlers.NewAlarmChangeEventSubscriber(config)
-	if err != nil {
-		log.Error("create alarm change event subscriber", zap.Error(err))
-		os.Exit(-1)
-	}
-
 	v1 := webSvr.Group("/alert/v1")
 	v1.POST("/rules", handlers.CreateAlarmRules(config))
 	v1.PUT("/rules", handlers.UpdateAlarmRules(config))

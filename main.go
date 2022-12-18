@@ -37,8 +37,6 @@ func main() {
 	bootstrap.Initialize(config)
 	// 设置模式
 	bootstrap.SetMode(config)
-	// 初始化事件中心
-	eventhub.InitEventHub()
 	// 路由请求
 	router.Router(config)
 }
