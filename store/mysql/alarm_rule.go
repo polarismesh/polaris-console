@@ -168,11 +168,12 @@ func (a *alarmRuleStore) EnableAlarmRule(rule *alarm.AlarmRule) error {
 	}
 
 	args := []interface{}{
+		rule.Revision,
 		enable,
 		rule.ID,
 	}
 
-	enableSql = fmt.Sprintf(enableSql, rule.Revision, enable, enableTime)
+	enableSql = fmt.Sprintf(enableSql, enableTime)
 
 	if _, err := a.master.Exec(enableSql, args...); err != nil {
 		return store.Error(err)

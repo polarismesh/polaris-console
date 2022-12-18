@@ -21,7 +21,6 @@ import (
 	"fmt"
 
 	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/eventhub"
 	"github.com/polarismesh/polaris-console/router"
 )
 
