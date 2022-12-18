@@ -21,13 +21,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/polarismesh/polaris-console/bootstrap"
 	"github.com/polarismesh/polaris-console/handlers"
-	"os"
-
-	"github.com/gin-gonic/gin"
-	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/log"
-	"github.com/polarismesh/polaris-console/handlers"
-	"go.uber.org/zap"
 )
 
 // AlarmRuleRouter alarm rule router

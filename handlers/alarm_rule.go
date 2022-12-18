@@ -30,7 +30,6 @@ import (
 	"github.com/polarismesh/polaris-console/common/log"
 	"github.com/polarismesh/polaris-console/common/model"
 	"github.com/polarismesh/polaris-console/common/model/alarm"
-	"github.com/polarismesh/polaris-console/common/operation"
 	"github.com/polarismesh/polaris-console/store"
 	"go.uber.org/zap"
 )
@@ -63,7 +62,7 @@ func CreateAlarmRules(conf *bootstrap.Config) gin.HandlerFunc {
 }
 
 func createAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
-	if err := req.Vaild(); err != nil {
+	if err := req.Vaild(false); err != nil {
 		return model.Response{
 			Code: int32(api.BadRequest),
 			Info: err.Error(),
@@ -117,7 +116,7 @@ func UpdateAlarmRules(conf *bootstrap.Config) gin.HandlerFunc {
 }
 
 func updateAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
-	if err := req.Vaild(); err != nil {
+	if err := req.Vaild(true); err != nil {
 		return model.Response{
 			Code: int32(api.BadRequest),
 			Info: err.Error(),
@@ -183,7 +182,6 @@ func DeleteAlarmRules(conf *bootstrap.Config) gin.HandlerFunc {
 		}
 
 		ctx.JSON(model.CalcCode(batchResp.Code), batchResp)
-		return
 	}
 }
 
@@ -274,7 +272,7 @@ func enableAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 	saveData.Enable = !saveData.Enable
 	saveData.Revision = id.NewUUID()
 
-	if err := s.UpdateAlarmRule(saveData); err != nil {
+	if err := s.EnableAlarmRule(saveData); err != nil {
 		log.Error("[AlarmRule] enable alarm rule", zap.String("id", req.ID), zap.Error(err))
 		return model.Response{
 			Code: int32(api.StoreLayerException),

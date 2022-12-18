@@ -56,6 +56,8 @@ func Router(config *bootstrap.Config) {
 	LogRouter(r, config)
 	// 告警配置接口
 	AlarmRuleRouter(r, config)
+	// CLS 日志信息
+	ClsInfoRouter(r, config)
 
 	address := fmt.Sprintf("%v:%v", config.WebServer.ListenIP, config.WebServer.ListenPort)
 	r.Run(address)

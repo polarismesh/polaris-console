@@ -26,9 +26,11 @@ type AlarmRule struct {
 	EnableTime   string            `json:"enable_time"`
 }
 
-func (a *AlarmRule) Vaild() error {
-	if utf8.RuneCountInString(a.Name) < 1 || utf8.RuneCountInString(a.Name) > alarm.MaxAlarmNameLength {
-		return alarm.ErrorAlarmNameInvalid
+func (a *AlarmRule) Vaild(isUpdate bool) error {
+	if !isUpdate {
+		if utf8.RuneCountInString(a.Name) < 1 || utf8.RuneCountInString(a.Name) > alarm.MaxAlarmNameLength {
+			return alarm.ErrorAlarmNameInvalid
+		}
 	}
 	if a.MonitorType != alarm.BusinessMonitorType {
 		return alarm.ErrorMonitorTypeInvalid
