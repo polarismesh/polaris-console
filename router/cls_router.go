@@ -18,6 +18,7 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -37,6 +38,7 @@ func ClsInfoRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 			Data: map[string]string{
 				"topic_id":   detail[0],
 				"topic_name": detail[1],
+				"link":       fmt.Sprintf("https://console.cloud.tencent.com/cls/topic/detail?region=%s&id=%s", os.Getenv("REGION"), detail[0]),
 			},
 		}
 		ctx.JSON(http.StatusOK, resp)
