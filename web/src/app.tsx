@@ -113,6 +113,10 @@ import AlertPage from '@src/polaris/alert/Page'
 import AlertPageDuck from '@src/polaris/alert/PageDuck'
 const Alert = connectWithDuck(AlertPage, AlertPageDuck)
 
+import AlertDetailPage from '@src/polaris/alert/detail/Page'
+import AlertDetailPageDuck from '@src/polaris/alert/detail/PageDuck'
+const AlertDetail = connectWithDuck(AlertDetailPage, AlertDetailPageDuck)
+
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1] || 'service')
@@ -257,6 +261,7 @@ export default function root() {
               <Route exact path='/audit' component={Audit} />
               <Route exact path='/event' component={Event} />
               <Route exact path='/alert' component={Alert} />
+              <Route exact path='/alert-detail' component={AlertDetail} />
             </Switch>
           </Content>
         </Body>

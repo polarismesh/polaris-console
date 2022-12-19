@@ -48,6 +48,7 @@ export interface DescribeAlertRulesParams {
   offset: number
   limit: number
   name?: string
+  id?: String
 }
 export type DescribeAlertRulesResult = {
   amount: number
@@ -96,12 +97,13 @@ export async function toggleAlertRule(params: ToggleAlertRuleParams[]) {
 
 export type FetchClsInfoParams = {}
 export type FetchClsInfoResult = {
-  data: {
-    topic_id: string
-    topic_name: string
-  }
+  data: ClsInfo
 }
-
+export interface ClsInfo {
+  topic_id: string
+  topic_name: string
+  link: string
+}
 export async function fetchClsInfo(params: FetchClsInfoParams) {
   const res = await getApiRequest<FetchClsInfoResult>({
     action: '/cls/v1/info',

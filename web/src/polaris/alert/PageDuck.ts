@@ -6,7 +6,7 @@ import { put } from 'redux-saga/effects'
 import GridPageDuck, { Filter as BaseFilter } from '../common/ducks/GridPage'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '../common/helpers/showDialog'
-import { deleteAlertRule, describeAlertRules, toggleAlertRule } from './model'
+import { deleteAlertRule, describeAlertRules, fetchClsInfo, toggleAlertRule } from './model'
 import { AlertInfo, MetricNameMap } from './types'
 import { Modal, notification } from 'tea-component'
 import { BusinessMonitorDuck } from '../monitor/PageDuck'
@@ -24,6 +24,7 @@ export default class AlertPageDuck extends GridPageDuck {
       CREATE,
       SET_METRICNAME_MAP,
       TOGGLE_RULE,
+      SET_CLS_INFO,
     }
     return {
       ...super.quickTypes,
@@ -53,6 +54,7 @@ export default class AlertPageDuck extends GridPageDuck {
     return {
       ...super.reducers,
       metricsNameMap: reduceFromPayload(types.SET_METRICNAME_MAP, {}),
+      clsInfo: reduceFromPayload(types.SET_CLS_INFO, {} as any),
     }
   }
   get creators() {
@@ -84,6 +86,8 @@ export default class AlertPageDuck extends GridPageDuck {
       type: types.SET_METRICNAME_MAP,
       payload: MetricNameMap,
     })
+    const { data: clsInfo } = yield fetchClsInfo({})
+    yield put({ type: types.SET_CLS_INFO, payload: clsInfo })
     yield takeLatest(types.CREATE, function* () {
       const res = yield* resolvePromise(
         new Promise((resolve) => {

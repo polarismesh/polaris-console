@@ -6,6 +6,7 @@ import { Column } from '../common/ducks/GridPage'
 import Action from '../common/duckComponents/grid/Action'
 import { AlertInfo, AlertTimeIntervalMap, AlterExprMap, MonitorTypeMap } from './types'
 import { MetricNameMap } from '../monitor/types'
+import { Link } from 'react-router-dom'
 
 export default ({ duck: { creators } }: DuckCmpProps<AlertPageDuck>): Column<AlertInfo>[] => {
   return [
@@ -14,7 +15,9 @@ export default ({ duck: { creators } }: DuckCmpProps<AlertPageDuck>): Column<Ale
       header: '策略ID/名称',
       render: (x) => (
         <>
-          <Text parent={'div'}>{x.id}</Text>
+          <React.Fragment>
+            <Link to={`/alert-detail?id=${x.id}`}>{x.id}</Link>
+          </React.Fragment>
           <Text parent={'div'}>{x.name}</Text>
         </>
       ),
