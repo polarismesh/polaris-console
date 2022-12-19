@@ -37,6 +37,7 @@ import (
 var (
 	_alarmRuleSearchFilter = map[string]struct{}{
 		"name": {},
+		"id":   {},
 	}
 )
 

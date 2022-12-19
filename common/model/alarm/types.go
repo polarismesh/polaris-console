@@ -87,7 +87,6 @@ type AlarmRule struct {
 	CreateTime  time.Time
 	ModifyTime  time.Time
 	EnableTime  time.Time
-	Valid       bool
 }
 
 type AlterExpr struct {
