@@ -106,7 +106,7 @@ func (a *alarmRuleStore) UpdateAlarmRule(rule *alarm.AlarmRule) error {
 		alarmFieldTopic:       rule.Topic,
 		alarmFieldMessage:     rule.Message,
 		alarmFieldRevision:    rule.Revision,
-		alarmFieldMonitorType: rule.MonitorType,
+		alarmFieldMonitorType: string(rule.MonitorType),
 		alarmFieldModifyTime:  time.Now(),
 	}
 
