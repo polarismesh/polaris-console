@@ -51,8 +51,10 @@ type AlarmRuleStore interface {
 	DeleteAlarmRule(rule *alarm.AlarmRule) error
 	// EnableAlarmRule enable alarm rule
 	EnableAlarmRule(rule *alarm.AlarmRule) error
-	// GetOneAlarmRule get one alarm rule by id
-	GetOneAlarmRule(id string) (*alarm.AlarmRule, error)
+	// GetAlarmRuleById get one alarm rule by id
+	GetAlarmRuleById(id string) (*alarm.AlarmRule, error)
+	// GetAlarmRuleByName get one alarm rule by id
+	GetAlarmRuleByName(name string) (*alarm.AlarmRule, error)
 	// GetAlarmRules get alarm rules
 	GetAlarmRules(query map[string]string, offset, limit uint32) (uint32, []*alarm.AlarmRule, error)
 	// GetAllAlarmRules get all alarm rules
