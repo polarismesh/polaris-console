@@ -31,7 +31,7 @@ export default ({ duck: { selectors }, store }: DuckCmpProps<ServicePageDuck>): 
     {
       key: 'host',
       header: '实例信息',
-      render: (x) => <Text tooltip={x.host + ":" + x.port}>{x.host + ":" + x.port || '-'}</Text>,
+      render: (x) => <Text tooltip={x.host + ':' + x.port}>{x.host + ':' + x.port || '-'}</Text>,
     },
     {
       key: 'event_time',

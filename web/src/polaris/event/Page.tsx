@@ -81,7 +81,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
     }),
     [],
   )
-  const columns = React.useMemo(() => getColumns(props), [])
+  const columns = getColumns(props)
   const { customFilters, namespaceList, tags, filterTime } = selector(store)
   const [timePickerIndex, setTimePickerIndex] = React.useState('7')
   return (
