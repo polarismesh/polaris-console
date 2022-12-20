@@ -51,7 +51,7 @@ export interface ResourceType {
 
 export async function describeResourceType() {
   const res = await getApiRequest<DescribeResourceTypeResult>({
-    action: 'operation/resource/types',
+    action: 'log/v1/operation/resource/types',
     data: {},
   })
   return res
