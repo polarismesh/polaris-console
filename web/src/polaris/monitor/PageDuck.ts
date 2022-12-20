@@ -419,7 +419,7 @@ export default class MonitorDuck extends Page {
 
 export class CircuitBreakerMonitorDuck extends MonitorDuck {
   get baseUrl() {
-    return '/#/circuitBreaker-monitor'
+    return '/#/flow-monitor'
   }
   get titleName() {
     return '熔断监控'
@@ -441,7 +441,7 @@ export class CircuitBreakerMonitorDuck extends MonitorDuck {
 }
 export class RouteMonitorDuck extends MonitorDuck {
   get baseUrl() {
-    return '/#/route-monitor'
+    return '/#/flow-monitor'
   }
   get titleName() {
     return '路由监控'
@@ -463,7 +463,7 @@ export class RouteMonitorDuck extends MonitorDuck {
 }
 export class RatelimitMonitorDuck extends MonitorDuck {
   get baseUrl() {
-    return '/#/ratelimit-monitor'
+    return '/#/flow-monitor'
   }
   get titleName() {
     return '限流监控'

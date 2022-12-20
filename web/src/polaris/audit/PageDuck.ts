@@ -68,7 +68,7 @@ export default class ServicePageDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS]
+    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS, this.types.SET_FILTER_TIME]
   }
   get params() {
     return [...super.params]
@@ -224,7 +224,7 @@ export default class ServicePageDuck extends GridPageDuck {
     return {
       list: data?.map((item) => ({
         ...item,
-        id: `${item.happen_time}-${item.operator}-${item.operation_type}-${item.resource_type}-${item.resource_name}-${item.namespace}`,
+        id: Math.floor(Math.random() * 10000000),
       })),
       totalCount: has_next ? page * count + 1 : data.length - 1,
       extend_info,

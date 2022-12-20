@@ -5,7 +5,7 @@ const { Header, Body, Sider, Content } = Layout
 import { MenuConfig, MenuItemConfig } from './menu'
 import { connectWithDuck } from './polaris/common/helpers'
 import MonitorPage from '@src/polaris/monitor/Page'
-import { CircuitBreakerMonitorDuck, RouteMonitorDuck, RatelimitMonitorDuck } from '@src/polaris/monitor/PageDuck'
+import FlowMonitorDuck from '@src/polaris/monitor/FlowMonitorDuck'
 
 import ServicePage from '@src/polaris/service/Page'
 import ServicePageDuck from '@src/polaris/service/PageDuck'
@@ -37,10 +37,6 @@ const FileGroupDetail = connectWithDuck(FileGroupDetailPage, FileGroupDetailPage
 import FileReleasePage from '@src/polaris/configuration/releaseHistory/Page'
 import FileReleasePageDuck from '@src/polaris/configuration/releaseHistory/PageDuck'
 const FileRelease = connectWithDuck(FileReleasePage, FileReleasePageDuck)
-
-const CircuitBreakerMonitor = connectWithDuck(MonitorPage, CircuitBreakerMonitorDuck)
-const RouteMonitor = connectWithDuck(MonitorPage, RouteMonitorDuck)
-const RatelimitMonitor = connectWithDuck(MonitorPage, RatelimitMonitorDuck)
 
 import UserPage from '@src/polaris/auth/user/Page'
 import UserPageDuck from '@src/polaris/auth/user/PageDuck'
@@ -116,6 +112,8 @@ const Alert = connectWithDuck(AlertPage, AlertPageDuck)
 import AlertDetailPage from '@src/polaris/alert/detail/Page'
 import AlertDetailPageDuck from '@src/polaris/alert/detail/PageDuck'
 const AlertDetail = connectWithDuck(AlertDetailPage, AlertDetailPageDuck)
+
+const FlowMonitor = connectWithDuck(MonitorPage, FlowMonitorDuck)
 
 export default function root() {
   const history = useHistory()
@@ -238,9 +236,7 @@ export default function root() {
               <Route exact path='/route-create' component={RouteCreate} />
               <Route exact path='/accesslimit-create' component={LimitRuleCreate} />
               <Route exact path='/circuitBreaker-create' component={CircuitBreaker} />
-              <Route exact path='/circuitBreaker-monitor' component={CircuitBreakerMonitor} />
-              <Route exact path='/route-monitor' component={RouteMonitor} />
-              <Route exact path='/ratelimit-monitor' component={RatelimitMonitor} />
+              <Route exact path='/flow-monitor' component={FlowMonitor} />
               <Route exact path='/filegroup' component={FileGroup} />
               <Route exact path='/filegroup-detail' component={FileGroupDetail} />
               <Route exact path='/file-release-history' component={FileRelease} />

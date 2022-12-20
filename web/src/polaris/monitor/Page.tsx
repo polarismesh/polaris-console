@@ -17,6 +17,8 @@ import {
   StatusTip,
   InputNumber,
   FormText,
+  Tabs,
+  TabPanel,
 } from 'tea-component'
 import MonitorDuck from './PageDuck'
 import { BasicLine } from 'tea-chart'
@@ -25,6 +27,7 @@ import moment from 'moment'
 import insertCSS from '../common/helpers/insertCSS'
 import TimeSelect from '../common/components/TimeSelect'
 import { TimePickerTab } from './operations/Create'
+import FlowMonitorDuck from './FlowMonitorDuck'
 const { Body, Content } = Layout
 insertCSS(
   `monitor`,
@@ -413,16 +416,33 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
   )
 }
 
-export default function Monitor(props: DuckCmpProps<MonitorDuck>) {
+export default function Monitor(props: DuckCmpProps<FlowMonitorDuck>) {
   const { duck } = props
   return (
     <>
       <Layout>
         <Body>
           <Content>
-            <Content.Header title={duck.titleName}></Content.Header>
+            <Content.Header title={'流量监控'}></Content.Header>
             <Content.Body className={'monitor-content'}>
-              <MonitorPanel {...props} />
+              <Tabs
+                tabs={[
+                  { id: 'routes', label: '路由监控' },
+                  { id: 'circuit', label: '熔断监控' },
+                  { id: 'ratelimit', label: '限流监控' },
+                ]}
+                ceiling
+              >
+                <TabPanel id={'routes'}>
+                  <MonitorPanel {...props} duck={duck.ducks.route} />
+                </TabPanel>
+                <TabPanel id={'circuit'}>
+                  <MonitorPanel {...props} duck={duck.ducks.circuit} />
+                </TabPanel>
+                <TabPanel id={'ratelimit'}>
+                  <MonitorPanel {...props} duck={duck.ducks.ratelimit} />
+                </TabPanel>
+              </Tabs>
             </Content.Body>
           </Content>
         </Body>

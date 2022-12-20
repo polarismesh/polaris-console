@@ -12,7 +12,7 @@ import { once, ttl } from '../common/helpers/cacheable'
 
 export const EmptyCustomFilter = {
   namespace: '',
-  service: '',
+  serviceName: '',
   instance: '',
 }
 
@@ -20,7 +20,7 @@ const cacheDescribeEventCenterRecord = once(describeEventCenterRecord, ttl(30 * 
 
 interface Filter extends BaseFilter {
   namespace?: string
-  service?: string
+  serviceName?: string
   instance?: string
   start_time?: string
   end_time?: string
@@ -29,7 +29,7 @@ interface Filter extends BaseFilter {
 }
 interface CustomFilters {
   namespace?: string
-  service?: string
+  serviceName?: string
   instance?: string
 }
 export default class ServicePageDuck extends GridPageDuck {
@@ -62,7 +62,7 @@ export default class ServicePageDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS]
+    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS, this.types.SET_FILTER_TIME]
   }
   get params() {
     return [...super.params]
@@ -105,7 +105,7 @@ export default class ServicePageDuck extends GridPageDuck {
         count: state.count,
         keyword: state.keyword,
         namespace: state.customFilters.namespace,
-        service: state.customFilters.service,
+        serviceName: state.customFilters.serviceName,
         instance: state.customFilters.instance,
         start_time: state.filterTime[0].unix().toString(),
         end_time: state.filterTime[1].unix().toString(),
@@ -176,7 +176,7 @@ export default class ServicePageDuck extends GridPageDuck {
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, service, instance, start_time, end_time, extend_info } = filters
+    const { page, count, namespace, serviceName, instance, start_time, end_time, extend_info } = filters
     const requestMethod = page === 1 ? describeEventCenterRecord : cacheDescribeEventCenterRecord
     const {
       has_next,
@@ -186,7 +186,7 @@ export default class ServicePageDuck extends GridPageDuck {
       limit: count,
       offset: (page - 1) * count,
       namespace: namespace ? `${namespace}*` : undefined,
-      service: service ? `${service}*` : undefined,
+      service: serviceName ? `${serviceName}*` : undefined,
       instance: instance || undefined,
       start_time: start_time || undefined,
       end_time: end_time || undefined,
@@ -198,7 +198,7 @@ export default class ServicePageDuck extends GridPageDuck {
     return {
       list: data?.map((item) => ({
         ...item,
-        id: `${item.service}-${item.port}-${item.instance_id}-${item.event_time}-${item.event_type}`,
+        id: Math.floor(Math.random() * 10000000),
       })),
       totalCount: has_next ? page * count + 1 : data.length - 1,
       extend_info,

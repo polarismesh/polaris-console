@@ -46,7 +46,7 @@ export const AlterExprMap = {
   [AlterExprType.Ne]: '!=',
   [AlterExprType.Fluctuation]: '环比波动',
   [AlterExprType.Rise]: '环比上升',
-  [AlterExprType.Decline]: '下降',
+  [AlterExprType.Decline]: '环比下降',
 }
 export const AlterExprOptions = Object.entries(AlterExprMap).map(([key, value]) => {
   return { text: value, value: key }
@@ -127,6 +127,12 @@ export const IntervalOptions = [
     value: '4h',
     interval: 4,
     unit: AlertTimeInterval.hour,
+  },
+  {
+    text: '每天告警一次',
+    value: '1d',
+    interval: 1,
+    unit: AlertTimeInterval.day,
   },
 ]
 export enum CallbackType {

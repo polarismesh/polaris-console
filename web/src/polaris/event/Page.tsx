@@ -6,7 +6,7 @@ import { Button, Card, Justify, Table, TagSearchBox, Segment } from 'tea-compone
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
-import { filterable } from 'tea-component/lib/table/addons'
+import { autotip, filterable } from 'tea-component/lib/table/addons'
 import insertCSS from '../common/helpers/insertCSS'
 import { replaceTags } from '../configuration/utils'
 import { NamespaceTagKey, ServiceNameTagKey } from '../service/Page'
@@ -164,6 +164,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               // 选项列表
               options: namespaceList,
             }),
+            autotip({ emptyText: '暂无数据' }),
           ]}
         />
         <GridPagePagination
