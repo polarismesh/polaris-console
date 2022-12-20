@@ -72,7 +72,9 @@ var (
 		string(RConfigGroup):       "配置分组",
 		string(RConfigFile):        "配置文件",
 		string(RConfigFileRelease): "配置发布",
+	}
 
+	OperationTypeInfos = map[string]string{
 		string(OCreate):        "创建",
 		string(ODelete):        "删除",
 		string(OUpdate):        "更新",

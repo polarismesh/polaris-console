@@ -38,4 +38,6 @@ func LogRouter(r *gin.Engine, config *bootstrap.Config) {
 	v1.GET("/operation/history", handlers.DescribeOperationHistoryLog(config))
 	// 创建服务
 	v1.GET("/operation/types", handlers.DescribeOperationTypes(config))
+	// 创建服务
+	v1.GET("/operation/resource/types", handlers.DescribeOperationResourceTypes(config))
 }

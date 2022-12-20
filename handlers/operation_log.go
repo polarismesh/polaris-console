@@ -121,6 +121,25 @@ func DescribeOperationHistoryLog(conf *bootstrap.Config) gin.HandlerFunc {
 // DescribeOperationTypes describe operation type desc list
 func DescribeOperationTypes(conf *bootstrap.Config) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		ret := make([]TypeInfo, 0, len(operation.OperationTypeInfos))
+		for k, v := range operation.OperationTypeInfos {
+			ret = append(ret, TypeInfo{
+				Type: string(k),
+				Desc: v,
+			})
+		}
+
+		ctx.JSON(http.StatusOK, model.Response{
+			Code: 200000,
+			Info: "success",
+			Data: ret,
+		})
+	}
+}
+
+// DescribeOperationResourceTypes describe operation type desc list
+func DescribeOperationResourceTypes(conf *bootstrap.Config) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 		ret := make([]TypeInfo, 0, len(operation.ResourceTypeInfos))
 		for k, v := range operation.ResourceTypeInfos {
 			ret = append(ret, TypeInfo{
