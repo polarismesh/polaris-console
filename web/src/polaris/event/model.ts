@@ -6,6 +6,7 @@ export interface DescribeEventCenterRecordParams {
   namespace?: string
   service?: string
   instance?: string
+  event_type?: string
   start_time?: string
   end_time?: string
   extend_info?: string
@@ -47,7 +48,7 @@ export interface EventType {
 
 export async function describeEventType() {
   const res = await getApiRequest<DescribeEventTypeResult>({
-    action: 'log/v1/event/types',
+    action: '/log/v1/operation/types',
     data: {},
   })
   return res

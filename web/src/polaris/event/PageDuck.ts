@@ -22,6 +22,7 @@ interface Filter extends BaseFilter {
   namespace?: string
   serviceName?: string
   instance?: string
+  event_type?: string
   start_time?: string
   end_time?: string
   extend_info?: Object
@@ -31,6 +32,7 @@ interface CustomFilters {
   namespace?: string
   serviceName?: string
   instance?: string
+  event_type?: string
 }
 export default class ServicePageDuck extends GridPageDuck {
   Filter: Filter
@@ -107,6 +109,7 @@ export default class ServicePageDuck extends GridPageDuck {
         namespace: state.customFilters.namespace,
         serviceName: state.customFilters.serviceName,
         instance: state.customFilters.instance,
+        event_type: state.customFilters.event_type,
         start_time: state.filterTime[0].unix().toString(),
         end_time: state.filterTime[1].unix().toString(),
         extend_info: state.extendInfo,
@@ -176,7 +179,7 @@ export default class ServicePageDuck extends GridPageDuck {
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, serviceName, instance, start_time, end_time, extend_info } = filters
+    const { page, count, namespace, serviceName, instance, event_type, start_time, end_time, extend_info } = filters
     const requestMethod = page === 1 ? describeEventCenterRecord : cacheDescribeEventCenterRecord
     const {
       has_next,
@@ -187,6 +190,7 @@ export default class ServicePageDuck extends GridPageDuck {
       offset: (page - 1) * count,
       namespace: namespace ? `${namespace}*` : undefined,
       service: serviceName ? `${serviceName}*` : undefined,
+      event_type: event_type || undefined,
       instance: instance || undefined,
       start_time: start_time || undefined,
       end_time: end_time || undefined,
