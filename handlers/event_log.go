@@ -67,6 +67,7 @@ var (
 	_searchEventLogParams = map[string]struct{}{
 		"namespace":   {},
 		"service":     {},
+		"event_type":  {},
 		"instance":    {},
 		"start_time":  {},
 		"end_time":    {},
