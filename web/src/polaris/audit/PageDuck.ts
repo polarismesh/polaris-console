@@ -1,6 +1,12 @@
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '../common/ducks/GridPage'
-import { describeOperationRecord, describeResourceType, OperationRecord, ResourceType } from './model'
+import {
+  describeOperationRecord,
+  describeOperationType,
+  describeResourceType,
+  OperationRecord,
+  ResourceType,
+} from './model'
 import { takeLatest } from 'redux-saga-catch'
 import { put } from 'redux-saga/effects'
 import { TagValue } from 'tea-component'
@@ -50,6 +56,7 @@ export default class ServicePageDuck extends GridPageDuck {
       SET_CUSTOM_FILTERS,
       SET_NAMESPACE_LIST,
       SET_RESOURCE_TYPE_LIST,
+      SET_OPERATION_TYPE_LIST,
       SET_AUTH_OPEN,
       CHANGE_TAGS,
       SET_TAGS,
@@ -87,6 +94,7 @@ export default class ServicePageDuck extends GridPageDuck {
       authOpen: reduceFromPayload<boolean>(types.SET_AUTH_OPEN, false),
       tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
       resourceTypeList: reduceFromPayload<ResourceType[]>(types.SET_RESOURCE_TYPE_LIST, []),
+      operationTypeList: reduceFromPayload<ResourceType[]>(types.SET_OPERATION_TYPE_LIST, []),
       filterTime: reduceFromPayload<[moment.Moment, moment.Moment]>(types.SET_FILTER_TIME, [
         moment().subtract(7, 'd'),
         moment(),
@@ -129,6 +137,12 @@ export default class ServicePageDuck extends GridPageDuck {
           return prev
         }, {} as any)
       },
+      operationTypeMap: (state: State) => {
+        return state.operationTypeList.reduce((prev, curr) => {
+          prev[curr.type] = curr.desc
+          return prev
+        }, {} as any)
+      },
     }
   }
   *loadInfo() {
@@ -153,6 +167,17 @@ export default class ServicePageDuck extends GridPageDuck {
     yield put({
       type: this.types.SET_RESOURCE_TYPE_LIST,
       payload: resourceTypeOption,
+    })
+    const { data: operationTypeList } = yield describeOperationType()
+    const operationTypeOption = operationTypeList.map((item) => ({
+      ...item,
+      text: item.desc,
+      value: item.type,
+      name: item.desc,
+    }))
+    yield put({
+      type: this.types.SET_OPERATION_TYPE_LIST,
+      payload: operationTypeOption,
     })
   }
 

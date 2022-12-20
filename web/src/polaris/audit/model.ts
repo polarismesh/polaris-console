@@ -56,3 +56,19 @@ export async function describeResourceType() {
   })
   return res
 }
+
+export type DescribeOperationTypeParams = {}
+export type DescribeOperationTypeResult = ResourceType[]
+
+export interface ResourceType {
+  type: string
+  desc: string
+}
+
+export async function describeOperationType() {
+  const res = await getApiRequest<DescribeResourceTypeResult>({
+    action: 'log/v1/operation/types',
+    data: {},
+  })
+  return res
+}

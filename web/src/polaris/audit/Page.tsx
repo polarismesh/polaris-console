@@ -42,7 +42,7 @@ export const OperationTypeMap = OperationTypeList.reduce((prev, curr) => {
 }, {} as any)
 function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
   const { duck, store } = props
-  const { namespaceList, resourceTypeList } = duck.selector(store)
+  const { namespaceList, resourceTypeList, operationTypeList } = duck.selector(store)
   return [
     {
       type: 'single',
@@ -66,7 +66,7 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
       type: 'single',
       key: 'operation_type',
       name: '操作类型',
-      values: OperationTypeList,
+      values: operationTypeList,
     },
     {
       type: 'input',
