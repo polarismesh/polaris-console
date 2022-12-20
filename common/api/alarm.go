@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"net/url"
 	"unicode/utf8"
 
 	"github.com/polarismesh/polaris-console/common/model/alarm"
@@ -82,6 +83,21 @@ func (a Callback) Vaild() error {
 	}
 	if len(a.Info) < 1 {
 		return alarm.ErrorCallbackInfoInvalid
+	}
+	switch a.Type {
+	case alarm.ClsCallback:
+		_, ok := a.Info["topic_id"]
+		if !ok {
+			return alarm.ErrorCallbackCLSInvalid
+		}
+	case alarm.WebhookCallback:
+		val, ok := a.Info["url"]
+		if !ok {
+			return alarm.ErrorCallbackWebHookInvalid
+		}
+		if _, err := url.Parse(val); err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -70,10 +70,6 @@ func createAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 		}
 	}
 
-	saveData := commonalarm.ParseToStore(*req)
-	saveData.ID = id.NewUUID()
-	saveData.Revision = id.NewUUID()
-
 	s, err := store.GetStore()
 	if err != nil {
 		log.Error("[AlarmRule] get store when create alarm rule", zap.Error(err))
@@ -82,6 +78,25 @@ func createAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 			Info: err.Error(),
 		}
 	}
+
+	storeData, err := s.GetAlarmRuleByName(req.Name)
+	if err != nil {
+		log.Error("[AlarmRule] get store when get alarm rule by name", zap.Error(err))
+		return model.Response{
+			Code: int32(api.StoreLayerException),
+			Info: err.Error(),
+		}
+	}
+	if storeData != nil {
+		return model.Response{
+			Code: int32(api.ExistedResource),
+			Info: api.Code2Info(api.ExistedResource),
+		}
+	}
+
+	saveData := commonalarm.ParseToStore(*req)
+	saveData.ID = id.NewUUID()
+	saveData.Revision = id.NewUUID()
 
 	if err := s.AddAlarmRule(&saveData); err != nil {
 		log.Error("[AlarmRule] create alarm rule", zap.String("id", req.ID), zap.Error(err))
@@ -135,7 +150,7 @@ func updateAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 		}
 	}
 
-	saveData, err := s.GetOneAlarmRule(req.ID)
+	saveData, err := s.GetAlarmRuleById(req.ID)
 	if err != nil {
 		log.Error("[AlarmRule] get one alarm rule by id", zap.String("id", req.ID), zap.Error(err))
 		return model.Response{
@@ -199,7 +214,7 @@ func deleteAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 		}
 	}
 
-	saveData, err := s.GetOneAlarmRule(req.ID)
+	saveData, err := s.GetAlarmRuleById(req.ID)
 	if err != nil {
 		log.Error("[AlarmRule] get one alarm rule by id", zap.String("id", req.ID), zap.Error(err))
 		return model.Response{
@@ -240,7 +255,6 @@ func EnableAlarmRules(conf *bootstrap.Config) gin.HandlerFunc {
 		}
 
 		ctx.JSON(model.CalcCode(batchResp.Code), batchResp)
-		return
 	}
 }
 
@@ -258,7 +272,7 @@ func enableAlarmRule(ctx *gin.Context, req *api.AlarmRule) model.Response {
 		}
 	}
 
-	saveData, err := s.GetOneAlarmRule(req.ID)
+	saveData, err := s.GetAlarmRuleById(req.ID)
 	if err != nil {
 		log.Error("[AlarmRule] get one alarm rule by id", zap.String("id", req.ID), zap.Error(err))
 		return model.Response{

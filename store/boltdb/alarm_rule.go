@@ -143,7 +143,7 @@ func (a *alarmRuleStore) EnableAlarmRule(rule *alarm.AlarmRule) error {
 	return a.handle.UpdateValue(tblAlarm, rule.ID, properties)
 }
 
-func (a *alarmRuleStore) GetOneAlarmRule(id string) (*alarm.AlarmRule, error) {
+func (a *alarmRuleStore) GetAlarmRuleById(id string) (*alarm.AlarmRule, error) {
 	if len(id) == 0 {
 		return nil, errors.New("invalid alarm rule id")
 	}
@@ -162,6 +162,33 @@ func (a *alarmRuleStore) GetOneAlarmRule(id string) (*alarm.AlarmRule, error) {
 	}
 
 	return a.parseToModel(val[id].(*alarmRuleForStore)), nil
+}
+
+func (a *alarmRuleStore) GetAlarmRuleByName(name string) (*alarm.AlarmRule, error) {
+	if len(name) == 0 {
+		return nil, errors.New("invalid alarm rule name")
+	}
+
+	val, err := a.handle.LoadValuesByFilter(tblAlarm, []string{alarmFieldName}, &alarmRuleForStore{},
+		func(m map[string]interface{}) bool {
+			return strings.Compare(m[alarmFieldName].(string), name) == 0
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(val) == 0 {
+		return nil, nil
+	}
+
+	if len(val) > 1 {
+		return nil, ErrorMultiAlarmFound
+	}
+
+	for k := range val {
+		return a.parseToModel(val[k].(*alarmRuleForStore)), nil
+	}
+	return nil, nil
 }
 
 // GetAlarmRules get alarm rules

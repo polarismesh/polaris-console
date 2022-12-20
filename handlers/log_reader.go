@@ -127,7 +127,7 @@ func parseHttpQueryToSearchParams(filters map[string]string, allowSearch map[str
 		}
 
 		ret = append(ret, model.QueryFilter{
-			SearcgKey:   k,
+			SearchKey:   k,
 			SearchValue: v,
 			Operation:   op,
 		})

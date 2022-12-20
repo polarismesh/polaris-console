@@ -182,8 +182,8 @@ func (a *alarmRuleStore) EnableAlarmRule(rule *alarm.AlarmRule) error {
 	return nil
 }
 
-// GetOneAlarmRule get one alarm rule
-func (a *alarmRuleStore) GetOneAlarmRule(id string) (*alarm.AlarmRule, error) {
+// GetAlarmRuleById get one alarm rule
+func (a *alarmRuleStore) GetAlarmRuleById(id string) (*alarm.AlarmRule, error) {
 
 	querySql := genAlarmRuleAllFieldsSQL() +
 		`
@@ -191,6 +191,31 @@ func (a *alarmRuleStore) GetOneAlarmRule(id string) (*alarm.AlarmRule, error) {
 	`
 
 	row, err := a.master.Query(querySql, id)
+	if err != nil {
+		return nil, store.Error(err)
+	}
+
+	ret, err := fetchAlarmRuleRows(row)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(ret) == 0 {
+		return nil, nil
+	}
+
+	return ret[0], nil
+}
+
+// GetAlarmRuleByName get one alarm rule by name
+func (a *alarmRuleStore) GetAlarmRuleByName(name string) (*alarm.AlarmRule, error) {
+
+	querySql := genAlarmRuleAllFieldsSQL() +
+		`
+	 WHERE name = ?
+	`
+
+	row, err := a.master.Query(querySql, name)
 	if err != nil {
 		return nil, store.Error(err)
 	}

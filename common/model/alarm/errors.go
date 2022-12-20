@@ -27,6 +27,8 @@ var (
 
 	ErrorExprLabelInvalid = errors.New("alarm expr label invalid")
 
-	ErrorCallbackTypeInvalid = errors.New("alarm callback type invalid")
-	ErrorCallbackInfoInvalid = errors.New("alarm callback info invalid")
+	ErrorCallbackTypeInvalid    = errors.New("alarm callback type invalid")
+	ErrorCallbackInfoInvalid    = errors.New("alarm callback info invalid")
+	ErrorCallbackCLSInvalid     = errors.New("alarm callback cls TopicId invalid")
+	ErrorCallbackWebHookInvalid = errors.New("alarm callback webhook url invalid")
 )
