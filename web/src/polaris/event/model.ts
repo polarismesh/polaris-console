@@ -48,7 +48,7 @@ export interface EventType {
 
 export async function describeEventType() {
   const res = await getApiRequest<DescribeEventTypeResult>({
-    action: '/log/v1/operation/types',
+    action: '/log/v1/event/types',
     data: {},
   })
   return res
