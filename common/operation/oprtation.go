@@ -81,5 +81,6 @@ var (
 		string(OUpdateIsolate): "更新实例隔离状态",
 		string(OUpdateGroup):   "更新用户组",
 		string(OUpdateEnable):  "更新启用状态",
+		string(OUpdateToken):   "更新用户/用户组Token",
 	}
 )
