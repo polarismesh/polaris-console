@@ -30,12 +30,14 @@ func LogRouter(r *gin.Engine, config *bootstrap.Config) {
 	}
 	// 后端server路由组
 	v1 := r.Group(logUrl)
-	// 创建命名空间
+	// 查询事件记录
 	v1.GET("/event/history", handlers.DescribeEventLog(config))
-	// 创建服务
+	// 查询事件类型
 	v1.GET("/event/types", handlers.DescribeEventTypes(config))
-	// 创建命名空间
+	// 查询操作记录
 	v1.GET("/operation/history", handlers.DescribeOperationHistoryLog(config))
-	// 创建服务
+	// 查询操作类型
 	v1.GET("/operation/types", handlers.DescribeOperationTypes(config))
+	// 查询资源类型
+	v1.GET("/operation/resource/types", handlers.DescribeOperationResourceTypes(config))
 }
