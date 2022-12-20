@@ -54,6 +54,6 @@ CREATE TABLE IF NOT EXISTS `alarm_rule`
     `mtime`        timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last updated time',
     `etime`    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    KEY `name` (`name`),
+    UNIQUE KEY `name` (`name`),
     KEY `mtime` (`mtime`)
 ) ENGINE = InnoDB;

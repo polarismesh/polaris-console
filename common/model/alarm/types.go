@@ -18,7 +18,6 @@
 package alarm
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/polarismesh/polaris-console/common/operation"
@@ -72,7 +71,7 @@ const (
 	BusinessMonitorType MonitorType = "Business"
 )
 
-// AlarmRule 告警策略
+// AlarmRule alarm rule
 type AlarmRule struct {
 	ID          string
 	Name        string
@@ -89,6 +88,7 @@ type AlarmRule struct {
 	EnableTime  time.Time
 }
 
+// AlterExpr alter expr
 type AlterExpr struct {
 	MetricsName string    `json:"metrics_name"`
 	Expr        ExprLabel `json:"expr"`
@@ -96,19 +96,7 @@ type AlterExpr struct {
 	For         string    `json:"for"`
 }
 
-func (a AlterExpr) ToPromQL() string {
-	switch a.Expr {
-	case Fluctuation:
-		return fmt.Sprintf("abs(%s - %s offset %s) / (%s offset %s) >= %s", a.MetricsName, a.MetricsName, a.For, a.MetricsName, a.For, a.Value)
-	case Rise:
-		return fmt.Sprintf("%s - %s offset %s >= %s", a.MetricsName, a.MetricsName, a.For, a.Value)
-	case Decline:
-		return fmt.Sprintf("-1*(%s - %s offset %s) >= %s", a.MetricsName, a.MetricsName, a.For, a.Value)
-	default:
-		return fmt.Sprintf("%s %s %s", a.MetricsName, _promExpr[a.Expr], a.Value)
-	}
-}
-
+// Callback callback info
 type Callback struct {
 	Type CallbackType      `json:"type"`
 	Info map[string]string `json:"info"`

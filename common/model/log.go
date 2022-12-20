@@ -28,7 +28,7 @@ const (
 )
 
 type QueryFilter struct {
-	SearcgKey   string
+	SearchKey   string
 	Operation   QueryOperator
 	SearchValue string
 }
