@@ -188,7 +188,7 @@ export default class ServicePageDuck extends GridPageDuck {
     } = await requestMethod({
       limit: count,
       offset: (page - 1) * count,
-      namespace: namespace ? `${namespace}*` : undefined,
+      namespace: namespace ? namespace : undefined,
       service: serviceName ? `${serviceName}*` : undefined,
       event_type: event_type || undefined,
       instance: instance || undefined,
