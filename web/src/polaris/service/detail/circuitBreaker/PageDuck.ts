@@ -8,6 +8,7 @@ import {
   releaseServiceCircuitBreaker,
   createServiceCircuitBreaker,
   unbindServiceCircuitBreaker,
+  deleteServiceCircuitBreaker,
 } from './model'
 import { takeLatest } from 'redux-saga-catch'
 import { put, select, take } from 'redux-saga/effects'
@@ -233,7 +234,7 @@ export default class ServicePageDuck extends GridPageDuck {
       const formValue = yield* ducks.dynamicCreateDuck.getDuck(createId).submit()
       if (!formValue) return
       const originData =
-        circuitBreaker || (({ service: name, namespace, inbounds: [], outbounds: [] } as unknown) as CircuitBreaker)
+        circuitBreaker || ({ service: name, namespace, inbounds: [], outbounds: [] } as unknown as CircuitBreaker)
       if (ruleType === RuleType.Inbound) {
         let newArray
         const tempArray = [...originData.inbounds] || []
@@ -276,7 +277,7 @@ export default class ServicePageDuck extends GridPageDuck {
     yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
       const { circuitBreaker, originData } = action.payload
       yield put({ type: types.SET_CIRCUIT_BREAKER, payload: circuitBreaker })
-      if (originData) yield put({ type: types.SET_ORIGIN_DATA, payload: originData })
+      if (originData || originData === null) yield put({ type: types.SET_ORIGIN_DATA, payload: originData })
     })
     yield takeLatest(types.RESET_DATA, function* () {
       const { originData } = selector(yield select())
@@ -302,17 +303,40 @@ export default class ServicePageDuck extends GridPageDuck {
       if (originData?.ctime) {
         if (params.inbounds.length === 0 && params.outbounds.length === 0) {
           // 如果出入都没有了，删除熔断规则
-          yield unbindServiceCircuitBreaker([{
-            service: {
-              name: service,
-              namespace,
-            }, circuitBreaker: {
+          yield unbindServiceCircuitBreaker([
+            {
+              service: {
+                name: service,
+                namespace,
+              },
+              circuitBreaker: {
+                id: originData.id,
+                name: service,
+                namespace: namespace,
+                version: originData.version,
+              },
+            },
+          ])
+          yield deleteServiceCircuitBreaker([
+            {
+              service: service,
+              service_namespace: namespace,
               id: originData.id,
               name: service,
               namespace: namespace,
               version: originData.version,
-            }
-          }])
+            },
+          ])
+          yield deleteServiceCircuitBreaker([
+            {
+              service: service,
+              service_namespace: namespace,
+              id: originData.id,
+              name: service,
+              namespace: namespace,
+              version: 'Master',
+            },
+          ])
         } else {
           const version = new Date().getTime().toString()
           // 只是更新熔断规则，直接创建出新的版本并直接 release
@@ -361,7 +385,7 @@ export default class ServicePageDuck extends GridPageDuck {
     })
   }
 
-  *sagaInitLoad() { }
+  *sagaInitLoad() {}
   async getData(filters: this['Filter']) {
     const { page, count, namespace, service, ruleType } = filters
     let circuitBreaker = filters.circuitBreaker
@@ -375,10 +399,11 @@ export default class ServicePageDuck extends GridPageDuck {
         return {
           totalCount: 0,
           list: [],
+          circuitBreaker: null,
         }
       }
       circuitBreaker = result
-      originData = JSON.parse(JSON.stringify(result))
+      originData = result ? JSON.parse(JSON.stringify(result)) : null
     }
     const offset = (page - 1) * count
     const listSlice = circuitBreaker[ruleType]?.slice(offset, offset + count + 1) || []

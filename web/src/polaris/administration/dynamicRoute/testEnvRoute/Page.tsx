@@ -7,6 +7,21 @@ const { Body, Content } = Layout
 insertCSS(
   'imageLink',
   `
+  .link-style {
+    display: block;
+    position: absolute;
+    width: 4.1%;
+    height: 2%;
+    background-color: none;
+    cursor: pointer;
+    z-index: 10;
+  }
+  `,
+)
+
+insertCSS(
+  'imageLink',
+  `
   .link-style-for-instance {
     display: block;
     position: absolute;
@@ -19,41 +34,6 @@ insertCSS(
     z-index: 10;
   }
 
-  .link-style-for-annotation {
-    display: block;
-    position: absolute;
-    top: 30%;
-    left: 29.8%;
-    width: 4.1%;
-    height: 2%;
-    background-color: none;
-    cursor: pointer;
-    z-index: 10;
-  }
-
-  .link-style-for-tracerule {
-    display: block;
-    position: absolute;
-    top: 64%;
-    left: 11.8%;
-    width: 4.1%;
-    height: 2%;
-    background-color: none;
-    cursor: pointer;
-    z-index: 10;
-  }
-
-  .link-style-for-traceplugin {
-    display: block;
-    position: absolute;
-    top: 64%;
-    left: 15.8%;
-    width: 4.1%;
-    height: 2%;
-    background-color: none;
-    cursor: pointer;
-    z-index: 10;
-  }
   `,
 )
 
@@ -65,7 +45,14 @@ function TabContentComp(props: TabContentInfo) {
       <Card.Body style={{ position: 'relative', padding: '1%' }}>
         <img src={imagePath} alt={alt} style={{ width: '100%', display: 'block' }} />
         {imageLinks.map(o => (
-          <a key={o.linkAddress} className={o.style} href={o.linkAddress} target='_blank' rel='noreferrer'></a>
+          <a
+            key={o.linkAddress}
+            style={o.style}
+            className={`link-style`}
+            href={o.linkAddress}
+            target='_blank'
+            rel='noreferrer'
+          ></a>
         ))}
       </Card.Body>
     </Card>

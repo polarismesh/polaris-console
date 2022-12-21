@@ -21,6 +21,11 @@ export const LimitTypeOptions = [
   },
 ]
 
+export const LimitTypeMap = LimitTypeOptions.reduce((map, curr) => {
+  map[curr.value] = curr.text
+  return map
+}, {})
+
 // 限流效果，支持REJECT（直接拒绝）,UNIRATE（匀速排队），默认REJECT
 export enum LimitAction {
   REJECT = 'REJECT',
@@ -36,6 +41,11 @@ export const LimitActionOptions = [
     text: '匀速排队',
   },
 ]
+
+export const LimitActionMap = LimitActionOptions.reduce((map, curr) => {
+  map[curr.value] = curr.text
+  return map
+}, {})
 
 // 规则启用状态
 export enum RuleStatus {
@@ -90,6 +100,11 @@ export const LimitMethodTypeOptions = [
   },
 ]
 
+export const LimitMethodTypeMap = LimitMethodTypeOptions.reduce((map, curr) => {
+  map[curr.value] = curr.text
+  return map
+}, {})
+
 // 匹配规则类型
 export enum LimitArgumentsType {
   CUSTOM = 'CUSTOM',
@@ -126,6 +141,11 @@ export const LimitArgumentsTypeOptions = [
   },
 ]
 
+export const LimitArgumentsTypeMap = LimitArgumentsTypeOptions.reduce((map, curr) => {
+  map[curr.value] = curr.text
+  return map
+}, {})
+
 // 失败处理策略
 export enum LimitFailover {
   FAILOVER_PASS = 'FAILOVER_PASS',
@@ -141,6 +161,11 @@ export const LimitFailoverOptions = [
     text: '直接通过',
   },
 ]
+
+export const LimitFailoverMap = LimitFailoverOptions.reduce((map, curr) => {
+  map[curr.value] = curr.text
+  return map
+}, {})
 
 // amounts限流阈值，统计窗口时长的单位
 export enum LimitAmountsValidationUnit {

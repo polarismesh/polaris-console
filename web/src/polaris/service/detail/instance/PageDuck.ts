@@ -227,6 +227,12 @@ export default class ServicePageDuck extends GridPageDuck {
           else customFilters[key] = tag.values[0].key
         }
       })
+      // https://github.com/polarismesh/polaris/issues/793
+      // 因为上面设置默认“健康状态”为“健康”，如果没有选择“健康状态”，就默认“健康状态”为“全部”
+      const hasHealthyTag = validTags.find(tag => HealthyTagKey === tag?.attr?.key)
+      if (!hasHealthyTag) {
+        customFilters[HealthyTagKey] = '__all__'
+      }
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
     yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {

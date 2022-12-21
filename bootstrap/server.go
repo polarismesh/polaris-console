@@ -22,10 +22,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/polarismesh/polaris-console/common/log"
+	"github.com/polarismesh/polaris-console/store"
 )
 
-// InitializeLog 日志初始化
-func InitializeLog(config *Config) {
+// Initialize 日志初始化
+func Initialize(config *Config) {
+	store.SetStoreConfig(&config.Store)
+
 	err := config.Logger.SetOutputLevel(log.DefaultScopeName, config.Logger.Level)
 	if err != nil {
 		fmt.Printf("[ERROR] %v\n", err)
@@ -33,9 +36,7 @@ func InitializeLog(config *Config) {
 	}
 
 	config.Logger.SetStackTraceLevel(log.DefaultScopeName, "none")
-
 	config.Logger.SetLogCallers(log.DefaultScopeName, true)
-
 	err = log.Configure(&config.Logger)
 	if err != nil {
 		fmt.Printf("[ERROR] %v\n", err)

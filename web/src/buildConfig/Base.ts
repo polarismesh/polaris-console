@@ -26,4 +26,10 @@ export default class BuildConfig {
   get license() {
     return false
   }
+  get checkGlobalRateLimit() {
+    return false
+  }
+  get useCls() {
+    return false
+  }
 }

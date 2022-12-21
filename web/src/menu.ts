@@ -14,7 +14,7 @@ export const MenuConfig: MenuItemConfig = {
     {
       id: 'namespace',
       title: '命名空间',
-      icon: '/static/img/namespace.svg',
+      icon: 'static/img/namespace.svg',
       subMenus: null,
     },
     {
@@ -25,13 +25,13 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'service',
           title: '服务列表',
-          icon: '/static/img/service.svg',
+          icon: 'static/img/service.svg',
           subMenus: null,
         },
         {
           id: 'alias',
           title: '服务别名',
-          icon: '/static/img/service.svg',
+          icon: 'static/img/service.svg',
           subMenus: null,
         },
       ],
@@ -44,24 +44,24 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'dynamic-route',
           title: '动态路由',
-          icon: '/static/img/dynamic-route.svg',
+          icon: 'static/img/dynamic-route.svg',
           subMenus: [
             {
               id: 'custom-route',
               title: '自定义路由',
-              icon: '/static/img/dynamic-route.svg',
+              icon: 'static/img/dynamic-route.svg',
               subMenus: null,
             },
             {
               id: 'test-env-route',
               title: '测试环境路由',
-              icon: '/static/img/dynamic-route.svg',
+              icon: 'static/img/dynamic-route.svg',
               subMenus: null,
             },
             {
               id: 'gray-publish',
               title: '灰度发布',
-              icon: '/static/img/dynamic-route.svg',
+              icon: 'static/img/dynamic-route.svg',
               subMenus: null,
             },
           ],
@@ -69,7 +69,14 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'accesslimit',
           title: '访问限流',
-          icon: '/static/img/dynamic-route.svg',
+          icon: 'static/img/dynamic-route.svg',
+          subMenus: null,
+        },
+
+        {
+          id: 'flow-monitor',
+          title: '流量监控',
+          icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
       ],
@@ -82,13 +89,13 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'filegroup',
           title: '配置分组',
-          icon: '/static/img/route-monitor.svg',
+          icon: 'static/img/route-monitor.svg',
           subMenus: null,
         },
         {
           id: 'file-release-history',
           title: '发布历史',
-          icon: '/static/img/route-monitor.svg',
+          icon: 'static/img/route-monitor.svg',
           subMenus: null,
         },
       ],
@@ -99,21 +106,21 @@ export const MenuConfig: MenuItemConfig = {
       icon: null,
       subMenus: [
         {
-          id: 'route-monitor',
-          title: '路由监控',
-          icon: '/static/img/circuit-monitor.svg',
+          id: 'audit',
+          title: '操作记录',
+          icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
         {
-          id: 'circuitBreaker-monitor',
-          title: '熔断监控',
-          icon: '/static/img/circuit-monitor.svg',
+          id: 'event',
+          title: '事件中心',
+          icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
         {
-          id: 'ratelimit-monitor',
-          title: '限流监控',
-          icon: '/static/img/circuit-monitor.svg',
+          id: 'alert',
+          title: '业务监控',
+          icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
       ],
@@ -126,19 +133,19 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'user',
           title: '用户',
-          icon: '/static/img/user-icon.svg',
+          icon: 'static/img/user-icon.svg',
           subMenus: null,
         },
         {
           id: 'usergroup',
           title: '用户组',
-          icon: '/static/img/user-icon.svg',
+          icon: 'static/img/user-icon.svg',
           subMenus: null,
         },
         {
           id: 'policy',
           title: '策略',
-          icon: '/static/img/user-icon.svg',
+          icon: 'static/img/user-icon.svg',
           subMenus: null,
         },
       ],

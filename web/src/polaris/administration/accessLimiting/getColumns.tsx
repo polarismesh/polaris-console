@@ -6,6 +6,8 @@ import Action from '@src/polaris/common/duckComponents/grid/Action'
 import { Dispatch } from 'redux'
 import { RateLimit } from './model'
 import { SwitchStatusAction } from './types'
+import { Link } from 'react-router-dom'
+
 export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
   {
     key: 'idName',
@@ -14,7 +16,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
     render: x => (
       <>
         <Text theme='primary'>
-          {x.id}
+          <Link to={`/accesslimit-detail?id=${x.id}`}>{x.id}</Link>
           <Copy text={x.id} />
         </Text>
         <br />

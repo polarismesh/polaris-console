@@ -27,4 +27,10 @@ export default class BuildConfig extends BaseConfig {
   get license() {
     return false
   }
+  get checkGlobalRateLimit() {
+    return true
+  }
+  get useCls() {
+    return true
+  }
 }

@@ -46,17 +46,18 @@ export default class CreateDuck extends FormDialog {
       selectors,
       ducks: { form, userGroupSelect, userSelect },
     } = this
-    const userIds = userSelect.selector(yield select()).selection.map(item => item.id)
-    const groupIds = userGroupSelect.selector(yield select()).selection.map(item => item.id)
+    const userIds = userSelect.selector(yield select()).selection.map((item) => item.id)
+    const groupIds = userGroupSelect.selector(yield select()).selection.map((item) => item.id)
     const { userIds: originUsers, groupIds: originGroups } = selectors.data(yield select())
     const options = selectors.options(yield select())
     const values = form.selectors.values(yield select())
     const { removeArray: removeUserIds } = diffAddRemoveArray(originUsers, userIds)
     const { removeArray: removeGroupIds } = diffAddRemoveArray(originGroups, groupIds)
-    const metaData: Record<string, string> = values?.metadata?.reduce((preV, curV) => {
-      preV[curV.key] = curV.value
-      return preV
-    }, {})
+    const metaData: Record<string, string> =
+      values?.metadata?.reduce((preV, curV) => {
+        preV[curV.key] = curV.value
+        return preV
+      }, {}) || {}
 
     if (values.enableNearby) {
       metaData[enableNearbyString] = 'true'
@@ -147,14 +148,14 @@ export default class CreateDuck extends FormDialog {
       yield put(userSelect.creators.select(users))
       yield put({
         type: types.UPDATE,
-        payload: { ...data, userIds: users.map(item => item.id), groupIds: groups.map(item => item.id) },
+        payload: { ...data, userIds: users.map((item) => item.id), groupIds: groups.map((item) => item.id) },
       })
     }
     yield put({
       type: types.SET_OPTIONS,
       payload: {
         ...options,
-        namespaceList: namespaceList.map(item => {
+        namespaceList: namespaceList.map((item) => {
           const disabled = isReadOnlyNamespace(item)
           return {
             ...item,

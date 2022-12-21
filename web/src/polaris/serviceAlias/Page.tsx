@@ -102,6 +102,7 @@ export default function ServiceAliasPage(props: DuckCmpProps<ServiceAliasDuck>) 
             filterable({
               type: 'single',
               column: 'alias_namespace',
+              searchable: true,
               value: customFilters.alias_namespace,
               onChange: value => {
                 const replacedTags = replaceTags(alias_namespaceTagKey, value, tags, namespaceList, {

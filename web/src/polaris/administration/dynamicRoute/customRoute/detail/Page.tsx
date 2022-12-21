@@ -22,8 +22,8 @@ insertCSS(
 `,
 )
 
-const formatNamespace = value => (value === '*' ? '全部命名空间' : value)
-const formatService = value => (value === '*' ? '全部服务' : value)
+const formatNamespace = (value) => (value === '*' ? '全部命名空间' : value)
+const formatService = (value) => (value === '*' ? '全部服务' : value)
 
 export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
   const { duck, store, dispatch } = props
@@ -33,7 +33,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
   const { ruleDetail } = selector(store)
   const { name, description, source, destination, priority } = ruleDetail as Values
   const backRoute = composedId?.namespace
-    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`
+    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=route`
     : `/custom-route`
   if (!data) {
     return <noscript />
@@ -59,7 +59,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
               <FormText>{priority}</FormText>
             </FormItem>
             <Form.Item label='路由规则详情' className='compact-form-control'>
-              <Form style={{ position: 'relative' }}>
+              <Form style={{ position: 'relative', width: '95%' }}>
                 <div
                   style={{
                     borderTop: '1px dashed gray',
@@ -104,7 +104,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                   {
                                     key: 'type',
                                     header: '类型',
-                                    render: item => {
+                                    render: (item) => {
                                       const { type } = item
 
                                       return (
@@ -117,7 +117,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                   {
                                     key: 'key',
                                     header: '键',
-                                    render: item => {
+                                    render: (item) => {
                                       const { key } = item
                                       return (
                                         <Text reset overflow tooltip={key}>
@@ -130,7 +130,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                     key: 'value_type',
                                     header: '匹配方式',
                                     width: 80,
-                                    render: item => {
+                                    render: (item) => {
                                       const { value_type } = item
                                       return (
                                         <Text reset overflow tooltip={RouteLabelTextMap[value_type]}>
@@ -142,7 +142,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                   {
                                     key: 'value',
                                     header: '值',
-                                    render: item => {
+                                    render: (item) => {
                                       const { value } = item
                                       return (
                                         <Text reset overflow tooltip={value}>
@@ -186,7 +186,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                             <Card key={index} bordered>
                               <Card.Body title={name} operation={<></>}>
                                 <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                                  <Form.Item label='实例标签' align='middle' tips={'相同的标签键，只有最后出现的生效'} >
+                                  <Form.Item label='实例标签' align='middle' tips={'相同的标签键，只有最后出现的生效'}>
                                     {labels?.length > 0 && (
                                       <Table
                                         verticalTop
@@ -196,7 +196,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                           {
                                             key: 'key',
                                             header: '键',
-                                            render: item => {
+                                            render: (item) => {
                                               const { key } = item
                                               return (
                                                 <Text reset overflow tooltip={key}>
@@ -209,7 +209,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                             key: 'type',
                                             header: '匹配方式',
                                             width: 80,
-                                            render: item => {
+                                            render: (item) => {
                                               const { type } = item
                                               return (
                                                 <Text reset overflow tooltip={RouteLabelTextMap[type]}>
@@ -221,7 +221,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                           {
                                             key: 'value',
                                             header: '值',
-                                            render: item => {
+                                            render: (item) => {
                                               const { value } = item
                                               return (
                                                 <Text reset overflow tooltip={value}>

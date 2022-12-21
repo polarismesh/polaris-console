@@ -18,8 +18,12 @@
 package router
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/polarismesh/polaris-console/bootstrap"
+	"github.com/polarismesh/polaris-console/common/model"
 	"github.com/polarismesh/polaris-console/handlers"
 )
 
@@ -29,4 +33,13 @@ func AdminRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	v1 := webSvr.Group("/")
 	v1.GET("/license/status", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
 	v1.GET("/apidocs.json", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
+	v1.GET("/console/ability", func(ctx *gin.Context) {
+		futures := strings.Split(config.Futures, ",")
+		resp := model.Response{
+			Code: 200000,
+			Info: "success",
+			Data: futures,
+		}
+		ctx.JSON(http.StatusOK, resp)
+	})
 }

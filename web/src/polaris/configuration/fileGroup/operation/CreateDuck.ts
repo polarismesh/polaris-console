@@ -10,6 +10,7 @@ import { UserGroupSelectDuck } from '@src/polaris/auth/user/operation/AttachUser
 import { DescribeStrategyOption } from '@src/polaris/auth/constants'
 import { AuthStrategy, describeGovernanceStrategies } from '@src/polaris/auth/model'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
+import { isReadOnlyNamespace } from '@src/polaris/service/utils'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -42,17 +43,18 @@ export default class CreateDuck extends FormDialog {
       selectors,
       ducks: { form, userGroupSelect, userSelect },
     } = this
-    const userIds = userSelect.selector(yield select()).selection.map(user => user.id)
-    const groupIds = userGroupSelect.selector(yield select()).selection.map(group => group.id)
+    const userIds = userSelect.selector(yield select()).selection.map((user) => user.id)
+    const groupIds = userGroupSelect.selector(yield select()).selection.map((group) => group.id)
     const { userIds: originUserIds, groupIds: originGroupIds } = selectors.data(yield select())
     const options = selectors.options(yield select())
 
-    const { name, comment, namespace } = form.selectors.values(yield select())
+    const values = form.selectors.values(yield select())
+    const { name, comment, namespace } = values
     const { removeArray: removeUserIds } = diffAddRemoveArray(originUserIds, userIds)
     const { removeArray: removeGroupIds } = diffAddRemoveArray(originGroupIds, groupIds)
 
     if (options.isModify) {
-      const { configFileGroup } = yield modifyConfigFileGroup({
+      const { code } = yield modifyConfigFileGroup({
         namespace,
         name,
         comment,
@@ -61,16 +63,16 @@ export default class CreateDuck extends FormDialog {
         remove_user_ids: removeUserIds,
         remove_group_ids: removeGroupIds,
       })
-      return configFileGroup.name
+      return code === 200000
     } else {
-      const { configFileGroup } = yield createConfigFileGroup({
+      const { code } = yield createConfigFileGroup({
         namespace,
         name,
         comment,
         user_ids: userIds,
         group_ids: groupIds,
       })
-      return configFileGroup.name
+      return code === 200000
     }
   }
   *beforeSubmit() {
@@ -117,8 +119,8 @@ export default class CreateDuck extends FormDialog {
         type: types.UPDATE,
         payload: {
           ...data,
-          userIds: users.map(user => user.id),
-          groupIds: groups.map(group => group.id),
+          userIds: users.map((user) => user.id),
+          groupIds: groups.map((group) => group.id),
         },
       })
     }
@@ -126,10 +128,14 @@ export default class CreateDuck extends FormDialog {
       type: types.SET_OPTIONS,
       payload: {
         ...options,
-        namespaceList: namespaceList.map(item => {
+        namespaceList: namespaceList.map((item) => {
+          const disabled = isReadOnlyNamespace(item)
           return {
             ...item,
+            text: item.name,
             value: item.name,
+            disabled,
+            tooltip: disabled && '该命名空间为只读命名空间',
           }
         }),
       },

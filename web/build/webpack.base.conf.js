@@ -87,11 +87,11 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: `./static/css/polaris-console.css`,
+      filename: `static/css/polaris-console.css`,
     }),
     new MonacoWebpackPlugin({
       // 所需语言支持
-      languages: ["json", "yaml"],
+      languages: ["json", "yaml", "ini", "xml"],
       // targetName 业务名
       filename: `static/js/[name].js`,
     }),
@@ -99,7 +99,7 @@ module.exports = {
       filename: "index.html",
       template: "./src/assets/index.html",
       minify: !isDev,
-      publicPath: "/",
+      publicPath: "",
     }),
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),

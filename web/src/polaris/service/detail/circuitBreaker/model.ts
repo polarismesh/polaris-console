@@ -89,13 +89,31 @@ export interface ReleaseServiceCircuitBreakerParams {
 
 export async function releaseServiceCircuitBreaker(params: ReleaseServiceCircuitBreakerParams[]) {
   const res = await apiRequest<any>({
-    action: '/naming/v1/circuitbreakers/release',
+    action: 'naming/v1/circuitbreakers/release',
     data: params,
   })
   return res
 }
 
 export interface DeleteServiceCircuitBreakerParams {
+  service: string // 服务名；必填；string
+  service_namespace: string // 命名空间；必填；string
+  //token: "..."; // 服务token；必填；string
+  id: string // 规则name；必填；string
+  name: string // 规则name；必填；string
+  namespace: string // 规则namespace；必填；string
+  version: string // 规则version；必填；string；
+}
+
+export async function deleteServiceCircuitBreaker(params: DeleteServiceCircuitBreakerParams[]) {
+  const res = await apiRequest<any>({
+    action: 'naming/v1/circuitbreakers/delete',
+    data: params,
+  })
+  return res
+}
+
+export interface UnbindServiceCircuitBreakerParams {
   service: {
     name: string // 服务名；必填；string
     namespace: string // 命名空间；必填；string
@@ -109,30 +127,9 @@ export interface DeleteServiceCircuitBreakerParams {
   }
 }
 
-export async function deleteServiceCircuitBreaker(params: DeleteServiceCircuitBreakerParams[]) {
+export async function unbindServiceCircuitBreaker(params: UnbindServiceCircuitBreakerParams[]) {
   const res = await apiRequest<any>({
-    action: '/naming/v1/circuitbreakers/delete',
-    data: params,
-  })
-  return res
-}
-
-
-export interface UnbindServiceCircuitBreakerParams {
-  service: {
-    name: string // 服务名；必填；string
-    namespace: string // 命名空间；必填；string
-    //token: "..."; // 服务token；必填；string
-  }
-  circuitBreaker: {
-    id: string // 规则name；必填；string
-    version: string // 规则version；必填；string；
-  }
-}
-
-export async function unbindServiceCircuitBreaker(params: DeleteServiceCircuitBreakerParams[]) {
-  const res = await apiRequest<any>({
-    action: '/naming/v1/circuitbreakers/unbind',
+    action: 'naming/v1/circuitbreakers/unbind',
     data: params,
   })
   return res

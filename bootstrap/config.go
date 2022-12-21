@@ -18,19 +18,20 @@
 package bootstrap
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/polarismesh/polaris-console/common/log"
+	"github.com/polarismesh/polaris-console/store"
 	"gopkg.in/yaml.v2"
 )
 
-// OAAuthority OA鉴权
-type OAAuthority struct {
-	EnableOAAuth bool   `yaml:"enableOAAuth"`
-	OAToken      string `yaml:"oaToken"`
-}
+var (
+	_globalConfig *Config
+)
 
 // StaffDepartment 回复请求
 type StaffDepartment struct {
@@ -48,31 +49,16 @@ type MonitorServer struct {
 	Address string `yaml:"address"`
 }
 
-// HRData 查询部门名称的地址
-type HRData struct {
-	EnableHRData  bool   `yaml:"enableHrData"`
-	UnitAddress   string `yaml:"unitAddress"`
-	DepartmentURL string `yaml:"departmentURL"`
-	StaffURL      string `yaml:"staffURL"`
-	HRToken       string `yaml:"hrToken"`
-}
-
-// ZhiYan 智研系统相关配置
-type ZhiYan struct {
-	Host        string `yaml:"host"`
-	Token       string `yaml:"token"`
-	ProjectName string `yaml:"projectName"`
-}
-
 // Config 配置
 type Config struct {
-	Logger        log.Options   `yaml:"logger"`
-	WebServer     WebServer     `yaml:"webServer"`
-	PolarisServer PolarisServer `yaml:"polarisServer"`
-	MonitorServer MonitorServer `yaml:"monitorServer"`
-	OAAuthority   OAAuthority   `yaml:"oaAuthority"`
-	HRData        HRData        `yaml:"hrData"`
-	ZhiYan        ZhiYan        `yaml:"zhiYan"`
+	Logger          log.Options     `yaml:"logger"`
+	WebServer       WebServer       `yaml:"webServer"`
+	PolarisServer   PolarisServer   `yaml:"polarisServer"`
+	MonitorServer   MonitorServer   `yaml:"monitorServer"`
+	EventServer     EventServer     `yaml:"eventServer"`
+	OperationServer OperationServer `yaml:"operationServer"`
+	Store           store.Config    `yaml:"store"`
+	Futures         string          `yaml:"futures"`
 }
 
 // WebServer web server配置
@@ -85,8 +71,19 @@ type WebServer struct {
 	AuthURL     string `yaml:"authURL"`
 	MonitorURL  string `yaml:"monitorURL"`
 	ConfigURL   string `yaml:"configURL"`
+	LogURL      string `yaml:"logURL"`
 	WebPath     string `yaml:"webPath"`
 	JWT         JWT    `yaml:"jwt"`
+}
+
+type EventServer struct {
+	RequestURL string        `yaml:"requestUrl"`
+	Timeout    time.Duration `yaml:"timeout"`
+}
+
+type OperationServer struct {
+	RequestURL string        `yaml:"requestUrl"`
+	Timeout    time.Duration `yaml:"timeout"`
 }
 
 // JWT jwtToken 相关的配置
@@ -107,19 +104,26 @@ func LoadConfig(filePath string) (*Config, error) {
 
 	fmt.Printf("[INFO] load config from %v\n", filePath)
 
-	file, err := os.Open(filePath)
+	content, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Printf("[ERROR] %v\n", err)
 		return nil, err
 	}
 
+	finalContent := os.ExpandEnv(string(content))
+
 	config := &Config{}
 	config.WebServer.JWT.Expired = 1800 // 默认30分钟
 	config.WebServer.JWT.SecretKey = "polarismesh@2021"
-	err = yaml.NewDecoder(file).Decode(config)
+	err = yaml.NewDecoder(bytes.NewBuffer([]byte(finalContent))).Decode(config)
 	if err != nil {
 		fmt.Printf("[ERROR] %v\n", err)
 	}
 
+	_globalConfig = config
 	return config, nil
+}
+
+func GetConfig() *Config {
+	return _globalConfig
 }

@@ -32,18 +32,11 @@ func Router(config *bootstrap.Config) {
 	r.Static("/static", config.WebServer.WebPath+"static")
 
 	// 加载Swagger UI
-	r.Static("/apidocs", "./swagger-ui")
+	// r.Static("/apidocs", "./swagger-ui")
 
 	// 加载界面
 	r.LoadHTMLGlob(config.WebServer.WebPath + "index.html")
 	r.GET("/", handlers.PolarisPage(config))
-
-	// 获取部门数据
-	r.GET("/HRFoundation-Unit", handlers.GetDepartment(config))
-	// 通过企业微信名获取部门数据
-	r.GET("/getStaffDept", handlers.ReverseProxyForDepartment(&config.HRData, config))
-	// 查询路由/限流/熔断日志记录
-	r.POST("/log/search/elasticsearch", handlers.ReverseProxyForLogRecord(&config.ZhiYan))
 
 	// 监控请求路由组
 	mv1 := r.Group(config.WebServer.MonitorURL)
@@ -52,16 +45,19 @@ func Router(config *bootstrap.Config) {
 
 	// 管理接口
 	AdminRouter(r, config)
-
 	// 鉴权请求
 	AuthRouter(r, config)
-
 	// 服务请求
 	DiscoveryV1Router(r, config)
 	DiscoveryV2Router(r, config)
-
 	// 配置请求
 	ConfigRouter(r, config)
+	// 事件日志、操作日志查询
+	LogRouter(r, config)
+	// 告警配置接口
+	AlarmRuleRouter(r, config)
+	// CLS 日志信息
+	ClsInfoRouter(r, config)
 
 	address := fmt.Sprintf("%v:%v", config.WebServer.ListenIP, config.WebServer.ListenPort)
 	r.Run(address)

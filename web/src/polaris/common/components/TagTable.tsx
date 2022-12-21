@@ -61,11 +61,10 @@ export function TagTable(props: ITagTableProps) {
           width: '80px',
           render: (item, rowKey, recordIndex) => {
             const index = Number(recordIndex)
-            const length = [...props.tags.asArray()].length
+            // const length = [...props.tags.asArray()].length
             return (
               <>
                 <Button
-                  disabled={length < 2}
                   title={'删除'}
                   icon={'close'}
                   onClick={() => props.tags.asArray().remove(index)}

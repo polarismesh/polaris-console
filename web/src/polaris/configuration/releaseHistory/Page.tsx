@@ -103,6 +103,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
             filterable({
               type: 'single',
               column: 'group',
+              searchable: true,
               value: customFilters.group,
               onChange: value => {
                 const replacedTags = replaceTags(GroupNameTagKey, value, tags, configFileGroupList, {

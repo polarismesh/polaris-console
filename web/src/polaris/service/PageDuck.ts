@@ -267,7 +267,7 @@ export default class ServicePageDuck extends GridPageDuck {
       limit: count,
       offset: (page - 1) * count,
       namespace: namespace || undefined,
-      name: serviceName || undefined,
+      name: serviceName ? `${serviceName}*` : undefined,
       keys: key || undefined,
       values: value || undefined,
       host: instanceIp || undefined,
