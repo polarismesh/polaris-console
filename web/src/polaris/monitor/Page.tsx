@@ -26,7 +26,6 @@ import { MetricNameMap, LabelKeyMap, OptionAllKey } from './types'
 import moment from 'moment'
 import insertCSS from '../common/helpers/insertCSS'
 import TimeSelect from '../common/components/TimeSelect'
-import { TimePickerTab } from './operations/Create'
 import FlowMonitorDuck from './FlowMonitorDuck'
 const { Body, Content } = Layout
 insertCSS(
@@ -43,6 +42,20 @@ insertCSS(
   }
 `,
 )
+export const TimePickerTab = () => [
+  {
+    text: '近1小时',
+    date: [moment().subtract(1, 'h'), moment()],
+  },
+  {
+    text: '近1天',
+    date: [moment().subtract(1, 'd'), moment()],
+  },
+  {
+    text: '近1周',
+    date: [moment().subtract(1, 'w'), moment()],
+  },
+]
 
 export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
   const { duck, store, dispatch } = props
@@ -64,6 +77,10 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
     }),
     [],
   )
+  const timePicker = React.useRef(null)
+  const flush = () => {
+    timePicker?.current?.flush()
+  }
   return (
     <Content.Body className={'monitor-content'}>
       <Table.ActionPanel>
@@ -98,7 +115,7 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
               <FormItem label={'时间选择'} className={'modify-form-control'}>
                 <FormText>
                   <TimeSelect
-                    tabs={TimePickerTab}
+                    tabs={TimePickerTab()}
                     style={{ display: 'inline-block' }}
                     changeDate={({ from, to }) => {
                       handlers.changeFilterConfig({
@@ -127,7 +144,9 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                       max: moment(),
                       maxLength: 3,
                     }}
+                    ref={timePicker}
                   />
+                  <Button type={'icon'} icon={'refresh'} onClick={flush}></Button>
                   &nbsp; 步长 &nbsp;
                   <InputNumber
                     hideButton
