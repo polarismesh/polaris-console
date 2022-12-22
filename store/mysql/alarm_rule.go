@@ -237,15 +237,15 @@ func (a *alarmRuleStore) GetAlarmRuleByName(name string) (*alarm.AlarmRule, erro
 func (a *alarmRuleStore) GetAlarmRules(query map[string]string, offset, limit uint32) (uint32, []*alarm.AlarmRule, error) {
 
 	countSql := `
-	SELECT COUNT(*) FROM alarm_rule WHERE 1=1 
+	SELECT COUNT(*) FROM alarm_rule WHERE 
 	`
 	querySql := genAlarmRuleAllFieldsSQL() +
 		`
-	WHERE 1=1
+	WHERE 
 	`
 
 	args := []interface{}{}
-	tmps := []string{}
+	tmps := []string{"1=1"}
 	for k, v := range query {
 		v, isWild := commonhttp.ParseWildName(v)
 		if isWild {
