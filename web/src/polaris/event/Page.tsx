@@ -6,7 +6,7 @@ import { Button, Card, Justify, Table, TagSearchBox, Segment } from 'tea-compone
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
-import { filterable } from 'tea-component/lib/table/addons'
+import { autotip, filterable } from 'tea-component/lib/table/addons'
 import insertCSS from '../common/helpers/insertCSS'
 import { replaceTags } from '../configuration/utils'
 import { NamespaceTagKey, ServiceNameTagKey } from '../service/Page'
@@ -37,7 +37,8 @@ export const OperationTypeList = [
   { text: '删除', value: 'delete' },
 ]
 export const OperationTypeMap = OperationTypeList.reduce((prev, curr) => {
-  return (curr[prev.value] = prev.text)
+  prev[curr.value] = curr.text
+  return prev
 }, {} as any)
 function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
   const { duck, store } = props
@@ -80,11 +81,11 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
     }),
     [],
   )
-  const columns = React.useMemo(() => getColumns(props), [])
-  const { customFilters, namespaceList, tags } = selector(store)
+  const columns = getColumns(props)
+  const { customFilters, namespaceList, tags, filterTime } = selector(store)
   const [timePickerIndex, setTimePickerIndex] = React.useState('7')
   return (
-    <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
+    <BasicLayout title={'事件中心'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
         <Justify
           left={
@@ -112,6 +113,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                   setTimePickerIndex('-1')
                   handlers.setFilterTime(value)
                 }}
+                value={filterTime}
               />
             </>
           }
@@ -162,9 +164,19 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               // 选项列表
               options: namespaceList,
             }),
+            autotip({ emptyText: '暂无数据' }),
           ]}
         />
-        <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
+        <GridPagePagination
+          duck={duck}
+          dispatch={dispatch}
+          store={store}
+          stateTextVisible={false}
+          pageSizeVisible={false}
+          pageIndexVisible={false}
+          jumpVisible={true}
+          endJumpVisible={false}
+        />
       </Card>
     </BasicLayout>
   )

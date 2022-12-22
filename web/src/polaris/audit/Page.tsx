@@ -6,7 +6,7 @@ import { Button, Card, Justify, Table, TagSearchBox, Input, Segment } from 'tea-
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
-import { filterable } from 'tea-component/lib/table/addons'
+import { autotip, filterable } from 'tea-component/lib/table/addons'
 import insertCSS from '../common/helpers/insertCSS'
 import { replaceTags } from '../configuration/utils'
 import { NamespaceTagKey } from '../service/Page'
@@ -32,16 +32,17 @@ export const DefaultAuditTagAttribute = {
   name: '资源名称',
 }
 export const OperationTypeList = [
-  { text: '创建', value: 'create' },
-  { text: '更新', value: 'update' },
-  { text: '删除', value: 'delete' },
+  { text: '创建', value: 'Create' },
+  { text: '更新', value: 'Update' },
+  { text: '删除', value: 'Delete' },
 ]
 export const OperationTypeMap = OperationTypeList.reduce((prev, curr) => {
-  return (curr[prev.value] = prev.text)
+  prev[curr.value] = curr.text
+  return prev
 }, {} as any)
 function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
   const { duck, store } = props
-  const { namespaceList, customFilters, resourceTypeList } = duck.selector(store)
+  const { namespaceList, resourceTypeList, operationTypeList } = duck.selector(store)
   return [
     {
       type: 'single',
@@ -65,25 +66,12 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
       type: 'single',
       key: 'operation_type',
       name: '操作类型',
-      values: OperationTypeList,
+      values: operationTypeList,
     },
     {
-      type: 'render',
+      type: 'input',
       key: 'operation_detail',
       name: '操作细节',
-      render: ({ onSelect }) => {
-        return (
-          <Card>
-            <Card.Body>
-              <Input.TextArea
-                value={customFilters.operation_detail}
-                onChange={(v) => onSelect(v)}
-                rows={6}
-              ></Input.TextArea>
-            </Card.Body>
-          </Card>
-        )
-      },
     },
     {
       type: 'input',
@@ -105,11 +93,12 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
     }),
     [],
   )
-  const columns = React.useMemo(() => getColumns(props), [])
-  const { customFilters, namespaceList, tags } = selector(store)
+  const columns = getColumns(props)
+  const { customFilters, namespaceList, tags, filterTime } = selector(store)
   const [timePickerIndex, setTimePickerIndex] = React.useState('7')
+
   return (
-    <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
+    <BasicLayout title={'操作记录'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
         <Justify
           left={
@@ -137,6 +126,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                   setTimePickerIndex('-1')
                   handlers.setFilterTime(value)
                 }}
+                value={filterTime}
               />
             </>
           }
@@ -187,9 +177,19 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               // 选项列表
               options: namespaceList,
             }),
+            autotip({ emptyText: '暂无数据' }),
           ]}
         />
-        <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
+        <GridPagePagination
+          duck={duck}
+          dispatch={dispatch}
+          store={store}
+          stateTextVisible={false}
+          pageSizeVisible={false}
+          pageIndexVisible={false}
+          jumpVisible={true}
+          endJumpVisible={false}
+        />
       </Card>
     </BasicLayout>
   )

@@ -89,29 +89,7 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 // ReverseProxyForServer 反向代理
 func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID, token, err := parseJWTThenSetToken(c, conf)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": http.StatusProxyAuthRequired,
-				"info": "Proxy Authentication Required",
-			})
-			return
-		}
-
-		if ok := checkAuthoration(c, conf); !ok {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": http.StatusProxyAuthRequired,
-				"info": "Proxy Authentication Required",
-			})
-			return
-		}
-
-		// 只有全部校验通过之后,请求才会自动续期jwtToken
-		if err = refreshJWT(c, userID, token, conf); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": http.StatusInternalServerError,
-				"info": "generate jwt token occurs error",
-			})
+		if !verifyAccessPermission(c, conf) {
 			return
 		}
 
@@ -126,6 +104,35 @@ func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstr
 		proxy := &httputil.ReverseProxy{Director: director}
 		proxy.ServeHTTP(c.Writer, c.Request)
 	}
+}
+
+func verifyAccessPermission(c *gin.Context, conf *bootstrap.Config) bool {
+	userID, token, err := parseJWTThenSetToken(c, conf)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": http.StatusProxyAuthRequired,
+			"info": "Proxy Authentication Required",
+		})
+		return false
+	}
+
+	if ok := checkAuthoration(c, conf); !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": http.StatusProxyAuthRequired,
+			"info": "Proxy Authentication Required",
+		})
+		return false
+	}
+
+	// 只有全部校验通过之后,请求才会自动续期jwtToken
+	if err = refreshJWT(c, userID, token, conf); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": http.StatusInternalServerError,
+			"info": "generate jwt token occurs error",
+		})
+		return false
+	}
+	return true
 }
 
 // ReverseProxyNoAuthForServer 反向代理

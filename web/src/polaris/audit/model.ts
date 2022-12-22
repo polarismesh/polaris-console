@@ -18,6 +18,7 @@ export type DescribeOperationRecordResult = {
   size: number
   extend_info: string
   data: OperationRecord[]
+  has_next: boolean
 }
 
 export interface OperationRecord {
@@ -49,6 +50,22 @@ export interface ResourceType {
 }
 
 export async function describeResourceType() {
+  const res = await getApiRequest<DescribeResourceTypeResult>({
+    action: 'log/v1/operation/resource/types',
+    data: {},
+  })
+  return res
+}
+
+export type DescribeOperationTypeParams = {}
+export type DescribeOperationTypeResult = ResourceType[]
+
+export interface ResourceType {
+  type: string
+  desc: string
+}
+
+export async function describeOperationType() {
   const res = await getApiRequest<DescribeResourceTypeResult>({
     action: 'log/v1/operation/types',
     data: {},

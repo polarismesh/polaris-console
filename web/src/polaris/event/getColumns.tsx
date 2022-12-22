@@ -25,8 +25,13 @@ export default ({ duck: { selectors }, store }: DuckCmpProps<ServicePageDuck>): 
     },
     {
       key: 'instance_id',
-      header: '影响对象',
+      header: '实例ID',
       render: (x) => <Text tooltip={x.instance_id}>{x.instance_id || '-'}</Text>,
+    },
+    {
+      key: 'host',
+      header: '实例信息',
+      render: (x) => <Text tooltip={x.host + ':' + x.port}>{x.host + ':' + x.port || '-'}</Text>,
     },
     {
       key: 'event_time',

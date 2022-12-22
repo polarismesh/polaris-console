@@ -4,11 +4,12 @@ import { DuckCmpProps } from 'saga-duck'
 import ServicePageDuck from './PageDuck'
 import { Text, Bubble } from 'tea-component'
 import { OperationRecord } from './model'
-import { OperationTypeMap } from './Page'
 import CopyableText from '../common/components/CopyableText'
 
 export default ({ duck: { selectors }, store }: DuckCmpProps<ServicePageDuck>): Column<OperationRecord>[] => {
   const resourceTypeMap = selectors.resourceTypeMap(store)
+  const operationTypeMap = selectors.operationTypeMap(store)
+
   return [
     {
       key: 'happen_time',
@@ -18,7 +19,7 @@ export default ({ duck: { selectors }, store }: DuckCmpProps<ServicePageDuck>): 
     {
       key: 'resource_type',
       header: '资源类型',
-      render: (x) => <Text>{resourceTypeMap[x.resource_type]}</Text>,
+      render: (x) => <Text>{resourceTypeMap[x.resource_type] || x.resource_type}</Text>,
     },
     {
       key: 'namespace',
@@ -33,7 +34,11 @@ export default ({ duck: { selectors }, store }: DuckCmpProps<ServicePageDuck>): 
     {
       key: 'operation_type',
       header: '操作类型',
-      render: (x) => <Text tooltip={OperationTypeMap[x.operation_type]}>{OperationTypeMap[x.operation_type]}</Text>,
+      render: (x) => (
+        <Text tooltip={operationTypeMap[x.operation_type]}>
+          {operationTypeMap[x.operation_type] || x.operation_type}
+        </Text>
+      ),
     },
     {
       key: 'operation_detail',

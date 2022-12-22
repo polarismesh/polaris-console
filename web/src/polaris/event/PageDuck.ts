@@ -8,25 +8,31 @@ import { NamespaceItem } from '../service/PageDuck'
 import { describeNamespaces } from '../service/model'
 import moment from 'moment'
 import { DefaultServiceTagAttribute, ServiceNameTagKey } from '../service/Page'
+import { once, ttl } from '../common/helpers/cacheable'
 
 export const EmptyCustomFilter = {
   namespace: '',
-  service: '',
+  serviceName: '',
   instance: '',
 }
 
+const cacheDescribeEventCenterRecord = once(describeEventCenterRecord, ttl(30 * 60 * 1000))
+
 interface Filter extends BaseFilter {
   namespace?: string
-  service?: string
+  serviceName?: string
   instance?: string
+  event_type?: string
   start_time?: string
   end_time?: string
-  extend_info?: string
+  extend_info?: Object
+  needReload?: boolean
 }
 interface CustomFilters {
   namespace?: string
-  service?: string
+  serviceName?: string
   instance?: string
+  event_type?: string
 }
 export default class ServicePageDuck extends GridPageDuck {
   Filter: Filter
@@ -58,7 +64,7 @@ export default class ServicePageDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS]
+    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS, this.types.SET_FILTER_TIME]
   }
   get params() {
     return [...super.params]
@@ -80,7 +86,7 @@ export default class ServicePageDuck extends GridPageDuck {
         moment().subtract(7, 'd'),
         moment(),
       ]),
-      extendInfo: reduceFromPayload<string>(types.SET_EXTEND_INFO, ''),
+      extendInfo: reduceFromPayload<Object>(types.SET_EXTEND_INFO, {}),
     }
   }
   get creators() {
@@ -101,16 +107,19 @@ export default class ServicePageDuck extends GridPageDuck {
         count: state.count,
         keyword: state.keyword,
         namespace: state.customFilters.namespace,
-        service: state.customFilters.service,
+        serviceName: state.customFilters.serviceName,
         instance: state.customFilters.instance,
+        event_type: state.customFilters.event_type,
         start_time: state.filterTime[0].unix().toString(),
         end_time: state.filterTime[1].unix().toString(),
+        extend_info: state.extendInfo,
       }),
       customFilters: (state: State) => state.customFilters,
       namespaceList: (state: State) => state.namespaceList,
       eventTypeMap: (state: State) => {
         return state.eventTypeList.reduce((prev, curr) => {
-          return (curr[prev.type] = prev.desc)
+          prev[curr.type] = curr.desc
+          return prev
         }, {} as any)
       },
     }
@@ -127,15 +136,15 @@ export default class ServicePageDuck extends GridPageDuck {
       type: this.types.SET_NAMESPACE_LIST,
       payload: options,
     })
-    const eventTypeList = yield describeEventType()
+    const { data: eventTypeList } = yield describeEventType()
     const eventTypeOption = eventTypeList.map((item) => ({
       ...item,
-      text: item.name,
+      text: item.desc,
       value: item.type,
-      key: item.name,
+      name: item.desc,
     }))
     yield put({
-      type: this.types.SET_RESOURCE_TYPE_LIST,
+      type: this.types.SET_EVENT_TYPE_LIST,
       payload: eventTypeOption,
     })
   }
@@ -147,6 +156,9 @@ export default class ServicePageDuck extends GridPageDuck {
     yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
       const { extend_info } = action.payload
       yield put({ type: types.SET_EXTEND_INFO, payload: extend_info })
+    })
+    yield takeLatest(types.RELOAD, function* () {
+      yield put(ducks.grid.creators.reset())
     })
     yield takeLatest(types.CHANGE_TAGS, function* (action) {
       const tags = action.payload
@@ -167,25 +179,33 @@ export default class ServicePageDuck extends GridPageDuck {
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, service, instance, start_time, end_time, extend_info } = filters
+    const { page, count, namespace, serviceName, instance, event_type, start_time, end_time, extend_info } = filters
+    const requestMethod = page === 1 ? describeEventCenterRecord : cacheDescribeEventCenterRecord
     const {
-      amount,
+      has_next,
       data,
-      extend_info: newExtendInfo,
-    } = await describeEventCenterRecord({
+      extend_info: nextExtendInfo,
+    } = await requestMethod({
       limit: count,
       offset: (page - 1) * count,
-      namespace: namespace ? `${namespace}*` : undefined,
-      service: service ? `${service}*` : undefined,
+      namespace: namespace ? namespace : undefined,
+      service: serviceName ? `${serviceName}*` : undefined,
+      event_type: event_type || undefined,
       instance: instance || undefined,
       start_time: start_time || undefined,
       end_time: end_time || undefined,
-      extend_info: extend_info || undefined,
+      extend_info: extend_info[page] || undefined,
     })
+    if (has_next) {
+      extend_info[page + 1] = nextExtendInfo
+    }
     return {
-      list: data,
-      totalCount: amount,
-      extend_info: newExtendInfo,
+      list: data?.map((item) => ({
+        ...item,
+        id: Math.floor(Math.random() * 10000000),
+      })),
+      totalCount: has_next ? page * count + 1 : data.length - 1,
+      extend_info,
     }
   }
 }

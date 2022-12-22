@@ -72,6 +72,13 @@ export const MenuConfig: MenuItemConfig = {
           icon: 'static/img/dynamic-route.svg',
           subMenus: null,
         },
+
+        {
+          id: 'flow-monitor',
+          title: '流量监控',
+          icon: 'static/img/circuit-monitor.svg',
+          subMenus: null,
+        },
       ],
     },
     buildConfig.configuration && {
@@ -99,20 +106,20 @@ export const MenuConfig: MenuItemConfig = {
       icon: null,
       subMenus: [
         {
-          id: 'route-monitor',
-          title: '路由监控',
+          id: 'audit',
+          title: '操作记录',
           icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
         {
-          id: 'circuitBreaker-monitor',
-          title: '熔断监控',
+          id: 'event',
+          title: '事件中心',
           icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
         {
-          id: 'ratelimit-monitor',
-          title: '限流监控',
+          id: 'alert',
+          title: '业务监控',
           icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
