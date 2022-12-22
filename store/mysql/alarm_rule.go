@@ -257,8 +257,8 @@ func (a *alarmRuleStore) GetAlarmRules(query map[string]string, offset, limit ui
 		}
 	}
 
-	countSql += " AND " + strings.Join(tmps, " AND ")
-	querySql += " AND " + strings.Join(tmps, " AND ")
+	countSql += " " + strings.Join(tmps, " AND ")
+	querySql += " " + strings.Join(tmps, " AND ")
 	querySql += " ORDER BY mtime  LIMIT ? , ? "
 
 	var total uint32
