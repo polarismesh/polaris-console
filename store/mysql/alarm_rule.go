@@ -245,7 +245,8 @@ func (a *alarmRuleStore) GetAlarmRules(query map[string]string, offset, limit ui
 	`
 
 	args := []interface{}{}
-	tmps := []string{"1=1"}
+	tmps := []string{}
+	tmps = append(tmps, "1=1")
 	for k, v := range query {
 		v, isWild := commonhttp.ParseWildName(v)
 		if isWild {
