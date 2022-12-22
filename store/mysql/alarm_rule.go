@@ -245,7 +245,8 @@ func (a *alarmRuleStore) GetAlarmRules(query map[string]string, offset, limit ui
 	`
 
 	args := []interface{}{}
-	tmps := []string{"1=1"}
+	tmps := []string{}
+	tmps = append(tmps, "1=1")
 	for k, v := range query {
 		v, isWild := commonhttp.ParseWildName(v)
 		if isWild {
@@ -257,8 +258,8 @@ func (a *alarmRuleStore) GetAlarmRules(query map[string]string, offset, limit ui
 		}
 	}
 
-	countSql += " AND " + strings.Join(tmps, " AND ")
-	querySql += " AND " + strings.Join(tmps, " AND ")
+	countSql += " " + strings.Join(tmps, " AND ")
+	querySql += " " + strings.Join(tmps, " AND ")
 	querySql += " ORDER BY mtime  LIMIT ? , ? "
 
 	var total uint32
