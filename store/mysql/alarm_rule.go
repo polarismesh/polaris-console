@@ -28,6 +28,7 @@ import (
 	"github.com/polarismesh/polaris-console/common/log"
 	"github.com/polarismesh/polaris-console/common/model/alarm"
 	"github.com/polarismesh/polaris-console/store"
+	"go.uber.org/zap"
 )
 
 type alarmRuleStore struct {
@@ -256,8 +257,8 @@ func (a *alarmRuleStore) GetAlarmRules(query map[string]string, offset, limit ui
 		}
 	}
 
-	countSql += " " + strings.Join(tmps, " AND ")
-	querySql += " " + strings.Join(tmps, " AND ")
+	countSql += " AND " + strings.Join(tmps, " AND ")
+	querySql += " AND " + strings.Join(tmps, " AND ")
 	querySql += " ORDER BY mtime  LIMIT ? , ? "
 
 	var total uint32
@@ -266,13 +267,14 @@ func (a *alarmRuleStore) GetAlarmRules(query map[string]string, offset, limit ui
 	case err == sql.ErrNoRows:
 		return 0, nil, nil
 	case err != nil:
-		log.Errorf("[Store][database] get alarm rule count err: %s", err.Error())
+		log.Error("[Store][database] get alarm rule count", zap.String("sql", countSql), zap.Error(err))
 		return 0, nil, err
 	}
 
 	args = append(args, offset, limit)
 	rows, err := a.master.Query(querySql, args...)
 	if err != nil {
+		log.Error("[Store][database] get alarm rules", zap.String("sql", countSql), zap.Error(err))
 		return 0, nil, err
 	}
 
