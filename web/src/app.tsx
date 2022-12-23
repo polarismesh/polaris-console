@@ -22,10 +22,6 @@ import RouteCreatePage from '@src/polaris/service/detail/route/operations/Create
 import RouteCreateDuck from '@src/polaris/service/detail/route/operations/CreateDuck'
 const RouteCreate = connectWithDuck(RouteCreatePage, RouteCreateDuck)
 
-import CircuitBreakerPage from '@src/polaris/service/detail/circuitBreaker/operations/Create'
-import CircuitBreakerDuck from '@src/polaris/service/detail/circuitBreaker/operations/CreateDuck'
-const CircuitBreaker = connectWithDuck(CircuitBreakerPage, CircuitBreakerDuck)
-
 import FileGroupPage from '@src/polaris/configuration/fileGroup/Page'
 import FileGroupPageDuck from '@src/polaris/configuration/fileGroup/PageDuck'
 const FileGroup = connectWithDuck(FileGroupPage, FileGroupPageDuck)
@@ -114,6 +110,17 @@ import AlertDetailPageDuck from '@src/polaris/alert/detail/PageDuck'
 const AlertDetail = connectWithDuck(AlertDetailPage, AlertDetailPageDuck)
 
 const FlowMonitor = connectWithDuck(MonitorPage, FlowMonitorDuck)
+import CircuitBreakerPage from '@src/polaris/administration/breaker/Page'
+import CircuitBreakerPageDuck from '@src/polaris/administration/breaker/PageDuck'
+const CircuitBreaker = connectWithDuck(CircuitBreakerPage, CircuitBreakerPageDuck)
+
+import CircuitBreakerCreatePage from '@src/polaris/administration/breaker/operations/Create'
+import CircuitBreakerCreatePageDuck from '@src/polaris/administration/breaker/operations/CreateDuck'
+const CircuitBreakerCreate = connectWithDuck(CircuitBreakerCreatePage, CircuitBreakerCreatePageDuck)
+
+import FaultDetectCreatePage from '@src/polaris/administration/breaker/faultDetect/operations/Create'
+import FaultDetectCreatePageDuck from '@src/polaris/administration/breaker/faultDetect/operations/CreateDuck'
+const FaultDetectCreate = connectWithDuck(FaultDetectCreatePage, FaultDetectCreatePageDuck)
 
 export default function root() {
   const history = useHistory()
@@ -235,7 +242,6 @@ export default function root() {
               <Route exact path='/service-detail' component={ServiceDetail} />
               <Route exact path='/route-create' component={RouteCreate} />
               <Route exact path='/accesslimit-create' component={LimitRuleCreate} />
-              <Route exact path='/circuitBreaker-create' component={CircuitBreaker} />
               <Route exact path='/flow-monitor' component={FlowMonitor} />
               <Route exact path='/filegroup' component={FileGroup} />
               <Route exact path='/filegroup-detail' component={FileGroupDetail} />
@@ -258,6 +264,9 @@ export default function root() {
               <Route exact path='/event' component={Event} />
               <Route exact path='/alert' component={Alert} />
               <Route exact path='/alert-detail' component={AlertDetail} />
+              <Route exact path='/circuitBreaker-create' component={CircuitBreakerCreate} />
+              <Route exact path='/circuitBreaker' component={CircuitBreaker} />
+              <Route exact path='/faultDetect-create' component={FaultDetectCreate} />
             </Switch>
           </Content>
         </Body>

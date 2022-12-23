@@ -9,9 +9,9 @@ import Instance from './instance/Page'
 import AccessLimit from '@src/polaris/administration/accessLimiting/Page'
 import Route from '@src/polaris/administration/dynamicRoute/customRoute/Page'
 
-import CircuitBreaker from './circuitBreaker/Page'
+import CircuitBreaker from '@src/polaris/administration/breaker/Page'
 
-const tabs: Array<Tab> = [TAB.Instance, TAB.Route, TAB.CircuitBreaker, TAB.AccessLimit, TAB.Info].map(id => ({
+const tabs: Array<Tab> = [TAB.Instance, TAB.Route, TAB.CircuitBreaker, TAB.AccessLimit, TAB.Info].map((id) => ({
   id,
   label: TAB_LABLES[id],
 }))
