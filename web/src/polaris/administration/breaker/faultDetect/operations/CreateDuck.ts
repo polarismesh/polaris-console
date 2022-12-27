@@ -209,6 +209,9 @@ const validator = Form.combineValidators<FaultDetectRule>({
       },
     },
   },
+  timeout(v) {
+    if (!v) return '请输入超时时间'
+  },
   httpConfig(v, values) {
     if (values.protocol !== FaultDetectProtocol.HTTP) return
     const res = Form.combineValidators<FaultDetectRule['httpConfig']>({

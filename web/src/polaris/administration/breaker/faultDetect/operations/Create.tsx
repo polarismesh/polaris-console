@@ -40,7 +40,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
   } = duck
   const composedId = selectors.composedId(store)
   const data = selectors.data(store)
-  const { name, description, httpConfig, tcpConfig, udpConfig, interval, port, protocol, targetService } = form
+  const { name, description, httpConfig, tcpConfig, udpConfig, interval, port, protocol, targetService, timeout } = form
     .getAPI(store, dispatch)
     .getFields([
       'name',
@@ -174,6 +174,17 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 hideButton
               />
             </FormField>
+            <FormField showStatusIcon={false} label='超时时间' field={timeout}>
+              <InputNumber
+                value={timeout.getValue()}
+                onChange={(v) => {
+                  timeout.setValue(v)
+                }}
+                size={'m'}
+                hideButton
+                min={0}
+              />
+            </FormField>
             <FormField showStatusIcon={false} label='端口' field={port}>
               <InputNumber
                 value={port.getValue()}
@@ -186,6 +197,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 max={65535}
               />
             </FormField>
+
             <FormField showStatusIcon={false} label='协议' field={protocol}>
               <Segment
                 options={FaultDetectProtocolOptions}
