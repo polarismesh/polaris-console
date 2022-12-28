@@ -23,7 +23,7 @@ export const EmptyCustomFilter = {
   version: '',
   keys: '',
   values: '',
-  healthy: 'true',
+  healthy: '',
   isolate: null,
   metadata: { key: '', value: '' },
 }
@@ -114,17 +114,7 @@ export default class ServicePageDuck extends GridPageDuck {
         types.SET_EXPANDED_KEYS,
         new Array(100).map((i, index) => index.toString()),
       ),
-      tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, [
-        {
-          attr: {
-            type: 'single',
-            key: HealthyTagKey,
-            name: '健康状态',
-            values: HealthStatusOptions,
-          },
-          values: [HealthStatusOptions[1]], //默认健康
-        },
-      ]),
+      tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
     }
   }
   get creators() {
@@ -164,13 +154,13 @@ export default class ServicePageDuck extends GridPageDuck {
   *saga() {
     const { types, creators, selector, ducks } = this
     yield* super.saga()
-    yield takeLatest(types.CREATE, function*() {
+    yield takeLatest(types.CREATE, function* () {
       const {
         data: { name, namespace },
       } = selector(yield select())
       const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute({}, { isModify: false, service: name, namespace }))
             } finally {
@@ -183,14 +173,14 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.EDIT, function*(action) {
+    yield takeLatest(types.EDIT, function* (action) {
       const {
         data: { name, namespace },
       } = selector(yield select())
       const data = action.payload
       const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+        new Promise((resolve) => {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(
                 yield* duck.execute(data, {
@@ -210,18 +200,18 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.CHANGE_TAGS, function*(action) {
+    yield takeLatest(types.CHANGE_TAGS, function* (action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
-      const validTags = tags.map(item => {
+      const validTags = tags.map((item) => {
         if (item.attr) return item
         else return { ...item, attr: DefaultHostTagAttribute }
       })
       yield put({ type: types.SET_TAGS, payload: validTags })
-      validTags.forEach(tag => {
+      validTags.forEach((tag) => {
         const key = tag?.attr?.key || HostTagKey
         if (key === MetadataTagKey) {
-          customFilters[key] = tag.values.map(item => ({ key: item.key, value: item.value || '' }))?.[0]
+          customFilters[key] = tag.values.map((item) => ({ key: item.key, value: item.value || '' }))?.[0]
         } else {
           if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
           else customFilters[key] = tag.values[0].key
@@ -229,64 +219,67 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       // https://github.com/polarismesh/polaris/issues/793
       // 因为上面设置默认“健康状态”为“健康”，如果没有选择“健康状态”，就默认“健康状态”为“全部”
-      const hasHealthyTag = validTags.find(tag => HealthyTagKey === tag?.attr?.key)
+      const hasHealthyTag = validTags.find((tag) => HealthyTagKey === tag?.attr?.key)
       if (!hasHealthyTag) {
         customFilters[HealthyTagKey] = '__all__'
       }
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
       const { searchParams, list } = action.payload
       const { selection } = selector(yield select())
-      const validSelection = selection.filter(id => !!list.find(item => item.id === id))
+      const validSelection = selection.filter((id) => !!list.find((item) => item.id === id))
       yield put(creators.setSelection(validSelection))
       yield put({ type: types.SET_LAST_SEARCH_PARAMS, payload: JSON.stringify(searchParams) })
     })
-    yield takeLatest([types.MODIFY_ISOLATE_STATUS, types.MODIFY_HEALTH_STATUS, types.MODIFY_WEIGHT], function*(action) {
-      const batchEditType =
-        action.type === types.MODIFY_WEIGHT
-          ? BATCH_EDIT_TYPE.WEIGHT
-          : action.type === types.MODIFY_ISOLATE_STATUS
-          ? BATCH_EDIT_TYPE.ISOLATE
-          : BATCH_EDIT_TYPE.HEALTHY
-      const {
-        data: { name, namespace },
-      } = selector(yield select())
-      const list = ducks.grid.selectors.list(yield select())
-      const ids = action.payload
-      const instances = ids.map(id => list.find(instance => instance.id === id))
-      const res = yield* resolvePromise(
-        new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
-            try {
-              resolve(
-                yield* duck.execute(instances[0], {
-                  isModify: true,
-                  service: name,
-                  namespace,
-                  batchEditType,
-                  instance: instances[0],
-                  instances,
-                }),
-              )
-            } finally {
-              resolve(false)
-            }
-          })
-        }),
-      )
-      if (res) {
-        yield put(creators.reload())
-      }
-    })
-    yield takeLatest(types.REMOVE, function*(action) {
+    yield takeLatest(
+      [types.MODIFY_ISOLATE_STATUS, types.MODIFY_HEALTH_STATUS, types.MODIFY_WEIGHT],
+      function* (action) {
+        const batchEditType =
+          action.type === types.MODIFY_WEIGHT
+            ? BATCH_EDIT_TYPE.WEIGHT
+            : action.type === types.MODIFY_ISOLATE_STATUS
+            ? BATCH_EDIT_TYPE.ISOLATE
+            : BATCH_EDIT_TYPE.HEALTHY
+        const {
+          data: { name, namespace },
+        } = selector(yield select())
+        const list = ducks.grid.selectors.list(yield select())
+        const ids = action.payload
+        const instances = ids.map((id) => list.find((instance) => instance.id === id))
+        const res = yield* resolvePromise(
+          new Promise((resolve) => {
+            showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
+              try {
+                resolve(
+                  yield* duck.execute(instances[0], {
+                    isModify: true,
+                    service: name,
+                    namespace,
+                    batchEditType,
+                    instance: instances[0],
+                    instances,
+                  }),
+                )
+              } finally {
+                resolve(false)
+              }
+            })
+          }),
+        )
+        if (res) {
+          yield put(creators.reload())
+        }
+      },
+    )
+    yield takeLatest(types.REMOVE, function* (action) {
       const ids = action.payload
       const confirm = yield Modal.confirm({
         message: `确认删除实例`,
         description: '删除后，无法恢复',
       })
       if (confirm) {
-        const res = yield deleteInstances(ids.map(id => ({ id })))
+        const res = yield deleteInstances(ids.map((id) => ({ id })))
         yield put(creators.reload())
       }
     })
