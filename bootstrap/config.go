@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/polarismesh/polaris-console/common/log"
@@ -59,6 +60,10 @@ type Config struct {
 	OperationServer OperationServer `yaml:"operationServer"`
 	Store           store.Config    `yaml:"store"`
 	Futures         string          `yaml:"futures"`
+}
+
+func (c *Config) HasFutures(s string) bool {
+	return strings.Contains(c.Futures, s)
 }
 
 // WebServer web server配置

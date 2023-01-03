@@ -31,6 +31,19 @@ import (
 func ClsInfoRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	v1 := webSvr.Group("/cls/v1")
 	v1.GET("/info", func(ctx *gin.Context) {
+		if !config.HasFutures(model.FutureLogObservability) {
+			resp := model.Response{
+				Code: 200000,
+				Info: "success",
+				Data: map[string]string{
+					"topic_id":   "",
+					"topic_name": "",
+					"link":       "",
+				},
+			}
+			ctx.JSON(http.StatusOK, resp)
+		}
+
 		detail := strings.Split(os.Getenv("CLS_TOPIC_INFO"), ":")
 		resp := model.Response{
 			Code: 200000,

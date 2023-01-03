@@ -69,7 +69,7 @@ func DescribeOperationHistoryLog(conf *bootstrap.Config) gin.HandlerFunc {
 		if !verifyAccessPermission(ctx, conf) {
 			return
 		}
-		if len(conf.OperationServer.RequestURL) == 0 {
+		if !conf.HasFutures(model.FutureLogObservability) || len(conf.OperationServer.RequestURL) == 0 {
 			ctx.JSON(http.StatusOK, model.QueryResponse{
 				Code:     200000,
 				Size:     0,
