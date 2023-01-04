@@ -120,10 +120,12 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
               type='primary'
               onClick={() => {
                 if (loadData) {
-                  router.navigate(`/circuitBreaker-create?ns=${loadData.namespace}&service=${loadData.name}`)
+                  router.navigate(
+                    `/circuitBreaker-create?type=${type}&ns=${loadData.namespace}&service=${loadData.name}`,
+                  )
                   return
                 }
-                router.navigate(`/circuitBreaker-create`)
+                router.navigate(`/circuitBreaker-create?type=${type}`)
               }}
             >
               新建熔断规则

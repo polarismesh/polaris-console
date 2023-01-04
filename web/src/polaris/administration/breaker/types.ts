@@ -102,8 +102,8 @@ export const BreakLevelSearchParamMap = {
   [BreakLevelType.Method]: 2,
   [BreakLevelType.Service]: 1,
 }
-export const ServiceLevelType = [BreakLevelType.Instance, BreakLevelType.Group]
-export const InterfaceLevelType = [BreakLevelType.Method, BreakLevelType.Service]
+export const ServiceLevelType = [BreakLevelType.Method, BreakLevelType.Service]
+export const InterfaceLevelType = [BreakLevelType.Instance, BreakLevelType.Group]
 export const ServiceBreakLevelOptions = Object.entries(BreakLevelMap)
   .filter(([key]) => ServiceLevelType.indexOf(key as any) > -1)
   .map(([key, value]) => ({

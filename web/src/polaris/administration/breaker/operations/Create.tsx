@@ -29,12 +29,12 @@ import {
   BreakerType,
   ErrorConditionOptions,
   ErrorConditionType,
-  InterfaceLevelType,
   InterfaceBreakLevelOptions,
   ServiceBreakLevelOptions,
   TriggerType,
   TriggerTypeMap,
   TriggerTypeOptions,
+  ServiceLevelType,
 } from '../types'
 import Select from '@src/polaris/common/duckComponents/form/Select'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
@@ -283,7 +283,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             <Input
                               field={methodValue}
                               placeholder='请输入接口名称'
-                              style={{ width: '100px', borderRight: '0px' }}
+                              style={{ width: '199px', borderRight: '0px' }}
                             />
                             <TeaSelect
                               options={LimitMethodTypeOptions}
@@ -325,6 +325,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   }
                                 }}
                                 options={ErrorConditionOptions}
+                                appearance={'button'}
                               />
                             </FormField>
                             <FormItem>
@@ -390,6 +391,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   triggerType.setValue(v)
                                 }}
                                 options={TriggerTypeOptions}
+                                appearance={'button'}
                               />
                             </FormField>
                             <FormItem>
@@ -562,7 +564,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             >
               <Switch field={faultDetectEnable} />
             </FormField>
-            {InterfaceLevelType.indexOf(level.getValue() as any) > -1 && (
+            {ServiceLevelType.indexOf(level.getValue() as any) > -1 && (
               <Form.Item label='熔断后降级' className='compact-form-control'>
                 <Switch field={fallbackConfigEnable} />
                 <Card style={{ width: '1100px', marginRight: '0px', marginLeft: '0px', marginTop: '20px' }} bordered>
@@ -658,10 +660,10 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               onClick={() => {
                 if (composedId?.namespace) {
                   router.navigate(
-                    `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=${TAB.Route}`,
+                    `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=${TAB.CircuitBreaker}`,
                   )
                 } else {
-                  router.navigate(`/custom-route`)
+                  router.navigate(`/circuitBreaker`)
                 }
               }}
             >

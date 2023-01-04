@@ -220,13 +220,6 @@ const validator = Form.combineValidators<CircuitBreakerRule>({
           return '请选择服务名'
         }
       },
-      method: {
-        value(v) {
-          if (!v) {
-            return '请输入接口名'
-          }
-        },
-      },
     },
   },
   errorConditions: [
