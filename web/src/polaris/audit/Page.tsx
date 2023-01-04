@@ -12,6 +12,8 @@ import { replaceTags } from '../configuration/utils'
 import { NamespaceTagKey } from '../service/Page'
 import { RangePicker } from 'tea-component/lib/datepicker/RangePicker'
 import moment from 'moment'
+import buildConfig from '@src/buildConfig'
+import ClsAlert from '../common/components/ClsAlert'
 
 insertCSS(
   'service',
@@ -99,6 +101,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
 
   return (
     <BasicLayout title={'操作记录'} store={store} selectors={duck.selectors} header={<></>}>
+      {buildConfig.useCls && <ClsAlert type={'操作记录'} />}
       <Table.ActionPanel>
         <Justify
           left={

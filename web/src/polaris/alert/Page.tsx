@@ -9,6 +9,7 @@ import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import BasicLayout from '../common/components/BaseLayout'
 import { MonitorPanel } from '../monitor/Page'
 import buildConfig from '@src/buildConfig'
+import ClsAlert from '../common/components/ClsAlert'
 
 insertCSS(
   'service',
@@ -36,6 +37,7 @@ export default function ServicePage(props: DuckCmpProps<NamespaceDuck>) {
   const { clsInfo } = selector(store)
   return (
     <BasicLayout title={'业务监控'} store={store} selectors={duck.selectors} header={<></>}>
+      <ClsAlert type={'业务监控/告警配置'}></ClsAlert>
       <Tabs
         tabs={[
           { id: 'business', label: '监控曲线' },

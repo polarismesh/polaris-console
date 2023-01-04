@@ -12,6 +12,8 @@ import { replaceTags } from '../configuration/utils'
 import { NamespaceTagKey, ServiceNameTagKey } from '../service/Page'
 import { RangePicker } from 'tea-component/lib/datepicker/RangePicker'
 import moment from 'moment'
+import ClsAlert from '../common/components/ClsAlert'
+import buildConfig from '@src/buildConfig'
 
 insertCSS(
   'service',
@@ -86,6 +88,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
   const [timePickerIndex, setTimePickerIndex] = React.useState('7')
   return (
     <BasicLayout title={'事件中心'} store={store} selectors={duck.selectors} header={<></>}>
+      {buildConfig.useCls && <ClsAlert type={'事件中心'} />}
       <Table.ActionPanel>
         <Justify
           left={

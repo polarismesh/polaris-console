@@ -53,3 +53,19 @@ export async function describeEventType() {
   })
   return res
 }
+
+export type DescribeCLSOpenStatusParams = {}
+export type DescribeCLSOpenStatusResult = string[]
+
+export interface EventType {
+  type: string
+  desc: string
+}
+
+export async function DescribeCLSOpenStatus() {
+  const res = await getApiRequest<DescribeCLSOpenStatusResult>({
+    action: 'console/ability',
+    data: {},
+  })
+  return res.indexOf('log_observability') > -1
+}
