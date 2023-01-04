@@ -248,7 +248,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                               {
                                 key: 'code',
                                 header: '返回码',
-                                width: 50,
+                                width: 100,
                               },
                               {
                                 key: 'headers',
@@ -270,7 +270,6 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                               {
                                 key: 'body',
                                 header: '消息体',
-                                width: 300,
                               },
                             ]}
                           ></Table>

@@ -282,13 +282,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                     return (
                       <Text parent={'div'} key={index}>
                         <Input field={item} size={'m'} placeholder={'header键'}></Input>
-                        {tcpReceive.getValue().length > 1 && (
-                          <Button
-                            type='icon'
-                            icon='close'
-                            onClick={() => removeArrayFieldValue(tcpReceive, index)}
-                          ></Button>
-                        )}
+                        <Button
+                          type='icon'
+                          icon='close'
+                          onClick={() => removeArrayFieldValue(tcpReceive, index)}
+                        ></Button>
                         <Button type={'icon'} icon={'plus'} onClick={() => addArrayFieldValue(tcpReceive, '')}></Button>
                       </Text>
                     )
@@ -309,13 +307,12 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                     return (
                       <Text parent={'div'} key={index}>
                         <Input field={item} size={'m'} placeholder={'header键'}></Input>
-                        {udpReceive.getValue().length > 1 && (
-                          <Button
-                            type='icon'
-                            icon='close'
-                            onClick={() => removeArrayFieldValue(udpReceive, index)}
-                          ></Button>
-                        )}
+                        <Button
+                          type='icon'
+                          icon='close'
+                          onClick={() => removeArrayFieldValue(udpReceive, index)}
+                        ></Button>
+
                         <Button type={'icon'} icon={'plus'} onClick={() => addArrayFieldValue(udpReceive, '')}></Button>
                       </Text>
                     )

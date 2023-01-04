@@ -173,7 +173,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               appearance={'button'}
                               matchButtonWidth
                               placeholder='请选择命名空间'
-                              size='m'
+                              style={{ width: '80%', maxWidth: '600px' }}
                             />
                           </FormField>
                           <FormField field={sourceService} label='服务名称' required>
@@ -201,6 +201,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   onChange={(value) => {
                                     sourceService.setValue(value)
                                   }}
+                                  style={{ width: '80%', maxWidth: '600px' }}
                                 />
                               )}
                             </AutoComplete>
@@ -239,7 +240,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               appearance={'button'}
                               matchButtonWidth
                               placeholder='请选择命名空间'
-                              size='m'
+                              style={{ width: '80%', maxWidth: '600px' }}
                             />
                           </FormField>
                           <FormField field={destinationService} label='服务名称' required>
@@ -275,6 +276,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                     destinationService.setValue(value)
                                   }}
                                   disabled={destinationNamespace.getValue() === '*'}
+                                  style={{ width: '80%', maxWidth: '600px' }}
                                 />
                               )}
                             </AutoComplete>
@@ -283,7 +285,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             <Input
                               field={methodValue}
                               placeholder='请输入接口名称'
-                              style={{ width: '199px', borderRight: '0px' }}
+                              style={{ width: 'calc(80% - 101px)', borderRight: '0px' }}
                             />
                             <TeaSelect
                               options={LimitMethodTypeOptions}
@@ -322,19 +324,22 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 onChange={(v) => {
                                   inputType.setValue(v)
                                   if (v === ErrorConditionType.DELAY) {
+                                    type.setValue(LimitMethodType.EXACT)
                                   }
                                 }}
                                 options={ErrorConditionOptions}
                                 appearance={'button'}
                               />
                             </FormField>
-                            <FormItem>
-                              <Select
-                                field={type}
-                                options={LimitMethodTypeOptions}
-                                disabled={inputType.getValue() === ErrorConditionType.DELAY}
-                              />
-                            </FormItem>
+                            {inputType.getValue() !== ErrorConditionType.DELAY && (
+                              <FormItem>
+                                <Select
+                                  field={type}
+                                  options={LimitMethodTypeOptions}
+                                  disabled={inputType.getValue() === ErrorConditionType.DELAY}
+                                />
+                              </FormItem>
+                            )}
                             <FormField
                               showStatusIcon={false}
                               field={value}
@@ -551,9 +556,8 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               label='主动探测'
               message={
                 <>
-                  <Text parent={'div'}>
-                    开启主动探测时，客户端将会根据您配置的探测规则对目标被调服务进行探测，主动探测请求与业务调用合并判断熔断恢复（如未匹配到探测规则，则不会生效）
-                  </Text>
+                  <Text parent={'div'}>开启主动探测时，客户端将会根据您配置的探测规则对目标被调服务进行探测</Text>
+                  <Text parent={'div'}>主动探测请求与业务调用合并判断熔断恢复（如未匹配到探测规则，则不会生效）</Text>
                   <Text parent={'div'}>未开启主动探测时，会仅根据业务调用判断熔断恢复</Text>
                   <Text parent={'div'}>
                     <ExternalLink href={''}>查看主动探测规则</ExternalLink>
@@ -598,13 +602,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                     placeholder={'header值'}
                                     style={{ marginLeft: '20px' }}
                                   ></Input>
-                                  {headers.getValue().length > 1 && (
-                                    <Button
-                                      type='icon'
-                                      icon='close'
-                                      onClick={() => removeArrayFieldValue(headers, index)}
-                                    ></Button>
-                                  )}
+                                  <Button
+                                    type='icon'
+                                    icon='close'
+                                    onClick={() => removeArrayFieldValue(headers, index)}
+                                  ></Button>
                                   <Button
                                     type={'icon'}
                                     icon={'plus'}

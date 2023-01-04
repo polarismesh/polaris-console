@@ -189,6 +189,9 @@ const validator = Form.combineValidators<FaultDetectRule>({
     if (!v) {
       return '请填写规则名称'
     }
+    if (!/^[a-z]([a-z0-9-_]{1,64})?$/.test(v)) {
+      return '名称只能含有数字，字母，下划线及中划线'
+    }
   },
   targetService: {
     namespace(v) {
@@ -200,13 +203,6 @@ const validator = Form.combineValidators<FaultDetectRule>({
       if (!v) {
         return '请选择服务名'
       }
-    },
-    method: {
-      value(v) {
-        if (!v) {
-          return '请输入接口名'
-        }
-      },
     },
   },
   timeout(v) {

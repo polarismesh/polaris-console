@@ -176,6 +176,12 @@ export default class ServicePageDuck extends GridPageDuck {
     yield takeLatest(types.LOAD, function* (action) {
       yield put(ducks.faultDetect.creators.load(action.payload))
     })
+    yield takeLatest(types.RELOAD, function* () {
+      yield put(ducks.faultDetect.creators.reload())
+    })
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* () {
+      yield put(ducks.faultDetect.creators.reload())
+    })
     yield takeLatest(types.CHANGE_TAGS, function* (action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
