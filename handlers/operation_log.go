@@ -74,6 +74,7 @@ func DescribeOperationHistoryLog(conf *bootstrap.Config) gin.HandlerFunc {
 				Code:     200000,
 				Size:     0,
 				Amount:   0,
+				Data:     []OperationRecord{},
 				HashNext: false,
 			})
 			return
@@ -87,9 +88,12 @@ func DescribeOperationHistoryLog(conf *bootstrap.Config) gin.HandlerFunc {
 			return
 		}
 		if reader == nil {
-			ctx.JSON(http.StatusOK, model.Response{
-				Code: 200000,
-				Info: "success",
+			ctx.JSON(http.StatusOK, model.QueryResponse{
+				Code:     200000,
+				Size:     0,
+				Amount:   0,
+				Data:     []OperationRecord{},
+				HashNext: false,
 			})
 			return
 		}
