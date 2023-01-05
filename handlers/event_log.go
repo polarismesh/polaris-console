@@ -108,6 +108,7 @@ func DescribeEventLog(conf *bootstrap.Config) gin.HandlerFunc {
 				Code:     200000,
 				Size:     0,
 				Amount:   0,
+				Data:     []EventRecord{},
 				HashNext: false,
 			})
 			return
@@ -121,9 +122,12 @@ func DescribeEventLog(conf *bootstrap.Config) gin.HandlerFunc {
 			return
 		}
 		if reader == nil {
-			ctx.JSON(http.StatusOK, model.Response{
-				Code: 200000,
-				Info: "success",
+			ctx.JSON(http.StatusOK, model.QueryResponse{
+				Code:     200000,
+				Size:     0,
+				Amount:   0,
+				Data:     []EventRecord{},
+				HashNext: false,
 			})
 			return
 		}
