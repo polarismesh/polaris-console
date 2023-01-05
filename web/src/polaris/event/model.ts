@@ -55,7 +55,7 @@ export async function describeEventType() {
 }
 
 export type DescribeCLSOpenStatusParams = {}
-export type DescribeCLSOpenStatusResult = string[]
+export type DescribeCLSOpenStatusResult = { data: string[] }
 
 export interface EventType {
   type: string
@@ -67,5 +67,5 @@ export async function DescribeCLSOpenStatus() {
     action: 'console/ability',
     data: {},
   })
-  return res.indexOf('log_observability') > -1
+  return res.data.indexOf('log_observability') > -1
 }
