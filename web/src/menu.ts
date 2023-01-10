@@ -67,6 +67,12 @@ export const MenuConfig: MenuItemConfig = {
           ],
         },
         {
+          id: 'circuitBreaker',
+          title: '熔断降级',
+          icon: 'static/img/dynamic-route.svg',
+          subMenus: null,
+        },
+        {
           id: 'accesslimit',
           title: '访问限流',
           icon: 'static/img/dynamic-route.svg',

@@ -19,6 +19,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"github.com/polarismesh/polaris-console/bootstrap"
 	"github.com/polarismesh/polaris-console/handlers"
 )
@@ -45,6 +46,10 @@ func DiscoveryV1Router(r *gin.Engine, config *bootstrap.Config) {
 	v1.POST("/circuitbreakers/version", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 发布熔断规则（已经在前端对负责人信息进行校验）
 	v1.POST("/circuitbreakers/release", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// new create API for circuitbreaker rule
+	v1.POST("/circuitbreaker/rules", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// new create API for faultdetect rule
+	v1.POST("/faultdetectors", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	// 查看资源
 	v1.GET("/:resource", handlers.ReverseProxyForServer(&config.PolarisServer, config))
@@ -64,6 +69,8 @@ func DiscoveryV1Router(r *gin.Engine, config *bootstrap.Config) {
 	v1.GET("/:resource/token", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 查询实例的标签列表
 	v1.GET("/:resource/labels", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 修改熔断高阶名
+	v1.GET("/:resource/rules", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	// 修改资源
 	v1.PUT("/:resource", handlers.ReverseProxyForServer(&config.PolarisServer, config))
@@ -73,6 +80,10 @@ func DiscoveryV1Router(r *gin.Engine, config *bootstrap.Config) {
 	v1.PUT("/:resource/alias", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 激活规则
 	v1.PUT("/:resource/enable", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 修改熔断高阶名
+	v1.PUT("/:resource/rules", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 激活熔断规则
+	v1.PUT("/:resource/rules/enable", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	// 删除命名空间
 	v1.POST("/namespaces/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
@@ -85,11 +96,15 @@ func DiscoveryV1Router(r *gin.Engine, config *bootstrap.Config) {
 	// 删除路由
 	v1.POST("/routings/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 删除限流规则
-	v1.POST("ratelimits/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	v1.POST("/ratelimits/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 删除熔断规则
-	v1.POST("circuitbreakers/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	v1.POST("/circuitbreakers/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 解绑熔断规则
-	v1.POST("circuitbreakers/unbind", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	v1.POST("/circuitbreakers/unbind", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// delete the CircuitBreaker rules
+	v1.POST("/circuitbreaker/rules/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// delete the FaultDetector rules
+	v1.POST("/faultdetectors/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 }
 
 // DiscoveryV2Router 路由请求

@@ -6,7 +6,7 @@ import InfoDuck from './info/PageDuck'
 import InstanceDuck from './instance/PageDuck'
 import AccessLimitDuck from '@src/polaris/administration/accessLimiting/PageDuck'
 import RouteDuck from '@src/polaris/administration/dynamicRoute/customRoute/PageDuck'
-import CircuitBreakerDuck from './circuitBreaker/PageDuck'
+import CircuitBreakerDuck from '@src/polaris/administration/breaker/PageDuck'
 
 import { Service } from '../types'
 import { describeServices } from '../model'
@@ -105,7 +105,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
   *watchTabs() {
     const duck = this
     const { types, ducks, selectors } = duck
-    yield takeLatest([types.SWITCH, types.FETCH_DONE], function*() {
+    yield takeLatest([types.SWITCH, types.FETCH_DONE], function* () {
       const composedId = selectors.composedId(yield select())
       const tab = selectors.tab(yield select())
       const data = selectors.data(yield select())
