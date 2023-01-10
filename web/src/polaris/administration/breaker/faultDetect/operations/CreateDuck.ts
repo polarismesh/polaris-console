@@ -189,7 +189,7 @@ const validator = Form.combineValidators<FaultDetectRule>({
     if (!v) {
       return '请填写规则名称'
     }
-    if (!/^[a-z]([a-z0-9-_]{1,64})?$/.test(v)) {
+    if (!/^[a-zA-Z]([a-zA-Z0-9-_]{1,64})?$/.test(v)) {
       return '名称只能含有数字，字母，下划线及中划线'
     }
   },
