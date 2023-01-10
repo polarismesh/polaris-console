@@ -55,7 +55,7 @@ export interface DeleteCircuitBreakerParams {
 }
 export async function deleteCircuitBreaker(params: DeleteCircuitBreakerParams[]) {
   const res = await apiRequest<any>({
-    action: 'naming/v2/routings/delete',
+    action: 'naming/v1/circuitbreaker/rules/delete',
     data: params,
   })
   return res
