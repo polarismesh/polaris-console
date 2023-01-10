@@ -129,18 +129,6 @@ export const MenuConfig: MenuItemConfig = {
           icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
-        {
-          id: 'audit',
-          title: '操作记录',
-          icon: 'static/img/circuit-monitor.svg',
-          subMenus: null,
-        },
-        {
-          id: 'event',
-          title: '事件中心',
-          icon: 'static/img/circuit-monitor.svg',
-          subMenus: null,
-        },
       ],
     },
     {
