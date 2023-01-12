@@ -94,6 +94,24 @@ module.exports = {
       languages: ["json", "yaml", "ini", "xml"],
       // targetName 业务名
       filename: `static/js/[name].js`,
+      customLanguages: [
+        {
+          label: 'yaml',
+          entry: 'monaco-yaml',
+          worker: {
+            id: 'monaco-yaml/yamlWorker',
+            entry: 'monaco-yaml/yaml.worker',
+          },
+        },
+        {
+          label: 'yml',
+          entry: 'monaco-yaml',
+          worker: {
+            id: 'monaco-yaml/yamlWorker',
+            entry: 'monaco-yaml/yaml.worker',
+          },
+        },
+      ],
     }),
     new HtmlWebpackPlugin({
       filename: "index.html",

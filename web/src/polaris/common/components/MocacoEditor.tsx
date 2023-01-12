@@ -7,7 +7,20 @@ import {
   Icon,
 } from 'tea-component'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import { setDiagnosticsOptions } from 'monaco-yaml'
+
 import insertCSS from '../helpers/insertCSS'
+
+
+setDiagnosticsOptions({
+  enableSchemaRequest: true,
+  hover: true,
+  completion: true,
+  validate: true,
+  format: true,
+  schemas: [],
+})
+
 insertCSS(
   'monaco-section',
   `
