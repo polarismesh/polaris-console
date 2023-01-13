@@ -22,13 +22,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/polarismesh/polaris-console/common/log"
-	"github.com/polarismesh/polaris-console/store"
 )
 
 // Initialize 日志初始化
 func Initialize(config *Config) {
-	store.SetStoreConfig(&config.Store)
-
 	err := config.Logger.SetOutputLevel(log.DefaultScopeName, config.Logger.Level)
 	if err != nil {
 		fmt.Printf("[ERROR] %v\n", err)

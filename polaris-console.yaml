@@ -22,28 +22,4 @@ polarisServer:
   polarisToken: "nu/0WRA4EqSR1FagrjRj0fZwPXuGlMpX+zCuWu4uMqy8xr1vRjisSbA25aAC3mtU8MeeRsKhQiDAynUR09I="
 monitorServer:
   address: "127.0.0.1:9090"
-# eventServer:
-#   requestUrl:
-#   timeout: 5s
-# operationServer:
-#   requestUrl:
-#   timeout: 5s
-# 存储配置
-store:
-  # 单机文件存储插件
-  name: boltdbStore
-  option:
-    path: ./polaris.bolt
-  # 数据库存储插件
-  # name: defaultStore
-  # option:
-  #   master:
-  #     dbType: mysql
-  #     dbName: polaris_console
-  #     dbUser: ##DB_USER##
-  #     dbPwd: ##DB_PWD##
-  #     dbAddr: ##DB_ADDR##
-  #     maxOpenConns: 300
-  #     maxIdleConns: 50
-  #     connMaxLifetime: 300 # 单位秒
-  #     txIsolationLevel: 2 #LevelReadCommitted
+

@@ -16,8 +16,3 @@
  */
 
 package main
-
-import (
-	_ "github.com/polarismesh/polaris-console/store/boltdb"
-	_ "github.com/polarismesh/polaris-console/store/mysql"
-)
