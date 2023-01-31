@@ -47,13 +47,13 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     'message',
   ])
   const options = selectors.options(store)
-  const {
-    expr,
-    for: expr_interval,
-    metrics_name,
-    value: expr_value,
-    for_unit,
-  } = alter_expr.getFields(['expr', 'for', 'metrics_name', 'value', 'for_unit'])
+  const { expr, for: expr_interval, metrics_name, value: expr_value, for_unit } = alter_expr.getFields([
+    'expr',
+    'for',
+    'metrics_name',
+    'value',
+    'for_unit',
+  ])
   const info = callback.getField('info')
   const url = info.getField('url')
   return (
@@ -66,7 +66,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           <Select
             value={monitor_type.getValue()}
             options={MonitorTypeOption}
-            onChange={(value) => monitor_type.setValue(value)}
+            onChange={value => monitor_type.setValue(value)}
             appearance={'button'}
           ></Select>
         </FormField>
@@ -80,7 +80,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                 <Select
                   value={metrics_name.getValue()}
                   options={MetricNameOptions}
-                  onChange={(value) => metrics_name.setValue(value)}
+                  onChange={value => metrics_name.setValue(value)}
                   appearance={'button'}
                 ></Select>
               </FormField>
@@ -88,14 +88,14 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                 <Select
                   value={expr.getValue()}
                   options={AlterExprOptions}
-                  onChange={(value) => expr.setValue(value)}
+                  onChange={value => expr.setValue(value)}
                   appearance={'button'}
                 ></Select>
               </FormField>
               <FormField field={expr_value}>
                 <InputNumber
                   value={expr_value.getValue()}
-                  onChange={(v) => expr_value.setValue(v)}
+                  onChange={v => expr_value.setValue(v)}
                   min={0}
                   size={'m'}
                   hideButton
@@ -113,7 +113,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
               <Select
                 value={for_unit.getValue()}
                 options={AlertTimeIntervalOptions}
-                onChange={(value) => for_unit.setValue(value)}
+                onChange={value => for_unit.setValue(value)}
                 appearance={'button'}
                 size={'xs'}
               ></Select>
@@ -121,7 +121,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           >
             <InputNumber
               value={expr_interval.getValue()}
-              onChange={(v) => expr_interval.setValue(v)}
+              onChange={v => expr_interval.setValue(v)}
               min={0}
               size={'m'}
               hideButton
@@ -149,7 +149,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         <FormField field={message} label={'告警消息'} required>
           <TeaInput.TextArea
             value={message.getValue()}
-            onChange={(v) => {
+            onChange={v => {
               message.setValue(v)
             }}
             rows={5}

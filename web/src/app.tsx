@@ -93,14 +93,6 @@ import CustomRouteDetailPage from '@src/polaris/administration/dynamicRoute/cust
 import CustomRouteDetailPageDuck from '@src/polaris/administration/dynamicRoute/customRoute/detail/PageDuck'
 const CustomRouteDetail = connectWithDuck(CustomRouteDetailPage, CustomRouteDetailPageDuck as any)
 
-import AuditPage from '@src/polaris/audit/Page'
-import AuditPageDuck from '@src/polaris/audit/PageDuck'
-const Audit = connectWithDuck(AuditPage, AuditPageDuck)
-
-import EventPage from '@src/polaris/event/Page'
-import EventPageDuck from '@src/polaris/event/PageDuck'
-const Event = connectWithDuck(EventPage, EventPageDuck)
-
 import AlertPage from '@src/polaris/alert/Page'
 import AlertPageDuck from '@src/polaris/alert/PageDuck'
 const Alert = connectWithDuck(AlertPage, AlertPageDuck)
@@ -125,7 +117,7 @@ const FaultDetectCreate = connectWithDuck(FaultDetectCreatePage, FaultDetectCrea
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1] || 'service')
-  const getMenuItemProps = (id) => ({
+  const getMenuItemProps = id => ({
     selected: selected === id,
     onClick: () => {
       setSelected(id)
@@ -152,7 +144,7 @@ export default function root() {
 
     return menuItem.subMenus ? (
       <Menu.SubMenu title={menuItem.title} icon={menuItem.icon} key={menuItem.id}>
-        {menuItem.subMenus.map((o) => recursiveRenderMenuItem(o))}
+        {menuItem.subMenus.map(o => recursiveRenderMenuItem(o))}
       </Menu.SubMenu>
     ) : (
       <Menu.Item
@@ -191,7 +183,7 @@ export default function root() {
                 </NavMenu.Item>
                 <NavMenu.Item
                   type='dropdown'
-                  overlay={(close) => (
+                  overlay={close => (
                     <List type='option'>
                       <List.Item
                         onClick={() => {
@@ -221,11 +213,11 @@ export default function root() {
         <Body>
           <Sider>
             <Menu collapsable theme='dark' title={MenuConfig.title}>
-              {MenuConfig.subMenus.map((o) => {
+              {MenuConfig.subMenus.map(o => {
                 if (o.subMenus) {
                   return (
                     <Menu.Group key={o.id} title={o.title}>
-                      {o.subMenus.map((item) => recursiveRenderMenuItem(item))}
+                      {o.subMenus.map(item => recursiveRenderMenuItem(item))}
                     </Menu.Group>
                   )
                 } else {
@@ -260,8 +252,6 @@ export default function root() {
               <Route exact path='/custom-route' component={CustomRoute} />
               <Route exact path='/custom-route-create' component={CustomRouteCreate} />
               <Route exact path='/custom-route-detail' component={CustomRouteDetail} />
-              <Route exact path='/audit' component={Audit} />
-              <Route exact path='/event' component={Event} />
               <Route exact path='/alert' component={Alert} />
               <Route exact path='/alert-detail' component={AlertDetail} />
               <Route exact path='/circuitBreaker-create' component={CircuitBreakerCreate} />
