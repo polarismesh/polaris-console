@@ -2,7 +2,6 @@ import { createToPayload, reduceFromPayload } from 'saga-duck'
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
 import Form from '@src/polaris/common/ducks/Form'
 import {
-  checkGlobalRateLimitAvailable,
   CreateLimitRulesBaseParams,
   CreateLimitRulesParams,
   createRateLimit,
@@ -21,7 +20,6 @@ import { takeLatest } from 'redux-saga-catch'
 import { delay } from 'redux-saga'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
-import buildConfig from '@src/buildConfig'
 
 interface ComposedId {
   id: string
@@ -307,12 +305,8 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
       })({}),
       getAllList(describeServices, {})({}),
     ])
-    let hasGlobalLimit
-    if (buildConfig.checkGlobalRateLimit) {
-      hasGlobalLimit = await checkGlobalRateLimitAvailable()
-    } else {
-      hasGlobalLimit = true
-    }
+    const hasGlobalLimit = true
+
     const namespaceList = namespaceOptions.list.map((item) => ({
       text: item.name,
       value: item.name,

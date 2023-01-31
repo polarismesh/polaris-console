@@ -1,4 +1,3 @@
-import buildConfig from './buildConfig'
 export interface MenuItemConfig {
   id: string
   title: string
@@ -87,7 +86,7 @@ export const MenuConfig: MenuItemConfig = {
         },
       ],
     },
-    buildConfig.configuration && {
+    {
       id: 'configuration',
       title: '配置中心',
       icon: null,

@@ -6,7 +6,6 @@ import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, Copy, Bubble } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
-import buildConfig from '@src/buildConfig'
 insertCSS(
   'login',
   `.login-background{
@@ -16,7 +15,7 @@ overflow:hidden;
 
 }`,
 )
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks, creators, selector } = duck
   const { userName, password } = ducks.form.getAPI(store, dispatch).getFields(['userName', 'password'])
@@ -74,15 +73,13 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       </Text>
                     </Col>
                   </Row>
-                  {buildConfig.useDefaultPwd && (
-                    <Row>
-                      <Col>
-                        <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
-                          初始用户名和密码为<Copy text={'polaris'}>polaris</Copy>/<Copy text={'polaris'}>polaris</Copy>
-                        </Text>
-                      </Col>
-                    </Row>
-                  )}
+                  <Row>
+                    <Col>
+                      <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
+                        初始用户名和密码为<Copy text={'polaris'}>polaris</Copy>/<Copy text={'polaris'}>polaris</Copy>
+                      </Text>
+                    </Col>
+                  </Row>
                   <Form style={{ padding: '20px 0px' }}>
                     <FormField field={userName} label={'用户名'}>
                       <Input field={userName} size={'full'} disabled={preError} placeholder={licenseToolTip} />
@@ -91,7 +88,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       <TeaInput.Password
                         value={password.getValue() || ''}
                         size={'full'}
-                        onChange={v => {
+                        onChange={(v) => {
                           password.setValue(v)
                           password.setTouched(true)
                           password.setError('')

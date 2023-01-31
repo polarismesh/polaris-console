@@ -1,6 +1,5 @@
-import buildConfig from '@src/buildConfig'
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
-import { ClsInfo, describeAlertRules, fetchClsInfo } from '../model'
+import { ClsInfo, describeAlertRules } from '../model'
 import { AlertInfo } from '../types'
 
 interface ComposedId {
@@ -73,14 +72,11 @@ export default class RouteDetailPageDuck extends DetailPage {
   }
 
   async getData(composedId: ComposedId) {
-    const result = await Promise.all([
-      describeAlertRules({ id: composedId.id, offset: 0, limit: 20 }),
-      ...(buildConfig.useCls ? [fetchClsInfo({})] : []),
-    ])
+    const result = await Promise.all([describeAlertRules({ id: composedId.id, offset: 0, limit: 20 })])
 
     return {
       alertInfo: result?.[0]?.data?.[0],
-      clsInfo: result?.[1]?.data || ({} as any),
+      clsInfo: {} as any,
     }
   }
 }

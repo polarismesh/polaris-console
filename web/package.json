@@ -6,9 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack serve --config build/webpack.dev.conf.js",
     "public-dev": "cross-env NODE_ENV=development BUILD_TYPE=public webpack serve --config build/webpack.dev.conf.js",
-    "build": "cross-env NODE_ENV=production webpack --config build/webpack.prod.conf.js && bash build/copy-file.sh && tar -czvf ./polaris-frontend.tar.gz ./dist",
-    "public-build": "cross-env NODE_ENV=production BUILD_TYPE=public webpack --config build/webpack.prod.conf.js && bash build/copy-file.sh && tar -czvf ./polaris-frontend.tar.gz ./dist",
-    "tcs-build": "cross-env NODE_ENV=production BUILD_TYPE=tcs webpack --config build/webpack.prod.conf.js && bash build/copy-file.sh && tar -czvf ./polaris-frontend.tar.gz ./dist"
+    "build": "cross-env NODE_ENV=production webpack --config build/webpack.prod.conf.js && bash build/copy-file.sh && tar -czvf ./polaris-frontend.tar.gz ./dist"
   },
   "author": "",
   "license": "ISC",

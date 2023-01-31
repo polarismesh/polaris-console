@@ -12,7 +12,6 @@ import {
   MetricNameOptions,
   MonitorTypeOption,
 } from '../types'
-import buildConfig from '@src/buildConfig'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -141,11 +140,9 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             appearance={'button'}
           ></Select>
         </FormItem>
-        {!buildConfig.useCls && (
-          <FormField field={url} label={'通知回调地址'} required>
-            <Input field={url} size={'l'} />
-          </FormField>
-        )}
+        <FormField field={url} label={'通知回调地址'} required>
+          <Input field={url} size={'l'} />
+        </FormField>
         <FormField field={topic} label={'告警主题'} required>
           <Input field={topic} size={'l'} />
         </FormField>

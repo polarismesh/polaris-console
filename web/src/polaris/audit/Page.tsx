@@ -2,7 +2,7 @@ import BasicLayout from '../common/components/BaseLayout'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import ServicePageDuck, { EmptyCustomFilter } from './PageDuck'
-import { Button, Card, Justify, Table, TagSearchBox, Input, Segment } from 'tea-component'
+import { Button, Card, Justify, Table, TagSearchBox, Segment } from 'tea-component'
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
@@ -12,8 +12,6 @@ import { replaceTags } from '../configuration/utils'
 import { NamespaceTagKey } from '../service/Page'
 import { RangePicker } from 'tea-component/lib/datepicker/RangePicker'
 import moment from 'moment'
-import buildConfig from '@src/buildConfig'
-import ClsAlert from '../common/components/ClsAlert'
 
 insertCSS(
   'service',
@@ -101,7 +99,6 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
 
   return (
     <BasicLayout title={'操作记录'} store={store} selectors={duck.selectors} header={<></>}>
-      {buildConfig.useCls && <ClsAlert type={'操作记录'} />}
       <Table.ActionPanel>
         <Justify
           left={

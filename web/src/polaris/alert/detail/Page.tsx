@@ -1,10 +1,9 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
-import { Form, Card, FormItem, FormText, Text, ExternalLink } from 'tea-component'
+import { Form, Card, FormItem, FormText, Text } from 'tea-component'
 import PageDuck from './PageDuck'
 import { AlertTimeIntervalMap, AlterExprMap, MetricNameMap, MonitorTypeMap } from '../types'
-import buildConfig from '@src/buildConfig'
 
 export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
   const { duck, store, dispatch } = props
@@ -16,7 +15,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
   if (!data?.alertInfo) {
     return <noscript />
   }
-  const { alertInfo, clsInfo } = data
+  const { alertInfo } = data
   return (
     <DetailPage
       store={store}
@@ -68,18 +67,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
             <FormItem label={'告警周期'}>
               <FormText>{alertInfo.message}</FormText>
             </FormItem>
-            {buildConfig.useCls ? (
-              <FormItem label={'监控告警日志'}>
-                <FormText>
-                  <ExternalLink href={clsInfo?.link}>{clsInfo.topic_id}</ExternalLink>
-                  <Text parent={'div'}>{clsInfo.topic_name}</Text>
-                </FormText>
-              </FormItem>
-            ) : (
-              <FormItem label={'通知回调地址'}>
-                <FormText>{alertInfo.callback?.info?.url}</FormText>
-              </FormItem>
-            )}
+            <FormItem label={'通知回调地址'}>
+              <FormText>{alertInfo.callback?.info?.url}</FormText>
+            </FormItem>
           </Form>
         </Card.Body>
       </Card>

@@ -40,7 +40,6 @@ import { FieldAPI } from '@src/polaris/common/ducks/Form'
 import { LimitArgumentsConfigForFormFilling } from '../model'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
-import buildConfig from '@src/buildConfig'
 
 insertCSS(
   'create-rule-form',
@@ -216,17 +215,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
 
   const [serviceInputValue, setServiceInputValue] = React.useState('')
 
-  const filteredLimitTypeOptions = buildConfig.checkGlobalRateLimit
-    ? LimitTypeOptions.map((item) => {
-        if (item.value === LimitType.GLOBAL) {
-          return {
-            ...item,
-            disabled: !data?.hasGlobalLimit,
-          }
-        }
-        return item
-      })
-    : LimitTypeOptions
+  const filteredLimitTypeOptions = LimitTypeOptions
   return (
     <DetailPage
       store={store}
@@ -241,16 +230,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
             <FormField label='限流规则名称' field={nameField} message='最长64个字符' required>
               <Input field={nameField} maxLength={64} size='l' />
             </FormField>
-            <FormField
-              label='限流类型'
-              field={typeField}
-              required
-              message={
-                buildConfig.checkGlobalRateLimit && !data?.hasGlobalLimit
-                  ? '您当前版本为标准版，支持单机限流的能力，如需使用分布式限流的能力，请升级版本至专业版'
-                  : ''
-              }
-            >
+            <FormField label='限流类型' field={typeField} required>
               <Segment
                 value={typeField.getValue()}
                 options={filteredLimitTypeOptions}

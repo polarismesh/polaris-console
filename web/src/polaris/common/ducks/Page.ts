@@ -4,12 +4,9 @@ import { DuckMap, reduceFromPayload, createToPayload } from 'saga-duck'
 import { takeEvery, takeLatest, runAndTakeLatest } from 'redux-saga-catch'
 import RouteDuck, { Param } from '../ducks/Route'
 import { createElement, ReactElement } from 'react'
-import { Alert, notification } from 'tea-component'
-import { PolarisTokenKey, userLogout } from '../util/common'
+import { Alert } from 'tea-component'
+import { PolarisTokenKey } from '../util/common'
 import router from '../util/router'
-import { once, ttl } from '../helpers/cacheable'
-import { describeLicenseStatus, LicenseStatus } from '../util/license'
-import buildConfig from '@src/buildConfig'
 import insertCSS from '../helpers/insertCSS'
 import React from 'react'
 
@@ -24,8 +21,6 @@ insertCSS(
   }
 `,
 )
-
-const cacheDescribeLicenseStatus = once(describeLicenseStatus, ttl(30 * 1000))
 
 type SELECTOR<T> = (globalState: any) => T
 type CREATOR<T> = (value: T) => any
@@ -200,7 +195,7 @@ export default abstract class PageDuck extends DuckMap {
   }
   *sagaUseTitle() {
     const { types, selector } = this
-    yield runAndTakeLatest(types.SET_TITLE, function*() {
+    yield runAndTakeLatest(types.SET_TITLE, function* () {
       const { title } = selector(yield select())
       if (!title) {
         return
@@ -225,7 +220,7 @@ export default abstract class PageDuck extends DuckMap {
         [],
       )
       // 标记为路由向属性同步
-      actions.forEach(action => {
+      actions.forEach((action) => {
         action.fromRoute = true
       })
       const len = actions.length
@@ -243,7 +238,7 @@ export default abstract class PageDuck extends DuckMap {
     // 属性变化，同步到路由上
     const watchTypeSet = new Set([types.ROUTE_CHANGED, ...watchRouteTypes])
     yield takeLatest(
-      action => watchTypeSet.has(action.type) && !action.fromRoute,
+      (action) => watchTypeSet.has(action.type) && !action.fromRoute,
       function* attrToRoute(action) {
         // 如果是路由向属性同步的，无视
         // TODO 如果一个fromRoute=false的动作后，紧接着一个fromRoute=true的动作
@@ -266,8 +261,8 @@ export default abstract class PageDuck extends DuckMap {
       yield all(
         this.preEffects
           // 兼容（返回false表示中止）
-          .map(effect =>
-            call(function*() {
+          .map((effect) =>
+            call(function* () {
               if ((yield effect) === false) {
                 throw null
               }
@@ -354,51 +349,7 @@ get preSagas(){
     }
   }
   *checkLicense() {
-    if (buildConfig.license) {
-      const licenseResult = yield cacheDescribeLicenseStatus({})
-      switch (licenseResult.code) {
-        case LicenseStatus.LICENSE_OK:
-          return true
-        case LicenseStatus.LICENSE_LEFT_30_DAY:
-          if (!window.sessionStorage.getItem(`license_status_closed${licenseResult.code}`)) {
-            notification.warning({
-              title: '请注意License即将到期',
-              description: licenseResult.warnMsg,
-              duration: 0,
-              unique: true,
-              onClose: () => {
-                window.sessionStorage.setItem(`license_status_closed${licenseResult.code}`, 'true')
-              },
-            })
-          }
-          return true
-        case LicenseStatus.LICENSE_EXPIRE_30_DAY:
-          notification.error({
-            title: '请注意License已过期',
-            description: licenseResult.warnMsg,
-            duration: 0,
-            unique: true,
-            className: 'license-notification-hide-btn',
-          })
-          return true
-        case LicenseStatus.LICENSE_FORBIDDEN:
-          if (window.location.hash.indexOf('login') === -1) {
-            userLogout()
-          }
-          notification.error({
-            title: 'License已超过最大过期时间',
-            description: licenseResult.warnMsg,
-            duration: 0,
-            unique: true,
-            className: 'license-notification-hide-btn',
-          })
-          throw LicenseStatus.LICENSE_FORBIDDEN
-        default:
-          return true
-      }
-    } else {
-      return true
-    }
+    return true
   }
   /**
    * 等待 url => PageDuck 同步完成
@@ -442,13 +393,13 @@ get preSagas(){
       return this._routesSelector
     }
     const { selector, selectors } = this
-    return (this._routesSelector = state =>
+    return (this._routesSelector = (state) =>
       this.params.reduce((map, param) => {
         let routeSelector
         if (param.selector) {
           routeSelector = selectors[param.selector as string] || param.selector
         } else {
-          routeSelector = selectors[param.key] || (state => selector(state)[param.key])
+          routeSelector = selectors[param.key] || ((state) => selector(state)[param.key])
         }
         map[param.key] = routeSelector(state)
         return map
@@ -465,7 +416,7 @@ get preSagas(){
       if (param.creator) {
         creator = creators[param.creator as string] || param.creator
       } else {
-        creator = creators[param.key] || (payload => ({ type: param.type, payload }))
+        creator = creators[param.key] || ((payload) => ({ type: param.type, payload }))
       }
       map[param.key] = creator
       return map

@@ -2,9 +2,8 @@ import { put, select } from 'redux-saga/effects'
 import FormDialog from '@src/polaris/common/ducks/FormDialog'
 import { resolvePromise } from '@src/polaris/common/helpers/saga'
 import Form from '@src/polaris/common/ducks/Form'
-import { modifyAlertRule, createAlertRule, fetchClsInfo } from '../model'
+import { modifyAlertRule, createAlertRule } from '../model'
 import { AlertInfo, AlterExpr, CallbackType } from '../types'
-import buildConfig from '@src/buildConfig'
 import { notification } from 'tea-component'
 
 export interface DialogOptions {
@@ -36,8 +35,6 @@ export default class CreateDuck extends FormDialog {
     } = this
     const options = selectors.options(yield select())
     const values = form.selectors.values(yield select())
-    let clsInfo = {} as any
-    if (buildConfig.useCls) clsInfo = yield fetchClsInfo({})
     if (options.isModify) {
       const res = yield* resolvePromise(
         modifyAlertRule([
@@ -57,9 +54,9 @@ export default class CreateDuck extends FormDialog {
             topic: values.topic,
             message: values.message,
             callback: {
-              type: buildConfig.useCls ? CallbackType.CLS : CallbackType.WebHook,
+              type: CallbackType.WebHook,
               info: {
-                ...(buildConfig.useCls ? { topic_id: clsInfo.data.topic_id } : { url: values?.callback?.info?.url }),
+                url: values?.callback?.info?.url,
               },
             },
           },
@@ -88,9 +85,9 @@ export default class CreateDuck extends FormDialog {
             topic: values.topic,
             message: values.message,
             callback: {
-              type: buildConfig.useCls ? CallbackType.CLS : CallbackType.WebHook,
+              type: CallbackType.WebHook,
               info: {
-                ...(buildConfig.useCls ? { topic_id: clsInfo.data.topic_id } : { url: values?.callback?.info?.url }),
+                url: values?.callback?.info?.url,
               },
             },
             enable: false,

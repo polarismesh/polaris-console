@@ -111,7 +111,7 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
   }
   *saga() {
     yield* super.saga()
-    const { types, ducks, selectors } = this
+    const { types, ducks, selectors, selector } = this
 
     // 规则创建
     yield takeLatest(types.SUBMIT, function* () {
@@ -122,6 +122,7 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
       }
       const values = ducks.form.selectors.values(yield select())
       const { id, namespace, service } = yield select(selectors.composedId)
+      const { type } = selector(yield select())
       let result
       if (id) {
         delete values['@type']
@@ -136,9 +137,11 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
       yield call(delay, 5)
       if (result.code === 200000) {
         if (namespace) {
-          router.navigate(`/service-detail?name=${service}&namespace=${namespace}&tab=${TAB.CircuitBreaker}`)
+          router.navigate(
+            `/service-detail?name=${service}&namespace=${namespace}&tab=${TAB.CircuitBreaker}&type=${type}`,
+          )
         } else {
-          router.navigate(`/circuitBreaker`)
+          router.navigate(`/circuitBreaker?type=${type}`)
         }
       }
     })
