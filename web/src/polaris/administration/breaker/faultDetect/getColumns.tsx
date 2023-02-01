@@ -17,10 +17,10 @@ export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[]
       key: 'idName',
       header: 'ID/规则名',
       width: 280,
-      render: (x) => {
+      render: x => {
         return (
           <>
-            <Text theme='primary' overflow>
+            <Text overflow>
               {x.id}
               <Copy text={x.id} />
             </Text>
@@ -33,7 +33,7 @@ export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[]
     {
       key: 'namespace',
       header: '命名空间',
-      render: (x) => {
+      render: x => {
         return (
           <>
             <Text parent={'div'}>{x.targetService?.namespace}</Text>
@@ -44,7 +44,7 @@ export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[]
     {
       key: 'service',
       header: '服务',
-      render: (x) => {
+      render: x => {
         return (
           <>
             <Text parent={'div'}>{x.targetService?.service}</Text>
@@ -55,7 +55,7 @@ export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[]
     {
       key: 'method',
       header: '接口',
-      render: (x) => {
+      render: x => {
         return (
           <>
             <Text parent={'div'}>{x.targetService?.method?.value}</Text>
@@ -66,7 +66,7 @@ export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[]
     {
       key: 'ctimemtime',
       header: '创建时间/修改时间',
-      render: (x) => {
+      render: x => {
         return (
           <>
             <Text parent={'div'}>{x.ctime}</Text>
@@ -78,7 +78,7 @@ export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[]
     {
       key: 'action',
       header: '操作',
-      render: (x) => {
+      render: x => {
         return (
           <React.Fragment>
             <Action

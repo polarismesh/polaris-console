@@ -567,7 +567,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                     未开启主动探测时，会仅根据业务调用判断熔断恢复。
                   </Text>
                   <Text parent={'div'}>
-                    <ExternalLink href={`/circuitBreaker?type=${BreakerType.FaultDetect}`}>
+                    <ExternalLink href={`/#/circuitBreaker?type=${BreakerType.FaultDetect}`}>
                       查看主动探测规则
                     </ExternalLink>
                   </Text>
