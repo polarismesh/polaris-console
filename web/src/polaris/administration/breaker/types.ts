@@ -121,10 +121,10 @@ export enum BreakerType {
   Interface = 'Interface',
   FaultDetect = 'FaultDetect',
 }
-export const checkRuleType = (rule) =>
-  ServiceLevelType.indexOf(rule.level as any) > 0
+export const checkRuleType = level =>
+  ServiceLevelType.indexOf(level as any) > -1
     ? BreakerType.Service
-    : InterfaceLevelType.indexOf(rule.level as any) > 0
+    : InterfaceLevelType.indexOf(level as any) > -1
     ? BreakerType.Interface
     : BreakerType.FaultDetect
 export const FaultDetectTabs = [

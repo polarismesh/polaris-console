@@ -40,7 +40,18 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
   } = duck
   const composedId = selectors.composedId(store)
   const data = selectors.data(store)
-  const { name, description, httpConfig, tcpConfig, udpConfig, interval, port, protocol, targetService, timeout } = form
+  const {
+    name,
+    description,
+    httpConfig,
+    tcpConfig,
+    udpConfig,
+    interval,
+    port,
+    protocol,
+    targetService,
+    timeout,
+  } = form
     .getAPI(store, dispatch)
     .getFields([
       'name',
@@ -101,7 +112,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               <TeaSelect
                 value={destinationNamespace.getValue()}
                 options={[{ text: '全部命名空间', value: '*' }, ...(data?.namespaceList || [])]}
-                onChange={(value) => {
+                onChange={value => {
                   if (value === '*') {
                     destinationNamespace.setValue('*')
                     destinationService.setValue('*')
@@ -131,21 +142,21 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                           },
                         ]
                       : []),
-                    ...(data?.serviceList.filter((o) => {
+                    ...(data?.serviceList.filter(o => {
                       return o.namespace === destinationNamespace.getValue()
                     }) || []),
                   ]),
                 ]}
                 tips='没有匹配的服务名称'
-                onChange={(value) => {
+                onChange={value => {
                   destinationService.setValue(value)
                 }}
               >
-                {(ref) => (
+                {ref => (
                   <TeaInput
                     ref={ref}
                     value={destinationService.getValue() === '*' ? '全部服务' : destinationService.getValue()}
-                    onChange={(value) => {
+                    onChange={value => {
                       destinationService.setValue(value)
                     }}
                     disabled={destinationNamespace.getValue() === '*'}
@@ -158,7 +169,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               <TeaSelect
                 options={LimitMethodTypeOptions}
                 value={methodType.getValue()}
-                onChange={(value) => methodType.setValue(LimitMethodType[value])}
+                onChange={value => methodType.setValue(LimitMethodType[value])}
                 size='s'
                 appearance={'button'}
                 matchButtonWidth
@@ -167,7 +178,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             <FormField showStatusIcon={false} label='周期' field={interval} suffix={'秒'}>
               <InputNumber
                 value={interval.getValue()}
-                onChange={(v) => {
+                onChange={v => {
                   interval.setValue(v)
                 }}
                 size={'m'}
@@ -177,7 +188,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             <FormField showStatusIcon={false} label='超时时间' field={timeout}>
               <InputNumber
                 value={timeout.getValue()}
-                onChange={(v) => {
+                onChange={v => {
                   timeout.setValue(v)
                 }}
                 size={'m'}
@@ -188,7 +199,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             <FormField showStatusIcon={false} label='端口' field={port}>
               <InputNumber
                 value={port.getValue()}
-                onChange={(v) => {
+                onChange={v => {
                   port.setValue(v)
                 }}
                 size={'m'}
@@ -202,7 +213,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               <Segment
                 options={FaultDetectProtocolOptions}
                 value={protocol.getValue()}
-                onChange={(value) => protocol.setValue(value)}
+                onChange={value => protocol.setValue(value)}
               />
             </FormField>
             {protocol.getValue() === FaultDetectProtocol.HTTP && (
@@ -211,7 +222,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   <TeaSelect
                     options={FaultDetectHttpMethodOptions}
                     value={method.getValue()}
-                    onChange={(value) => method.setValue(value)}
+                    onChange={value => method.setValue(value)}
                     size='m'
                     appearance={'button'}
                     matchButtonWidth
@@ -263,7 +274,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 <FormField field={body} label={'Body'}>
                   <TeaInput.TextArea
                     value={body.getValue()}
-                    onChange={(v) => {
+                    onChange={v => {
                       body.setValue(v)
                     }}
                     size={'m'}
@@ -332,10 +343,10 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               onClick={() => {
                 if (composedId?.namespace) {
                   router.navigate(
-                    `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=${TAB.Route}`,
+                    `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=${TAB.CircuitBreaker}&type=${BreakerType.FaultDetect}`,
                   )
                 } else {
-                  router.navigate(`/custom-route`)
+                  router.navigate(`/circuitBreaker?type=${BreakerType.FaultDetect}`)
                 }
               }}
             >

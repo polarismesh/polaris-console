@@ -159,7 +159,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 { text: '全部命名空间', value: '*', disabled: destinationNamespace.getValue() === '*' },
                                 ...(data?.namespaceList || []),
                               ]}
-                              onChange={(value) => {
+                              onChange={value => {
                                 if (value === '*') {
                                   sourceNamespace.setValue('*')
                                   sourceService.setValue('*')
@@ -184,21 +184,21 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   ...(sourceService.getValue()
                                     ? [{ text: `(输入值)${sourceService.getValue()}`, value: sourceService.getValue() }]
                                     : []),
-                                  ...(data?.serviceList.filter((o) => {
+                                  ...(data?.serviceList.filter(o => {
                                     return o.namespace === sourceNamespace.getValue()
                                   }) || []),
                                 ]),
                               ]}
                               tips='没有匹配的服务名称'
-                              onChange={(value) => {
+                              onChange={value => {
                                 sourceService.setValue(value)
                               }}
                             >
-                              {(ref) => (
+                              {ref => (
                                 <TeaInput
                                   ref={ref}
                                   value={sourceService.getValue() === '*' ? '全部服务' : sourceService.getValue()}
-                                  onChange={(value) => {
+                                  onChange={value => {
                                     sourceService.setValue(value)
                                   }}
                                   style={{ width: '80%', maxWidth: '600px' }}
@@ -226,7 +226,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 { text: '全部命名空间', value: '*', disabled: sourceNamespace.getValue() === '*' },
                                 ...(data?.namespaceList || []),
                               ]}
-                              onChange={(value) => {
+                              onChange={value => {
                                 if (value === '*') {
                                   destinationNamespace.setValue('*')
                                   destinationService.setValue('*')
@@ -256,23 +256,23 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                         },
                                       ]
                                     : []),
-                                  ...(data?.serviceList.filter((o) => {
+                                  ...(data?.serviceList.filter(o => {
                                     return o.namespace === destinationNamespace.getValue()
                                   }) || []),
                                 ]),
                               ]}
                               tips='没有匹配的服务名称'
-                              onChange={(value) => {
+                              onChange={value => {
                                 destinationService.setValue(value)
                               }}
                             >
-                              {(ref) => (
+                              {ref => (
                                 <TeaInput
                                   ref={ref}
                                   value={
                                     destinationService.getValue() === '*' ? '全部服务' : destinationService.getValue()
                                   }
-                                  onChange={(value) => {
+                                  onChange={value => {
                                     destinationService.setValue(value)
                                   }}
                                   disabled={destinationNamespace.getValue() === '*'}
@@ -290,7 +290,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             <TeaSelect
                               options={LimitMethodTypeOptions}
                               value={methodType.getValue()}
-                              onChange={(value) => methodType.setValue(LimitMethodType[value])}
+                              onChange={value => methodType.setValue(LimitMethodType[value])}
                               size='s'
                               type={'simulate'}
                               appearance={'button'}
@@ -321,7 +321,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             <FormField field={inputType} showStatusIcon={false}>
                               <TeaSelect
                                 value={inputType.getValue()}
-                                onChange={(v) => {
+                                onChange={v => {
                                   inputType.setValue(v)
                                   if (v === ErrorConditionType.DELAY) {
                                     type.setValue(LimitMethodType.EXACT)
@@ -331,6 +331,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 appearance={'button'}
                               />
                             </FormField>
+                            {inputType.getValue() === ErrorConditionType.DELAY && (
+                              <FormItem>
+                                <FormText>超过</FormText>
+                              </FormItem>
+                            )}
                             {inputType.getValue() !== ErrorConditionType.DELAY && (
                               <FormItem>
                                 <Select
@@ -392,7 +397,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             <FormField field={triggerType} showStatusIcon={false}>
                               <TeaSelect
                                 value={triggerType.getValue()}
-                                onChange={(v) => {
+                                onChange={v => {
                                   triggerType.setValue(v)
                                 }}
                                 options={TriggerTypeOptions}
@@ -411,7 +416,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 >
                                   <InputNumber
                                     value={errorPercent.getValue()}
-                                    onChange={(v) => {
+                                    onChange={v => {
                                       errorPercent.setValue(v)
                                     }}
                                     size={'m'}
@@ -421,7 +426,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 <FormField showStatusIcon={false} label={'统计周期'} field={interval} suffix={'秒'}>
                                   <InputNumber
                                     value={interval.getValue()}
-                                    onChange={(v) => {
+                                    onChange={v => {
                                       interval.setValue(v)
                                     }}
                                     size={'m'}
@@ -436,7 +441,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 >
                                   <InputNumber
                                     value={minimumRequest.getValue()}
-                                    onChange={(v) => {
+                                    onChange={v => {
                                       minimumRequest.setValue(v)
                                     }}
                                     size={'m'}
@@ -454,7 +459,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 >
                                   <InputNumber
                                     value={errorCount.getValue()}
-                                    onChange={(v) => {
+                                    onChange={v => {
                                       errorCount.setValue(v)
                                     }}
                                     size={'m'}
@@ -502,7 +507,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                         <FormField field={level}>
                           <Segment
                             value={level.getValue()}
-                            onChange={(v) => level.setValue(v)}
+                            onChange={v => level.setValue(v)}
                             options={
                               type === BreakerType.Service ? ServiceBreakLevelOptions : InterfaceBreakLevelOptions
                             }
@@ -525,7 +530,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                         <FormField field={sleepWindow} label={'熔断时长'} showStatusIcon={false} suffix={'秒'}>
                           <InputNumber
                             value={sleepWindow.getValue()}
-                            onChange={(v) => {
+                            onChange={v => {
                               sleepWindow.setValue(v)
                             }}
                             size={'m'}
@@ -537,7 +542,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             当满足
                             <InputNumber
                               value={consecutiveSuccess.getValue()}
-                              onChange={(v) => {
+                              onChange={v => {
                                 consecutiveSuccess.setValue(v)
                               }}
                               size={'m'}
@@ -556,11 +561,15 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               label='主动探测'
               message={
                 <>
-                  <Text parent={'div'}>开启主动探测时，客户端将会根据您配置的探测规则对目标被调服务进行探测</Text>
-                  <Text parent={'div'}>主动探测请求与业务调用合并判断熔断恢复（如未匹配到探测规则，则不会生效）</Text>
-                  <Text parent={'div'}>未开启主动探测时，会仅根据业务调用判断熔断恢复</Text>
                   <Text parent={'div'}>
-                    <ExternalLink href={''}>查看主动探测规则</ExternalLink>
+                    开启主动探测时，客户端将会根据您配置的探测规则对目标被调服务进行探测；
+                    主动探测请求与业务调用合并判断熔断恢复（如未匹配到探测规则，则不会生效）；
+                    未开启主动探测时，会仅根据业务调用判断熔断恢复。
+                  </Text>
+                  <Text parent={'div'}>
+                    <ExternalLink href={`/circuitBreaker?type=${BreakerType.FaultDetect}`}>
+                      查看主动探测规则
+                    </ExternalLink>
                   </Text>
                 </>
               }
@@ -571,83 +580,85 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             {ServiceLevelType.indexOf(level.getValue() as any) > -1 && (
               <Form.Item label='熔断后降级' className='compact-form-control'>
                 <Switch field={fallbackConfigEnable} />
-                <Card style={{ width: '1100px', marginRight: '0px', marginLeft: '0px', marginTop: '20px' }} bordered>
-                  <Card.Body>
-                    <div>
-                      <H6 className='card-module-h6-title-style'>自定义响应</H6>
-                      <Text theme='label'>熔断触发后的降级响应策略</Text>
-                    </div>
-                    <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                      <FormItem>
-                        <Form>
-                          <FormField field={code} label={'返回码'}>
-                            <InputNumber
-                              value={code.getValue()}
-                              onChange={(v) => {
-                                code.setValue(v)
-                              }}
-                              size={'m'}
-                              hideButton
-                            />
-                          </FormField>
-                          <FormField field={headers} label={'Headers'}>
-                            {[...headers.asArray()].map((item, index) => {
-                              const { key, value } = item.getFields(['key', 'value'])
-                              return (
-                                <Text parent={'div'} key={index}>
-                                  <Input field={key} size={'m'} placeholder={'header键'}></Input>
-                                  <Input
-                                    field={value}
-                                    size={'m'}
-                                    placeholder={'header值'}
-                                    style={{ marginLeft: '20px' }}
-                                  ></Input>
-                                  <Button
-                                    type='icon'
-                                    icon='close'
-                                    onClick={() => removeArrayFieldValue(headers, index)}
-                                  ></Button>
-                                  <Button
-                                    type={'icon'}
-                                    icon={'plus'}
-                                    onClick={() =>
-                                      addArrayFieldValue(headers, {
-                                        key: '',
-                                        value: '',
-                                      })
-                                    }
-                                  ></Button>
-                                </Text>
-                              )
-                            })}
-                            {headers.getValue()?.length < 1 && (
-                              <Button
-                                type={'icon'}
-                                icon={'plus'}
-                                onClick={() =>
-                                  addArrayFieldValue(headers, {
-                                    key: '',
-                                    value: '',
-                                  })
-                                }
-                              ></Button>
-                            )}
-                          </FormField>
-                          <FormField field={body} label={'Body'}>
-                            <TeaInput.TextArea
-                              value={body.getValue()}
-                              onChange={(v) => {
-                                body.setValue(v)
-                              }}
-                              size={'m'}
-                              rows={4}
-                            />
-                          </FormField>
-                        </Form>
-                      </FormItem>
-                    </Form>
-                  </Card.Body>
-                </Card>
+                {fallbackConfigEnable.getValue() && (
+                  <Card style={{ width: '1100px', marginRight: '0px', marginLeft: '0px', marginTop: '20px' }} bordered>
+                    <Card.Body>
+                      <div>
+                        <H6 className='card-module-h6-title-style'>自定义响应</H6>
+                        <Text theme='label'>熔断触发后的降级响应策略</Text>
+                      </div>
+                      <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
+                        <FormItem>
+                          <Form>
+                            <FormField field={code} label={'返回码'}>
+                              <InputNumber
+                                value={code.getValue()}
+                                onChange={v => {
+                                  code.setValue(v)
+                                }}
+                                size={'m'}
+                                hideButton
+                              />
+                            </FormField>
+                            <FormItem label={'Headers'}>
+                              {[...headers.asArray()].map((item, index) => {
+                                const { key, value } = item.getFields(['key', 'value'])
+                                return (
+                                  <Text parent={'div'} key={index} style={{ marginBottom: '15px' }}>
+                                    <Input field={key} size={'m'} placeholder={'header键'}></Input>
+                                    <Input
+                                      field={value}
+                                      size={'m'}
+                                      placeholder={'header值'}
+                                      style={{ marginLeft: '20px' }}
+                                    ></Input>
+                                    <Button
+                                      type='icon'
+                                      icon='close'
+                                      onClick={() => removeArrayFieldValue(headers, index)}
+                                    ></Button>
+                                    <Button
+                                      type={'icon'}
+                                      icon={'plus'}
+                                      onClick={() =>
+                                        addArrayFieldValue(headers, {
+                                          key: '',
+                                          value: '',
+                                        })
+                                      }
+                                    ></Button>
+                                  </Text>
+                                )
+                              })}
+                              {headers.getValue()?.length < 1 && (
+                                <Button
+                                  type={'icon'}
+                                  icon={'plus'}
+                                  onClick={() =>
+                                    addArrayFieldValue(headers, {
+                                      key: '',
+                                      value: '',
+                                    })
+                                  }
+                                ></Button>
+                              )}
+                            </FormItem>
+                            <FormField field={body} label={'Body'}>
+                              <TeaInput.TextArea
+                                value={body.getValue()}
+                                onChange={v => {
+                                  body.setValue(v)
+                                }}
+                                size={'m'}
+                                rows={4}
+                              />
+                            </FormField>
+                          </Form>
+                        </FormItem>
+                      </Form>
+                    </Card.Body>
+                  </Card>
+                )}
               </Form.Item>
             )}
             <FormField label='是否开启' field={enable}>
@@ -665,7 +676,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                     `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=${TAB.CircuitBreaker}`,
                   )
                 } else {
-                  router.navigate(`/circuitBreaker`)
+                  router.navigate(`/circuitBreaker?type=${type}`)
                 }
               }}
             >

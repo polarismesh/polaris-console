@@ -27,6 +27,7 @@ import {
   BreakLevelMap,
   CircuitBreakerRule,
   ErrorConditionMap,
+  ErrorConditionType,
   FaultDetectTabs,
   TriggerType,
   TriggerTypeMap,
@@ -47,10 +48,14 @@ const EnableOptions = [
   {
     text: '已启用',
     value: 'true',
+    name: '已启用',
+    key: 'true',
   },
   {
     text: '未启用',
     value: 'false',
+    name: '未启用',
+    key: 'false',
   },
 ]
 export const DefaultBreakerTag = {
@@ -105,9 +110,9 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
   const { customFilters, tags, loadData, expandedKeys, ruleInfoMap, type } = selector(store)
   const handlers = React.useMemo(
     () => ({
-      changeTags: (tags) => dispatch(creators.changeTags(tags)),
-      setExpandedKeys: (v) => dispatch(creators.setExpandedKeys(v)),
-      setType: (v) => dispatch(creators.setType(v)),
+      changeTags: tags => dispatch(creators.changeTags(tags)),
+      setExpandedKeys: v => dispatch(creators.setExpandedKeys(v)),
+      setType: v => dispatch(creators.setType(v)),
     }),
     [],
   )
@@ -140,7 +145,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                   verticalAlign: 'middle',
                   width: '400px',
                 }}
-                onChange={(value) => handlers.changeTags(value)}
+                onChange={value => handlers.changeTags(value)}
                 tips={'请选择条件进行过滤'}
                 hideHelp={true}
               />
@@ -159,11 +164,11 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
               type: 'single',
               column: 'enable',
               value: customFilters.enable,
-              onChange: (value) => {
+              onChange: value => {
                 const replacedTags = replaceTags(TagSearchType.Enable, value, tags, EnableOptions, {
                   type: 'single',
                   key: TagSearchType.Enable,
-                  name: '命名空间',
+                  name: '状态',
                   values: EnableOptions,
                 })
                 handlers.changeTags(replacedTags)
@@ -178,8 +183,8 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
               // 已经展开的产品
               expandedKeys,
               // 发生展开行为时，回调更新展开键值
-              onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
-              render: (record) => {
+              onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
+              render: record => {
                 const ruleDetail = ruleInfoMap[record.id] as CircuitBreakerRule
                 return ruleDetail ? (
                   <Form>
@@ -188,13 +193,17 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                     </FormItem>
                     <FormItem label='错误判断条件'>
                       <FormText>
-                        {ruleDetail.errorConditions?.map((item) => {
+                        {ruleDetail.errorConditions?.map(item => {
                           return (
                             <>
                               <Text parent={'div'}>
                                 {ErrorConditionMap[item.inputType]}
-                                {LimitMethodTypeMap[item.condition.type]}
-                                {item.condition.value}
+                                {item.inputType === ErrorConditionType.DELAY
+                                  ? '超过'
+                                  : LimitMethodTypeMap[item.condition?.type]}
+                                {item.inputType === ErrorConditionType.DELAY
+                                  ? `${item.condition?.value}ms`
+                                  : item.condition?.value}
                               </Text>
                             </>
                           )
@@ -203,7 +212,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                     </FormItem>
                     <FormItem label='描述'>
                       <FormText>
-                        {ruleDetail.triggerCondition?.map((item) => {
+                        {ruleDetail.triggerCondition?.map(item => {
                           return (
                             <>
                               <Text parent={'div'}>
@@ -253,10 +262,10 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                               {
                                 key: 'headers',
                                 header: '消息头',
-                                render: (x) => {
+                                render: x => {
                                   return (
                                     <>
-                                      {x.headers.map((item) => {
+                                      {x.headers.map(item => {
                                         return (
                                           <Text parent={'p'} key={item.key}>
                                             {item.key}:{item.value}
@@ -298,7 +307,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
       header={<></>}
       type={loadData?.name ? 'fregment' : 'page'}
     >
-      <Tabs tabs={FaultDetectTabs} onActive={(v) => handlers.setType(v.id)} activeId={type} ceiling>
+      <Tabs tabs={FaultDetectTabs} onActive={v => handlers.setType(v.id)} activeId={type} ceiling>
         <TabPanel id={BreakerType.Service}>{breakerPanel}</TabPanel>
         <TabPanel id={BreakerType.Interface}>{breakerPanel}</TabPanel>
         <TabPanel id={BreakerType.FaultDetect}>

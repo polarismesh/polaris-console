@@ -10,7 +10,7 @@ import { delay } from 'redux-saga'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
 import { createCircuitBreaker, DescribeCircuitBreakers, modifyCircuitBreaker } from '../model'
-import { BreakerType, CircuitBreakerRule, FallbackConfig } from '../types'
+import { BreakerType, BreakLevelType, checkRuleType, CircuitBreakerRule, FallbackConfig } from '../types'
 
 interface ComposedId {
   id: string
@@ -114,7 +114,7 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
     const { types, ducks, selectors, selector } = this
 
     // 规则创建
-    yield takeLatest(types.SUBMIT, function* () {
+    yield takeLatest(types.SUBMIT, function*() {
       try {
         yield* ducks.form.submit()
       } catch (e) {
@@ -147,7 +147,7 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
     })
 
     // 规则编辑
-    yield takeLatest(types.SET_ID, function* (action) {
+    yield takeLatest(types.SET_ID, function*(action) {
       let circuitBreakerRule
       if (action.payload) {
         const result = yield DescribeCircuitBreakers({
@@ -176,12 +176,12 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
       getAllList(describeServices, {})({}),
     ])
 
-    const namespaceList = namespaceOptions.list.map((item) => ({
+    const namespaceList = namespaceOptions.list.map(item => ({
       text: item.name,
       value: item.name,
     }))
 
-    const serviceList = serviceOptions.list.map((item) => ({
+    const serviceList = serviceOptions.list.map(item => ({
       text: item.name,
       value: item.name,
       namespace: item.namespace,
@@ -202,31 +202,41 @@ const validator = Form.combineValidators<CircuitBreakerRule>({
       return '名称只能含有数字，字母，下划线及中划线'
     }
   },
-  ruleMatcher: {
-    source: {
-      namespace(v) {
-        if (!v) {
-          return '请选择命名空间'
-        }
+  ruleMatcher(v, values) {
+    return Form.combineValidators<any>({
+      source: {
+        namespace(v) {
+          if (!v) {
+            return '请选择命名空间'
+          }
+        },
+        service(v) {
+          if (!v) {
+            return '请选择服务名'
+          }
+        },
       },
-      service(v) {
-        if (!v) {
-          return '请选择服务名'
-        }
+      destination: {
+        namespace(v) {
+          if (!v) {
+            return '请选择命名空间'
+          }
+        },
+        service(v) {
+          if (!v) {
+            return '请选择服务名'
+          }
+        },
+        method: {
+          value(v) {
+            if (values?.level !== BreakLevelType.Method) return
+            if (!v) {
+              return '请输入接口名'
+            }
+          },
+        },
       },
-    },
-    destination: {
-      namespace(v) {
-        if (!v) {
-          return '请选择命名空间'
-        }
-      },
-      service(v) {
-        if (!v) {
-          return '请选择服务名'
-        }
-      },
-    },
+    })(v, values)
   },
   errorConditions: [
     {

@@ -157,7 +157,7 @@ export default class ServicePageDuck extends GridPageDuck {
   }
   *loadInfo() {
     const namespaceList = yield describeNamespaces()
-    const options = namespaceList.map((item) => ({
+    const options = namespaceList.map(item => ({
       ...item,
       text: item.name,
       value: item.name,
@@ -173,24 +173,24 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types, selector, creators, ducks } = this
     yield* super.saga()
     yield* this.loadInfo()
-    yield takeLatest(types.LOAD, function* (action) {
+    yield takeLatest(types.LOAD, function*(action) {
       yield put(ducks.faultDetect.creators.load(action.payload))
     })
-    yield takeLatest(types.RELOAD, function* () {
+    yield takeLatest(types.RELOAD, function*() {
       yield put(ducks.faultDetect.creators.reload())
     })
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function* () {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function*() {
       yield put(ducks.faultDetect.creators.reload())
     })
-    yield takeLatest(types.CHANGE_TAGS, function* (action) {
+    yield takeLatest(types.CHANGE_TAGS, function*(action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
-      const validTags = tags.map((item) => {
+      const validTags = tags.map(item => {
         if (item.attr) return item
         else return { ...item, attr: DefaultBreakerTag }
       })
       yield put({ type: types.SET_TAGS, payload: validTags })
-      validTags.forEach((tag) => {
+      validTags.forEach(tag => {
         const key = tag?.attr?.key || TagSearchType.Name
 
         if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
@@ -198,7 +198,7 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
-    yield takeLatest(types.SET_EXPANDED_KEY, function* (action) {
+    yield takeLatest(types.SET_EXPANDED_KEY, function*(action) {
       const { ruleInfoMap } = selector(yield select())
       const expandedKeys = action.payload
       const obj = { ...ruleInfoMap }
@@ -210,7 +210,7 @@ export default class ServicePageDuck extends GridPageDuck {
         }
       }
     })
-    yield takeLatest(types.REMOVE, function* (action) {
+    yield takeLatest(types.REMOVE, function*(action) {
       const rule = action.payload
       const confirm = yield Modal.confirm({
         message: `确认删除规则 ${rule.name} 吗？`,
@@ -222,10 +222,10 @@ export default class ServicePageDuck extends GridPageDuck {
       }
       return null
     })
-    yield takeLatest(types.SET_TYPE, function* (action) {
+    yield takeLatest(types.SET_TYPE, function*(action) {
       if (action.payload === BreakerType.FaultDetect) yield put(ducks.faultDetect.creators.reload())
     })
-    yield takeLatest(types.TOGGLE_RULE, function* (action) {
+    yield takeLatest(types.TOGGLE_RULE, function*(action) {
       const rule = action.payload
       const ops = rule.enable ? '禁用' : '启用'
       const confirm = yield Modal.confirm({
@@ -255,10 +255,10 @@ export default class ServicePageDuck extends GridPageDuck {
     } = filters
     let level
     if (type === BreakerType.Service) {
-      level = ServiceLevelType.map((item) => BreakLevelSearchParamMap[item]).join(',')
+      level = ServiceLevelType.map(item => BreakLevelSearchParamMap[item]).join(',')
     }
     if (type === BreakerType.Interface) {
-      level = InterfaceLevelType.map((item) => BreakLevelSearchParamMap[item]).join(',')
+      level = InterfaceLevelType.map(item => BreakLevelSearchParamMap[item]).join(',')
     }
     const { totalCount, list } = await DescribeCircuitBreakers({
       limit: count,

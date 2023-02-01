@@ -17,10 +17,10 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
       key: 'idName',
       header: 'ID/规则名',
       width: 280,
-      render: (x) => {
+      render: x => {
         return (
           <>
-            <Text theme='primary' overflow>
+            <Text overflow>
               {x.id}
               <Copy text={x.id} />
             </Text>
@@ -33,12 +33,12 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
     {
       key: 'enable',
       header: '状态',
-      render: (x) => (x.enable ? <Text theme='success'>已启用</Text> : <Text theme='danger'>未启用</Text>),
+      render: x => (x.enable ? <Text theme='success'>已启用</Text> : <Text theme='danger'>未启用</Text>),
     },
     {
       key: 'source',
       header: '主调服务',
-      render: (x) => {
+      render: x => {
         return (
           <>
             <Text parent={'div'}>命名空间: {x.ruleMatcher?.source?.namespace}</Text>
@@ -50,7 +50,7 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
     {
       key: 'destination',
       header: '被调服务',
-      render: (x) => {
+      render: x => {
         return (
           <>
             <Text parent={'div'}>命名空间: {x.ruleMatcher?.destination?.namespace}</Text>
@@ -63,7 +63,7 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
     {
       key: 'ctimemtime',
       header: '创建时间/修改时间',
-      render: (x) => {
+      render: x => {
         return (
           <>
             <Text parent={'div'}>{x.ctime}</Text>
@@ -75,7 +75,7 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
     {
       key: 'etime',
       header: '启用时间',
-      render: (x) => {
+      render: x => {
         return (
           <>
             <Text parent={'div'}>{x.etime}</Text>
@@ -86,7 +86,7 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
     {
       key: 'action',
       header: '操作',
-      render: (x) => {
+      render: x => {
         return (
           <React.Fragment>
             <Action
@@ -98,7 +98,8 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
             <Action
               text={'编辑'}
               fn={() => {
-                const type = checkRuleType(x)
+                const type = checkRuleType(x?.level)
+                console.log(x)
                 router.navigate(`/circuitBreaker-create?id=${x.id}&type=${type}`)
               }}
             />
