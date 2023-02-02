@@ -10,7 +10,7 @@ import { delay } from 'redux-saga'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
 import { createCircuitBreaker, DescribeCircuitBreakers, modifyCircuitBreaker } from '../model'
-import { BreakerType, BreakLevelType, checkRuleType, CircuitBreakerRule, FallbackConfig } from '../types'
+import { BreakerType, BreakLevelType, CircuitBreakerRule, FallbackConfig } from '../types'
 
 interface ComposedId {
   id: string

@@ -99,7 +99,6 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
               text={'编辑'}
               fn={() => {
                 const type = checkRuleType(x?.level)
-                console.log(x)
                 router.navigate(`/circuitBreaker-create?id=${x.id}&type=${type}`)
               }}
             />

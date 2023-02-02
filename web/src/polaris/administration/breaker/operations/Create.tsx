@@ -35,6 +35,7 @@ import {
   TriggerTypeMap,
   TriggerTypeOptions,
   ServiceLevelType,
+  BreakLevelType,
 } from '../types'
 import Select from '@src/polaris/common/duckComponents/form/Select'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
@@ -281,22 +282,24 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               )}
                             </AutoComplete>
                           </FormField>
-                          <FormField label='接口名称' field={methodValue} align='middle'>
-                            <Input
-                              field={methodValue}
-                              placeholder='请输入接口名称'
-                              style={{ width: 'calc(80% - 101px)', borderRight: '0px' }}
-                            />
-                            <TeaSelect
-                              options={LimitMethodTypeOptions}
-                              value={methodType.getValue()}
-                              onChange={value => methodType.setValue(LimitMethodType[value])}
-                              size='s'
-                              type={'simulate'}
-                              appearance={'button'}
-                              matchButtonWidth
-                            />
-                          </FormField>
+                          {level.getValue() === BreakLevelType.Method && (
+                            <FormField label='接口名称' field={methodValue} align='middle'>
+                              <Input
+                                field={methodValue}
+                                placeholder='请输入接口名称'
+                                style={{ width: 'calc(80% - 101px)', borderRight: '0px' }}
+                              />
+                              <TeaSelect
+                                options={LimitMethodTypeOptions}
+                                value={methodType.getValue()}
+                                onChange={value => methodType.setValue(LimitMethodType[value])}
+                                size='s'
+                                type={'simulate'}
+                                appearance={'button'}
+                                matchButtonWidth
+                              />
+                            </FormField>
+                          )}
                         </Form>
                       </Card.Body>
                     </Card>
