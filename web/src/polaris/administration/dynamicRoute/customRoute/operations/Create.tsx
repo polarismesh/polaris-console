@@ -20,6 +20,7 @@ import {
   Checkbox,
   Tag,
   PopConfirm,
+  InputNumber as TeaInputNumber,
 } from 'tea-component'
 import FormDuck from '@src/polaris/common/ducks/Form'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
@@ -186,7 +187,12 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
   }
 
   function getArgumentsValueComp(recordField: FieldAPI<RouteSourceArgument | RouteDestinationArgument>, type: string) {
-    const { value: valueField, key: keyField, type: labelType } = recordField.getFields(['value', 'key', 'type'])
+    const { value: valueField, key: keyField, type: labelType, value_type } = recordField.getFields([
+      'value',
+      'key',
+      'type',
+      'value_type',
+    ])
     const valueValidate = valueField.getTouched() && valueField.getError()
     const labelList = type === 'source' ? sourceLabelList : destinationLabelList
     const valueOptions = labelList.find(item => item.value === keyField.getValue())?.valueOptions || []
@@ -216,6 +222,30 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             />
           )}
         </AutoComplete>
+      )
+    } else if (value_type.getValue() === RouteLabelMatchType.RANGE) {
+      valueComponent = (
+        <>
+          <TeaInputNumber
+            hideButton
+            value={Number(valueField?.getValue()?.split('~')?.[0])}
+            onChange={value => {
+              const splited = valueField?.getValue()?.split('~')
+              splited[0] = value.toString()
+              valueField.setValue(splited.join('~'))
+            }}
+          />
+          &nbsp;~&nbsp;
+          <TeaInputNumber
+            hideButton
+            value={Number(valueField?.getValue()?.split('~')?.[0])}
+            onChange={value => {
+              const splited = valueField?.getValue()?.split('~')
+              splited[1] = value.toString()
+              valueField.setValue(splited.join('~'))
+            }}
+          />
+        </>
       )
     } else {
       valueComponent = (
