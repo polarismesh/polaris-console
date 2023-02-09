@@ -14,7 +14,7 @@ export const RouteLabelMatchTypeOptions = [
   },
   {
     value: RouteLabelMatchType.REGEX,
-    text: '正则表达式',
+    text: '正则表达式匹配',
   },
   {
     value: RouteLabelMatchType.NOT_EQUALS,

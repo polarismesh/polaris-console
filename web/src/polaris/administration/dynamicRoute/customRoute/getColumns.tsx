@@ -42,11 +42,6 @@ export default (
       render: x => x.description || '-',
     },
     {
-      key: 'priority',
-      header: '优先级',
-      render: x => x.priority,
-    },
-    {
       key: 'source',
       header: '主调服务',
       render: x => {

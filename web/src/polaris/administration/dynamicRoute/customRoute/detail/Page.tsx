@@ -1,11 +1,27 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
-import { Form, Card, Icon, Table, Col, Row, Text, FormItem, FormText } from 'tea-component'
+import {
+  Form,
+  Card,
+  Icon,
+  Table,
+  Col,
+  Row,
+  Text,
+  FormItem,
+  FormText,
+  Justify,
+  Bubble,
+  Button,
+  Checkbox,
+  Tag,
+} from 'tea-component'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import PageDuck from './PageDuck'
 import { Values } from '../operations/CreateDuck'
 import { RouteArgumentTextMap, RouteLabelTextMap } from '../types'
+import { getLabelTag } from '../operations/Create'
 
 insertCSS(
   'create-rule-form',
@@ -22,8 +38,8 @@ insertCSS(
 `,
 )
 
-const formatNamespace = (value) => (value === '*' ? '全部命名空间' : value)
-const formatService = (value) => (value === '*' ? '全部服务' : value)
+const formatNamespace = value => (value === '*' ? '全部命名空间' : value)
+const formatService = value => (value === '*' ? '全部服务' : value)
 
 export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
   const { duck, store, dispatch } = props
@@ -31,7 +47,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
   const composedId = selectors.composedId(store)
   const data = selectors.data(store)
   const { ruleDetail } = selector(store)
-  const { name, description, source, destination, priority } = ruleDetail as Values
+  const { name, description, source, destination, priority, rules } = ruleDetail as Values
   const backRoute = composedId?.namespace
     ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=route`
     : `/custom-route`
@@ -92,71 +108,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                           </FormItem>
                         </Form>
                       </Card.Body>
-                      <Card.Body title='请求标签'>
-                        <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                          <Form.Item label='请求匹配规则' align='middle'>
-                            {source?.arguments?.length > 0 && (
-                              <Table
-                                verticalTop
-                                bordered
-                                records={source?.arguments}
-                                columns={[
-                                  {
-                                    key: 'type',
-                                    header: '类型',
-                                    render: (item) => {
-                                      const { type } = item
-
-                                      return (
-                                        <Text reset overflow tooltip={RouteArgumentTextMap[type]}>
-                                          {RouteArgumentTextMap[type]}
-                                        </Text>
-                                      )
-                                    },
-                                  },
-                                  {
-                                    key: 'key',
-                                    header: '键',
-                                    render: (item) => {
-                                      const { key } = item
-                                      return (
-                                        <Text reset overflow tooltip={key}>
-                                          {key}
-                                        </Text>
-                                      )
-                                    },
-                                  },
-                                  {
-                                    key: 'value_type',
-                                    header: '匹配方式',
-                                    width: 80,
-                                    render: (item) => {
-                                      const { value_type } = item
-                                      return (
-                                        <Text reset overflow tooltip={RouteLabelTextMap[value_type]}>
-                                          {RouteLabelTextMap[value_type]}
-                                        </Text>
-                                      )
-                                    },
-                                  },
-                                  {
-                                    key: 'value',
-                                    header: '值',
-                                    render: (item) => {
-                                      const { value } = item
-                                      return (
-                                        <Text reset overflow tooltip={value}>
-                                          {value}
-                                        </Text>
-                                      )
-                                    },
-                                  },
-                                ]}
-                              ></Table>
-                            )}
-                          </Form.Item>
-                        </Form>
-                      </Card.Body>
                     </Card>
                   </Col>
                   <Col span={12}>
@@ -179,80 +130,137 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                           </FormItem>
                         </Form>
                       </Card.Body>
-                      <Card.Body title='实例分组'>
-                        {destination.instanceGroups.map((instanceGroup, index) => {
-                          const { name, weight, priority, labels, isolate } = instanceGroup
-                          return (
-                            <Card key={index} bordered>
-                              <Card.Body title={name} operation={<></>}>
-                                <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                                  <Form.Item label='实例标签' align='middle' tips={'相同的标签键，只有最后出现的生效'}>
-                                    {labels?.length > 0 && (
-                                      <Table
-                                        verticalTop
-                                        bordered
-                                        records={labels}
-                                        columns={[
-                                          {
-                                            key: 'key',
-                                            header: '键',
-                                            render: (item) => {
-                                              const { key } = item
-                                              return (
-                                                <Text reset overflow tooltip={key}>
-                                                  {key}
-                                                </Text>
-                                              )
-                                            },
-                                          },
-                                          {
-                                            key: 'type',
-                                            header: '匹配方式',
-                                            width: 80,
-                                            render: (item) => {
-                                              const { type } = item
-                                              return (
-                                                <Text reset overflow tooltip={RouteLabelTextMap[type]}>
-                                                  {RouteLabelTextMap[type]}
-                                                </Text>
-                                              )
-                                            },
-                                          },
-                                          {
-                                            key: 'value',
-                                            header: '值',
-                                            render: (item) => {
-                                              const { value } = item
-                                              return (
-                                                <Text reset overflow tooltip={value}>
-                                                  {value}
-                                                </Text>
-                                              )
-                                            },
-                                          },
-                                        ]}
-                                      ></Table>
-                                    )}
-                                  </Form.Item>
-                                  <FormItem label={'权重'}>
-                                    <FormText>{weight}</FormText>
-                                  </FormItem>
-                                  <FormItem label={'优先级'} tips={'优先级数字设置越小，匹配顺序越靠前'}>
-                                    <FormText>{priority}</FormText>
-                                  </FormItem>
-                                  <FormItem label={'是否隔离'}>
-                                    <FormText>{isolate ? '是' : '否'}</FormText>
-                                  </FormItem>
-                                </Form>
-                              </Card.Body>
-                            </Card>
-                          )
-                        })}
-                      </Card.Body>
                     </Card>
                   </Col>
                 </Row>
               </Form>
+            </Form.Item>
+            <Form.Item label={'路由规则'}>
+              {rules.map((rule, index) => {
+                const { sources, destinations } = rule
+                return (
+                  <Card key={index}>
+                    <Card.Header>
+                      <Justify left={`规则${index}`}></Justify>
+                    </Card.Header>
+                    <Card.Body>
+                      <Text parent={'div'} theme={'strong'} style={{ marginBottom: '20px' }}>
+                        来源服务的请求满足以下匹配条件
+                      </Text>
+                      <section>
+                        {sources?.[0]?.arguments?.length > 0 && (
+                          <Table
+                            verticalTop
+                            bordered
+                            records={sources?.[0]?.arguments}
+                            columns={[
+                              {
+                                key: 'type',
+                                header: '类型',
+                                render: item => {
+                                  const { type } = item
+
+                                  return (
+                                    <Text reset overflow tooltip={RouteArgumentTextMap[type]}>
+                                      {RouteArgumentTextMap[type]}
+                                    </Text>
+                                  )
+                                },
+                              },
+                              {
+                                key: 'key',
+                                header: '键',
+                                render: item => {
+                                  const { key } = item
+                                  return (
+                                    <Text reset overflow tooltip={key}>
+                                      {key}
+                                    </Text>
+                                  )
+                                },
+                              },
+                              {
+                                key: 'value_type',
+                                header: '匹配方式',
+                                width: 80,
+                                render: item => {
+                                  const { value_type } = item
+                                  return (
+                                    <Text reset overflow tooltip={RouteLabelTextMap[value_type]}>
+                                      {RouteLabelTextMap[value_type]}
+                                    </Text>
+                                  )
+                                },
+                              },
+                              {
+                                key: 'value',
+                                header: '值',
+                                render: item => {
+                                  const { value } = item
+                                  return (
+                                    <Text reset overflow tooltip={value}>
+                                      {value}
+                                    </Text>
+                                  )
+                                },
+                              },
+                            ]}
+                          ></Table>
+                        )}
+                      </section>
+                      <Text parent={'div'} theme={'strong'} style={{ marginBottom: '20px' }}>
+                        将转发至目标服务的一下实例分组
+                      </Text>
+                      <section>
+                        {destinations?.[0]?.instanceGroups?.length > 0 && (
+                          <Table
+                            verticalTop
+                            bordered
+                            records={destinations?.[0]?.instanceGroups}
+                            columns={[
+                              {
+                                key: 'labels',
+                                header: '实例标签',
+                                render: item => {
+                                  const { labels } = item
+                                  return (
+                                    <>
+                                      {labels.slice(0, 3).map((label, index) => getLabelTag(label, index))}
+                                      {labels.length > 3 && (
+                                        <Bubble content={labels.map((label, index) => getLabelTag(label, index))}>
+                                          <Tag>
+                                            <Button type={'icon'} icon={'more'}></Button>
+                                          </Tag>
+                                        </Bubble>
+                                      )}
+                                    </>
+                                  )
+                                },
+                              },
+                              {
+                                key: 'weight',
+                                header: '权重',
+                                render: item => {
+                                  const { weight } = item
+                                  return weight
+                                },
+                              },
+                              {
+                                key: 'isolate',
+                                header: '是否隔离',
+                                render: item => {
+                                  const { isolate } = item
+                                  return <Checkbox value={isolate}></Checkbox>
+                                },
+                              },
+                            ]}
+                          ></Table>
+                        )}
+                      </section>
+                    </Card.Body>
+                  </Card>
+                )
+              })}
             </Form.Item>
           </Form>
         </Card.Body>

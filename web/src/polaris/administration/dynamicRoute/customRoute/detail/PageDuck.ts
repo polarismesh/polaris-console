@@ -120,27 +120,31 @@ export default class RouteDetailPageDuck extends DetailPage {
             ...item,
             source: {
               ...item.routing_config.sources?.[0],
-              arguments: item.routing_config.sources?.[0].arguments.map(item => {
-                return {
-                  type: item.type,
-                  key: item.key,
-                  value_type: item.value.type,
-                  value: item.value.value,
-                }
-              }),
             },
             destination: {
               service: item.routing_config.destinations?.[0]?.service,
               namespace: item.routing_config.destinations?.[0]?.namespace,
-              instanceGroups: item.routing_config.destinations.map(instanceGroup => {
-                delete instanceGroup.namespace
-                delete instanceGroup.service
-                return {
-                  ...instanceGroup,
-                  labels: Object.entries(instanceGroup.labels).map(([key, value]) => ({ key, ...value })),
-                }
-              }),
+              // instanceGroups: item.routing_config.destinations.map(instanceGroup => {
+              //   delete instanceGroup.namespace
+              //   delete instanceGroup.service
+              //   return {
+              //     ...instanceGroup,
+              //     labels: Object.entries(instanceGroup.labels).map(([key, value]) => ({ key, ...value })),
+              //   }
+              // }),
             },
+            rules: item.routing_config.rules.map(rule => ({
+              ...item,
+              sources: rule.sources.map(source => ({
+                ...source,
+                arguments: source?.[0].arguments.map(item => ({
+                  type: item.type,
+                  key: item.key,
+                  value_type: item.value.type,
+                  value: item.value.value,
+                })),
+              })),
+            })),
           }))
         ruleDetailInfo = result.list[0]
         yield put({ type: types.SET_RULE_DETAIL, payload: ruleDetailInfo })
