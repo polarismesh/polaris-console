@@ -101,7 +101,6 @@ const getEmptyDestination = () => ({
   labels: [],
   weight: 0,
   isolate: false,
-  value_type: 'TEXT',
 })
 export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) {
   const { duck, store, dispatch } = props
@@ -313,7 +312,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
           <Button
             type={'link'}
             onClick={() => {
-              labelsField.setValue([...labelsField.getValue(), labelField.getValue()])
+              labelsField.setValue([...labelsField.getValue(), { ...labelField.getValue(), value_type: 'TEXT' }])
               setLabelPopConfirmVisible('')
               labelField.setValue(null)
             }}
