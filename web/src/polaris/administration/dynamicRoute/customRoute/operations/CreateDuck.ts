@@ -318,6 +318,7 @@ export interface RouteRuleDestinationField {
   labels: RouteDestinationArgument[]
   weight: number
   isolate: boolean
+  name: string
 }
 export interface RouteDestinationArgument {
   key: string
