@@ -45,7 +45,7 @@ export default (
       key: 'source',
       header: '主调服务',
       render: x => {
-        const { namespace, service } = x?.routing_config?.sources?.[0] || {}
+        const { namespace, service } = x?.routing_config?.rules?.[0]?.sources?.[0] || {}
         return (
           <>
             <Text parent={'div'}>命名空间：{namespace || '-'}</Text>
@@ -58,7 +58,7 @@ export default (
       key: 'destination',
       header: '被调服务',
       render: x => {
-        const { namespace, service } = x?.routing_config?.destinations?.[0] || {}
+        const { namespace, service } = x?.routing_config?.rules?.[0]?.destinations?.[0] || {}
         return (
           <>
             <Text parent={'div'}>命名空间：{namespace || '-'}</Text>

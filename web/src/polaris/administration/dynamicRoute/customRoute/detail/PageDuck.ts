@@ -119,17 +119,18 @@ export default class RouteDetailPageDuck extends DetailPage {
           result.list.map((item: CustomRoute) => ({
             ...item,
             source: {
-              ...item.routing_config.sources?.[0],
+              service: item.routing_config?.rules?.[0]?.sources?.[0].service,
+              namespace: item.routing_config?.rules?.[0]?.sources?.[0].namespace,
             },
             destination: {
-              service: item.routing_config.destinations?.[0]?.service,
-              namespace: item.routing_config.destinations?.[0]?.namespace,
+              service: item.routing_config?.rules?.[0].destinations?.[0]?.service,
+              namespace: item.routing_config?.rules?.[0].destinations?.[0]?.namespace,
             },
             rules: item.routing_config.rules.map(rule => ({
               ...item,
               sources: rule.sources.map(source => ({
                 ...source,
-                arguments: source?.[0]?.arguments.map(item => ({
+                arguments: source?.[0].arguments.map(item => ({
                   type: item.type,
                   key: item.key,
                   value_type: item.value.type,
