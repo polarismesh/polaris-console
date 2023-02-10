@@ -83,13 +83,7 @@ const getEmptyRule = () => ({
       arguments: [getEmptyArgument()],
     },
   ],
-  destinations: [
-    {
-      service: '',
-      namespace: '',
-      instanceGroups: [getEmptyDestination()],
-    },
-  ],
+  destinations: [getEmptyDestination()],
 })
 const getEmptyArgument = () => ({
   type: RoutingArgumentsType.CUSTOM,
@@ -101,6 +95,9 @@ const getEmptyDestination = () => ({
   labels: [],
   weight: 0,
   isolate: false,
+  service: '',
+  namespace: '',
+  name: '',
 })
 export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) {
   const { duck, store, dispatch } = props
@@ -553,9 +550,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   'destinations',
                 ])
                 const { arguments: argumentsField } = [...ruleSources.asArray()]?.[0]?.getFields(['arguments'])
-                const { instanceGroups: instanceGroupsField } = [...ruleDestinations.asArray()]?.[0]?.getFields([
-                  'instanceGroups',
-                ])
+
                 const filterSourceLabelList = sourceLabelList.map(item => {
                   if (argumentsField.getValue().find(argument => argument.key === item.value)) {
                     return { ...item, disabled: true }
@@ -710,11 +705,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                         将转发至目标服务的一下实例分组
                       </Text>
                       <section style={{ marginBottom: '10px' }}>
-                        {instanceGroupsField?.getValue()?.length > 0 && (
+                        {ruleDestinations?.getValue()?.length > 0 && (
                           <Table
                             verticalTop
                             bordered
-                            records={[...instanceGroupsField.asArray()]}
+                            records={[...ruleDestinations.asArray()]}
                             columns={[
                               {
                                 key: 'labels',
@@ -787,7 +782,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                       }}
                                       type='close'
                                       onClick={() => {
-                                        instanceGroupsField.asArray().remove(index)
+                                        ruleDestinations.asArray().remove(index)
                                       }}
                                     />
                                   )
@@ -801,7 +796,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                           <Button
                             className='form-item-space'
                             type='link'
-                            onClick={() => instanceGroupsField.asArray().push(getEmptyDestination())}
+                            onClick={() => ruleDestinations.asArray().push(getEmptyDestination())}
                           >
                             添加
                           </Button>

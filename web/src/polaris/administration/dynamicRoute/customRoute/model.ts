@@ -76,11 +76,10 @@ export interface RoutingRuleSource {
 export interface RoutingRuleDestination {
   service: string
   namespace: string
-  instanceGroups: {
-    weight: number
-    isolate: boolean
-    labels: Record<string, RoutingLabel>
-  }[]
+  weight: number
+  isolate: boolean
+  labels: Record<string, RoutingLabel>
+  name: string
 }
 export interface RoutingSourceArgument {
   type: string

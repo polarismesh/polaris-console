@@ -137,23 +137,20 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
       } catch (e) {
         return
       }
-      const values = ducks.form.selectors.values(yield select())
+      const originValues = ducks.form.selectors.values(yield select())
       const { id, namespace, service } = yield select(selectors.composedId)
-
+      const values = JSON.parse(JSON.stringify(originValues))
       const handledRules = values.rules.map((rule, index) => {
-        const handledDestinations = rule.destinations.map(destination => ({
+        const handledDestinations = rule.destinations.map((destination, index) => ({
+          ...destination,
           service: values.destination.service,
           namespace: values.destination.namespace,
-          instanceGroups: destination.instanceGroups.map(instanceGroup => {
-            return {
-              ...instanceGroup,
-              labels: instanceGroup.labels.reduce((map, curr) => {
-                map[curr.key] = curr
-                delete curr.key
-                return map
-              }, {}) as any,
-            }
-          }),
+          labels: destination.labels.reduce((map, curr) => {
+            map[curr.key] = curr
+            delete curr.key
+            return map
+          }, {}) as any,
+          name: `group-${index}`,
         }))
         const handledSources = rule.sources.map(source => ({
           service: values.source.service,
@@ -182,12 +179,14 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
           '@type': 'type.googleapis.com/v2.RuleRoutingConfig',
           sources: [
             {
-              ...values.source,
+              service: values.source.service,
+              namespace: values.source.namespace,
             },
           ],
           destinations: [
             {
-              ...values.destination,
+              service: values.destination.service,
+              namespace: values.destination.namespace,
             },
           ],
           rules: handledRules,
@@ -196,7 +195,6 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
         source: undefined,
         destination: undefined,
       } as CreateCustomRoutesParams
-
       delete params['@type']
       let result
       if (id) {
@@ -253,6 +251,10 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
                   value_type: item.value.type,
                   value: item.value.value,
                 })),
+              })),
+              destinations: rule.destinations.map(destination => ({
+                ...destination,
+                labels: Object.entries(destination.labels).map(([key, value]) => ({ key, ...value })),
               })),
             })),
           }))
@@ -319,14 +321,12 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
   }
 }
 export interface RouteRuleDestinationField {
-  instanceGroups: DestinationInstanceGroup[]
   service: string
   namespace: string
-}
-export interface DestinationInstanceGroup {
   labels: RouteDestinationArgument[]
   weight: number
   isolate: boolean
+  name: string
 }
 export interface RouteDestinationArgument {
   key: string
@@ -491,13 +491,10 @@ export class RouteCreateDuck extends Form {
             {
               service: '',
               namespace: '',
-              instanceGroups: [
-                {
-                  labels: [],
-                  weight: 100,
-                  isolate: false,
-                },
-              ],
+              labels: [],
+              weight: 100,
+              isolate: false,
+              name: '',
             },
           ],
         },

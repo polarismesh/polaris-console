@@ -14,7 +14,6 @@ import {
   Justify,
   Bubble,
   Button,
-  Checkbox,
   Tag,
 } from 'tea-component'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
@@ -212,11 +211,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                         将转发至目标服务的一下实例分组
                       </Text>
                       <section>
-                        {destinations?.[0]?.instanceGroups?.length > 0 && (
+                        {destinations?.length > 0 && (
                           <Table
                             verticalTop
                             bordered
-                            records={destinations?.[0]?.instanceGroups}
+                            records={destinations}
                             columns={[
                               {
                                 key: 'labels',
@@ -250,7 +249,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                 header: '是否隔离',
                                 render: item => {
                                   const { isolate } = item
-                                  return <Checkbox value={isolate}></Checkbox>
+                                  return isolate ? '是' : '否'
                                 },
                               },
                             ]}
