@@ -124,6 +124,9 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
       const { id, namespace, service } = yield select(selectors.composedId)
       const { type } = selector(yield select())
       let result
+      if (values.level !== BreakLevelType.Method) {
+        delete values.ruleMatcher.destination.method
+      }
       if (id) {
         delete values['@type']
         delete values.ctime
