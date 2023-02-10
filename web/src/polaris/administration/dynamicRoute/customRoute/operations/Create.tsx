@@ -131,7 +131,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     const keyValidate = keyField.getTouched() && keyField.getError()
     const labelList = [
       ...(keyField.getValue() ? [{ text: `(输入值)${keyField.getValue()}`, value: keyField.getValue() }] : []),
-      ...filteredLabelList.filter(item => item.text.indexOf(keyField.getValue()) > -1),
+      ...filteredLabelList.filter(item => (keyField.getValue() ? item.text.indexOf(keyField.getValue()) > -1 : true)),
     ]
     let keyComponent
     if (labelType.getValue() === RoutingArgumentsType.CUSTOM || type === 'destination') {
@@ -197,7 +197,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     const valueOptions = labelList.find(item => item.value === keyField.getValue())?.valueOptions || []
     const options = [
       ...(valueField.getValue() ? [{ text: `(输入值)${valueField.getValue()}`, value: valueField.getValue() }] : []),
-      ...valueOptions.filter(item => item.text.indexOf(valueField.getValue()) > -1),
+      ...valueOptions.filter(item => (valueField.getValue() ? item.text.indexOf(valueField.getValue()) > -1 : true)),
     ]
     let valueComponent
     if (labelType.getValue() === RoutingArgumentsType.CUSTOM || type === 'destination') {
@@ -563,7 +563,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   return item
                 })
                 return (
-                  <Card key={index} bordered style={{ backgroundColor: '#f8f8fa' }}>
+                  <Card
+                    key={index}
+                    bordered
+                    style={{ backgroundColor: '#f8f8fa', maxWidth: '1200px', margin: '20px 0' }}
+                  >
                     <Card.Header>
                       <Justify
                         left={<Text reset>{`规则${index + 1}`}</Text>}

@@ -139,7 +139,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
               {rules.map((rule, index) => {
                 const { sources, destinations } = rule
                 return (
-                  <Card key={index}>
+                  <Card key={index} style={{ maxWidth: '1200px' }}>
                     <Card.Header>
                       <Justify left={`规则${index}`}></Justify>
                     </Card.Header>
