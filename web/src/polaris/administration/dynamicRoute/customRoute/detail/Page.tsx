@@ -138,15 +138,15 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
               {rules.map((rule, index) => {
                 const { sources, destinations } = rule
                 return (
-                  <Card key={index} style={{ maxWidth: '1200px' }}>
+                  <Card key={index} style={{ width: 'calc(95% + 20px)', margin: '0' }} bordered>
                     <Card.Header>
-                      <Justify left={`规则${index}`}></Justify>
+                      <Justify style={{ padding: '10px' }} left={<Text reset>{`规则${index + 1}`}</Text>}></Justify>
                     </Card.Header>
                     <Card.Body>
                       <Text parent={'div'} theme={'strong'} style={{ marginBottom: '20px' }}>
                         来源服务的请求满足以下匹配条件
                       </Text>
-                      <section>
+                      <section style={{ marginBottom: '20px' }}>
                         {sources?.[0]?.arguments?.length > 0 && (
                           <Table
                             verticalTop
@@ -210,7 +210,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                       <Text parent={'div'} theme={'strong'} style={{ marginBottom: '20px' }}>
                         将转发至目标服务的一下实例分组
                       </Text>
-                      <section>
+                      <section style={{ marginBottom: '20px' }}>
                         {destinations?.length > 0 && (
                           <Table
                             verticalTop

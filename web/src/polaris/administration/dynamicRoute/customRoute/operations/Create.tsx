@@ -166,7 +166,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       keyField.setValue('$path')
       keyComponent = <TeaInput placeholder='$path' disabled />
     } else {
-      keyComponent = <Input placeholder='请输入Key值' field={keyField} onChange={key => keyField.setValue(key)} />
+      keyComponent = (
+        <Input placeholder='请输入Key值' size={'full'} field={keyField} onChange={key => keyField.setValue(key)} />
+      )
     }
     return (
       <Bubble content={keyField.getValue()}>
@@ -197,7 +199,33 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       ...valueOptions.filter(item => (valueField.getValue() ? item.text.indexOf(valueField.getValue()) > -1 : true)),
     ]
     let valueComponent
-    if (labelType.getValue() === RoutingArgumentsType.CUSTOM || type === 'destination') {
+    if (value_type.getValue() === RouteLabelMatchType.RANGE || labelType.getValue() === RouteLabelMatchType.RANGE) {
+      valueComponent = (
+        <>
+          <TeaInputNumber
+            hideButton
+            value={Number(valueField?.getValue()?.split('~')?.[0] || 0)}
+            onChange={value => {
+              const splited = valueField?.getValue() ? valueField?.getValue()?.split('~') : ['0', '0']
+              splited[0] = value.toString()
+              valueField.setValue(splited.join('~'))
+            }}
+          />
+          <Text reset verticalAlign={'middle'}>
+            &nbsp;~&nbsp;
+          </Text>
+          <TeaInputNumber
+            hideButton
+            value={Number(valueField?.getValue()?.split('~')?.[1] || 0)}
+            onChange={value => {
+              const splited = valueField?.getValue() ? valueField?.getValue()?.split('~') : ['0', '0']
+              splited[1] = value.toString()
+              valueField.setValue(splited.join('~'))
+            }}
+          />
+        </>
+      )
+    } else if (labelType.getValue() === RoutingArgumentsType.CUSTOM || type === 'destination') {
       valueComponent = (
         <AutoComplete
           options={options}
@@ -218,30 +246,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             />
           )}
         </AutoComplete>
-      )
-    } else if (value_type.getValue() === RouteLabelMatchType.RANGE) {
-      valueComponent = (
-        <>
-          <TeaInputNumber
-            hideButton
-            value={Number(valueField?.getValue()?.split('~')?.[0])}
-            onChange={value => {
-              const splited = valueField?.getValue()?.split('~')
-              splited[0] = value.toString()
-              valueField.setValue(splited.join('~'))
-            }}
-          />
-          &nbsp;~&nbsp;
-          <TeaInputNumber
-            hideButton
-            value={Number(valueField?.getValue()?.split('~')?.[0])}
-            onChange={value => {
-              const splited = valueField?.getValue()?.split('~')
-              splited[1] = value.toString()
-              valueField.setValue(splited.join('~'))
-            }}
-          />
-        </>
       )
     } else {
       valueComponent = (
@@ -284,19 +288,22 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
         key={id}
         message={
           <Row>
-            <Col span={10}>{getArgumentsKeyComp(labelField, 'destination', filterDestinationLabelList)}</Col>
-            <Col span={4}>
+            <Col span={9}>{getArgumentsKeyComp(labelField, 'destination', filterDestinationLabelList)}</Col>
+            <Col span={6}>
               <Select
                 options={RouteLabelMatchTypeOptions}
                 value={type.getValue()}
                 onChange={value => type.setValue(value)}
                 appearance={'button'}
+                matchButtonWidth={false}
+                size={'full'}
               />
             </Col>
-            <Col span={10}>{getArgumentsValueComp(labelField, 'destination')}</Col>
+            <Col span={9}>{getArgumentsValueComp(labelField, 'destination')}</Col>
           </Row>
         }
-        style={{ width: '600px', maxWidth: 'none' }}
+        placement={'right'}
+        style={{ width: '800px', maxWidth: 'none' }}
         onVisibleChange={visible => {
           if (visible) setLabelPopConfirmVisible(id)
           else {

@@ -130,7 +130,7 @@ export default class RouteDetailPageDuck extends DetailPage {
               ...item,
               sources: rule.sources.map(source => ({
                 ...source,
-                arguments: source?.[0].arguments.map(item => ({
+                arguments: source?.arguments.map(item => ({
                   type: item.type,
                   key: item.key,
                   value_type: item.value.type,
