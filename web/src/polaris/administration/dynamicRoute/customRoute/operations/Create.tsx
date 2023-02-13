@@ -250,30 +250,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
           )}
         </AutoComplete>
       )
-    } else if (value_type.getValue() === RouteLabelMatchType.RANGE) {
-      valueComponent = (
-        <>
-          <TeaInputNumber
-            hideButton
-            value={Number(valueField?.getValue()?.split('~')?.[0])}
-            onChange={value => {
-              const splited = valueField?.getValue()?.split('~')
-              splited[0] = value.toString()
-              valueField.setValue(splited.join('~'))
-            }}
-          />
-          &nbsp;~&nbsp;
-          <TeaInputNumber
-            hideButton
-            value={Number(valueField?.getValue()?.split('~')?.[0])}
-            onChange={value => {
-              const splited = valueField?.getValue()?.split('~')
-              splited[1] = value.toString()
-              valueField.setValue(splited.join('~'))
-            }}
-          />
-        </>
-      )
     } else {
       valueComponent = (
         <Input placeholder='请输入Value值' field={valueField} onChange={value => valueField.setValue(value)} />
