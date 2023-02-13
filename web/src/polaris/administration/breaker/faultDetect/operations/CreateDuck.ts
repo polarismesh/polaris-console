@@ -109,7 +109,7 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
     const { types, ducks, selectors } = this
 
     // 规则创建
-    yield takeLatest(types.SUBMIT, function* () {
+    yield takeLatest(types.SUBMIT, function*() {
       try {
         yield* ducks.form.submit()
       } catch (e) {
@@ -138,7 +138,7 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
     })
 
     // 规则编辑
-    yield takeLatest(types.SET_ID, function* (action) {
+    yield takeLatest(types.SET_ID, function*(action) {
       let rule
       if (action.payload) {
         const result = yield DescribeFaultDetects({
@@ -167,12 +167,12 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
       getAllList(describeServices, {})({}),
     ])
 
-    const namespaceList = namespaceOptions.list.map((item) => ({
+    const namespaceList = namespaceOptions.list.map(item => ({
       text: item.name,
       value: item.name,
     }))
 
-    const serviceList = serviceOptions.list.map((item) => ({
+    const serviceList = serviceOptions.list.map(item => ({
       text: item.name,
       value: item.name,
       namespace: item.namespace,
@@ -189,7 +189,7 @@ const validator = Form.combineValidators<FaultDetectRule>({
     if (!v) {
       return '请填写规则名称'
     }
-    if (!/^[a-zA-Z]([a-zA-Z0-9-_]{1,64})?$/.test(v)) {
+    if (!/^[a-zA-Z0-9-_]([a-zA-Z0-9-_]{1,64})?$/.test(v)) {
       return '名称只能含有数字，字母，下划线及中划线'
     }
   },
