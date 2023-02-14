@@ -209,7 +209,12 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               />
             </FormField>
 
-            <FormField showStatusIcon={false} label='协议' field={protocol}>
+            <FormField
+              showStatusIcon={false}
+              label='协议'
+              tips={'服务实例下需要存在所选择用于探测的协议，否则无法探测无法生效'}
+              field={protocol}
+            >
               <Segment
                 options={FaultDetectProtocolOptions}
                 value={protocol.getValue()}
