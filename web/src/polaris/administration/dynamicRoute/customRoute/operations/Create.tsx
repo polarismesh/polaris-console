@@ -553,7 +553,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Row>
               </Form>
             </Form.Item>
-            <FormItem label='匹配规则'>
+            <FormItem label='路由策略'>
               <DragDropContext
                 onDragEnd={context => {
                   const source = context.source.index

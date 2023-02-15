@@ -73,7 +73,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
             <FormItem label={'优先级'}>
               <FormText>{priority}</FormText>
             </FormItem>
-            <Form.Item label='匹配规则' className='compact-form-control'>
+            <Form.Item label='匹配条件' className='compact-form-control'>
               <Form style={{ position: 'relative', width: '95%' }}>
                 <div
                   style={{

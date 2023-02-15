@@ -43,7 +43,7 @@ rm -rf "polaris_console_package"
 # 编译web
 cd $workdir/web
 rm -rf dist/
-npm install
+npm install --force
 npm run build
 
 # 编译web服务器
