@@ -368,13 +368,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       <Card>
         <Card.Body>
           <Form>
-            <FormField label='路由规则名称' field={name} message='最长64个字符' required>
+            <FormField label='规则名称' field={name} message='最长64个字符' required>
               <Input field={name} maxLength={64} size='l' />
             </FormField>
             <FormField label='描述' field={description}>
               <Input field={description} maxLength={64} size='l' multiple />
             </FormField>
-            <Form.Item label='路由规则详情' className='compact-form-control'>
+            <Form.Item label='匹配条件' className='compact-form-control'>
               <Form style={{ position: 'relative', minWidth: '1200px' }}>
                 <div
                   style={{
@@ -407,14 +407,14 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   <Col span={12}>
                     <div style={{ margin: '10px 0' }}>
                       <Text parent={'div'} style={{ width: '100%', textAlign: 'center', fontWeight: 'bolder' }}>
-                        来源服务
+                        主调服务
                       </Text>
                       <Text parent={'div'} theme={'label'} style={{ width: '100%', textAlign: 'center' }}>
                         主调请求按照匹配规则匹配成功后，将按照当前规则进行目标服务路由
                       </Text>
                     </div>
                     <Card bordered>
-                      <Card.Body title='主调服务'>
+                      <Card.Body>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                           <FormField field={sourceNamespace} label='命名空间' required>
                             <Select
@@ -476,14 +476,14 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   <Col span={12}>
                     <div style={{ margin: '10px 0' }}>
                       <Text parent={'div'} style={{ width: '100%', textAlign: 'center', fontWeight: 'bolder' }}>
-                        目标服务
+                        被调服务
                       </Text>
                       <Text parent={'div'} theme={'label'} style={{ width: '100%', textAlign: 'center' }}>
                         请求会按照规则路由到目标服务分组
                       </Text>
                     </div>
                     <Card bordered>
-                      <Card.Body title='被调服务'>
+                      <Card.Body>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                           <FormField field={destinationNamespace} label='命名空间' required>
                             <Select
