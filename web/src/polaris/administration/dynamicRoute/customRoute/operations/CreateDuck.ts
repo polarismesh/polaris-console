@@ -9,7 +9,13 @@ import { takeLatest, takeEvery } from 'redux-saga-catch'
 import { delay } from 'redux-saga'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
-import { createCustomRoute, CustomRoute, describeCustomRoute, modifyCustomRoute } from '../model'
+import {
+  createCustomRoute,
+  CreateCustomRoutesParams,
+  CustomRoute,
+  describeCustomRoute,
+  modifyCustomRoute,
+} from '../model'
 import { RouteLabelMatchType, RoutingArgumentsType } from '../types'
 import { describeInstanceLabels } from '@src/polaris/service/detail/instance/model'
 
@@ -113,7 +119,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
         service: service,
       })) as Record<string, { values: string[] }>
       const labelList = Object.entries(labelData).map(([key, { values }]) => {
-        return { text: key, value: key, valueOptions: values.map((item) => ({ text: item, value: item })) }
+        return { text: key, value: key, valueOptions: values.map(item => ({ text: item, value: item })) }
       })
       yield put({ type: type, payload: labelList })
     } catch (e) {
@@ -125,54 +131,70 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
     const { types, ducks, selectors, selector, getLabelList } = this
 
     // 规则创建
-    yield takeLatest(types.SUBMIT, function* () {
+    yield takeLatest(types.SUBMIT, function*() {
       try {
         yield* ducks.form.submit()
       } catch (e) {
         return
       }
-      const values = ducks.form.selectors.values(yield select())
+      const originValues = ducks.form.selectors.values(yield select())
       const { id, namespace, service } = yield select(selectors.composedId)
-
-      const handledDestination = values.destination.instanceGroups.map((item) => {
-        return {
-          ...item,
-          labels: item.labels.reduce((map, curr) => {
+      const values = JSON.parse(JSON.stringify(originValues))
+      const handledRules = values.rules.map((rule, index) => {
+        const handledDestinations = rule.destinations.map((destination, index) => ({
+          ...destination,
+          service: values.destination.service,
+          namespace: values.destination.namespace,
+          labels: destination.labels.reduce((map, curr) => {
             map[curr.key] = curr
             delete curr.key
             return map
           }, {}) as any,
-          namespace: values.destination.namespace,
-          service: values.destination.service,
+          name: `group-${index}`,
+        }))
+        const handledSources = rule.sources.map(source => ({
+          service: values.source.service,
+          namespace: values.source.namespace,
+          arguments: source.arguments.map(item => ({
+            type: item.type,
+            key: item.key,
+            value: {
+              type: item.value_type,
+              value: item.value,
+              value_type: 'TEXT',
+            },
+          })),
+        }))
+        return {
+          ...rule,
+          name: `规则${index}`,
+          sources: handledSources,
+          destinations: handledDestinations,
         }
       })
-
-      const handledArguments = values.source.arguments.map((item) => ({
-        type: item.type,
-        key: item.key,
-        value: {
-          type: item.value_type,
-          value: item.value,
-          value_type: 'TEXT',
-        },
-      }))
       const params = {
         ...values,
+        rules: undefined,
         routing_config: {
           '@type': 'type.googleapis.com/v2.RuleRoutingConfig',
           sources: [
             {
-              ...values.source,
-              arguments: handledArguments,
+              service: values.source.service,
+              namespace: values.source.namespace,
             },
           ],
-          destinations: handledDestination,
+          destinations: [
+            {
+              service: values.destination.service,
+              namespace: values.destination.namespace,
+            },
+          ],
+          rules: handledRules,
         },
         id: id ? id : undefined,
         source: undefined,
         destination: undefined,
-      }
-
+      } as CreateCustomRoutesParams
       delete params['@type']
       let result
       if (id) {
@@ -192,7 +214,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
     })
 
     // 规则编辑
-    yield takeLatest(types.SET_ID, function* (action) {
+    yield takeLatest(types.SET_ID, function*(action) {
       if (action.payload) {
         let ruleDetailInfo: Values = null
         const result = yield describeCustomRoute({
@@ -205,28 +227,29 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
           result.list.map((item: CustomRoute) => ({
             ...item,
             source: {
-              ...item.routing_config.sources?.[0],
-              arguments: item.routing_config.sources?.[0].arguments.map((item) => {
-                return {
+              service: item.routing_config?.rules?.[0]?.sources?.[0].service,
+              namespace: item.routing_config?.rules?.[0]?.sources?.[0].namespace,
+            },
+            destination: {
+              service: item.routing_config?.rules?.[0].destinations?.[0]?.service,
+              namespace: item.routing_config?.rules?.[0].destinations?.[0]?.namespace,
+            },
+            rules: item.routing_config.rules.map(rule => ({
+              ...item,
+              sources: rule.sources.map(source => ({
+                ...source,
+                arguments: source?.[0].arguments.map(item => ({
                   type: item.type,
                   key: item.key,
                   value_type: item.value.type,
                   value: item.value.value,
-                }
-              }),
-            },
-            destination: {
-              service: item.routing_config.destinations?.[0]?.service,
-              namespace: item.routing_config.destinations?.[0]?.namespace,
-              instanceGroups: item.routing_config.destinations.map((instanceGroup) => {
-                delete instanceGroup.namespace
-                delete instanceGroup.service
-                return {
-                  ...instanceGroup,
-                  labels: Object.entries(instanceGroup.labels).map(([key, value]) => ({ key, ...value })),
-                }
-              }),
-            },
+                })),
+              })),
+              destinations: rule.destinations.map(destination => ({
+                ...destination,
+                labels: Object.entries(destination.labels).map(([key, value]) => ({ key, ...value })),
+              })),
+            })),
           }))
         ruleDetailInfo = result.list[0]
         yield put(ducks.form.creators.setValues(ruleDetailInfo))
@@ -242,30 +265,27 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
         })
       }
     })
-    yield takeLatest(types.SET_SERVICE, function* (action) {
+    yield takeLatest(types.SET_SERVICE, function*(action) {
       const { namespace } = selector(yield select())
       yield* getLabelList(namespace, action.payload, types.SET_DESTINATION_LABEL_LIST)
     })
-    yield takeEvery(
-      [ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE],
-      function* (action) {
-        const type = action.type === ducks.form.types.SET_SOURCE_SERVICE ? 'source' : 'destination'
-        const setLabelListType =
-          action.type === ducks.form.types.SET_SOURCE_SERVICE
-            ? types.SET_SOURCE_LABEL_LIST
-            : types.SET_DESTINATION_LABEL_LIST
-        if (action.payload === '*' || !action.payload) {
-          yield put({ type: setLabelListType, payload: [] })
-          return
-        }
-        const { data } = selector(yield select())
-        if (!data?.serviceList?.find((item) => item.value === action.payload) && !action.noCheckValid) {
-          return
-        }
-        const values = ducks.form.selectors.values(yield select())
-        yield* getLabelList(values[type].namespace, action.payload, setLabelListType)
-      },
-    )
+    yield takeEvery([ducks.form.types.SET_SOURCE_SERVICE, ducks.form.types.SET_DESTINATION_SERVICE], function*(action) {
+      const type = action.type === ducks.form.types.SET_SOURCE_SERVICE ? 'source' : 'destination'
+      const setLabelListType =
+        action.type === ducks.form.types.SET_SOURCE_SERVICE
+          ? types.SET_SOURCE_LABEL_LIST
+          : types.SET_DESTINATION_LABEL_LIST
+      if (action.payload === '*' || !action.payload) {
+        yield put({ type: setLabelListType, payload: [] })
+        return
+      }
+      const { data } = selector(yield select())
+      if (!data?.serviceList?.find(item => item.value === action.payload) && !action.noCheckValid) {
+        return
+      }
+      const values = ducks.form.selectors.values(yield select())
+      yield* getLabelList(values[type].namespace, action.payload, setLabelListType)
+    })
   }
 
   async getData() {
@@ -277,12 +297,12 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
       getAllList(describeServices, {})({}),
     ])
 
-    const namespaceList = namespaceOptions.list.map((item) => ({
+    const namespaceList = namespaceOptions.list.map(item => ({
       text: item.name,
       value: item.name,
     }))
 
-    const serviceList = serviceOptions.list.map((item) => ({
+    const serviceList = serviceOptions.list.map(item => ({
       text: item.name,
       value: item.name,
       namespace: item.namespace,
@@ -293,10 +313,11 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
     }
   }
 }
-export interface DestinationInstanceGroup {
+export interface RouteRuleDestinationField {
+  service: string
+  namespace: string
   labels: RouteDestinationArgument[]
   weight: number
-  priority: number
   isolate: boolean
   name: string
 }
@@ -305,6 +326,16 @@ export interface RouteDestinationArgument {
   value: string
   value_type: string
   type: string
+}
+export interface RouteRuleField {
+  name: string
+  sources: RouteRuleSourceField[]
+  destinations: RouteRuleDestinationField[]
+}
+export interface RouteRuleSourceField {
+  service: string
+  namespace: string
+  arguments: RouteSourceArgument[]
 }
 export interface RouteSourceArgument {
   value_type: string
@@ -321,13 +352,13 @@ export interface Values {
   destination: {
     service: string
     namespace: string
-    instanceGroups: DestinationInstanceGroup[]
   }
   source: {
     service: string
     namespace: string
-    arguments: RouteSourceArgument[]
   }
+  rules: RouteRuleField[]
+  tempKey?: RouteDestinationArgument
 }
 
 const validator = Form.combineValidators<Values>({
@@ -347,23 +378,23 @@ const validator = Form.combineValidators<Values>({
         return '请选择服务名'
       }
     },
-    arguments: [
-      {
-        key(v) {
-          if (!v) {
-            return '请输入key值'
-          }
-        },
-        value(v, data) {
-          if (!v && data.type === RoutingArgumentsType.CALLER_IP) {
-            return '请输入IP'
-          }
-          if (!v && data.type !== RoutingArgumentsType.CALLER_IP) {
-            return '请输入value值'
-          }
-        },
-      },
-    ],
+    // arguments: [
+    //   {
+    //     key(v) {
+    //       if (!v) {
+    //         return '请输入key值'
+    //       }
+    //     },
+    //     value(v, data) {
+    //       if (!v && data.type === RoutingArgumentsType.CALLER_IP) {
+    //         return '请输入IP'
+    //       }
+    //       if (!v && data.type !== RoutingArgumentsType.CALLER_IP) {
+    //         return '请输入value值'
+    //       }
+    //     },
+    //   },
+    // ],
   },
   destination: {
     namespace(v) {
@@ -376,38 +407,38 @@ const validator = Form.combineValidators<Values>({
         return '请选择服务名'
       }
     },
-    instanceGroups: [
-      {
-        name(v) {
-          if (!v) {
-            return '请输入名称'
-          }
-        },
-        weight(v, data, meta) {
-          const weightSum = meta?.destination?.instanceGroups.reduce((sum, curr) => {
-            sum += curr.weight
-            return sum
-          }, 0)
-          if (!(weightSum > 0)) {
-            return '所有实例分组权重加和必须大于0'
-          }
-        },
-        labels: [
-          {
-            key(v) {
-              if (!v) {
-                return '请输入key值'
-              }
-            },
-            value(v) {
-              if ((v ?? false) === false) {
-                return '请输入value值'
-              }
-            },
-          },
-        ],
-      },
-    ],
+    // instanceGroups: [
+    //   {
+    //     name(v) {
+    //       if (!v) {
+    //         return '请输入名称'
+    //       }
+    //     },
+    //     weight(v, data, meta) {
+    //       const weightSum = meta?.destination?.instanceGroups.reduce((sum, curr) => {
+    //         sum += curr.weight
+    //         return sum
+    //       }, 0)
+    //       if (!(weightSum > 0)) {
+    //         return '所有实例分组权重加和必须大于0'
+    //       }
+    //     },
+    //     labels: [
+    //       {
+    //         key(v) {
+    //           if (!v) {
+    //             return '请输入key值'
+    //           }
+    //         },
+    //         value(v) {
+    //           if ((v ?? false) === false) {
+    //             return '请输入value值'
+    //           }
+    //         },
+    //       },
+    //     ],
+    //   },
+    // ],
   },
 })
 
@@ -427,28 +458,40 @@ export class RouteCreateDuck extends Form {
       destination: {
         service: '',
         namespace: '',
-        instanceGroups: [
-          {
-            labels: [
-              {
-                key: '',
-                value: '',
-                value_type: 'TEXT',
-                type: RouteLabelMatchType.EXACT,
-              },
-            ],
-            weight: 100,
-            priority: 0,
-            isolate: false,
-            name: '实例分组1',
-          },
-        ],
       },
       source: {
         service: '*',
         namespace: '*',
-        arguments: [],
       },
+      rules: [
+        {
+          name: '规则1',
+          sources: [
+            {
+              service: '*',
+              namespace: '*',
+              arguments: [
+                {
+                  type: RoutingArgumentsType.CUSTOM,
+                  key: '',
+                  value: '',
+                  value_type: RouteLabelMatchType.EXACT,
+                },
+              ],
+            },
+          ],
+          destinations: [
+            {
+              service: '',
+              namespace: '',
+              labels: [],
+              weight: 100,
+              isolate: false,
+              name: '',
+            },
+          ],
+        },
+      ],
     }
   }
 

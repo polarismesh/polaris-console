@@ -1,5 +1,5 @@
 import React from 'react'
-import { DuckCmpProps, purify } from 'saga-duck'
+import { DuckCmpProps, purify, useDuck } from 'saga-duck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import {
   Form,
@@ -15,7 +15,14 @@ import {
   Row,
   Text,
   Bubble,
+  FormItem,
+  Justify,
+  Checkbox,
+  Tag,
+  PopConfirm,
+  InputNumber as TeaInputNumber,
 } from 'tea-component'
+import FormDuck from '@src/polaris/common/ducks/Form'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
@@ -24,14 +31,13 @@ import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
 import CreateDuck, { RouteDestinationArgument, RouteSourceArgument } from './CreateDuck'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
-import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import {
   RouteLabelMatchType,
   RouteLabelMatchTypeOptions,
   RoutingArgumentsTypeOptions,
   RoutingArgumentsType,
+  RouteLabelTextMap,
 } from '../types'
-import { MatchingLabelTips } from '@src/polaris/administration/accessLimiting/operations/Create'
 
 insertCSS(
   'create-rule-form',
@@ -47,7 +53,52 @@ insertCSS(
   }
 `,
 )
-
+export const getLabelTag = (
+  label: RouteDestinationArgument,
+  index,
+  labelsField?: FieldAPI<RouteDestinationArgument[]>,
+) => {
+  const { key, type, value } = label
+  return (
+    <Tag key={`${key}${index}`}>
+      {`键${key}${RouteLabelTextMap[type]}${value}`}
+      {labelsField && (
+        <Button
+          type={'icon'}
+          icon={'close'}
+          onClick={() => {
+            labelsField.asArray().remove(index)
+          }}
+        ></Button>
+      )}
+    </Tag>
+  )
+}
+const getEmptyRule = () => ({
+  name: '',
+  sources: [
+    {
+      service: '',
+      namespace: '',
+      arguments: [getEmptyArgument()],
+    },
+  ],
+  destinations: [getEmptyDestination()],
+})
+const getEmptyArgument = () => ({
+  type: RoutingArgumentsType.CUSTOM,
+  key: '',
+  value: '',
+  value_type: RouteLabelMatchType.EXACT,
+})
+const getEmptyDestination = () => ({
+  labels: [],
+  weight: 0,
+  isolate: false,
+  service: '',
+  namespace: '',
+  name: '',
+})
 export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) {
   const { duck, store, dispatch } = props
   const {
@@ -58,27 +109,16 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
   } = duck
   const composedId = selectors.composedId(store)
   const data = selectors.data(store)
-  const { name, priority, description, destination, source } = form
+  const { name, description, destination, source, rules } = form
     .getAPI(store, dispatch)
-    .getFields(['name', 'enable', 'description', 'destination', 'source', 'priority'])
-  const {
-    namespace: sourceNamespace,
-    service: sourceService,
-    arguments: argumentsField,
-  } = source.getFields(['namespace', 'service', 'arguments'])
-  const {
-    namespace: destinationNamespace,
-    service: destinationService,
-    instanceGroups,
-  } = destination.getFields(['namespace', 'service', 'instanceGroups'])
+    .getFields(['name', 'enable', 'description', 'destination', 'source', 'rules', 'tempKey'])
+  const { namespace: sourceNamespace, service: sourceService } = source.getFields(['namespace', 'service'])
+  const { namespace: destinationNamespace, service: destinationService } = destination.getFields([
+    'namespace',
+    'service',
+  ])
   const { sourceLabelList, destinationLabelList } = selector(store)
-  const filterSourceLabelList = sourceLabelList.map((item) => {
-    if (argumentsField.getValue().find((argument) => argument.key === item.value)) {
-      return { ...item, disabled: true }
-    }
-    return item
-  })
-
+  const [labelPopConfirmVisible, setLabelPopConfirmVisible] = React.useState('')
   function getArgumentsKeyComp(
     recordField: FieldAPI<RouteSourceArgument | RouteDestinationArgument>,
     type: string,
@@ -88,7 +128,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     const keyValidate = keyField.getTouched() && keyField.getError()
     const labelList = [
       ...(keyField.getValue() ? [{ text: `(输入值)${keyField.getValue()}`, value: keyField.getValue() }] : []),
-      ...filteredLabelList.filter((item) => item.text.indexOf(keyField.getValue()) > -1),
+      ...filteredLabelList.filter(item => (keyField.getValue() ? item.text.indexOf(keyField.getValue()) > -1 : true)),
     ]
     let keyComponent
     if (labelType.getValue() === RoutingArgumentsType.CUSTOM || type === 'destination') {
@@ -96,18 +136,18 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
         <AutoComplete
           options={labelList}
           tips='没有匹配的标签键'
-          onChange={(value) => {
+          onChange={value => {
             if (value !== keyField.getValue()) {
               valueField.setValue('')
             }
             keyField.setValue(value)
           }}
         >
-          {(ref) => (
+          {ref => (
             <TeaInput
               ref={ref}
               value={keyField.getValue()}
-              onChange={(value) => {
+              onChange={value => {
                 keyField.setValue(value)
               }}
               placeholder={'请输入标签键'}
@@ -126,7 +166,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       keyField.setValue('$path')
       keyComponent = <TeaInput placeholder='$path' disabled />
     } else {
-      keyComponent = <Input placeholder='请输入Key值' field={keyField} onChange={(key) => keyField.setValue(key)} />
+      keyComponent = (
+        <Input placeholder='请输入Key值' size={'full'} field={keyField} onChange={key => keyField.setValue(key)} />
+      )
     }
     return (
       <Bubble content={keyField.getValue()}>
@@ -143,29 +185,60 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
   }
 
   function getArgumentsValueComp(recordField: FieldAPI<RouteSourceArgument | RouteDestinationArgument>, type: string) {
-    const { value: valueField, key: keyField, type: labelType } = recordField.getFields(['value', 'key', 'type'])
+    const { value: valueField, key: keyField, type: labelType, value_type } = recordField.getFields([
+      'value',
+      'key',
+      'type',
+      'value_type',
+    ])
     const valueValidate = valueField.getTouched() && valueField.getError()
     const labelList = type === 'source' ? sourceLabelList : destinationLabelList
-    const valueOptions = labelList.find((item) => item.value === keyField.getValue())?.valueOptions || []
+    const valueOptions = labelList.find(item => item.value === keyField.getValue())?.valueOptions || []
     const options = [
       ...(valueField.getValue() ? [{ text: `(输入值)${valueField.getValue()}`, value: valueField.getValue() }] : []),
-      ...valueOptions.filter((item) => item.text.indexOf(valueField.getValue()) > -1),
+      ...valueOptions.filter(item => (valueField.getValue() ? item.text.indexOf(valueField.getValue()) > -1 : true)),
     ]
     let valueComponent
-    if (labelType.getValue() === RoutingArgumentsType.CUSTOM || type === 'destination') {
+    if (value_type.getValue() === RouteLabelMatchType.RANGE || labelType.getValue() === RouteLabelMatchType.RANGE) {
+      valueComponent = (
+        <>
+          <TeaInputNumber
+            hideButton
+            value={Number(valueField?.getValue()?.split('~')?.[0] || 0)}
+            onChange={value => {
+              const splited = valueField?.getValue() ? valueField?.getValue()?.split('~') : ['0', '0']
+              splited[0] = value.toString()
+              valueField.setValue(splited.join('~'))
+            }}
+          />
+          <Text reset verticalAlign={'middle'}>
+            &nbsp;~&nbsp;
+          </Text>
+          <TeaInputNumber
+            hideButton
+            value={Number(valueField?.getValue()?.split('~')?.[1] || 0)}
+            onChange={value => {
+              const splited = valueField?.getValue() ? valueField?.getValue()?.split('~') : ['0', '0']
+              splited[1] = value.toString()
+              valueField.setValue(splited.join('~'))
+            }}
+          />
+        </>
+      )
+    } else if (labelType.getValue() === RoutingArgumentsType.CUSTOM || type === 'destination') {
       valueComponent = (
         <AutoComplete
           options={options}
           tips='没有匹配的标签值'
-          onChange={(value) => {
+          onChange={value => {
             valueField.setValue(value)
           }}
         >
-          {(ref) => (
+          {ref => (
             <TeaInput
               ref={ref}
               value={valueField.getValue()}
-              onChange={(value) => {
+              onChange={value => {
                 valueField.setValue(value)
               }}
               placeholder={'请输入标签值'}
@@ -176,7 +249,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       )
     } else {
       valueComponent = (
-        <Input placeholder='请输入Value值' field={valueField} onChange={(value) => valueField.setValue(value)} />
+        <Input placeholder='请输入Value值' field={valueField} onChange={value => valueField.setValue(value)} />
       )
     }
     return (
@@ -190,6 +263,77 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
           {valueComponent}
         </FormControl>
       </Bubble>
+    )
+  }
+
+  function RouteLabelSelectPanel({
+    labelsField,
+    id,
+  }: {
+    labelsField: FieldAPI<RouteDestinationArgument[]>
+    id: string
+  }) {
+    const tempLabelForm = useDuck(FormDuck)
+    const { duck: tempLabelFormDuck, store: tempLabelFormStore, dispatch: tempLabelFormDispatch } = tempLabelForm
+    const labelField = tempLabelFormDuck.getAPI(tempLabelFormStore, tempLabelFormDispatch)
+    const filterDestinationLabelList = destinationLabelList.map(item => {
+      if (labelsField.getValue().find(label => label.key === item.value)) {
+        return { ...item, disabled: true }
+      }
+      return item
+    })
+    const { type } = labelField.getFields(['type'])
+    return (
+      <PopConfirm
+        key={id}
+        message={
+          <Row>
+            <Col span={9}>{getArgumentsKeyComp(labelField, 'destination', filterDestinationLabelList)}</Col>
+            <Col span={6}>
+              <Select
+                options={RouteLabelMatchTypeOptions}
+                value={type.getValue()}
+                onChange={value => type.setValue(value)}
+                appearance={'button'}
+                matchButtonWidth={false}
+                size={'full'}
+              />
+            </Col>
+            <Col span={9}>{getArgumentsValueComp(labelField, 'destination')}</Col>
+          </Row>
+        }
+        placement={'right'}
+        style={{ width: '800px', maxWidth: 'none' }}
+        onVisibleChange={visible => {
+          if (visible) setLabelPopConfirmVisible(id)
+          else {
+            setLabelPopConfirmVisible('')
+            labelField.setValue(null)
+          }
+        }}
+        visible={labelPopConfirmVisible === id}
+        footer={
+          <Button
+            type={'link'}
+            onClick={() => {
+              labelsField.setValue([...labelsField.getValue(), { ...labelField.getValue(), value_type: 'TEXT' }])
+              setLabelPopConfirmVisible('')
+              labelField.setValue(null)
+            }}
+            style={{ marginTop: '20px' }}
+            disabled={!labelField.getValue()?.type || !labelField.getValue()?.key || !labelField.getValue()?.value}
+            tooltip={
+              !labelField.getValue()?.type || !labelField.getValue()?.key || !labelField.getValue()?.value
+                ? '请输入完整标签'
+                : ''
+            }
+          >
+            {'确认'}
+          </Button>
+        }
+      >
+        <Button type='icon' icon={'plus'}></Button>
+      </PopConfirm>
     )
   }
 
@@ -228,7 +372,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               <Input field={description} maxLength={64} size='l' multiple />
             </FormField>
             <Form.Item label='路由规则详情' className='compact-form-control'>
-              <Form style={{ position: 'relative' }}>
+              <Form style={{ position: 'relative', minWidth: '1200px' }}>
                 <div
                   style={{
                     borderTop: '1px dashed gray',
@@ -276,7 +420,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 { text: '全部命名空间', value: '*', disabled: destinationNamespace.getValue() === '*' },
                                 ...(data?.namespaceList || []),
                               ]}
-                              onChange={(value) => {
+                              onChange={value => {
                                 if (value === '*') {
                                   sourceNamespace.setValue('*')
                                   sourceService.setValue('*')
@@ -301,154 +445,27 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   ...(sourceService.getValue()
                                     ? [{ text: `(输入值)${sourceService.getValue()}`, value: sourceService.getValue() }]
                                     : []),
-                                  ...(data?.serviceList.filter((o) => {
+                                  ...(data?.serviceList.filter(o => {
                                     return o.namespace === sourceNamespace.getValue()
                                   }) || []),
                                 ]),
                               ]}
                               tips='没有匹配的服务名称'
-                              onChange={(value) => {
+                              onChange={value => {
                                 sourceService.setValue(value)
                               }}
                             >
-                              {(ref) => (
+                              {ref => (
                                 <TeaInput
                                   ref={ref}
                                   value={sourceService.getValue() === '*' ? '全部服务' : sourceService.getValue()}
-                                  onChange={(value) => {
+                                  onChange={value => {
                                     sourceService.setValue(value)
                                   }}
                                 />
                               )}
                             </AutoComplete>
                           </FormField>
-                        </Form>
-                      </Card.Body>
-                      <Card.Body title='请求标签'>
-                        <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                          <Form.Item label='请求匹配规则' align='middle' tips={MatchingLabelTips}>
-                            {argumentsField?.getValue()?.length > 0 && (
-                              <Table
-                                hideHeader
-                                verticalTop
-                                bordered
-                                records={[...argumentsField.asArray()]}
-                                columns={[
-                                  {
-                                    key: 'type',
-                                    header: '类型',
-                                    render: (item) => {
-                                      const { type, key } = item.getFields(['type', 'key'])
-                                      const validate = type.getTouched() && type.getError()
-                                      const option = RoutingArgumentsTypeOptions.find(
-                                        (item) => item.value === type.getValue(),
-                                      )
-                                      return (
-                                        <Bubble content={option?.text}>
-                                          <FormControl
-                                            status={validate ? 'error' : null}
-                                            message={validate ? type.getError() : ''}
-                                            showStatusIcon={false}
-                                            style={{ display: 'inline', padding: 0 }}
-                                          >
-                                            <Select
-                                              options={RoutingArgumentsTypeOptions}
-                                              value={type.getValue()}
-                                              onChange={(value) => {
-                                                type.setValue(RoutingArgumentsType[value])
-                                                key.setValue('')
-                                              }}
-                                              type={'simulate'}
-                                              appearance={'button'}
-                                              size={'full'}
-                                            ></Select>
-                                          </FormControl>
-                                        </Bubble>
-                                      )
-                                    },
-                                  },
-                                  {
-                                    key: 'key',
-                                    header: 'key',
-                                    render: (item) => {
-                                      return getArgumentsKeyComp(item, 'source', filterSourceLabelList)
-                                    },
-                                  },
-                                  {
-                                    key: 'value_type',
-                                    header: 'value_type',
-                                    width: 120,
-                                    render: (item) => {
-                                      const { value_type } = item.getFields(['value_type'])
-                                      return (
-                                        <Select
-                                          options={RouteLabelMatchTypeOptions}
-                                          value={value_type.getValue()}
-                                          onChange={(value) => value_type.setValue(value)}
-                                          type={'simulate'}
-                                          appearance={'button'}
-                                          matchButtonWidth
-                                        />
-                                      )
-                                    },
-                                  },
-                                  {
-                                    key: 'value',
-                                    header: 'value',
-                                    render: (item) => {
-                                      return getArgumentsValueComp(item, 'source')
-                                    },
-                                  },
-                                  {
-                                    key: 'close',
-                                    header: '',
-                                    width: 50,
-                                    render(item, rowKey, recordIndex) {
-                                      const index = Number(recordIndex)
-                                      return (
-                                        <Icon
-                                          style={{
-                                            cursor: 'pointer',
-                                            display: 'block',
-                                            marginTop: '8px',
-                                          }}
-                                          type='close'
-                                          onClick={() => {
-                                            argumentsField.asArray().remove(index)
-                                          }}
-                                        />
-                                      )
-                                    },
-                                  },
-                                ]}
-                              ></Table>
-                            )}
-                            <div style={{ marginTop: '8px' }}>
-                              <Icon type='plus' />
-                              <Button
-                                className='form-item-space'
-                                type='link'
-                                onClick={() =>
-                                  argumentsField.asArray().push({
-                                    type: RoutingArgumentsType.CUSTOM,
-                                    key: '',
-                                    value: '',
-                                    value_type: RouteLabelMatchType.EXACT,
-                                  })
-                                }
-                              >
-                                添加
-                              </Button>
-                              {argumentsField?.getValue()?.length > 0 && (
-                                <Button
-                                  type='link'
-                                  onClick={() => argumentsField.asArray().splice(0, argumentsField?.getValue()?.length)}
-                                >
-                                  删除所有
-                                </Button>
-                              )}
-                            </div>
-                          </Form.Item>
                         </Form>
                       </Card.Body>
                     </Card>
@@ -472,7 +489,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 { text: '全部命名空间', value: '*', disabled: sourceNamespace.getValue() === '*' },
                                 ...(data?.namespaceList || []),
                               ]}
-                              onChange={(value) => {
+                              onChange={value => {
                                 if (value === '*') {
                                   destinationNamespace.setValue('*')
                                   destinationService.setValue('*')
@@ -502,23 +519,23 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                         },
                                       ]
                                     : []),
-                                  ...(data?.serviceList.filter((o) => {
+                                  ...(data?.serviceList.filter(o => {
                                     return o.namespace === destinationNamespace.getValue()
                                   }) || []),
                                 ]),
                               ]}
                               tips='没有匹配的服务名称'
-                              onChange={(value) => {
+                              onChange={value => {
                                 destinationService.setValue(value)
                               }}
                             >
-                              {(ref) => (
+                              {ref => (
                                 <TeaInput
                                   ref={ref}
                                   value={
                                     destinationService.getValue() === '*' ? '全部服务' : destinationService.getValue()
                                   }
-                                  onChange={(value) => {
+                                  onChange={value => {
                                     destinationService.setValue(value)
                                   }}
                                   disabled={destinationNamespace.getValue() === '*'}
@@ -528,195 +545,281 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                           </FormField>
                         </Form>
                       </Card.Body>
-                      <Card.Body title='实例分组'>
-                        {[...instanceGroups.asArray()].map((instanceGroup, index) => {
-                          const { name, weight, priority, labels, isolate } = instanceGroup.getFields([
-                            'name',
-                            'weight',
-                            'priority',
-                            'labels',
-                            'isolate',
-                          ])
-                          const filterDestinationLabelList = destinationLabelList.map((item) => {
-                            if (labels.getValue().find((label) => label.key === item.value)) {
-                              return { ...item, disabled: true }
-                            }
-                            return item
-                          })
-                          const nameValidate = name.getTouched() && name.getError()
-                          return (
-                            <Card key={index} bordered>
-                              <Card.Body
-                                title={
-                                  <FormControl
-                                    style={{ paddingBottom: '0px' }}
-                                    status={nameValidate ? 'error' : null}
-                                    message={nameValidate ? name.getError() : ''}
-                                    showStatusIcon={false}
-                                  >
-                                    <TeaInput
-                                      value={name.getValue()}
-                                      onChange={(v) => name.setValue(v)}
-                                      placeholder={'请输入实例分组名称'}
-                                    ></TeaInput>
-                                  </FormControl>
-                                }
-                                operation={
-                                  <>
-                                    <Button
-                                      type={'icon'}
-                                      icon={'close'}
-                                      onClick={() => {
-                                        instanceGroups.asArray().remove(index)
-                                      }}
-                                    ></Button>
-                                  </>
-                                }
-                              >
-                                <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                                  <Form.Item label='实例标签' align='middle'>
-                                    {labels?.getValue()?.length > 0 && (
-                                      <Table
-                                        hideHeader
-                                        verticalTop
-                                        bordered
-                                        records={[...labels.asArray()]}
-                                        columns={[
-                                          {
-                                            key: 'key',
-                                            header: 'key',
-                                            render: (item) => {
-                                              return getArgumentsKeyComp(
-                                                item,
-                                                'destination',
-                                                filterDestinationLabelList,
-                                              )
-                                            },
-                                          },
-                                          {
-                                            key: 'type',
-                                            header: 'type',
-                                            width: 120,
-                                            render: (item) => {
-                                              const { type } = item.getFields(['type'])
-                                              return (
-                                                <Select
-                                                  options={RouteLabelMatchTypeOptions}
-                                                  value={type.getValue()}
-                                                  onChange={(value) => type.setValue(value)}
-                                                  type={'simulate'}
-                                                  appearance={'button'}
-                                                />
-                                              )
-                                            },
-                                          },
-                                          {
-                                            key: 'value',
-                                            header: 'value',
-                                            render: (item) => {
-                                              return getArgumentsValueComp(item, 'destination')
-                                            },
-                                          },
-                                          {
-                                            key: 'close',
-                                            header: '',
-                                            width: 50,
-                                            render(item, rowKey, recordIndex) {
-                                              const index = Number(recordIndex)
-                                              return (
-                                                <Icon
-                                                  style={{
-                                                    cursor: 'pointer',
-                                                    display: 'block',
-                                                    marginTop: '8px',
-                                                  }}
-                                                  type='close'
-                                                  onClick={() => {
-                                                    labels.asArray().remove(index)
-                                                  }}
-                                                />
-                                              )
-                                            },
-                                          },
-                                        ]}
-                                      ></Table>
-                                    )}
-                                    <div style={{ marginTop: '8px' }}>
-                                      <Icon type='plus' />
-                                      <Button
-                                        className='form-item-space'
-                                        type='link'
-                                        onClick={() =>
-                                          labels.asArray().push({
-                                            key: '',
-                                            value: '',
-                                            value_type: 'TEXT',
-                                            type: RouteLabelMatchType.EXACT,
-                                          })
-                                        }
-                                      >
-                                        添加
-                                      </Button>
-                                      {labels?.getValue()?.length > 0 && (
-                                        <Button
-                                          type='link'
-                                          onClick={() => labels.asArray().splice(0, labels?.getValue()?.length)}
-                                        >
-                                          删除所有
-                                        </Button>
-                                      )}
-                                    </div>
-                                  </Form.Item>
-                                  <FormField label='权重' field={weight} required>
-                                    <InputNumber min={0} max={100} field={weight} />
-                                  </FormField>
-                                  <FormField
-                                    label='优先级'
-                                    field={priority}
-                                    required
-                                    tips={'优先级数字设置越小，匹配顺序越靠前'}
-                                  >
-                                    <InputNumber min={0} max={10} field={priority} />
-                                  </FormField>
-                                  <FormField label='是否隔离' field={isolate} required>
-                                    <Switch field={isolate} />
-                                  </FormField>
-                                </Form>
-                              </Card.Body>
-                            </Card>
-                          )
-                        })}
-                        <Button
-                          className='form-item-space'
-                          type='link'
-                          onClick={() =>
-                            instanceGroups.asArray().push({
-                              labels: [
-                                {
-                                  key: '',
-                                  value: '',
-                                  value_type: 'TEXT',
-                                  type: RouteLabelMatchType.EXACT,
-                                },
-                              ],
-                              weight: 100,
-                              priority: 0,
-                              isolate: false,
-                              name: `实例分组${instanceGroups.getValue()?.length + 1}`,
-                            })
-                          }
-                        >
-                          添加
-                        </Button>
-                      </Card.Body>
                     </Card>
                   </Col>
                 </Row>
               </Form>
             </Form.Item>
-            <FormField label='优先级' field={priority} tips={'优先级数字设置越小，匹配顺序越靠前'} required>
-              <InputNumber min={0} max={10} field={priority} />
-            </FormField>
+            <FormItem label='匹配规则'>
+              {[...rules.asArray()].map((rule, index) => {
+                const { sources: ruleSources, destinations: ruleDestinations } = rule.getFields([
+                  'sources',
+                  'destinations',
+                ])
+                const { arguments: argumentsField } = [...ruleSources.asArray()]?.[0]?.getFields(['arguments'])
+
+                const filterSourceLabelList = sourceLabelList.map(item => {
+                  if (argumentsField.getValue().find(argument => argument.key === item.value)) {
+                    return { ...item, disabled: true }
+                  }
+                  return item
+                })
+                return (
+                  <Card
+                    key={index}
+                    bordered
+                    style={{ backgroundColor: '#f8f8fa', maxWidth: '1200px', margin: '20px 0' }}
+                  >
+                    <Card.Header>
+                      <Justify
+                        left={<Text reset>{`规则${index + 1}`}</Text>}
+                        right={
+                          <>
+                            <Button
+                              type={'icon'}
+                              icon={'plus'}
+                              onClick={() => {
+                                rules.asArray().splice(index, 0, getEmptyRule())
+                              }}
+                            ></Button>
+                            <Button
+                              type={'icon'}
+                              icon={'close'}
+                              onClick={() => {
+                                rules.asArray().remove(index)
+                              }}
+                            ></Button>
+                          </>
+                        }
+                        style={{ padding: '10px' }}
+                      ></Justify>
+                    </Card.Header>
+                    <Card.Body>
+                      <Text parent={'div'} theme={'strong'} style={{ marginBottom: '10px' }}>
+                        来源服务的请求满足以下匹配条件
+                      </Text>
+                      <section style={{ marginBottom: '10px' }}>
+                        {argumentsField?.getValue()?.length > 0 && (
+                          <Table
+                            hideHeader
+                            verticalTop
+                            bordered
+                            records={[...argumentsField.asArray()]}
+                            columns={[
+                              {
+                                key: 'type',
+                                header: '类型',
+                                width: 200,
+                                render: item => {
+                                  const { type, key } = item.getFields(['type', 'key'])
+                                  const validate = type.getTouched() && type.getError()
+                                  const option = RoutingArgumentsTypeOptions.find(
+                                    item => item.value === type.getValue(),
+                                  )
+                                  return (
+                                    <Bubble content={option?.text}>
+                                      <FormControl
+                                        status={validate ? 'error' : null}
+                                        message={validate ? type.getError() : ''}
+                                        showStatusIcon={false}
+                                        style={{ display: 'inline', padding: 0 }}
+                                      >
+                                        <Select
+                                          options={RoutingArgumentsTypeOptions}
+                                          value={type.getValue()}
+                                          onChange={value => {
+                                            type.setValue(RoutingArgumentsType[value])
+                                            key.setValue('')
+                                          }}
+                                          type={'simulate'}
+                                          appearance={'button'}
+                                          size={'full'}
+                                        ></Select>
+                                      </FormControl>
+                                    </Bubble>
+                                  )
+                                },
+                              },
+                              {
+                                key: 'key',
+                                header: 'key',
+                                render: item => {
+                                  return getArgumentsKeyComp(item, 'source', filterSourceLabelList)
+                                },
+                              },
+                              {
+                                key: 'value_type',
+                                header: 'value_type',
+                                width: 120,
+                                render: item => {
+                                  const { value_type } = item.getFields(['value_type'])
+                                  return (
+                                    <Select
+                                      options={RouteLabelMatchTypeOptions}
+                                      value={value_type.getValue()}
+                                      onChange={value => value_type.setValue(value)}
+                                      type={'simulate'}
+                                      appearance={'button'}
+                                      matchButtonWidth
+                                      size={'full'}
+                                    />
+                                  )
+                                },
+                              },
+                              {
+                                key: 'value',
+                                header: 'value',
+                                render: item => {
+                                  return getArgumentsValueComp(item, 'source')
+                                },
+                              },
+                              {
+                                key: 'close',
+                                header: '',
+                                width: 50,
+                                render(item, rowKey, recordIndex) {
+                                  const index = Number(recordIndex)
+                                  return (
+                                    <Icon
+                                      style={{
+                                        cursor: 'pointer',
+                                        display: 'block',
+                                        marginTop: '8px',
+                                      }}
+                                      type='close'
+                                      onClick={() => {
+                                        argumentsField.asArray().remove(index)
+                                      }}
+                                    />
+                                  )
+                                },
+                              },
+                            ]}
+                          ></Table>
+                        )}
+                        <div style={{ marginTop: '8px' }}>
+                          <Icon type='plus' />
+                          <Button
+                            className='form-item-space'
+                            type='link'
+                            onClick={() => argumentsField.asArray().push(getEmptyArgument())}
+                          >
+                            添加
+                          </Button>
+                        </div>
+                      </section>
+                      <Text parent={'div'} theme={'strong'} style={{ marginBottom: '10px' }}>
+                        将转发至目标服务的一下实例分组
+                      </Text>
+                      <section style={{ marginBottom: '10px' }}>
+                        {ruleDestinations?.getValue()?.length > 0 && (
+                          <Table
+                            verticalTop
+                            bordered
+                            records={[...ruleDestinations.asArray()]}
+                            columns={[
+                              {
+                                key: 'labels',
+                                header: '实例标签',
+                                render: (item, _, recordIndex) => {
+                                  const { labels } = item.getFields(['labels'])
+                                  const validate = labels.getTouched() && labels.getError()
+                                  const labelFieldArray = [...labels.asArray()]
+                                  return (
+                                    <FormControl
+                                      status={validate ? 'error' : null}
+                                      message={validate ? labels.getError() : ''}
+                                      showStatusIcon={false}
+                                      style={{ display: 'inline', padding: 0 }}
+                                    >
+                                      {labelFieldArray
+                                        .slice(0, 3)
+                                        .map((labelField, index) => getLabelTag(labelField.getValue(), index, labels))}
+                                      {labels.getValue()?.length > 3 && (
+                                        <Bubble
+                                          content={labelFieldArray.map((labelField, index) =>
+                                            getLabelTag(labelField.getValue(), index, labels),
+                                          )}
+                                          trigger={'click'}
+                                        >
+                                          <Tag>
+                                            <Button type={'icon'} icon={'more'}></Button>
+                                          </Tag>
+                                        </Bubble>
+                                      )}
+                                      <Tag style={{ padding: 0 }}>
+                                        <RouteLabelSelectPanel labelsField={labels} id={`${index}-${recordIndex}`} />
+                                      </Tag>
+                                    </FormControl>
+                                  )
+                                },
+                              },
+                              {
+                                key: 'weight',
+                                header: '权重',
+                                width: 150,
+                                render: item => {
+                                  const { weight } = item.getFields(['weight'])
+                                  return <InputNumber field={weight} hideButton></InputNumber>
+                                },
+                              },
+                              {
+                                key: 'isolate',
+                                header: '是否隔离',
+                                width: 100,
+                                render: item => {
+                                  const { isolate } = item.getFields(['isolate'])
+                                  return (
+                                    <Checkbox value={isolate.getValue()} onChange={v => isolate.setValue(v)}></Checkbox>
+                                  )
+                                },
+                              },
+                              {
+                                key: 'close',
+                                header: '',
+                                width: 50,
+                                render(item, rowKey, recordIndex) {
+                                  const index = Number(recordIndex)
+                                  return (
+                                    <Icon
+                                      style={{
+                                        cursor: 'pointer',
+                                        display: 'block',
+                                        marginTop: '8px',
+                                      }}
+                                      type='close'
+                                      onClick={() => {
+                                        ruleDestinations.asArray().remove(index)
+                                      }}
+                                    />
+                                  )
+                                },
+                              },
+                            ]}
+                          ></Table>
+                        )}
+                        <div style={{ marginTop: '8px' }}>
+                          <Icon type='plus' />
+                          <Button
+                            className='form-item-space'
+                            type='link'
+                            onClick={() => ruleDestinations.asArray().push(getEmptyDestination())}
+                          >
+                            添加
+                          </Button>
+                        </div>
+                      </section>
+                    </Card.Body>
+                  </Card>
+                )
+              })}
+              <div style={{ marginTop: '8px' }}>
+                <Icon type='plus' />
+                <Button className='form-item-space' type='link' onClick={() => rules.asArray().push(getEmptyRule())}>
+                  添加规则
+                </Button>
+              </div>
+            </FormItem>
           </Form>
           <Form.Action>
             <Button type='primary' onClick={() => dispatch(creators.submit())}>

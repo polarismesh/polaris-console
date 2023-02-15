@@ -6,6 +6,7 @@ export enum RouteLabelMatchType {
   NOT_EQUALS = 'NOT_EQUALS',
   IN = 'IN',
   NOT_IN = 'NOT_IN',
+  RANGE = 'RANGE',
 }
 export const RouteLabelMatchTypeOptions = [
   {
@@ -14,7 +15,7 @@ export const RouteLabelMatchTypeOptions = [
   },
   {
     value: RouteLabelMatchType.REGEX,
-    text: '正则表达式',
+    text: '正则表达式匹配',
   },
   {
     value: RouteLabelMatchType.NOT_EQUALS,
@@ -27,6 +28,10 @@ export const RouteLabelMatchTypeOptions = [
   {
     value: RouteLabelMatchType.NOT_IN,
     text: '不包含',
+  },
+  {
+    value: RouteLabelMatchType.RANGE,
+    text: '范围表达式',
   },
 ]
 export const RouteLabelTextMap = RouteLabelMatchTypeOptions.reduce((map, curr) => {

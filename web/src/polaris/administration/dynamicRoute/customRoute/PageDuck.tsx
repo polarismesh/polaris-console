@@ -151,7 +151,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       {
         type: OperationType.NO_TARGET,
         watch: types.CREATE,
-        fn: function* () {
+        fn: function*() {
           const loadData = selector(yield select())?.loadData
           if (loadData) {
             router.navigate(`/custom-route-create?ns=${loadData.namespace}&service=${loadData.name}`)
@@ -165,7 +165,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       {
         type: OperationType.SINGLE,
         watch: types.MODIFY,
-        fn: function* (item) {
+        fn: function*(item) {
           const loadData = selector(yield select())?.loadData
           if (loadData) {
             router.navigate(`/custom-route-create?id=${item.id}&ns=${loadData.namespace}&service=${loadData.name}`)
@@ -178,7 +178,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       {
         type: OperationType.SINGLE,
         watch: types.DELETE,
-        fn: function* (item) {
+        fn: function*(item) {
           const confirm = yield Modal.confirm({
             message: `确认删除路由规则 ${item.name} 吗？`,
             description: '删除后，无法恢复',
@@ -193,7 +193,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       {
         type: OperationType.SINGLE,
         watch: types.SWITCH_STATUS,
-        fn: function* (item: any) {
+        fn: function*(item: any) {
           const ops = item.swtichStatusAction === SwitchStatusAction.disable ? '禁用' : '启用'
           const disable = item.swtichStatusAction === SwitchStatusAction.disable ? true : false
           const confirm = yield Modal.confirm({
@@ -215,7 +215,7 @@ export default class CustomRouteDuck extends GridPageDuck {
   *saga() {
     const { types, creators } = this
     yield* super.saga()
-    yield takeLatest(types.LOAD, function* (action) {
+    yield takeLatest(types.LOAD, function*(action) {
       const data = action.payload
       if (data) {
         yield put(creators.changeNamespace(data.namespace))
@@ -223,9 +223,9 @@ export default class CustomRouteDuck extends GridPageDuck {
         yield put({ type: types.SET_IN_DETAIL, payload: true })
       }
     })
-    yield takeLatest(types.CHANGE_TAGS, function* (action) {
+    yield takeLatest(types.CHANGE_TAGS, function*(action) {
       const tags = action.payload
-      const validTags = tags.map((item) => {
+      const validTags = tags.map(item => {
         if (item.attr) return item
         else
           return {
@@ -248,8 +248,8 @@ export default class CustomRouteDuck extends GridPageDuck {
       limit: count,
     }
     if (validTags.length) {
-      validTags.forEach((tag) => {
-        if (tag.attr.key === "name") {
+      validTags.forEach(tag => {
+        if (tag.attr.key === 'name') {
           params[tag.attr.key] = `${tag.values?.[0]?.name}*`
         } else {
           params[tag.attr.key] = tag.values?.[0]?.name
@@ -286,7 +286,7 @@ export default class CustomRouteDuck extends GridPageDuck {
 
     result.list =
       result.totalCount > 0 &&
-      result.list.map((item) => ({
+      result.list.map(item => ({
         ...item,
         namespace,
         service,

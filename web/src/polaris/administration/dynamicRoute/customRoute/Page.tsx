@@ -54,13 +54,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
   const columns = getColumns(duck, store)
   const handlers = React.useMemo(
     () => ({
-      changeNamespace: (namespace) => dispatch(creators.changeNamespace(namespace)),
-      changeService: (service) => dispatch(creators.changeService(service)),
-      changeStatus: (status) => dispatch(creators.changeStatus(status)),
-      changeName: (name) => dispatch(creators.changeName(name)),
-      changeTags: (tags) => dispatch(creators.changeTags(tags)),
+      changeNamespace: namespace => dispatch(creators.changeNamespace(namespace)),
+      changeService: service => dispatch(creators.changeService(service)),
+      changeStatus: status => dispatch(creators.changeStatus(status)),
+      changeName: name => dispatch(creators.changeName(name)),
+      changeTags: tags => dispatch(creators.changeTags(tags)),
       jumpToCreateRulePage: () => dispatch(creators.create()),
-      setSort: (sort) => dispatch(creators.setSort(sort)),
+      setSort: sort => dispatch(creators.setSort(sort)),
     }),
     [],
   )
@@ -89,7 +89,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
                   verticalAlign: 'middle',
                   width: '400px',
                 }}
-                onChange={(value) => handlers.changeTags(value)}
+                onChange={value => handlers.changeTags(value)}
                 tips={'请选择条件进行过滤'}
                 hideHelp={true}
               />
@@ -102,13 +102,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
           duck={duck}
           dispatch={dispatch}
           store={store}
-          columns={!!loadData ? columns.filter((item) => item.key !== 'namespace' && item.key !== 'service') : columns}
+          columns={!!loadData ? columns.filter(item => item.key !== 'namespace' && item.key !== 'service') : columns}
           addons={[
             filterable({
               type: 'single',
               column: 'enable',
               value: status,
-              onChange: (value) => handlers.changeStatus(value),
+              onChange: value => handlers.changeStatus(value),
               all: {
                 value: '',
                 text: '全部',
@@ -118,7 +118,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
             sortable({
               columns: ['priority'],
               value: sort,
-              onChange: (value) => handlers.setSort(value.length ? value : []),
+              onChange: value => handlers.setSort(value.length ? value : []),
             }),
           ]}
         />

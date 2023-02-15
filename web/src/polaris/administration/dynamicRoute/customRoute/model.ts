@@ -53,11 +53,33 @@ export interface RoutingConfig {
   '@type': string
   destinations: RoutingDestination[]
   sources: RoutingSources[]
+  rules: RoutingRule[]
 }
+
 export interface RoutingSources {
   service: string
   namespace: string
+}
+
+export interface RoutingRule {
+  name: string
+  sources: RoutingRuleSource[]
+  destinations: RoutingRuleDestination[]
+}
+
+export interface RoutingRuleSource {
+  service: string
+  namespace: string
   arguments: RoutingSourceArgument[]
+}
+
+export interface RoutingRuleDestination {
+  service: string
+  namespace: string
+  weight: number
+  isolate: boolean
+  labels: Record<string, RoutingLabel>
+  name: string
 }
 export interface RoutingSourceArgument {
   type: string
@@ -69,14 +91,8 @@ export interface RoutingSourceArgument {
   }
 }
 export interface RoutingDestination {
-  name: string
   service: string
   namespace: string
-  priority: number
-  weight: number
-  isolate: boolean
-  transfer?: string
-  labels: Record<string, RoutingLabel>
 }
 export interface RoutingLabel {
   key: string
