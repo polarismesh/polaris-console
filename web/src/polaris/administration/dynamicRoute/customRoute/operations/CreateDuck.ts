@@ -166,7 +166,6 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
           })),
         }))
         return {
-          ...rule,
           name: `规则${index}`,
           sources: handledSources,
           destinations: handledDestinations,
