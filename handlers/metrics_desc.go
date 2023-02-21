@@ -15,30 +15,60 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package router
+package handlers
 
-import (
-	"net/http"
-	"strings"
+const (
+	_interfacesDescriptions = `
+[
+	{
+		"name": "",
+		"desc": "",
+		"type": ""
+	}
+]
+	`
 
-	"github.com/gin-gonic/gin"
-	"github.com/polarismesh/polaris-console/bootstrap"
-	"github.com/polarismesh/polaris-console/common/model"
-	"github.com/polarismesh/polaris-console/handlers"
+	_metricLabelsDescriptions = `
+[
+	{
+		"name": "callee_namespace",
+		"desc": "被调方命名空间",
+		"type": ""
+	},
+	{
+		"name": "callee_service",
+		"desc": "被调方服务名",
+		"type": ""
+	},
+	{
+		"name": "callee_method",
+		"desc": "被调方接口名",
+		"type": ""
+	},
+	{
+		"name": "",
+		"desc": "",
+		"type": ""
+	},
+	{
+		"name": "",
+		"desc": "",
+		"type": ""
+	},
+	{
+		"name": "",
+		"desc": "",
+		"type": ""
+	},
+	{
+		"name": "",
+		"desc": "",
+		"type": ""
+	},	{
+		"name": "",
+		"desc": "",
+		"type": ""
+	}
+]	
+`
 )
-
-// AdminRouter 路由请求
-func AdminRouter(webSvr *gin.Engine, config *bootstrap.Config) {
-	// 后端server路由组
-	v1 := webSvr.Group("/")
-	v1.GET("/apidocs.json", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
-	v1.GET("/console/ability", func(ctx *gin.Context) {
-		futures := strings.Split(config.Futures, ",")
-		resp := model.Response{
-			Code: 200000,
-			Info: "success",
-			Data: futures,
-		}
-		ctx.JSON(http.StatusOK, resp)
-	})
-}
