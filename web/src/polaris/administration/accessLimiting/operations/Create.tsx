@@ -109,9 +109,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
   // 只有单机限流模式才有匀速排队
   const limitType = typeField.getValue()
   const limitActionOptions =
-    limitType === LimitType.LOCAL
-      ? LimitActionOptions
-      : LimitActionOptions.filter((o) => o.value === LimitAction.REJECT)
+    limitType === LimitType.LOCAL ? LimitActionOptions : LimitActionOptions.filter(o => o.value === LimitAction.REJECT)
   // 获取arguments amounts列表值
   const argumentsList = argumentsField.getValue()
   const amountsList = amountsField.getValue()
@@ -126,7 +124,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
         <Select
           options={data?.namespaceList}
           value={keyField.getValue()}
-          onChange={(value) => keyField.setValue(value)}
+          onChange={value => keyField.setValue(value)}
           type={'simulate'}
           appearance={'button'}
           matchButtonWidth
@@ -141,7 +139,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
       keyField.setValue('$caller_ip')
       keyComponent = <TeaInput placeholder='$caller_ip' disabled />
     } else {
-      keyComponent = <Input placeholder='请输入Key值' field={keyField} onChange={(key) => keyField.setValue(key)} />
+      keyComponent = <Input placeholder='请输入Key值' field={keyField} onChange={key => keyField.setValue(key)} />
     }
 
     return (
@@ -157,22 +155,26 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
   }
 
   function getArgumentsValueComp(type: LimitArgumentsType, recordField: FieldAPI<LimitArgumentsConfigForFormFilling>) {
-    const { value: valueField, key: keyField } = recordField.getFields(['value', 'key'])
+    const { value: valueField, key: keyField, operator: operatorField } = recordField.getFields([
+      'value',
+      'key',
+      'operator',
+    ])
     const valueValidate = valueField.getTouched() && valueField.getError()
     let valueComponent: React.ReactNode = <noscript />
 
-    if (type === LimitArgumentsType.CALLER_SERVICE) {
+    if (type === LimitArgumentsType.CALLER_SERVICE && operatorField.getValue() !== LimitMethodType.REGEX) {
       valueComponent = (
         <Select
           value={valueField.getValue()}
-          options={data?.serviceList.filter((o) => {
+          options={data?.serviceList.filter(o => {
             if (keyField.getValue()) {
               return o.namespace === keyField.getValue()
             } else {
               return data?.serviceList
             }
           })}
-          onChange={(value) => valueField.setValue(value)}
+          onChange={value => valueField.setValue(value)}
           searchable
           type={'simulate'}
           appearance={'button'}
@@ -183,7 +185,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
       )
     } else {
       valueComponent = (
-        <Input placeholder='请输入Value值' field={valueField} onChange={(value) => valueField.setValue(value)} />
+        <Input placeholder='请输入Value值' field={valueField} onChange={value => valueField.setValue(value)} />
       )
     }
 
@@ -234,7 +236,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
               <Segment
                 value={typeField.getValue()}
                 options={filteredLimitTypeOptions}
-                onChange={(value) => {
+                onChange={value => {
                   typeField.setValue(LimitType[value])
                   if (value === LimitType.GLOBAL) {
                     actionField.setValue(LimitAction.REJECT)
@@ -254,7 +256,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                       <Select
                         value={namespaceField.getValue()}
                         options={data?.namespaceList}
-                        onChange={(value) => {
+                        onChange={value => {
                           namespaceField.setValue(value)
                           serviceField.setValue('')
                           setServiceInputValue('')
@@ -270,7 +272,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                     </FormField>
                     <FormField field={serviceField} label='服务名称' required>
                       <AutoComplete
-                        options={data?.serviceList.filter((o) => {
+                        options={data?.serviceList.filter(o => {
                           if (namespaceField.getValue()) {
                             return o.text.includes(serviceInputValue) && o.namespace === namespaceField.getValue()
                           } else {
@@ -278,17 +280,17 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                           }
                         })}
                         tips='没有匹配的服务名称'
-                        onChange={(value) => {
-                          const option = data?.serviceList.find((opt) => opt.value === value)
+                        onChange={value => {
+                          const option = data?.serviceList.find(opt => opt.value === value)
                           setServiceInputValue(option.value)
                           serviceField.setValue(option.value)
                         }}
                       >
-                        {(ref) => (
+                        {ref => (
                           <TeaInput
                             ref={ref}
                             value={serviceField.getValue()}
-                            onChange={(value) => {
+                            onChange={value => {
                               setServiceInputValue(value)
                               serviceField.setValue(value)
                             }}
@@ -306,7 +308,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                       <Select
                         options={LimitMethodTypeOptions}
                         value={methodTypeField.getValue()}
-                        onChange={(value) => methodTypeField.setValue(LimitMethodType[value])}
+                        onChange={value => methodTypeField.setValue(LimitMethodType[value])}
                         size='s'
                         type={'simulate'}
                         appearance={'button'}
@@ -318,7 +320,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                         <Table
                           hideHeader
                           verticalTop
-                          recordKey={(o) => {
+                          recordKey={o => {
                             const { id } = o.getFields(['id'])
                             return id.getValue()
                           }}
@@ -329,7 +331,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             {
                               key: 'type',
                               header: '类型',
-                              render: (item) => {
+                              render: item => {
                                 const { type, key } = item.getFields(['type', 'key'])
                                 const validate = type.getTouched() && type.getError()
                                 return (
@@ -342,7 +344,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                                     <Select
                                       options={LimitArgumentsTypeOptions}
                                       value={type.getValue()}
-                                      onChange={(value) => {
+                                      onChange={value => {
                                         type.setValue(LimitArgumentsType[value])
                                         key.setValue('')
                                       }}
@@ -358,7 +360,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             {
                               key: 'key',
                               header: 'key',
-                              render: (item) => {
+                              render: item => {
                                 const { type } = item.getFields(['type'])
                                 return getArgumentsKeyComp(type.getValue(), item)
                               },
@@ -367,13 +369,13 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                               key: 'operator',
                               header: 'operator',
                               width: 120,
-                              render: (item) => {
+                              render: item => {
                                 const { operator } = item.getFields(['operator'])
                                 return (
                                   <Select
                                     options={LimitMethodTypeOptions}
                                     value={operator.getValue()}
-                                    onChange={(value) => operator.setValue(LimitMethodType[value])}
+                                    onChange={value => operator.setValue(LimitMethodType[value])}
                                     size='s'
                                     type={'simulate'}
                                     appearance={'button'}
@@ -385,7 +387,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             {
                               key: 'value',
                               header: 'value',
-                              render: (item) => {
+                              render: item => {
                                 const { type } = item.getFields(['type'])
                                 return getArgumentsValueComp(type.getValue(), item)
                               },
@@ -452,7 +454,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                     <Form.Item label='限流阈值' align='middle'>
                       {amountsList?.length > 0 && (
                         <Table
-                          recordKey={(o) => {
+                          recordKey={o => {
                             const { id } = o.getFields(['id'])
                             return id.getValue()
                           }}
@@ -462,7 +464,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             {
                               key: 'validDuration',
                               header: '统计窗口时长',
-                              render: (item) => {
+                              render: item => {
                                 const { validDurationNum, validDurationUnit } = item.getFields([
                                   'validDurationNum',
                                   'validDurationUnit',
@@ -473,7 +475,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                                       <Select
                                         options={LimitAmountsValidationUnitOptions}
                                         value={validDurationUnit.getValue()}
-                                        onChange={(value) =>
+                                        onChange={value =>
                                           validDurationUnit.setValue(LimitAmountsValidationUnit[value])
                                         }
                                         matchButtonWidth
@@ -483,7 +485,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                                     <InputNumber
                                       field={validDurationNum}
                                       min={1}
-                                      onInputChange={(value) => validDurationNum.setValue(+value)}
+                                      onInputChange={value => validDurationNum.setValue(+value)}
                                       hideButton
                                       size='l'
                                     />
@@ -494,14 +496,14 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             {
                               key: 'maxAmount',
                               header: '请求数阈值',
-                              render: (item) => {
+                              render: item => {
                                 const { maxAmount } = item.getFields(['maxAmount'])
                                 return (
                                   <InputAdornment after='次'>
                                     <InputNumber
                                       field={maxAmount}
                                       min={1}
-                                      onInputChange={(value) => maxAmount.setValue(+value)}
+                                      onInputChange={value => maxAmount.setValue(+value)}
                                       hideButton
                                       size='l'
                                     />
@@ -575,7 +577,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                       <Segment
                         value={actionField.getValue()}
                         options={limitActionOptions}
-                        onChange={(value) => actionField.setValue(LimitAction[value])}
+                        onChange={value => actionField.setValue(LimitAction[value])}
                       />
                     </Form.Item>
                     {limitType === LimitType.GLOBAL && (
@@ -586,7 +588,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                         <Segment
                           value={failoverField.getValue()}
                           options={LimitFailoverOptions}
-                          onChange={(value) => failoverField.setValue(LimitFailover[value])}
+                          onChange={value => failoverField.setValue(LimitFailover[value])}
                         />
                       </Form.Item>
                     )}

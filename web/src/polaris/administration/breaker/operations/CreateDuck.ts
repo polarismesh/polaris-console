@@ -109,10 +109,18 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
       type: reduceFromPayload<string>(types.SET_TYPE, BreakerType.Service),
     }
   }
+
   *saga() {
     yield* super.saga()
     const { types, ducks, selectors, selector } = this
-
+    yield takeLatest(types.SET_TYPE, function*(action) {
+      if (action.payload === BreakerType.Interface) {
+        yield put(ducks.form.creators.setValue('level', BreakLevelType.Instance))
+      }
+      if (action.payload === BreakerType.Service) {
+        yield put(ducks.form.creators.setValue('level', BreakLevelType.Method))
+      }
+    })
     // 规则创建
     yield takeLatest(types.SUBMIT, function*() {
       try {
@@ -349,7 +357,6 @@ export class BreakerRuleCreateDuck extends Form {
       ...super.creators,
     }
   }
-
   *submit() {
     const { creators, selectors } = this
     yield put(creators.setAllTouched(true))

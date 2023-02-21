@@ -4,23 +4,8 @@ import AccessLimitingDetailPageDuck from './PageDuck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { Values } from '../operations/CreateDuck'
 
-import {
-  Form,
-  Card,
-  Text,
-  Table,
-  H6,
-  FormItem,
-  FormText
-} from 'tea-component'
-import {
-  LimitType,
-  LimitTypeMap,
-  LimitMethodTypeMap,
-  LimitAction,
-  LimitActionMap,
-  LimitFailoverMap,
-} from '../types'
+import { Form, Card, Text, Table, H6, FormItem, FormText } from 'tea-component'
+import { LimitType, LimitTypeMap, LimitMethodTypeMap, LimitAction, LimitActionMap, LimitFailoverMap } from '../types'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 
 insertCSS(
@@ -48,16 +33,23 @@ export const MatchingLabelTips = (
 )
 export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<AccessLimitingDetailPageDuck>) {
   const { duck, store, dispatch } = props
-  const {
-    selectors,
-    selector,
-    creators,
-  } = duck
+  const { selectors, selector } = duck
   const composedId = selectors.composedId(store)
-  const { ruleDetail } = selector(store);
-  console.log('ruledetail', ruleDetail);
-  const { name, type: strLimitType, namespace, service, method: methodObj, arguments: argsList, amounts, regex_combine, action, max_queue_delay, failover, disable } = ruleDetail as Values;
-
+  const { ruleDetail } = selector(store)
+  const {
+    name,
+    type: strLimitType,
+    namespace,
+    service,
+    method: methodObj,
+    arguments: argsList,
+    amounts,
+    regex_combine,
+    action,
+    max_queue_delay,
+    failover,
+    disable,
+  } = ruleDetail as Values
 
   const backRoute = composedId?.namespace
     ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`
@@ -94,7 +86,7 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
                     <FormItem label='服务名称'>
                       <FormText>{service}</FormText>
                     </FormItem>
-                    
+
                     <FormItem label='接口名称' align='middle'>
                       <FormText>{methodObj && methodObj['value']}</FormText>
                       <FormText>{methodObj && LimitMethodTypeMap[methodObj['type']]}</FormText>
@@ -150,7 +142,7 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
                               header: 'value',
                               render: item => {
                                 const { value } = item
-                                return(
+                                return (
                                   <Text reset overflow>
                                     {value}
                                   </Text>
@@ -185,7 +177,8 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
                                 const { validDurationNum, validDurationUnit } = item
                                 return (
                                   <Text>
-                                    {validDurationNum}{validDurationUnit}
+                                    {validDurationNum}
+                                    {validDurationUnit}
                                   </Text>
                                 )
                               },
@@ -195,11 +188,7 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
                               header: '请求数阈值',
                               render: item => {
                                 const { maxAmount } = item
-                                return (
-                                  <Text>
-                                    {maxAmount}次
-                                  </Text>
-                                )
+                                return <Text>{maxAmount}次</Text>
                               },
                             },
                           ]}
