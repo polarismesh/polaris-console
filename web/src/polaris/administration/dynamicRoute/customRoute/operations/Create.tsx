@@ -61,7 +61,7 @@ export const getLabelTag = (
   const { key, type, value } = label
   return (
     <Tag key={`${key}${index}`}>
-      {`键${key}${RouteLabelTextMap[type]}${value}`}
+      {`键 ${key} ${RouteLabelTextMap[type]} ${value}`}
       {labelsField && (
         <Button
           type={'icon'}
@@ -109,9 +109,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
   } = duck
   const composedId = selectors.composedId(store)
   const data = selectors.data(store)
-  const { name, description, destination, source, rules } = form
+  const { name, description, destination, source, rules, priority } = form
     .getAPI(store, dispatch)
-    .getFields(['name', 'enable', 'description', 'destination', 'source', 'rules', 'tempKey'])
+    .getFields(['name', 'enable', 'description', 'destination', 'source', 'rules', 'tempKey', 'priority'])
   const { namespace: sourceNamespace, service: sourceService } = source.getFields(['namespace', 'service'])
   const { namespace: destinationNamespace, service: destinationService } = destination.getFields([
     'namespace',
@@ -707,16 +707,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                           render(item, rowKey, recordIndex) {
                                             const index = Number(recordIndex)
                                             return (
-                                              <Icon
-                                                style={{
-                                                  cursor: 'pointer',
-                                                  display: 'block',
-                                                  marginTop: '8px',
-                                                }}
-                                                type='close'
+                                              <Button
+                                                type='icon'
+                                                icon='close'
                                                 onClick={() => {
                                                   argumentsField.asArray().remove(index)
                                                 }}
+                                                disabled={argumentsField.getValue()?.length === 1}
                                               />
                                             )
                                           },
@@ -873,6 +870,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Button>
               </div>
             </FormItem>
+            <FormField label='优先级' field={priority} tips={'优先级数字设置越小，匹配顺序越靠前'} required>
+              <InputNumber min={0} max={10} field={priority} />
+            </FormField>
           </Form>
           <Form.Action>
             <Button type='primary' onClick={() => dispatch(creators.submit())}>

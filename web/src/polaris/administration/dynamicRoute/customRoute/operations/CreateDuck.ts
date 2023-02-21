@@ -377,23 +377,6 @@ const validator = Form.combineValidators<Values>({
         return '请选择服务名'
       }
     },
-    // arguments: [
-    //   {
-    //     key(v) {
-    //       if (!v) {
-    //         return '请输入key值'
-    //       }
-    //     },
-    //     value(v, data) {
-    //       if (!v && data.type === RoutingArgumentsType.CALLER_IP) {
-    //         return '请输入IP'
-    //       }
-    //       if (!v && data.type !== RoutingArgumentsType.CALLER_IP) {
-    //         return '请输入value值'
-    //       }
-    //     },
-    //   },
-    // ],
   },
   destination: {
     namespace(v) {
@@ -406,39 +389,41 @@ const validator = Form.combineValidators<Values>({
         return '请选择服务名'
       }
     },
-    // instanceGroups: [
-    //   {
-    //     name(v) {
-    //       if (!v) {
-    //         return '请输入名称'
-    //       }
-    //     },
-    //     weight(v, data, meta) {
-    //       const weightSum = meta?.destination?.instanceGroups.reduce((sum, curr) => {
-    //         sum += curr.weight
-    //         return sum
-    //       }, 0)
-    //       if (!(weightSum > 0)) {
-    //         return '所有实例分组权重加和必须大于0'
-    //       }
-    //     },
-    //     labels: [
-    //       {
-    //         key(v) {
-    //           if (!v) {
-    //             return '请输入key值'
-    //           }
-    //         },
-    //         value(v) {
-    //           if ((v ?? false) === false) {
-    //             return '请输入value值'
-    //           }
-    //         },
-    //       },
-    //     ],
-    //   },
-    // ],
   },
+  rules: [
+    {
+      sources: [
+        {
+          arguments: [
+            {
+              key(v) {
+                if (!v) {
+                  return '请输入key值'
+                }
+              },
+              value(v, data) {
+                if (!v && data.type === RoutingArgumentsType.CALLER_IP) {
+                  return '请输入IP'
+                }
+                if (!v && data.type !== RoutingArgumentsType.CALLER_IP) {
+                  return '请输入value值'
+                }
+              },
+            },
+          ],
+        },
+      ],
+      destinations: [
+        {
+          labels(v) {
+            if (!v.length) {
+              return '请输入标签分组'
+            }
+          },
+        },
+      ],
+    },
+  ],
 })
 
 export class RouteCreateDuck extends Form {
