@@ -162,8 +162,8 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
     ])
     const valueValidate = valueField.getTouched() && valueField.getError()
     let valueComponent: React.ReactNode = <noscript />
-
-    if (type === LimitArgumentsType.CALLER_SERVICE && operatorField.getValue() !== LimitMethodType.REGEX) {
+    const needInputType = [LimitMethodType.REGEX, LimitMethodType.IN, LimitMethodType.NOT_IN]
+    if (type === LimitArgumentsType.CALLER_SERVICE && !needInputType.includes(operatorField.getValue())) {
       valueComponent = (
         <Select
           value={valueField.getValue()}
