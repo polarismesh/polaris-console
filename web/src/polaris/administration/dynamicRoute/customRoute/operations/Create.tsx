@@ -614,6 +614,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                       onClick={() => {
                                         rules.asArray().remove(index)
                                       }}
+                                      disabled={rules.getValue()?.length === 1}
                                     ></Button>
                                   </>
                                 }
@@ -813,16 +814,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                           render(item, rowKey, recordIndex) {
                                             const index = Number(recordIndex)
                                             return (
-                                              <Icon
-                                                style={{
-                                                  cursor: 'pointer',
-                                                  display: 'block',
-                                                  marginTop: '8px',
-                                                }}
-                                                type='close'
+                                              <Button
+                                                type='icon'
+                                                icon='close'
                                                 onClick={() => {
                                                   ruleDestinations.asArray().remove(index)
                                                 }}
+                                                disabled={ruleDestinations.getValue()?.length === 1}
                                               />
                                             )
                                           },

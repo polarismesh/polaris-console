@@ -208,7 +208,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                         )}
                       </section>
                       <Text parent={'div'} theme={'strong'} style={{ marginBottom: '20px' }}>
-                        将转发至目标服务的一下实例分组
+                        将转发至目标服务的以下实例分组
                       </Text>
                       <section style={{ marginBottom: '20px' }}>
                         {destinations?.length > 0 && (
