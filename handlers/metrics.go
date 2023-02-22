@@ -18,7 +18,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,20 +34,10 @@ type (
 
 func DescribeMetricLabels() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ret := make([]Description, 0, 4)
-		if err := json.Unmarshal([]byte(_metricLabelsDescriptions), &ret); err != nil {
-			resp := model.Response{
-				Code: 500000,
-				Info: err.Error(),
-			}
-			ctx.JSON(http.StatusInternalServerError, resp)
-			return
-		}
-
 		resp := model.Response{
 			Code: 200000,
 			Info: "success",
-			Data: ret,
+			Data: metricLabelsDescriptions,
 		}
 		ctx.JSON(http.StatusOK, resp)
 	}
@@ -56,20 +45,10 @@ func DescribeMetricLabels() gin.HandlerFunc {
 
 func DescribeRequestInterface() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ret := make([]Description, 0, 4)
-		if err := json.Unmarshal([]byte(_interfacesDescriptions), &ret); err != nil {
-			resp := model.Response{
-				Code: 500000,
-				Info: err.Error(),
-			}
-			ctx.JSON(http.StatusInternalServerError, resp)
-			return
-		}
-
 		resp := model.Response{
 			Code: 200000,
 			Info: "success",
-			Data: ret,
+			Data: interfacesDescriptions,
 		}
 		ctx.JSON(http.StatusOK, resp)
 	}

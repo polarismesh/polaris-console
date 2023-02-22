@@ -17,58 +17,44 @@
 
 package handlers
 
-const (
-	_interfacesDescriptions = `
-[
-	{
-		"name": "",
-		"desc": "",
-		"type": ""
-	}
-]
-	`
+var (
+	metricLabelsDescriptions = []Description{}
 
-	_metricLabelsDescriptions = `
-[
-	{
-		"name": "callee_namespace",
-		"desc": "被调方命名空间",
-		"type": ""
-	},
-	{
-		"name": "callee_service",
-		"desc": "被调方服务名",
-		"type": ""
-	},
-	{
-		"name": "callee_method",
-		"desc": "被调方接口名",
-		"type": ""
-	},
-	{
-		"name": "",
-		"desc": "",
-		"type": ""
-	},
-	{
-		"name": "",
-		"desc": "",
-		"type": ""
-	},
-	{
-		"name": "",
-		"desc": "",
-		"type": ""
-	},
-	{
-		"name": "",
-		"desc": "",
-		"type": ""
-	},	{
-		"name": "",
-		"desc": "",
-		"type": ""
+	interfacesDescriptions = []Description{
+		{
+			Name: "/v1/RegisterInstance",
+			Desc: "注册服务实例",
+			Type: "Register",
+		},
+		{
+			Name: "/v1/DeregisterInstance",
+			Desc: "反注册服务实例",
+			Type: "Register",
+		},
+		{
+			Name: "/v1/ReportClient",
+			Desc: "上报客户端",
+			Type: "Register",
+		},
+		{
+			Name: "/v1/Heartbeat",
+			Desc: "上报实例心跳",
+			Type: "HealthCheck",
+		},
+		{
+			Name: "/v1/Discover",
+			Desc: "服务发现",
+			Type: "Discovery",
+		},
+		{
+			Name: "/config/v1/GetConfigFile",
+			Desc: "获取单个配置文件",
+			Type: "Config",
+		},
+		{
+			Name: "/config/v1/WatchConfigFile",
+			Desc: "监听配置文件",
+			Type: "Config",
+		},
 	}
-]	
-`
 )
