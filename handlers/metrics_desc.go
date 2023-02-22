@@ -42,7 +42,7 @@ var (
 			Desc: "上报客户端",
 			Type: "Register",
 			QueryLabels: []string{
-				"POST:/v1/ReportClient",
+				"POST:/v1/ReportClient", "/v1.PolarisGRPC/ReportClient",
 			},
 		},
 		{
