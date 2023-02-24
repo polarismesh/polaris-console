@@ -50,6 +50,24 @@ export enum RoutingArgumentsType {
   CALLER_IP = 'CALLER_IP',
 }
 
+export enum RoutingValueType {
+  TEXT = 'TEXT',
+  PARAMETER = 'PARAMETER',
+}
+export const RoutingValueTextMap = {
+  [RoutingValueType.TEXT]: '值',
+  [RoutingValueType.PARAMETER]: '变量',
+}
+export const RoutingValueTypeOptions = [
+  {
+    text: '值',
+    value: RoutingValueType.TEXT,
+  },
+  {
+    text: '变量',
+    value: RoutingValueType.PARAMETER,
+  },
+]
 export const RoutingArgumentsTypeOptions = [
   {
     value: RoutingArgumentsType.CUSTOM,

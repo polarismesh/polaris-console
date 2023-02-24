@@ -37,6 +37,9 @@ import {
   RoutingArgumentsTypeOptions,
   RoutingArgumentsType,
   RouteLabelTextMap,
+  RoutingValueType,
+  RoutingValueTypeOptions,
+  RoutingValueTextMap,
 } from '../types'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 insertCSS(
@@ -58,10 +61,11 @@ export const getLabelTag = (
   index,
   labelsField?: FieldAPI<RouteDestinationArgument[]>,
 ) => {
-  const { key, type, value } = label
+  const { key, type, value, value_type } = label
+  console.log(value_type)
   return (
     <Tag key={`${key}${index}`}>
-      {`键 ${key} ${RouteLabelTextMap[type]} ${value}`}
+      {`键 ${key} ${RouteLabelTextMap[type]} ${RoutingValueTextMap[value_type]}${value}`}
       {labelsField && (
         <Button
           type={'icon'}
@@ -87,6 +91,12 @@ const getEmptyRule = () => ({
 })
 const getEmptyArgument = () => ({
   type: RoutingArgumentsType.CUSTOM,
+  key: '',
+  value: '',
+  value_type: RouteLabelMatchType.EXACT,
+})
+const getEmptyLabel = () => ({
+  type: RoutingValueType.TEXT,
   key: '',
   value: '',
   value_type: RouteLabelMatchType.EXACT,
@@ -285,14 +295,15 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       }
       return item
     })
-    const { type } = labelField.getFields(['type'])
+    const { type, value_type } = labelField.getFields(['type', 'value_type'])
+
     return (
       <PopConfirm
         key={id}
         message={
           <Row>
-            <Col span={9}>{getArgumentsKeyComp(labelField, 'destination', filterDestinationLabelList)}</Col>
-            <Col span={6}>
+            <Col span={8}>{getArgumentsKeyComp(labelField, 'destination', filterDestinationLabelList)}</Col>
+            <Col span={5}>
               <Select
                 options={RouteLabelMatchTypeOptions}
                 value={type.getValue()}
@@ -302,7 +313,18 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 size={'full'}
               />
             </Col>
-            <Col span={9}>{getArgumentsValueComp(labelField, 'destination')}</Col>
+            <Col span={3}>
+              <Select
+                options={RoutingValueTypeOptions}
+                value={value_type.getValue()}
+                onChange={value => value_type.setValue(value)}
+                type={'simulate'}
+                appearance={'button'}
+                matchButtonWidth
+                size={'s'}
+              />
+            </Col>
+            <Col span={8}>{getArgumentsValueComp(labelField, 'destination')}</Col>
           </Row>
         }
         placement={'right'}
@@ -319,7 +341,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
           <Button
             type={'link'}
             onClick={() => {
-              labelsField.setValue([...labelsField.getValue(), { ...labelField.getValue(), value_type: 'TEXT' }])
+              labelsField.setValue([...labelsField.getValue(), { ...labelField.getValue() }])
               setLabelPopConfirmVisible('')
               labelField.setValue(null)
             }}
@@ -727,7 +749,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                     <Button
                                       className='form-item-space'
                                       type='link'
-                                      onClick={() => argumentsField.asArray().push(getEmptyArgument())}
+                                      onClick={() => argumentsField.asArray().push(getEmptyLabel())}
                                     >
                                       添加
                                     </Button>
