@@ -64,7 +64,7 @@ export const getLabelTag = (
   const { key, type, value, value_type } = label
   return (
     <Tag key={`${key}${index}`}>
-      {`键 ${key} ${RouteLabelTextMap[type]} ${RoutingValueTextMap[value_type]}${value}`}
+      {`key:${key} ${RouteLabelTextMap[type]} value:${value}(${RoutingValueTextMap[value_type]})`}
       {labelsField && (
         <Button
           type={'icon'}
@@ -418,7 +418,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               <Input field={description} maxLength={64} size='l' multiple />
             </FormField>
             <Form.Item label='匹配条件' className='compact-form-control'>
-              <Form style={{ position: 'relative', minWidth: '1200px' }}>
+              <Form style={{ position: 'relative', minWidth: '1200px', paddingBottom: '25px' }}>
                 <div
                   style={{
                     borderTop: '1px dashed gray',
@@ -666,7 +666,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             </Card.Header>
                             {!isDragging && (
                               <Card.Body>
-                                <Text parent={'div'} theme={'strong'} style={{ marginBottom: '10px' }}>
+                                <Text parent={'div'} theme={'strong'} style={{ marginBottom: '10px', fontWeight: 700 }}>
                                   来源服务的请求满足以下匹配条件
                                 </Text>
                                 <section style={{ marginBottom: '10px' }}>
@@ -675,6 +675,18 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                       hideHeader
                                       verticalTop
                                       bordered
+                                      bottomTip={
+                                        <div>
+                                          <Icon type='plus' />
+                                          <Button
+                                            className='form-item-space'
+                                            type='link'
+                                            onClick={() => argumentsField.asArray().push(getEmptyLabel())}
+                                          >
+                                            添加
+                                          </Button>
+                                        </div>
+                                      }
                                       records={[...argumentsField.asArray()]}
                                       columns={[
                                         {
@@ -765,18 +777,8 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                       ]}
                                     ></Table>
                                   )}
-                                  <div style={{ marginTop: '8px' }}>
-                                    <Icon type='plus' />
-                                    <Button
-                                      className='form-item-space'
-                                      type='link'
-                                      onClick={() => argumentsField.asArray().push(getEmptyLabel())}
-                                    >
-                                      添加
-                                    </Button>
-                                  </div>
                                 </section>
-                                <Text parent={'div'} theme={'strong'} style={{ marginBottom: '10px' }}>
+                                <Text parent={'div'} theme={'strong'} style={{ marginBottom: '10px', fontWeight: 700 }}>
                                   将转发至目标服务的一下实例分组
                                 </Text>
                                 <section style={{ marginBottom: '10px' }}>
@@ -812,9 +814,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                                     )}
                                                     trigger={'click'}
                                                   >
-                                                    <Tag>
-                                                      <Button type={'icon'} icon={'more'}></Button>
-                                                    </Tag>
+                                                    <Button type={'icon'} icon={'more'}></Button>
                                                   </Bubble>
                                                 )}
                                                 <Tag style={{ padding: 0 }}>
@@ -829,7 +829,14 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                         },
                                         {
                                           key: 'weight',
-                                          header: '权重',
+                                          header: (
+                                            <>
+                                              权重
+                                              <Bubble content={'相对权重，数值范围：0-65535'}>
+                                                <Icon type={'info'}></Icon>
+                                              </Bubble>
+                                            </>
+                                          ),
                                           width: 150,
                                           render: item => {
                                             const { weight } = item.getFields(['weight'])
