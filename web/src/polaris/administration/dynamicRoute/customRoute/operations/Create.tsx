@@ -62,7 +62,6 @@ export const getLabelTag = (
   labelsField?: FieldAPI<RouteDestinationArgument[]>,
 ) => {
   const { key, type, value, value_type } = label
-  console.log(value_type)
   return (
     <Tag key={`${key}${index}`}>
       {`键 ${key} ${RouteLabelTextMap[type]} ${RoutingValueTextMap[value_type]}${value}`}
@@ -311,13 +310,19 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 appearance={'button'}
                 matchButtonWidth={false}
                 size={'full'}
+                disabled={value_type.getValue() === RoutingValueType.PARAMETER}
               />
             </Col>
             <Col span={3}>
               <Select
                 options={RoutingValueTypeOptions}
                 value={value_type.getValue()}
-                onChange={value => value_type.setValue(value)}
+                onChange={value => {
+                  if (value === RoutingValueType.PARAMETER) {
+                    type.setValue(RouteLabelMatchType.EXACT)
+                  }
+                  value_type.setValue(value)
+                }}
                 type={'simulate'}
                 appearance={'button'}
                 matchButtonWidth
