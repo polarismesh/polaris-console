@@ -136,7 +136,12 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     type: string,
     filteredLabelList,
   ) {
-    const { key: keyField, value: valueField, type: labelType } = recordField.getFields(['key', 'value', 'type'])
+    const { key: keyField, value: valueField, type: labelType, value_type } = recordField.getFields([
+      'key',
+      'value',
+      'type',
+      'value_type',
+    ])
     const keyValidate = keyField.getTouched() && keyField.getError()
     const labelList = [
       ...(keyField.getValue() ? [{ text: `(输入值)${keyField.getValue()}`, value: keyField.getValue() }] : []),
@@ -152,6 +157,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             if (value !== keyField.getValue()) {
               valueField.setValue('')
             }
+            if (value_type.getValue() === RoutingValueType.PARAMETER) {
+              valueField.setValue(value)
+            }
             keyField.setValue(value)
           }}
         >
@@ -160,6 +168,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               ref={ref}
               value={keyField.getValue()}
               onChange={value => {
+                if (value_type.getValue() === RoutingValueType.PARAMETER) {
+                  valueField.setValue(value)
+                }
                 keyField.setValue(value)
               }}
               placeholder={'请输入标签键'}
@@ -255,6 +266,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               }}
               placeholder={'请输入标签值'}
               size={'full'}
+              disabled={value_type.getValue() === RoutingValueType.PARAMETER}
             />
           )}
         </AutoComplete>
@@ -294,7 +306,12 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       }
       return item
     })
-    const { type, value_type } = labelField.getFields(['type', 'value_type'])
+    const { type, value_type, key: keyField, value: valueField } = labelField.getFields([
+      'type',
+      'value_type',
+      'key',
+      'value',
+    ])
 
     return (
       <PopConfirm
@@ -310,7 +327,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 appearance={'button'}
                 matchButtonWidth={false}
                 size={'full'}
-                disabled={value_type.getValue() === RoutingValueType.PARAMETER}
               />
             </Col>
             <Col span={3}>
@@ -319,7 +335,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 value={value_type.getValue()}
                 onChange={value => {
                   if (value === RoutingValueType.PARAMETER) {
-                    type.setValue(RouteLabelMatchType.EXACT)
+                    valueField.setValue(keyField.getValue())
                   }
                   value_type.setValue(value)
                 }}
