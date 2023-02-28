@@ -76,9 +76,9 @@ export const MonitorTypeOption = Object.entries(MonitorTypeMap).map(([key, value
   return { text: value, value: key }
 })
 export enum MetricName {
-  DiscoveryConnTotal = 'discovery_conn_total', //总请求数
-  ConfigConnTotal = 'config_conn_total', //总成功数
-  SdkClientTotal = 'sdk_client_total', //总时延
+  DiscoveryConnTotal = 'discovery_conn_total',
+  ConfigConnTotal = 'config_conn_total',
+  SdkClientTotal = 'sdk_client_total',
 }
 export const MetricNameMap = {
   [MetricName.DiscoveryConnTotal]: {

@@ -114,6 +114,10 @@ import FaultDetectCreatePage from '@src/polaris/administration/breaker/faultDete
 import FaultDetectCreatePageDuck from '@src/polaris/administration/breaker/faultDetect/operations/CreateDuck'
 const FaultDetectCreate = connectWithDuck(FaultDetectCreatePage, FaultDetectCreatePageDuck)
 
+import RegistryMonitorPage from '@src/polaris/monitor/registryMonitor/Page'
+import RegistryMonitorPageDuck from '@src/polaris/monitor/registryMonitor/PageDuck'
+const RegistryMonitor = connectWithDuck(RegistryMonitorPage, RegistryMonitorPageDuck)
+
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1] || 'service')
@@ -257,6 +261,7 @@ export default function root() {
               <Route exact path='/circuitBreaker-create' component={CircuitBreakerCreate} />
               <Route exact path='/circuitBreaker' component={CircuitBreaker} />
               <Route exact path='/faultDetect-create' component={FaultDetectCreate} />
+              <Route exact path='/registry-monitor' component={RegistryMonitor} />
             </Switch>
           </Content>
         </Body>

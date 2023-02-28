@@ -1,4 +1,4 @@
-import { APIRequestOption, ApiResponse } from '@src/polaris/common/util/apiRequest'
+import { APIRequestOption } from '@src/polaris/common/util/apiRequest'
 import axios from 'axios'
 
 interface PromethusResponse<T> {
@@ -36,6 +36,7 @@ export interface GetMonitorDataParams {
   end: number
   step: number
 }
+
 export interface GetLabelDataParams {
   match?: string[]
   start?: number

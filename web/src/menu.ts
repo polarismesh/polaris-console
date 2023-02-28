@@ -104,6 +104,12 @@ export const MenuConfig: MenuItemConfig = {
       icon: null,
       subMenus: [
         {
+          id: 'registry-monitor',
+          title: '注册配置监控',
+          icon: 'static/img/circuit-monitor.svg',
+          subMenus: null,
+        },
+        {
           id: 'alert',
           title: '业务监控',
           icon: 'static/img/circuit-monitor.svg',
