@@ -9,6 +9,7 @@ if [ $# != 1 ]; then
 fi
 
 docker_tag=$1
+docker_repository="polarismesh"
 
 echo "docker repository : polarismesh/polaris-console, tag : ${docker_tag}"
 
