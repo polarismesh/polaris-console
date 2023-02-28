@@ -31,7 +31,7 @@ import (
 func AdminRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	// 后端server路由组
 	v1 := webSvr.Group("/")
-	v1.GET("/apidocs.json", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
+	v1.GET("/server/nodes", handlers.DescribeServerNodes(&config.PolarisServer, config))
 	v1.GET("/console/ability", func(ctx *gin.Context) {
 		futures := strings.Split(config.Futures, ",")
 		resp := model.Response{
