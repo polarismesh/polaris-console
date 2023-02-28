@@ -27,6 +27,6 @@ import (
 func MetricsRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	// 后端server路由组
 	v1 := webSvr.Group("/metrics")
-	v1.GET("/server/interfaces", handlers.DescribeRequestInterface())
+	v1.GET("/server/interfaces", handlers.DescribeRequestInterface(&config.PolarisServer, config))
 	v1.GET("/labelDesc", handlers.DescribeMetricLabels())
 }

@@ -25,36 +25,53 @@ var (
 			Name: "/v1/RegisterInstance",
 			Desc: "注册服务实例",
 			Type: "Register",
+			QueryLabels: []string{
+				"POST:/v1/RegisterInstance", "/v1.PolarisGRPC/RegisterInstance", "POST:/eureka/apps/{application}",
+			},
 		},
 		{
 			Name: "/v1/DeregisterInstance",
 			Desc: "反注册服务实例",
 			Type: "Register",
+			QueryLabels: []string{
+				"POST:/v1/DeregisterInstance", "/v1.PolarisGRPC/DeregisterInstance", "DELETE:/eureka/apps/{application}/{instanceId}",
+			},
 		},
 		{
 			Name: "/v1/ReportClient",
 			Desc: "上报客户端",
 			Type: "Register",
+			QueryLabels: []string{
+				"POST:/v1/ReportClient",
+			},
 		},
 		{
 			Name: "/v1/Heartbeat",
 			Desc: "上报实例心跳",
 			Type: "HealthCheck",
+			QueryLabels: []string{
+				"POST:/v1/Heartbeat", "/v1.PolarisGRPC/Heartbeat", "PUT:/eureka/apps/{application}/{instanceId}",
+			},
 		},
 		{
 			Name: "/v1/Discover",
 			Desc: "服务发现",
 			Type: "Discovery",
+			QueryLabels: []string{
+				"POST:/v1/Discover", "/v1.PolarisGRPC/Discover",
+			},
 		},
 		{
-			Name: "/config/v1/GetConfigFile",
-			Desc: "获取单个配置文件",
-			Type: "Config",
+			Name:        "/config/v1/GetConfigFile",
+			Desc:        "获取单个配置文件",
+			Type:        "Config",
+			QueryLabels: []string{"GET:/config/v1/GetConfigFile"},
 		},
 		{
-			Name: "/config/v1/WatchConfigFile",
-			Desc: "监听配置文件",
-			Type: "Config",
+			Name:        "/config/v1/WatchConfigFile",
+			Desc:        "监听配置文件",
+			Type:        "Config",
+			QueryLabels: []string{"GET:/config/v1/WatchConfigFile"},
 		},
 	}
 )
