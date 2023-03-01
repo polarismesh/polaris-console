@@ -26,7 +26,7 @@ const SumUpReduceFunction = (prev, curr, index, array) => {
 
 const AvgReduceFunction = (prev, curr, index, array) => {
   const [, value] = curr
-  if (index === array.length - 1) return (prev / array.filter(item => item.value !== 0).length).toFixed(2)
+  if (index === array.length - 1) return (prev / array.filter(item => item.value !== '0').length).toFixed(2)
   return prev + Number(value)
 }
 
@@ -120,7 +120,6 @@ export const getQueryMap = {
             : 'client_rq_timeout_avg',
         boardFunction: AvgReduceFunction,
         unit: 'ms',
-        dataFormatter: v => v * 1000,
       },
       {
         name: '最大值',
@@ -132,7 +131,6 @@ export const getQueryMap = {
             : 'client_rq_timeout_max',
         boardFunction: AvgReduceFunction,
         unit: 'ms',
-        dataFormatter: v => v * 1000,
       },
       {
         name: '最小值',
@@ -144,7 +142,6 @@ export const getQueryMap = {
             : 'client_rq_timeout_min',
         boardFunction: AvgReduceFunction,
         unit: 'ms',
-        dataFormatter: v => v * 1000,
       },
       {
         name: 'P99',
@@ -171,7 +168,6 @@ export const getQueryMap = {
           const [, value] = point
           return value
         },
-        dataFormatter: v => v * 1000,
         unit: 'ms',
       },
       {
@@ -199,7 +195,6 @@ export const getQueryMap = {
           const [, value] = point
           return value
         },
-        dataFormatter: v => v * 1000,
         unit: 'ms',
       },
     ]
