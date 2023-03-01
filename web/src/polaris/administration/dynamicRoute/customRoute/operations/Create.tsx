@@ -312,6 +312,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       'key',
       'value',
     ])
+    React.useEffect(() => {
+      value_type.setValue(RoutingValueType.TEXT)
+    }, [labelField])
 
     return (
       <PopConfirm
@@ -327,9 +330,10 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 appearance={'button'}
                 matchButtonWidth={false}
                 size={'full'}
+                disabled={value_type.getValue() === RoutingValueType.PARAMETER}
               />
             </Col>
-            <Col span={3}>
+            {/* <Col span={3}>
               <Select
                 options={RoutingValueTypeOptions}
                 value={value_type.getValue()}
@@ -344,7 +348,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 matchButtonWidth
                 size={'s'}
               />
-            </Col>
+            </Col> */}
             <Col span={8}>{getArgumentsValueComp(labelField, 'destination')}</Col>
           </Row>
         }
