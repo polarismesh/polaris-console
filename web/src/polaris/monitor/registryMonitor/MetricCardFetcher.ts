@@ -18,6 +18,7 @@ export interface QuerySet {
   query: string
   boardFunction?: Function
   asyncBoardFunction?: Function
+  dataFormatter?: Function
 }
 export class MetricCardFetcher extends Fetcher {
   Data: {
@@ -47,9 +48,10 @@ export class MetricCardFetcher extends Fetcher {
       const reduceValue = res[0]?.values.reduce((prev, curr, currentIndex, currentArray) => {
         const [time, value] = curr
         const timeString = moment(time * 1000).format('YYYY-MM-DD HH:mm:ss')
+        const formattedValue = currentQuery.dataFormatter ? currentQuery.dataFormatter(Number(value)) : Number(value)
         formattedArray.push({
           time: timeString,
-          value: Number(value),
+          value: formattedValue,
           metric: currentQuery?.name,
         })
         return currentQuery?.boardFunction(prev, curr, currentIndex, currentArray)

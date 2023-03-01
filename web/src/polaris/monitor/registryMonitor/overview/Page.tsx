@@ -43,7 +43,7 @@ export default function Overview(props: DuckCmpProps<BaseInfoDuck>) {
         <Col span={12}>
           <MetricCard
             {...basicQueryParam}
-            query={getQueryMap[MetricName.Timeout]()}
+            query={getQueryMap[MetricName.Timeout]({ ...basicQueryParam })}
             cardProps={{ bordered: true }}
             cardBodyProps={{ title: '响应耗时' }}
           ></MetricCard>

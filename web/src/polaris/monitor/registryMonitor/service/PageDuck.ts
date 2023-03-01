@@ -6,7 +6,6 @@ import { put } from 'redux-saga/effects'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
 import { ComposedId } from '../PageDuck'
 import { takeLatest } from 'redux-saga-catch'
-import { data } from 'jquery'
 
 export default class ServiceMonitorDuck extends DetailPage {
   get baseUrl() {
@@ -64,6 +63,7 @@ export default class ServiceMonitorDuck extends DetailPage {
         if (state.data?.serviceList) {
           return state.data?.serviceList.reduce((prev, curr) => {
             prev[curr.id] = curr
+            return prev
           }, {})
         }
         return {}
@@ -72,6 +72,7 @@ export default class ServiceMonitorDuck extends DetailPage {
         if (state.data?.configGroupList) {
           return state.data?.configGroupList.reduce((prev, curr) => {
             prev[curr.id] = curr
+            return prev
           }, {})
         }
         return {}

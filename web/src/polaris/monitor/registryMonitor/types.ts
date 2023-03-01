@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { getMonitorData } from '../models'
 
 export enum MetricName {
@@ -9,20 +10,23 @@ export enum MetricName {
   Instance = 'Instance',
   ConfigGroup = 'ConfigGroup',
   ConfigFile = 'ConfigFile',
+  ErrorReq = 'ErrorReq',
+  RetCode = 'RetCode',
 }
 const LatestValueReduceFunction = (prev, curr, index, array) => {
   const [, value] = curr
-  if (index === array?.length - 1) return value
+  if (index === array?.length - 1) return Math.floor(Number(value))
 }
 
-const SumUpReduceFunction = (prev, curr) => {
+const SumUpReduceFunction = (prev, curr, index, array) => {
   const [, value] = curr
+  if (index === array.length - 1) return Math.floor(prev + Number(value))
   return prev + Number(value)
 }
 
 const AvgReduceFunction = (prev, curr, index, array) => {
   const [, value] = curr
-  if (index === array.length - 1) return (prev / array.length).toFixed(2)
+  if (index === array.length - 1) return (prev / array.filter(item => item.value !== 0).length).toFixed(2)
   return prev + Number(value)
 }
 
@@ -52,83 +56,154 @@ export const getQueryMap = {
       boardFunction: LatestValueReduceFunction,
     },
   ],
-  [MetricName.Request]: () => [
-    {
-      name: '总请求数',
-      query: 'sum(client_rq_interval_count)',
-      boardFunction: SumUpReduceFunction,
-    },
-    {
-      name: '成功请求数',
-      query: 'sum(client_rq_interval_count{err_code=~"2.+|0"})',
-      boardFunction: SumUpReduceFunction,
-    },
-    {
-      name: '失败请求数',
-      query: 'sum(client_rq_interval_count{err_code=~"4.+|0"})',
-      boardFunction: SumUpReduceFunction,
-    },
-    {
-      name: '请求成功率',
-      query: 'sum(client_rq_interval_count{err_code=~"2.+|0"}) / sum(client_rq_interval_count)',
-      boardFunction: (prev, curr, index, array) => {
-        const [, value] = curr
-        if (index === array.length - 1) return ((prev / array.length) * 100).toFixed(2)
-        return prev + Number(value)
+  [MetricName.Request]: (queryParam = {} as any) => {
+    const { interfaceName, podName } = queryParam
+    return [
+      {
+        name: '总请求数',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}"})`
+            : interfaceName
+            ? `sum(client_rq_interval_count{api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count)',
+        boardFunction: SumUpReduceFunction,
       },
-      unit: '%',
-    },
-  ],
-  [MetricName.Timeout]: () => [
-    {
-      name: '均值',
-      query: 'client_rq_timeout_avg',
-      boardFunction: AvgReduceFunction,
-      unit: 'ms',
-    },
-    {
-      name: '最大值',
-      query: 'client_rq_timeout_max',
-      boardFunction: AvgReduceFunction,
-      unit: 'ms',
-    },
-    {
-      name: '最小值',
-      query: 'client_rq_timeout_min',
-      boardFunction: AvgReduceFunction,
-      unit: 'ms',
-    },
-    {
-      name: 'P99',
-      query: 'histogram_quantile(0.99, rate(client_rq_timeout[5m]))',
-      asyncBoardFunction: async queryParam => {
-        const res = await getMonitorData({
-          ...queryParam,
-          query: `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket[60m])))`,
-        })
-        const point = res?.[0]?.values?.[0]
-        if (!point) return '-'
-        const [, value] = point
-        return value
+      {
+        name: '成功请求数',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
+            : interfaceName
+            ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"2.+|0"})',
+        boardFunction: SumUpReduceFunction,
       },
-      unit: 'ms',
-    },
-    {
-      name: 'P95',
-      query: 'histogram_quantile(0.95, rate(client_rq_timeout[5m]))',
-      asyncBoardFunction: async queryParam => {
-        const res = await getMonitorData({
-          ...queryParam,
-          query: `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket[60m])))`,
-        })
-        const point = res?.[0]?.values?.[0]
-        if (!point) return '-'
-        const [, value] = point
-        return value
+      {
+        name: '失败请求数',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
+            : interfaceName
+            ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code!~"2.+|0"})',
+        boardFunction: SumUpReduceFunction,
       },
-      unit: 'ms',
-    },
-  ],
+      {
+        name: '请求成功率',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}})`
+            : interfaceName
+            ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"2.+|0"}) / sum(client_rq_interval_count)',
+        boardFunction: (prev, curr, index, array) => {
+          const [, value] = curr
+          if (index === array.length - 1) return ((prev / array.length) * 100).toFixed(2)
+          return prev + Number(value)
+        },
+        unit: '%',
+      },
+    ]
+  },
+  [MetricName.Timeout]: queryParam => {
+    const { interfaceName, podName, start, end, step } = queryParam
+    const interval = moment.duration(end - start, 's').asMinutes() + 'm'
+    return [
+      {
+        name: '均值',
+        query:
+          interfaceName && podName
+            ? `client_rq_timeout_avg{api=~"${interfaceName}",polaris_server_instance="${podName}"}`
+            : interfaceName
+            ? `client_rq_timeout_avg{api=~"${interfaceName}"}`
+            : 'client_rq_timeout_avg',
+        boardFunction: AvgReduceFunction,
+        unit: 'ms',
+        dataFormatter: v => v * 1000,
+      },
+      {
+        name: '最大值',
+        query:
+          interfaceName && podName
+            ? `client_rq_timeout_max{api=~"${interfaceName}",polaris_server_instance="${podName}"}`
+            : interfaceName
+            ? `client_rq_timeout_max{api=~"${interfaceName}"}`
+            : 'client_rq_timeout_max',
+        boardFunction: AvgReduceFunction,
+        unit: 'ms',
+        dataFormatter: v => v * 1000,
+      },
+      {
+        name: '最小值',
+        query:
+          interfaceName && podName
+            ? `client_rq_timeout_min{api=~"${interfaceName}",polaris_server_instance="${podName}"}`
+            : interfaceName
+            ? `client_rq_timeout_min{api=~"${interfaceName}"}`
+            : 'client_rq_timeout_min',
+        boardFunction: AvgReduceFunction,
+        unit: 'ms',
+        dataFormatter: v => v * 1000,
+      },
+      {
+        name: 'P99',
+        query:
+          interfaceName && podName
+            ? `histogram_quantile(0.99, rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${interval}]))`
+            : interfaceName
+            ? `histogram_quantile(0.99, rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${interval}]))`
+            : `histogram_quantile(0.99, rate(client_rq_timeout[${interval}]))`,
+        asyncBoardFunction: async () => {
+          const res = await getMonitorData({
+            start,
+            end,
+            step,
+            query:
+              interfaceName && podName
+                ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${interval}])))`
+                : interfaceName
+                ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${interval}])))`
+                : `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket[${interval}])))`,
+          })
+          const point = res?.[0]?.values?.[0]
+          if (!point) return '-'
+          const [, value] = point
+          return value
+        },
+        dataFormatter: v => v * 1000,
+        unit: 'ms',
+      },
+      {
+        name: 'P95',
+        query:
+          interfaceName && podName
+            ? `histogram_quantile(0.95, rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${interval}]))`
+            : interfaceName
+            ? `histogram_quantile(0.95, rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${interval}]))`
+            : `histogram_quantile(0.95, rate(client_rq_timeout[${interval}]))`,
+        asyncBoardFunction: async () => {
+          const res = await getMonitorData({
+            start,
+            end,
+            step,
+            query:
+              interfaceName && podName
+                ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${interval}])))`
+                : interfaceName
+                ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${interval}])))`
+                : `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket[${interval}])))`,
+          })
+          const point = res?.[0]?.values?.[0]
+          if (!point) return '-'
+          const [, value] = point
+          return value
+        },
+        dataFormatter: v => v * 1000,
+        unit: 'ms',
+      },
+    ]
+  },
   [MetricName.Service]: queryParam => {
     const { namespace } = queryParam
     return [
@@ -244,4 +319,92 @@ export const getQueryMap = {
       },
     ]
   },
+  [MetricName.ErrorReq]: (queryParam = {} as any) => {
+    const { interfaceName, podName } = queryParam
+    return [
+      {
+        name: '总失败请求数',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
+            : interfaceName
+            ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code!~"2.+|0"})',
+        boardFunction: SumUpReduceFunction,
+      },
+      {
+        name: '5xx失败请求数',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
+            : interfaceName
+            ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"5.+"})',
+        boardFunction: SumUpReduceFunction,
+      },
+      {
+        name: '4xx失败请求数',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}})`
+            : interfaceName
+            ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"4.+|0"}) / sum(client_rq_interval_count)',
+        boardFunction: SumUpReduceFunction,
+      },
+    ]
+  },
+  [MetricName.RetCode]: (queryParam = {} as any) => {
+    const { interfaceName, podName } = queryParam
+    return [
+      {
+        name: '200',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
+            : interfaceName
+            ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"2.+|0"})',
+        boardFunction: SumUpReduceFunction,
+      },
+      {
+        name: '5xx',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
+            : interfaceName
+            ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"5.+"})',
+        boardFunction: SumUpReduceFunction,
+      },
+      {
+        name: '4xx',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}})`
+            : interfaceName
+            ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"4.+|0"}) / sum(client_rq_interval_count)',
+        boardFunction: SumUpReduceFunction,
+      },
+    ]
+  },
 }
+export enum MonitorFeature {
+  Register = 'Register',
+  Discovery = 'Discovery',
+  HealthCheck = 'HealthCheck',
+  Config = 'Config',
+  OpenAPI = 'OpenAPI',
+}
+export const MonitorFeatureTextMap = {
+  [MonitorFeature.Register]: '服务注册',
+  [MonitorFeature.Discovery]: '服务发现',
+  [MonitorFeature.HealthCheck]: '健康检查',
+  [MonitorFeature.Config]: '配置读取',
+  [MonitorFeature.OpenAPI]: 'OpenAPI',
+}
+export const MonitorFeatureOptions = Object.entries(MonitorFeatureTextMap).map(([key, value]) => ({
+  text: value,
+  value: key,
+}))

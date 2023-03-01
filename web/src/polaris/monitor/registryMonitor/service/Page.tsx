@@ -1,7 +1,8 @@
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
-import { Card, Col, Form, FormItem, Justify, Row, SelectMultiple } from 'tea-component'
+import { Col, Form, FormItem, Justify, Row, SelectMultiple } from 'tea-component'
 import MetricCard from '../MetricCard'
+import SimpleCollapse from '../SimpleCollapse'
 import { getQueryMap, MetricName } from '../types'
 import BaseInfoDuck from './PageDuck'
 
@@ -23,6 +24,9 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
   const serviceMap = selectors.serviceMap(store)
   const selectAllService = selectedService?.length === data?.serviceList?.length
   const selectAllConfigGroup = selectedConfigGroup?.length === data?.configGroupList?.length
+  const onChangeFunction = v => {
+    setActiveIds(v)
+  }
   return (
     <>
       <Justify
@@ -52,63 +56,63 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
         }
       ></Justify>
 
-      <Card bordered>
-        <Card.Body title={'汇总'}>
-          <Row>
-            <Col span={12}>
-              <MetricCard
-                {...basicQueryParam}
-                query={getQueryMap[MetricName.Service]({ namespace })}
-                cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '服务数' }}
-              ></MetricCard>
-            </Col>
-            <Col span={12}>
-              <MetricCard
-                {...basicQueryParam}
-                query={getQueryMap[MetricName.Instance]({ namespace })}
-                cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '实例数' }}
-              ></MetricCard>
-            </Col>
-            <Col span={12}>
-              <MetricCard
-                {...basicQueryParam}
-                query={getQueryMap[MetricName.ConfigGroup]({ namespace })}
-                cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '配置分组数' }}
-              ></MetricCard>
-            </Col>
-            <Col span={12}>
-              <MetricCard
-                {...basicQueryParam}
-                query={getQueryMap[MetricName.ConfigFile]({ namespace })}
-                cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '配置数' }}
-              ></MetricCard>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
+      <SimpleCollapse id={'all'} activeIds={activeIds} title={'汇总'} onChange={onChangeFunction}>
+        <Row>
+          <Col span={12}>
+            <MetricCard
+              {...basicQueryParam}
+              query={getQueryMap[MetricName.Service]({ namespace })}
+              cardProps={{ bordered: true }}
+              cardBodyProps={{ title: '服务数' }}
+            ></MetricCard>
+          </Col>
+          <Col span={12}>
+            <MetricCard
+              {...basicQueryParam}
+              query={getQueryMap[MetricName.Instance]({ namespace })}
+              cardProps={{ bordered: true }}
+              cardBodyProps={{ title: '实例数' }}
+            ></MetricCard>
+          </Col>
+          <Col span={12}>
+            <MetricCard
+              {...basicQueryParam}
+              query={getQueryMap[MetricName.ConfigGroup]({ namespace })}
+              cardProps={{ bordered: true }}
+              cardBodyProps={{ title: '配置分组数' }}
+            ></MetricCard>
+          </Col>
+          <Col span={12}>
+            <MetricCard
+              {...basicQueryParam}
+              query={getQueryMap[MetricName.ConfigFile]({ namespace })}
+              cardProps={{ bordered: true }}
+              cardBodyProps={{ title: '配置数' }}
+            ></MetricCard>
+          </Col>
+        </Row>
+      </SimpleCollapse>
       {!selectAllService && (
         <>
           {selectedService.map(service => {
             const curService = serviceMap[service]
             return (
-              <Card key={service} bordered>
-                <Card.Body
-                  title={
-                    <section style={{ backgroundColor: '#bbb', padding: '5px 10px' }}>服务{curService?.name}</section>
-                  }
-                >
-                  <MetricCard
-                    {...basicQueryParam}
-                    query={getQueryMap[MetricName.Instance]({ namespace, service })}
-                    cardProps={{ bordered: true }}
-                    cardBodyProps={{ title: '实例数' }}
-                  ></MetricCard>
-                </Card.Body>
-              </Card>
+              <SimpleCollapse
+                key={service}
+                id={service}
+                activeIds={activeIds}
+                onChange={onChangeFunction}
+                title={
+                  <section style={{ backgroundColor: '#bbb', padding: '5px 10px' }}>服务{curService?.name}</section>
+                }
+              >
+                <MetricCard
+                  {...basicQueryParam}
+                  query={getQueryMap[MetricName.Instance]({ namespace, service })}
+                  cardProps={{ bordered: true }}
+                  cardBodyProps={{ title: '实例数' }}
+                ></MetricCard>
+              </SimpleCollapse>
             )
           })}
         </>
@@ -118,22 +122,22 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
           {selectedConfigGroup.map(configGroup => {
             const curConfigGroup = configGroupMap[configGroup]
             return (
-              <Card key={configGroup} bordered>
-                <Card.Body
-                  title={
-                    <section style={{ backgroundColor: '#bbb', padding: '5px 10px' }}>
-                      配置分组{curConfigGroup?.name}
-                    </section>
-                  }
-                >
-                  <MetricCard
-                    {...basicQueryParam}
-                    query={getQueryMap[MetricName.ConfigFile]({ namespace, configGroup })}
-                    cardProps={{ bordered: true }}
-                    cardBodyProps={{ title: '配置文件数' }}
-                  ></MetricCard>
-                </Card.Body>
-              </Card>
+              <SimpleCollapse
+                key={configGroup}
+                id={configGroup}
+                activeIds={activeIds}
+                onChange={onChangeFunction}
+                title={
+                  <section style={{ backgroundColor: '#bbb', padding: '5px 10px' }}>服务{curConfigGroup?.name}</section>
+                }
+              >
+                <MetricCard
+                  {...basicQueryParam}
+                  query={getQueryMap[MetricName.ConfigFile]({ namespace, configGroup })}
+                  cardProps={{ bordered: true }}
+                  cardBodyProps={{ title: '配置文件数' }}
+                ></MetricCard>
+              </SimpleCollapse>
             )
           })}
         </>

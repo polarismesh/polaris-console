@@ -7,15 +7,18 @@ import Overview from './overview/Page'
 import moment from 'moment'
 import TimeSelect from '@src/polaris/common/components/TimeSelect'
 import Service from './service/Page'
+import Server from './server/Page'
 export enum TAB {
   Overview = 'overview',
   Service = 'service',
+  Server = 'server',
 }
 export const TAB_LABLES = {
   [TAB.Overview]: '概览',
   [TAB.Service]: '服务和配置统计',
+  [TAB.Server]: '北极星服务端请求统计',
 }
-const tabs: Array<Tab> = [TAB.Overview, TAB.Service].map(id => ({
+const tabs: Array<Tab> = [TAB.Overview, TAB.Service, TAB.Server].map(id => ({
   id,
   label: TAB_LABLES[id],
 }))
@@ -126,6 +129,9 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
             </TabPanel>
             <TabPanel id={TAB.Service}>
               <Service duck={ducks[TAB.Service]} store={store} dispatch={dispatch} />
+            </TabPanel>
+            <TabPanel id={TAB.Server}>
+              <Server duck={ducks[TAB.Server]} store={store} dispatch={dispatch} />
             </TabPanel>
           </Tabs>
         </Card.Body>

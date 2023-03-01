@@ -10,6 +10,7 @@ import { TAB } from './Page'
 import OverviewDuck from './overview/PageDuck'
 import ServiceMonitorDuck from './service/PageDuck'
 import { delay } from 'redux-saga'
+import ServerMonitorDuck from './server/PageDuck'
 
 export interface ComposedId {
   start: number
@@ -84,6 +85,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
       ...super.quickDucks,
       overview: OverviewDuck,
       service: ServiceMonitorDuck,
+      server: ServerMonitorDuck,
     }
   }
   get reducers() {
@@ -91,13 +93,13 @@ export default class RegistryDetailDuck extends DetailPageDuck {
     return {
       ...super.reducers,
       tab: reduceFromPayload(types.SWITCH, TAB.Overview),
-      start: reduceFromPayload(types.SET_START, moment().unix()),
-      end: reduceFromPayload(
-        types.SET_END,
+      start: reduceFromPayload(
+        types.SET_START,
         moment()
-          .add(1, 'h')
+          .subtract(1, 'h')
           .unix(),
       ),
+      end: reduceFromPayload(types.SET_END, moment().unix()),
       namespace: reduceFromPayload(types.SET_NAMESPACE, ''),
       step: reduceFromPayload(types.SET_STEP, 1),
     }
