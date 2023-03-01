@@ -33,9 +33,9 @@ import (
 
 func DescribeServerNodes(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// if !verifyAccessPermission(c, conf) {
-		// 	return
-		// }
+		if !verifyAccessPermission(c, conf) {
+			return
+		}
 
 		c.Request.Header.Add("Polaris-Token", polarisServer.PolarisToken)
 		c.Request.Header.Del("Cookie")
