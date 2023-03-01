@@ -161,7 +161,6 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
           </Col>
         </Row>
       </SimpleCollapse>
-
       {partitions.length > 0 && (
         <>
           {partitions.map(({ podName, interfaceId }) => {
