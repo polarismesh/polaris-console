@@ -63,10 +63,10 @@ export const RoutingValueTypeOptions = [
     text: '值',
     value: RoutingValueType.TEXT,
   },
-  {
-    text: '变量',
-    value: RoutingValueType.PARAMETER,
-  },
+  // {
+  //   text: '变量',
+  //   value: RoutingValueType.PARAMETER,
+  // },
 ]
 export const RoutingArgumentsTypeOptions = [
   {
