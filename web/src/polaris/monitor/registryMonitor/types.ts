@@ -54,12 +54,11 @@ const MaxReduceFunction = (prev, curr, index, array) => {
 }
 
 const MinReduceFunction = (prev, curr, index, array) => {
-  const ppre = prev ? prev : Number.MAX_VALUE
   const [, value] = curr
   if (!value) {
-    return ppre
+    return prev ? prev : Number.MAX_VALUE
   }
-  return Math.min(ppre, Number(value)).toFixed(2)
+  return Math.min(prev, Number(value)).toFixed(2)
 }
 
 export const getQueryMap = {
