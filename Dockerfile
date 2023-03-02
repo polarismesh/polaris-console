@@ -14,7 +14,7 @@ RUN set -eux && \
 
 ARG TARGETARCH
 
-COPY ./polaris_console_package/polaris-console-${TARGETARCH} /root/polaris-console
+COPY polaris-console-${TARGETARCH} /root/polaris-console
 COPY ./polaris_console_package/tool /root/tool
 COPY ./polaris_console_package/web /root/web
 COPY ./polaris_console_package/polaris-console.yaml /root/polaris-console.yaml
