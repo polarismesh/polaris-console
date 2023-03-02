@@ -1,6 +1,6 @@
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
-import { Col, Form, FormItem, FormText, Justify, Row, SelectMultiple } from 'tea-component'
+import { Col, Form, FormItem, FormText, Justify, Row, SelectMultiple, Text } from 'tea-component'
 import MetricCard from '../MetricCard'
 import SimpleCollapse from '../SimpleCollapse'
 import { getQueryMap, MetricName } from '../types'
@@ -110,9 +110,7 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
                 id={service}
                 activeIds={activeIds}
                 onChange={onChangeFunction}
-                title={
-                  <section style={{ backgroundColor: '#bbb', padding: '5px 10px' }}>服务{curService?.name}</section>
-                }
+                title={<Text>服务{curService?.name}</Text>}
               >
                 <MetricCard
                   {...basicQueryParam}
@@ -135,9 +133,7 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
                 id={configGroup}
                 activeIds={activeIds}
                 onChange={onChangeFunction}
-                title={
-                  <section style={{ backgroundColor: '#bbb', padding: '5px 10px' }}>服务{curConfigGroup?.name}</section>
-                }
+                title={<Text>配置分组{curConfigGroup?.name}</Text>}
               >
                 <MetricCard
                   {...basicQueryParam}
@@ -150,98 +146,6 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
           })}
         </>
       )}
-      {/* <Collapse
-        activeIds={activeIds}
-        onActive={v => {
-          console.log(v)
-          setActiveIds(v)
-        }}
-      >
-        <CollapsePanel id={'all'} title={'汇总'}>
-          <Row>
-            <Col span={12}>
-              <MetricCard
-                {...basicQueryParam}
-                query={getQueryMap[MetricName.Service]({ namespace })}
-                cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '服务数' }}
-              ></MetricCard>
-            </Col>
-            <Col span={12}>
-              <MetricCard
-                {...basicQueryParam}
-                query={getQueryMap[MetricName.Instance]({ namespace })}
-                cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '实例数' }}
-              ></MetricCard>
-            </Col>
-            <Col span={12}>
-              <MetricCard
-                {...basicQueryParam}
-                query={getQueryMap[MetricName.ConfigGroup]({ namespace })}
-                cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '配置分组数' }}
-              ></MetricCard>
-            </Col>
-            <Col span={12}>
-              <MetricCard
-                {...basicQueryParam}
-                query={getQueryMap[MetricName.ConfigFile]({ namespace })}
-                cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '配置数' }}
-              ></MetricCard>
-            </Col>
-          </Row>
-        </CollapsePanel>
-        {!selectAllService && (
-          <>
-            {selectedService.map(service => {
-              const curService = serviceMap[service]
-              return (
-                <CollapsePanel
-                  id={service}
-                  key={service}
-                  title={
-                    <section style={{ backgroundColor: '#bbb', padding: '5px 10px' }}>服务{curService?.name}</section>
-                  }
-                >
-                  <MetricCard
-                    {...basicQueryParam}
-                    query={getQueryMap[MetricName.Instance]({ namespace, service })}
-                    cardProps={{ bordered: true }}
-                    cardBodyProps={{ title: '实例数' }}
-                  ></MetricCard>
-                </CollapsePanel>
-              )
-            })}
-          </>
-        )}
-        {!selectAllConfigGroup && (
-          <>
-            {selectedConfigGroup.map(configGroup => {
-              const curConfigGroup = configGroupMap[configGroup]
-              return (
-                <CollapsePanel
-                  id={configGroup}
-                  key={configGroup}
-                  title={
-                    <section style={{ backgroundColor: '#bbb', padding: '5px 10px' }}>
-                      配置分组{curConfigGroup?.name}
-                    </section>
-                  }
-                >
-                  <MetricCard
-                    {...basicQueryParam}
-                    query={getQueryMap[MetricName.ConfigFile]({ namespace, configGroup })}
-                    cardProps={{ bordered: true }}
-                    cardBodyProps={{ title: '配置文件数' }}
-                  ></MetricCard>
-                </CollapsePanel>
-              )
-            })}
-          </>
-        )}
-      </Collapse> */}
     </>
   )
 }
