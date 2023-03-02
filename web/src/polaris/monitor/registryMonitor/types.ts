@@ -404,6 +404,13 @@ export const MonitorFeatureOptions = Object.entries(MonitorFeatureTextMap).map((
   text: value,
   value: key,
 }))
+export const compressNumber = n => {
+  if (n < 1e3) return roundToN(n, 2)
+  if (n >= 1e3 && n < 1e6) return roundToN(+(n / 1e3), 2) + 'K'
+  if (n >= 1e6 && n < 1e9) return roundToN(+(n / 1e6), 2) + 'M'
+  if (n >= 1e9 && n < 1e12) return roundToN(+(n / 1e9), 2) + 'B'
+  if (n >= 1e12) return roundToN(+(n / 1e12), 2) + 'T'
+}
 export function roundToN(value, n) {
   return Math.round(value * Math.pow(10, n)) / Math.pow(10, n)
 }

@@ -3,7 +3,7 @@ import React from 'react'
 import { useDuck } from 'saga-duck'
 import { BasicArea } from 'tea-chart'
 import { MetricCardFetcher, QuerySet } from './MetricCardFetcher'
-import { roundToN } from './types'
+import { compressNumber, roundToN } from './types'
 
 interface Props {
   query: QuerySet[]
@@ -29,15 +29,18 @@ export default function(props: Props) {
       <Card.Body {...cardBodyProps} style={{ height: '500px' }}>
         {board.length > 0 && (
           <Row showSplitLine>
-            {board.map(item => (
-              <Col key={item.name}>
-                <MetricsBoard
-                  title={<Text theme={'label'}>{item.name}</Text>}
-                  value={!item.value && item.value !== 0 ? '-' : roundToN(item.value, 2)}
-                  unit={item.unit}
-                />
-              </Col>
-            ))}
+            {board.map(item => {
+              const notValidNumber = !item.value && item.value !== 0
+              return (
+                <Col key={item.name}>
+                  <MetricsBoard
+                    title={<Text theme={'label'}>{item.name}</Text>}
+                    value={notValidNumber ? '-' : compressNumber(item.value)}
+                    unit={item.unit}
+                  />
+                </Col>
+              )
+            })}
           </Row>
         )}
         <div style={{ marginTop: '20px' }}>
@@ -51,6 +54,12 @@ export default function(props: Props) {
               position={'time*value'}
               dataSource={line as any}
               color={'metric'}
+              tooltip={{
+                enable: true,
+                formatter: values => {
+                  return values.map(metaData => ({ ...metaData, valueText: roundToN(metaData.value, 2).toString() }))
+                },
+              }}
             ></BasicArea>
           )}
         </div>

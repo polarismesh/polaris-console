@@ -40,24 +40,6 @@ export const TimePickerTab = () => [
     date: [moment().subtract(1, 'w'), moment()],
   },
 ]
-export const StepOptions = [
-  {
-    text: '1秒',
-    value: '1',
-  },
-  {
-    text: '1分',
-    value: '60',
-  },
-  {
-    text: '5分',
-    value: '300',
-  },
-  {
-    text: '1小时',
-    value: '3600',
-  },
-]
 export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDuck>) {
   const { duck, store, dispatch } = props
   const { selector, creators, ducks } = duck
@@ -73,6 +55,28 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
     timePicker?.current?.flush()
   }
   if (!data) return <noscript />
+  const gap = end - start
+  const StepOptions = [
+    {
+      text: '1秒',
+      value: '1',
+      disabled: gap > 60 * 60,
+    },
+    {
+      text: '1分',
+      value: '60',
+      disabled: gap > 60 * 60 * 24,
+    },
+    {
+      text: '5分',
+      value: '300',
+      disabled: gap > 60 * 60 * 24 * 3,
+    },
+    {
+      text: '1小时',
+      value: '3600',
+    },
+  ]
   return (
     <DetailPage
       store={store}
@@ -81,7 +85,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
       title={'注册配置监控'}
       headerComponent={
         <>
-          <Form layout={'inline'} style={{ width: '1000px', display: 'inline-block' }}>
+          <Form layout={'inline'} style={{ width: '1200px', display: 'inline-block' }}>
             <FormItem label={'命名空间'}>
               <Select
                 appearance='button'

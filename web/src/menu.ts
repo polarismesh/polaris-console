@@ -110,12 +110,6 @@ export const MenuConfig: MenuItemConfig = {
           subMenus: null,
         },
         {
-          id: 'alert',
-          title: '业务监控',
-          icon: 'static/img/circuit-monitor.svg',
-          subMenus: null,
-        },
-        {
           id: 'flow-monitor',
           title: '流量监控',
           icon: 'static/img/circuit-monitor.svg',

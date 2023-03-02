@@ -55,7 +55,7 @@ export class MetricCardFetcher extends Fetcher {
           value: formattedValue,
           metric: currentQuery?.name,
         })
-        return currentQuery?.boardFunction(prev, curr, currentIndex, currentArray)
+        return currentQuery?.boardFunction?.(prev, curr, currentIndex, currentArray)
       }, 0)
       if (currentQuery.boardFunction) {
         boardData.push({ ...currentQuery, value: reduceValue })
