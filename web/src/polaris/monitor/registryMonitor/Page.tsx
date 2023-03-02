@@ -106,6 +106,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
                   maxLength: 3,
                 }}
                 ref={timePicker}
+                format={'HH:mm:ss'}
               />
               <Button type={'icon'} icon={'refresh'} onClick={flush}></Button>
             </FormItem>

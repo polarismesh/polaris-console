@@ -3,6 +3,7 @@ import React from 'react'
 import { useDuck } from 'saga-duck'
 import { BasicArea } from 'tea-chart'
 import { MetricCardFetcher, QuerySet } from './MetricCardFetcher'
+import { roundToN } from './types'
 
 interface Props {
   query: QuerySet[]
@@ -32,7 +33,7 @@ export default function(props: Props) {
               <Col key={item.name}>
                 <MetricsBoard
                   title={<Text theme={'label'}>{item.name}</Text>}
-                  value={!item.value && item.value !== 0 ? '-' : item.value}
+                  value={!item.value && item.value !== 0 ? '-' : roundToN(item.value, 2)}
                   unit={item.unit}
                 />
               </Col>
@@ -42,7 +43,15 @@ export default function(props: Props) {
         <div style={{ marginTop: '20px' }}>
           {loading && <LoadingTip style={{ margin: '245px auto' }} />}
           {line && (
-            <BasicArea height={300} position={'time*value'} dataSource={line as any} color={'metric'}></BasicArea>
+            <BasicArea
+              interaction={{
+                zoom: { resetText: '重置' },
+              }}
+              height={300}
+              position={'time*value'}
+              dataSource={line as any}
+              color={'metric'}
+            ></BasicArea>
           )}
         </div>
       </Card.Body>

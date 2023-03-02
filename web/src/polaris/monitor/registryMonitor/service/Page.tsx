@@ -1,6 +1,6 @@
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
-import { Col, Form, FormItem, Justify, Row, SelectMultiple } from 'tea-component'
+import { Col, Form, FormItem, FormText, Justify, Row, SelectMultiple } from 'tea-component'
 import MetricCard from '../MetricCard'
 import SimpleCollapse from '../SimpleCollapse'
 import { getQueryMap, MetricName } from '../types'
@@ -34,22 +34,30 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
           <>
             <Form layout={'inline'} style={{ display: 'inline-block' }}>
               <FormItem label={'服务'}>
-                <SelectMultiple
-                  appearance='button'
-                  options={[...(data?.serviceList || [])]}
-                  value={selectedService}
-                  onChange={v => dispatch(creators.selectService(v))}
-                  allOption={{ text: '全部服务汇总', value: '' }}
-                ></SelectMultiple>
+                {data?.serviceList.length ? (
+                  <SelectMultiple
+                    appearance='button'
+                    options={[...(data?.serviceList || [])]}
+                    value={selectedService}
+                    onChange={v => dispatch(creators.selectService(v))}
+                    allOption={{ text: '全部服务汇总', value: '' }}
+                  ></SelectMultiple>
+                ) : (
+                  <FormText>无可选服务</FormText>
+                )}
               </FormItem>
               <FormItem label={'配置分组'}>
-                <SelectMultiple
-                  appearance='button'
-                  options={[...(data?.configGroupList || [])]}
-                  value={selectedConfigGroup}
-                  onChange={v => dispatch(creators.selectConfigGroup(v))}
-                  allOption={{ text: '全部配置分组汇总', value: '' }}
-                ></SelectMultiple>
+                {data?.configGroupList.length ? (
+                  <SelectMultiple
+                    appearance='button'
+                    options={[...(data?.configGroupList || [])]}
+                    value={selectedConfigGroup}
+                    onChange={v => dispatch(creators.selectConfigGroup(v))}
+                    allOption={{ text: '全部配置分组汇总', value: '' }}
+                  ></SelectMultiple>
+                ) : (
+                  <FormText>无配置分组</FormText>
+                )}
               </FormItem>
             </Form>
           </>

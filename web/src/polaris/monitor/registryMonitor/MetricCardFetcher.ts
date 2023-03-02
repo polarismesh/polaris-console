@@ -19,6 +19,7 @@ export interface QuerySet {
   boardFunction?: Function
   asyncBoardFunction?: Function
   dataFormatter?: Function
+  noLine?: boolean
 }
 export class MetricCardFetcher extends Fetcher {
   Data: {
@@ -61,7 +62,7 @@ export class MetricCardFetcher extends Fetcher {
       } else if (currentQuery.asyncBoardFunction) {
         boardData.push({ ...currentQuery, value: currentQuery?.asyncBoardFunction({ ...currentQuery, ...param }) })
       }
-      convertedData = convertedData.concat(formattedArray)
+      if (!currentQuery.noLine) convertedData = convertedData.concat(formattedArray)
       resIndex += 1
     }
     const asyncBoardData = boardData.filter(item => item.asyncBoardFunction)

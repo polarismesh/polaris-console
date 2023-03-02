@@ -103,6 +103,7 @@ export const getQueryMap = {
           return prev + Number(value)
         },
         unit: '%',
+        noLine: true,
       },
     ]
   },
@@ -403,3 +404,6 @@ export const MonitorFeatureOptions = Object.entries(MonitorFeatureTextMap).map((
   text: value,
   value: key,
 }))
+export function roundToN(value, n) {
+  return Math.round(value * Math.pow(10, n)) / Math.pow(10, n)
+}

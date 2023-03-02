@@ -1,6 +1,6 @@
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
-import { Col, Form, FormItem, Justify, Row, SelectMultiple } from 'tea-component'
+import { Col, Form, FormItem, FormText, Justify, Row, SelectMultiple } from 'tea-component'
 import { combineVector } from '../../combvec'
 import MetricCard from '../MetricCard'
 import SimpleCollapse from '../SimpleCollapse'
@@ -72,26 +72,34 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
                     }
                     dispatch(creators.selectInterface(availableInterface))
                   }}
-                  allOption={{ text: '全部服务汇总', value: '' }}
+                  allOption={{ text: '全部功能汇总', value: '' }}
                 ></SelectMultiple>
               </FormItem>
               <FormItem label={'接口'}>
-                <SelectMultiple
-                  appearance='button'
-                  options={currentInterfaceList}
-                  value={selectedInterface}
-                  onChange={v => dispatch(creators.selectInterface(v))}
-                  allOption={{ text: '全部接口汇总', value: '' }}
-                ></SelectMultiple>
+                {currentInterfaceList?.length ? (
+                  <SelectMultiple
+                    appearance='button'
+                    options={currentInterfaceList}
+                    value={selectedInterface}
+                    onChange={v => dispatch(creators.selectInterface(v))}
+                    allOption={{ text: '全部接口汇总', value: '' }}
+                  ></SelectMultiple>
+                ) : (
+                  <FormText>无可选接口</FormText>
+                )}
               </FormItem>
               <FormItem label={'节点'}>
-                <SelectMultiple
-                  appearance='button'
-                  options={[...(data?.podList || [])]}
-                  value={selectedPod}
-                  onChange={v => dispatch(creators.selectPod(v))}
-                  allOption={{ text: '全部节点汇总', value: '' }}
-                ></SelectMultiple>
+                {data?.podList.length ? (
+                  <SelectMultiple
+                    appearance='button'
+                    options={[...(data?.podList || [])]}
+                    value={selectedPod}
+                    onChange={v => dispatch(creators.selectPod(v))}
+                    allOption={{ text: '全部节点汇总', value: '' }}
+                  ></SelectMultiple>
+                ) : (
+                  <FormText>无节点</FormText>
+                )}
               </FormItem>
             </Form>
           </>
