@@ -23,6 +23,8 @@ for arch in ${arch_list[@]}; do
       echo "build polaris-console failed"
       exit 1
     fi
+    
+    ls -lstrh
 
     mv polaris-console polaris-console-${arch}
     platforms+="linux/${arch},"
