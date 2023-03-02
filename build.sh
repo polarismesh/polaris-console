@@ -54,7 +54,7 @@ CGO_ENABLED=0 go build -o ${bin_name}
 # 打包
 cd $workdir
 mkdir -p ${folder_name}/web/
-cp web/dist/ ${folder_name}/web/
+mv web/dist/ ${folder_name}/web/
 cp ${bin_name} ${folder_name}
 cp polaris-console.yaml ${folder_name}
 cp -r tool/ ${folder_name}/tool/
