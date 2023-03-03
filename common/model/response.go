@@ -83,3 +83,13 @@ func (b *BatchWriteResponse) Collect(response *Response) {
 func CalcCode(code int32) int {
 	return int(code / 1000)
 }
+
+type ServerNodes struct {
+	Code  int    `json:"code"`
+	Info  string `json:"info"`
+	Nodes []struct {
+		ID   string `json:"id"`
+		Host string `json:"host"`
+		Port int    `json:"port"`
+	} `json:"instances"`
+}

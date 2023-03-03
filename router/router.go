@@ -52,6 +52,8 @@ func Router(config *bootstrap.Config) {
 	DiscoveryV2Router(r, config)
 	// 配置请求
 	ConfigRouter(r, config)
+	// 指标监控接口
+	MetricsRouter(r, config)
 
 	address := fmt.Sprintf("%v:%v", config.WebServer.ListenIP, config.WebServer.ListenPort)
 	r.Run(address)
