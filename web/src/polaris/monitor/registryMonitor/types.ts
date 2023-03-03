@@ -58,6 +58,7 @@ const MinReduceFunction = (prev, curr, index, array) => {
   if (!value) {
     return prev ? prev : Number.MAX_VALUE
   }
+  if (index === array.length - 1) return roundToN(Math.min(prev, Number(value)), 2)
   return Math.min(prev, Number(value)).toFixed(2)
 }
 
@@ -137,7 +138,7 @@ export const getQueryMap = {
             : interfaceName
               ? `((sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})) * 100) or on() vector(0)`
               : podName
-                ? `((sum(client_rq_interval_count{err_code=~"2.+|0",polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})) * 100) or on() vector(0)`
+                ? `((sum(client_rq_interval_count{err_code=~"2.+|0",polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}"})) * 100) or on() vector(0)`
                 : '((sum(client_rq_interval_count{err_code=~"2.+|0"}) / sum(client_rq_interval_count)) * 100) or on() vector(0)',
         boardFunction: LatestValueReduceFunction,
         minStep: 60,
