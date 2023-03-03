@@ -121,7 +121,7 @@ export const getQueryMap = {
   },
   [MetricName.Timeout]: queryParam => {
     const { interfaceName, podName, start, end, step } = queryParam
-    const stepInterval = moment.duration(end - start, 's').asMinutes() > 1440 ? "10m" : "1m"
+    const stepInterval = step <= 60 ? 60 : step
     const interval = moment.duration(end - start, 's').asMinutes() + 'm'
     return [
       {
@@ -161,11 +161,10 @@ export const getQueryMap = {
         name: 'P99',
         query:
           interfaceName && podName
-            ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${step}s])))`
+            ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))`
             : interfaceName
-              ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${step}s])))`
-              : `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket[${step}s])))`,
-        boardFunction: MaxReduceFunction,
+              ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))`
+              : `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))`,
         asyncBoardFunction: async () => {
           const res = await getMonitorData({
             start,
@@ -189,11 +188,10 @@ export const getQueryMap = {
         name: 'P95',
         query:
           interfaceName && podName
-            ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${step}s])))`
+            ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))`
             : interfaceName
-              ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${step}s])))`
-              : `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket[${step}s])))`,
-        boardFunction: MaxReduceFunction,
+              ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))`
+              : `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))`,
         asyncBoardFunction: async () => {
           const res = await getMonitorData({
             start,
@@ -357,10 +355,10 @@ export const getQueryMap = {
         name: '4xx失败请求数',
         query:
           interfaceName && podName
-            ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}})`
+            ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count{err_code=~"4.+|0"}) / sum(client_rq_interval_count)',
+              ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"})`
+              : 'sum(client_rq_interval_count{err_code=~"4.+|0"})',
         boardFunction: SumUpReduceFunction,
       },
     ]
@@ -392,10 +390,10 @@ export const getQueryMap = {
         name: '4xx',
         query:
           interfaceName && podName
-            ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}})`
+            ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count{err_code=~"4.+|0"}) / sum(client_rq_interval_count)',
+              ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"})`
+              : 'sum(client_rq_interval_count{err_code=~"4.+|0"})',
         boardFunction: SumUpReduceFunction,
       },
     ]
