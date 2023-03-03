@@ -12,10 +12,13 @@ RUN set -eux && \
     echo "Asia/Shanghai" > /etc/timezone && \
     date
 
-COPY ./polaris_console_package/polaris-console /root/polaris-console
+ARG TARGETARCH
+
+COPY ./polaris_console_package/polaris-console-${TARGETARCH} /root/polaris-console
 COPY ./polaris_console_package/tool /root/tool
 COPY ./polaris_console_package/web /root/web
 COPY ./polaris_console_package/polaris-console.yaml /root/polaris-console.yaml
+
 
 EXPOSE 8080
 

@@ -9,18 +9,31 @@ if [ $# != 1 ]; then
 fi
 
 docker_tag=$1
+docker_repository="polarismesh"
 
 echo "docker repository : polarismesh/polaris-console, tag : ${docker_tag}"
 
-bash build.sh
+arch_list=( "amd64" "arm64" )
+platforms=""
 
-if [ $? != 0 ]; then
-  echo "build polaris-console failed"
-  exit 1
+for arch in ${arch_list[@]}; do
+    export GOARCH=${arch}
+    bash build.sh ${docker_tag}
+    if [ $? != 0 ]; then
+      echo "build polaris-console failed"
+      exit 1
+    fi
+
+    mv polaris-console polaris-console-${arch}
+    platforms+="linux/${arch},"
+done
+
+platforms=${platforms::-1}
+extra_tags=""
+
+pre_release=`echo ${docker_tag}|egrep "(alpha|beta|rc|[T|t]est)"|wc -l`
+if [ ${pre_release} == 0 ]; then
+  extra_tags="-t ${docker_repository}/polaris-console:latest"
 fi
 
-docker build --network=host -t polarismesh/polaris-console:${docker_tag} ./
-
-docker push polarismesh/polaris-console:${docker_tag}
-docker tag polarismesh/polaris-console:${docker_tag} polarismesh/polaris-console:latest
-docker push polarismesh/polaris-console:latest
+docker buildx build --network=host -t ${docker_repository}/polaris-console:${docker_tag} ${extra_tags} --platform ${platforms} --push ./
