@@ -62,7 +62,6 @@ export const getLabelTag = (
   labelsField?: FieldAPI<RouteDestinationArgument[]>,
 ) => {
   const { key, type, value, value_type } = label
-  console.log(value_type)
   return (
     <Tag key={`${key}${index}`}>
       {`键 ${key} ${RouteLabelTextMap[type]} ${RoutingValueTextMap[value_type]}${value}`}

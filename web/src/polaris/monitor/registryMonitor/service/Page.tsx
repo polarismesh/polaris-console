@@ -36,6 +36,7 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
               <FormItem label={'服务'}>
                 {data?.serviceList.length ? (
                   <SelectMultiple
+                    searchable
                     appearance='button'
                     options={[...(data?.serviceList || [])]}
                     value={selectedService}
@@ -49,6 +50,7 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
               <FormItem label={'配置分组'}>
                 {data?.configGroupList.length ? (
                   <SelectMultiple
+                    searchable
                     appearance='button'
                     options={[...(data?.configGroupList || [])]}
                     value={selectedConfigGroup}

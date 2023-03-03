@@ -78,6 +78,7 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
               <FormItem label={'接口'}>
                 {currentInterfaceList?.length ? (
                   <SelectMultiple
+                    searchable
                     appearance='button'
                     options={currentInterfaceList}
                     value={selectedInterface}
@@ -91,6 +92,7 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
               <FormItem label={'节点'}>
                 {data?.podList.length ? (
                   <SelectMultiple
+                    searchable
                     appearance='button'
                     options={[...(data?.podList || [])]}
                     value={selectedPod}

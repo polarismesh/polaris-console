@@ -48,7 +48,7 @@ export class MetricCardFetcher extends Fetcher {
       const currentQuery = param.query[resIndex] as QuerySet
       const reduceValue = res[0]?.values.reduce((prev, curr, currentIndex, currentArray) => {
         const [time, value] = curr
-        if (value === "NaN") {
+        if (value === 'NaN') {
           return
         }
         const timeString = moment(time * 1000).format('YYYY-MM-DD HH:mm:ss')

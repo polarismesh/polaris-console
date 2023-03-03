@@ -35,6 +35,7 @@ const MaxReduceFunction = (prev, curr, index, array) => {
   if (!value) {
     return prev ? prev : 0
   }
+  if (index === array.length - 1) return roundToN(Math.max(prev, Number(value)), 2)
   return Math.max(prev, Number(value)).toFixed(2)
 }
 
@@ -43,6 +44,7 @@ const MinReduceFunction = (prev, curr, index, array) => {
   if (!value) {
     return prev ? prev : Number.MAX_VALUE
   }
+  if (index === array.length - 1) return roundToN(Math.min(prev, Number(value)), 2)
   return Math.min(prev, Number(value)).toFixed(2)
 }
 
@@ -81,8 +83,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count)',
+            ? `sum(client_rq_interval_count{api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count)',
         boardFunction: SumUpReduceFunction,
       },
       {
@@ -91,8 +93,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count{err_code=~"2.+|0"})',
+            ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"2.+|0"})',
         boardFunction: SumUpReduceFunction,
       },
       {
@@ -101,8 +103,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count{err_code!~"2.+|0"})',
+            ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code!~"2.+|0"})',
         boardFunction: SumUpReduceFunction,
       },
       {
@@ -111,8 +113,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `(sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}})) * 100`
             : interfaceName
-              ? `(sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})) * 100`
-              : '(sum(client_rq_interval_count{err_code=~"2.+|0"}) / sum(client_rq_interval_count)) * 100',
+            ? `(sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})) * 100`
+            : '(sum(client_rq_interval_count{err_code=~"2.+|0"}) / sum(client_rq_interval_count)) * 100',
         boardFunction: LatestValueReduceFunction,
         unit: '%',
         noLine: true,
@@ -130,8 +132,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(rate(client_rq_time_ms_sum{api=~"${interfaceName}"}[${interval}]))/sum(rate(client_rq_time_ms_count{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${interval}]))`
             : interfaceName
-              ? `sum(rate(client_rq_time_ms_sum{api=~"${interfaceName}"}[${interval}]))/sum(rate(client_rq_time_ms_count{api=~"${interfaceName}"}[${interval}]))`
-              : `sum(rate(client_rq_time_ms_sum[${interval}]))/sum(rate(client_rq_time_ms_count[${interval}]))`,
+            ? `sum(rate(client_rq_time_ms_sum{api=~"${interfaceName}"}[${interval}]))/sum(rate(client_rq_time_ms_count{api=~"${interfaceName}"}[${interval}]))`
+            : `sum(rate(client_rq_time_ms_sum[${interval}]))/sum(rate(client_rq_time_ms_count[${interval}]))`,
         boardFunction: AvgReduceFunction,
         unit: 'ms',
       },
@@ -141,8 +143,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `max(client_rq_timeout_max{api=~"${interfaceName}",polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `max(client_rq_timeout_max{api=~"${interfaceName}"})`
-              : 'max(client_rq_timeout_max)',
+            ? `max(client_rq_timeout_max{api=~"${interfaceName}"})`
+            : 'max(client_rq_timeout_max)',
         boardFunction: MaxReduceFunction,
         unit: 'ms',
       },
@@ -152,8 +154,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `min(client_rq_timeout_min{api=~"${interfaceName}",polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `min(client_rq_timeout_min{api=~"${interfaceName}"})`
-              : 'min(client_rq_timeout_min)',
+            ? `min(client_rq_timeout_min{api=~"${interfaceName}"})`
+            : 'min(client_rq_timeout_min)',
         boardFunction: MinReduceFunction,
         unit: 'ms',
       },
@@ -163,8 +165,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))`
             : interfaceName
-              ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))`
-              : `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))`,
+            ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))`
+            : `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))`,
         asyncBoardFunction: async () => {
           const res = await getMonitorData({
             start,
@@ -174,8 +176,8 @@ export const getQueryMap = {
               interfaceName && podName
                 ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${interval}])))`
                 : interfaceName
-                  ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${interval}])))`
-                  : `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket[${interval}])))`,
+                ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${interval}])))`
+                : `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket[${interval}])))`,
           })
           const point = res?.[0]?.values?.[0]
           if (!point) return '-'
@@ -190,8 +192,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))`
             : interfaceName
-              ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))`
-              : `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))`,
+            ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))`
+            : `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))`,
         asyncBoardFunction: async () => {
           const res = await getMonitorData({
             start,
@@ -201,8 +203,8 @@ export const getQueryMap = {
               interfaceName && podName
                 ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${interval}])))`
                 : interfaceName
-                  ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${interval}])))`
-                  : `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket[${interval}])))`,
+                ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${interval}])))`
+                : `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket[${interval}])))`,
           })
           const point = res?.[0]?.values?.[0]
           if (!point) return '-'
@@ -255,8 +257,8 @@ export const getQueryMap = {
           namespace && service
             ? `max(sum(instance_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance))`
             : namespace
-              ? `max(sum(instance_count{namespace="${namespace}"}) by(polaris_server_instance))`
-              : 'max(sum(instance_count) by(polaris_server_instance))',
+            ? `max(sum(instance_count{namespace="${namespace}"}) by(polaris_server_instance))`
+            : 'max(sum(instance_count) by(polaris_server_instance))',
         boardFunction: LatestValueReduceFunction,
       },
       {
@@ -265,8 +267,8 @@ export const getQueryMap = {
           namespace && service
             ? `max(sum(instance_online_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance))`
             : namespace
-              ? `max(sum(instance_online_count{namespace="${namespace}"}) by(polaris_server_instance))`
-              : 'max(sum(instance_online_count) by(polaris_server_instance))',
+            ? `max(sum(instance_online_count{namespace="${namespace}"}) by(polaris_server_instance))`
+            : 'max(sum(instance_online_count) by(polaris_server_instance))',
         boardFunction: LatestValueReduceFunction,
       },
       {
@@ -275,8 +277,8 @@ export const getQueryMap = {
           namespace && service
             ? `max(sum(instance_isolate_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance))`
             : namespace
-              ? `max(sum(instance_isolate_count{namespace="${namespace}"}) by(polaris_server_instance))`
-              : 'max(sum(instance_isolate_count) by(polaris_server_instance))',
+            ? `max(sum(instance_isolate_count{namespace="${namespace}"}) by(polaris_server_instance))`
+            : 'max(sum(instance_isolate_count) by(polaris_server_instance))',
         boardFunction: LatestValueReduceFunction,
       },
       {
@@ -285,8 +287,8 @@ export const getQueryMap = {
           namespace && service
             ? `max(sum(instance_abnormal_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance))`
             : namespace
-              ? `max(sum(instance_abnormal_count{namespace="${namespace}"}) by(polaris_server_instance))`
-              : 'max(sum(instance_abnormal_count) by(polaris_server_instance))',
+            ? `max(sum(instance_abnormal_count{namespace="${namespace}"}) by(polaris_server_instance))`
+            : 'max(sum(instance_abnormal_count) by(polaris_server_instance))',
         boardFunction: LatestValueReduceFunction,
       },
     ]
@@ -312,8 +314,8 @@ export const getQueryMap = {
           namespace && configGroup
             ? `max(sum(config_file_count{namespace="${namespace}",group="${configGroup}"}) by(polaris_server_instance))`
             : namespace
-              ? `max(sum(config_file_count{namespace="${namespace}"}) by(polaris_server_instance))`
-              : 'max(sum(config_file_count) by(polaris_server_instance))',
+            ? `max(sum(config_file_count{namespace="${namespace}"}) by(polaris_server_instance))`
+            : 'max(sum(config_file_count) by(polaris_server_instance))',
         boardFunction: LatestValueReduceFunction,
       },
       {
@@ -322,8 +324,8 @@ export const getQueryMap = {
           namespace && configGroup
             ? `max(sum(config_release_file_count{namespace="${namespace}",group="${configGroup}"}) by(polaris_server_instance))`
             : namespace
-              ? `max(sum(config_release_file_count{namespace="${namespace}"}) by(polaris_server_instance))`
-              : 'max(sum(config_release_file_count) by(polaris_server_instance))',
+            ? `max(sum(config_release_file_count{namespace="${namespace}"}) by(polaris_server_instance))`
+            : 'max(sum(config_release_file_count) by(polaris_server_instance))',
         boardFunction: LatestValueReduceFunction,
       },
     ]
@@ -337,8 +339,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count{err_code!~"2.+|0"})',
+            ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code!~"2.+|0"})',
         boardFunction: SumUpReduceFunction,
       },
       {
@@ -347,8 +349,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count{err_code=~"5.+"})',
+            ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"5.+"})',
         boardFunction: SumUpReduceFunction,
       },
       {
@@ -357,8 +359,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count{err_code=~"4.+|0"})',
+            ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"4.+|0"})',
         boardFunction: SumUpReduceFunction,
       },
     ]
@@ -372,8 +374,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count{err_code=~"2.+|0"})',
+            ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"2.+|0"})',
         boardFunction: SumUpReduceFunction,
       },
       {
@@ -382,8 +384,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}",polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count{err_code=~"5.+"})',
+            ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"5.+"})',
         boardFunction: SumUpReduceFunction,
       },
       {
@@ -392,8 +394,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"})`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"})`
-              : 'sum(client_rq_interval_count{err_code=~"4.+|0"})',
+            ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"})`
+            : 'sum(client_rq_interval_count{err_code=~"4.+|0"})',
         boardFunction: SumUpReduceFunction,
       },
     ]

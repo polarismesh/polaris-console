@@ -88,6 +88,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
           <Form layout={'inline'} style={{ width: '1200px', display: 'inline-block' }}>
             <FormItem label={'命名空间'}>
               <Select
+                searchable
                 appearance='button'
                 options={[{ text: '全部命名空间汇总', value: '' }, ...data]}
                 value={namespace}
