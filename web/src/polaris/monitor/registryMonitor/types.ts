@@ -58,6 +58,7 @@ const MinReduceFunction = (prev, curr, index, array) => {
   if (!value) {
     return prev ? prev : Number.MAX_VALUE
   }
+  if (index === array.length - 1) return roundToN(Math.min(prev, Number(value)), 2)
   return Math.min(prev, Number(value)).toFixed(2)
 }
 
