@@ -21,7 +21,10 @@ export interface QuerySet {
   dataFormatter?: Function
   noLine?: boolean
   minStep?: number
+<<<<<<< HEAD
   color?: string
+=======
+>>>>>>> 3ea413c... fix: 修复step相关问题
 }
 export class MetricCardFetcher extends Fetcher {
   Data: {
