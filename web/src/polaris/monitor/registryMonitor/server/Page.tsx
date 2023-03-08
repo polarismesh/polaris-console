@@ -45,6 +45,9 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
       ),
     )
   }
+  React.useEffect(() => {
+    partitions.length ? setActiveIds([partitions[0].interfaceId]) : setActiveIds(['all'])
+  }, [partitions.length, namespace])
   const currentInterfaceList = (data?.interfaceList || []).filter(item => selectedFeature.includes(item.type))
   return (
     <>
@@ -144,6 +147,7 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
           </Col>
         </Row>
       </SimpleCollapse>
+
       {partitions.length > 0 && (
         <>
           {partitions.map(({ podName, interfaceId }) => {
@@ -153,8 +157,8 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
             const key = `${interfaceName ? `${interfaceName}-` : ''}${podName ? podName : ''}`
             return (
               <SimpleCollapse
-                id={key}
-                key={`${interfaceName ? interfaceName : ''}-${podName ? podName : ''}`}
+                id={id}
+                key={key}
                 activeIds={activeIds}
                 title={`
                 ${curInterface ? `${MonitorFeatureTextMap[curInterface.type]}功能-${curInterface.desc}接口` : ''}

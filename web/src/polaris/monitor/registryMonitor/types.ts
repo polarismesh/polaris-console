@@ -86,6 +86,7 @@ export const getQueryMap = {
             ? `sum(client_rq_interval_count{api=~"${interfaceName}"})`
             : 'sum(client_rq_interval_count)',
         boardFunction: SumUpReduceFunction,
+        minStep: 60,
       },
       {
         name: '成功请求数',
@@ -96,6 +97,7 @@ export const getQueryMap = {
             ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"})`
             : 'sum(client_rq_interval_count{err_code=~"2.+|0"})',
         boardFunction: SumUpReduceFunction,
+        minStep: 60,
       },
       {
         name: '失败请求数',
@@ -106,6 +108,7 @@ export const getQueryMap = {
             ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"})`
             : 'sum(client_rq_interval_count{err_code!~"2.+|0"})',
         boardFunction: SumUpReduceFunction,
+        minStep: 60,
       },
       {
         name: '请求成功率',
@@ -116,6 +119,8 @@ export const getQueryMap = {
             ? `(sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})) * 100`
             : '(sum(client_rq_interval_count{err_code=~"2.+|0"}) / sum(client_rq_interval_count)) * 100',
         boardFunction: LatestValueReduceFunction,
+        minStep: 60,
+
         unit: '%',
         noLine: true,
       },
@@ -124,7 +129,7 @@ export const getQueryMap = {
   [MetricName.Timeout]: queryParam => {
     const { interfaceName, podName, start, end, step } = queryParam
     const stepInterval = step <= 60 ? 60 : step
-    const interval = moment.duration(end - start, 's').asMinutes() + 'm'
+    const interval = Math.floor(moment.duration(end - start, 's').asMinutes()) + 'm'
     return [
       {
         name: '均值',
@@ -136,6 +141,7 @@ export const getQueryMap = {
             : `sum(rate(client_rq_time_ms_sum[${interval}]))/sum(rate(client_rq_time_ms_count[${interval}]))`,
         boardFunction: AvgReduceFunction,
         unit: 'ms',
+        minStep: 60,
       },
       {
         name: '最大值',
@@ -147,6 +153,7 @@ export const getQueryMap = {
             : 'max(client_rq_timeout_max)',
         boardFunction: MaxReduceFunction,
         unit: 'ms',
+        minStep: 60,
       },
       {
         name: '最小值',
@@ -158,6 +165,7 @@ export const getQueryMap = {
             : 'min(client_rq_timeout_min)',
         boardFunction: MinReduceFunction,
         unit: 'ms',
+        minStep: 60,
       },
       {
         name: 'P99',
@@ -185,6 +193,7 @@ export const getQueryMap = {
           return value
         },
         unit: 'ms',
+        minStep: 60,
       },
       {
         name: 'P95',
@@ -212,6 +221,7 @@ export const getQueryMap = {
           return value
         },
         unit: 'ms',
+        minStep: 60,
       },
     ]
   },
@@ -342,6 +352,7 @@ export const getQueryMap = {
             ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"})`
             : 'sum(client_rq_interval_count{err_code!~"2.+|0"})',
         boardFunction: SumUpReduceFunction,
+        minStep: 60,
       },
       {
         name: '5xx失败请求数',
@@ -352,6 +363,7 @@ export const getQueryMap = {
             ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"})`
             : 'sum(client_rq_interval_count{err_code=~"5.+"})',
         boardFunction: SumUpReduceFunction,
+        minStep: 60,
       },
       {
         name: '4xx失败请求数',
@@ -362,6 +374,7 @@ export const getQueryMap = {
             ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"})`
             : 'sum(client_rq_interval_count{err_code=~"4.+|0"})',
         boardFunction: SumUpReduceFunction,
+        minStep: 60,
       },
     ]
   },
@@ -377,6 +390,7 @@ export const getQueryMap = {
             ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"})`
             : 'sum(client_rq_interval_count{err_code=~"2.+|0"})',
         boardFunction: SumUpReduceFunction,
+        minStep: 60,
       },
       {
         name: '5xx',
@@ -387,6 +401,7 @@ export const getQueryMap = {
             ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"})`
             : 'sum(client_rq_interval_count{err_code=~"5.+"})',
         boardFunction: SumUpReduceFunction,
+        minStep: 60,
       },
       {
         name: '4xx',
@@ -397,6 +412,7 @@ export const getQueryMap = {
             ? `sum(client_rq_interval_count{err_code=~"4.+|0",api=~"${interfaceName}"})`
             : 'sum(client_rq_interval_count{err_code=~"4.+|0"})',
         boardFunction: SumUpReduceFunction,
+        minStep: 60,
       },
     ]
   },

@@ -20,6 +20,7 @@ export interface QuerySet {
   asyncBoardFunction?: Function
   dataFormatter?: Function
   noLine?: boolean
+  minStep?: number
 }
 export class MetricCardFetcher extends Fetcher {
   Data: {
@@ -36,7 +37,13 @@ export class MetricCardFetcher extends Fetcher {
   async getDataAsync(param: this['Param']) {
     const fetchPromise = []
     for (const queryParam of param.query) {
-      fetchPromise.push(getMonitorData({ ...param, query: queryParam.query }))
+      fetchPromise.push(
+        getMonitorData({
+          ...param,
+          query: queryParam.query,
+          step: queryParam.minStep ? Math.max(queryParam.minStep, param.step) : param.step,
+        }),
+      )
     }
     const results = await Promise.all(fetchPromise)
     let convertedData = []

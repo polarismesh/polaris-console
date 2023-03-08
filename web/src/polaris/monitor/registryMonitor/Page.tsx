@@ -54,6 +54,13 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
   const flush = () => {
     timePicker?.current?.flush()
   }
+  React.useEffect(() => {
+    const gap = end - start
+    if (gap < step) {
+      //如果间隔小于step，重置step为可选的第一个
+      dispatch(creators.setStep(Number(StepOptions.find(item => !item.disabled).value)))
+    }
+  }, [start, end])
   if (!data) return <noscript />
   const gap = end - start
   const StepOptions = [
@@ -75,8 +82,10 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
     {
       text: '1小时',
       value: '3600',
+      disabled: gap < 3600,
     },
   ]
+
   return (
     <DetailPage
       store={store}
