@@ -16,9 +16,7 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
     data,
   } = selector(store)
   const [activeIds, setActiveIds] = React.useState(['all'])
-  React.useEffect(() => {
-    setActiveIds(['all'])
-  }, [namespace])
+
   const basicQueryParam = { start, end, step }
   const configGroupMap = selectors.configGroupMap(store)
   const serviceMap = selectors.serviceMap(store)
@@ -27,6 +25,14 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
   const onChangeFunction = v => {
     setActiveIds(v)
   }
+
+  React.useEffect(() => {
+    const partitions = [
+      ...(selectAllConfigGroup ? [] : selectedConfigGroup),
+      ...(selectAllService ? [] : selectedService),
+    ]
+    partitions.length ? setActiveIds([partitions[0]]) : setActiveIds(['all'])
+  }, [selectedService.length, selectedConfigGroup.length, namespace])
   return (
     <>
       <Justify
