@@ -147,10 +147,10 @@ export const getQueryMap = {
         name: '最大值',
         query:
           interfaceName && podName
-            ? `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))[${interval}:])`
+            ? `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))[${stepInterval}s:])`
             : interfaceName
-              ? `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))[${interval}:])`
-              : `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))[${interval}:])`,
+              ? `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))[${stepInterval}s:])`
+              : `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))[${stepInterval}s:])`,
         boardFunction: MaxReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -159,10 +159,10 @@ export const getQueryMap = {
         name: '最小值',
         query:
           interfaceName && podName
-          ? `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))[${interval}:])`
+          ? `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))[${stepInterval}s:])`
           : interfaceName
-            ? `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))[${interval}:])`
-            : `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))[${interval}:])`,
+            ? `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))[${stepInterval}s:])`
+            : `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))[${stepInterval}s:])`,
         boardFunction: MinReduceFunction,
         unit: 'ms',
         minStep: 60,
