@@ -135,7 +135,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                 </Form>
               </Form.Item>
               <Form.Item label={'路由策略'}>
-                {rules.map((rule, index) => {
+                {rules?.map((rule, index) => {
                   const { sources, destinations } = rule
                   return (
                     <Card key={index} style={{ width: 'calc(95% + 20px)', margin: '0' }} bordered>
