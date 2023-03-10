@@ -29,8 +29,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"go.uber.org/zap"
 
 	"github.com/polarismesh/polaris-console/bootstrap"
+	"github.com/polarismesh/polaris-console/common/log"
 )
 
 // ServiceOwner 服务(规则)负责人信息
@@ -38,6 +40,12 @@ type ServiceOwner struct {
 	Namespace string
 	Name      string
 	Owners    map[string]bool
+}
+
+type LoginRequest struct {
+	Owner    string `json:"owner"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
 
 // ReverseProxyForLogin 反向代理
@@ -50,6 +58,23 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 			req.URL.Scheme = "http"
 			req.URL.Host = polarisServer.Address
 			req.Host = polarisServer.Address
+			body, err := ioutil.ReadAll(req.Body)
+			if err != nil {
+				log.Error("[Proxy][Login] modify login request fail", zap.Error(err))
+				return
+			}
+			loginBody := &LoginRequest{}
+			_ = json.Unmarshal(body, loginBody)
+			loginBody.Owner = "polaris"
+			if len(conf.WebServer.MainUser) != 0 {
+				loginBody.Owner = conf.WebServer.MainUser
+			}
+			body, err = json.Marshal(loginBody)
+			if err != nil {
+				log.Error("[Proxy][Login] modify login request fail", zap.Error(err))
+				return
+			}
+			req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 		}
 		modifyResp := func(resp *http.Response) error {
 			body, err := ioutil.ReadAll(resp.Body)
