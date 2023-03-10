@@ -60,6 +60,7 @@ export default function(props: Props) {
                   return values.map(metaData => ({ ...metaData, valueText: roundToN(metaData.value, 2).toString() }))
                 },
               }}
+              size={1}
               theme={{ color: ['#006EFF', '#0ABF5B', '#E54545', '#FF7200', '#6E829D'] }}
             ></BasicArea>
           )}
