@@ -289,7 +289,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       </Bubble>
     )
   }
-
   function RouteLabelSelectPanel({
     labelsField,
     id,

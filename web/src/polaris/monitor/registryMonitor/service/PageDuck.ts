@@ -2,10 +2,9 @@ import DetailPage from '@src/polaris/common/ducks/DetailPage'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeConfigFileGroups } from '@src/polaris/configuration/fileGroup/model'
 import { describeServices } from '@src/polaris/service/model'
-import { put } from 'redux-saga/effects'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
 import { ComposedId } from '../PageDuck'
-import { takeLatest } from 'redux-saga-catch'
+import { SelectAllString } from './Page'
 
 export default class ServiceMonitorDuck extends DetailPage {
   get baseUrl() {
@@ -41,8 +40,8 @@ export default class ServiceMonitorDuck extends DetailPage {
     return {
       ...super.reducers,
       composedId: reduceFromPayload(types.LOAD, {} as ComposedId),
-      selectedService: reduceFromPayload(types.SELECT_SERVICE, []),
-      selectedConfigGroup: reduceFromPayload(types.SELECT_CONFIG_GROUP, []),
+      selectedService: reduceFromPayload(types.SELECT_SERVICE, [SelectAllString]),
+      selectedConfigGroup: reduceFromPayload(types.SELECT_CONFIG_GROUP, [SelectAllString]),
     }
   }
   get creators() {
@@ -80,13 +79,7 @@ export default class ServiceMonitorDuck extends DetailPage {
     }
   }
   *saga() {
-    const { types, creators } = this
     yield* super.saga()
-    yield takeLatest(types.FETCH_DONE, function*(action) {
-      const { configGroupList, serviceList } = action.payload
-      yield put(creators.selectConfigGroup(configGroupList.map(item => item.id)))
-      yield put(creators.selectService(serviceList.map(item => item.id)))
-    })
   }
   async getData(composedId: ComposedId) {
     const { namespace } = composedId

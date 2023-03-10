@@ -1,9 +1,8 @@
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
-import { put } from 'redux-saga/effects'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
 import { ComposedId } from '../PageDuck'
-import { takeLatest } from 'redux-saga-catch'
 import { getMetricsInterface, getNamespaceNodes } from '../../models'
+import { SelectAllString } from '../service/Page'
 
 export default class ServerMonitorDuck extends DetailPage {
   get baseUrl() {
@@ -39,8 +38,8 @@ export default class ServerMonitorDuck extends DetailPage {
     return {
       ...super.reducers,
       composedId: reduceFromPayload(types.LOAD, {} as ComposedId),
-      selectedInterface: reduceFromPayload(types.SELECT_INTERFACE, []),
-      selectedPod: reduceFromPayload(types.SELECT_POD, []),
+      selectedInterface: reduceFromPayload(types.SELECT_INTERFACE, [SelectAllString]),
+      selectedPod: reduceFromPayload(types.SELECT_POD, [SelectAllString]),
     }
   }
   get creators() {
@@ -69,13 +68,7 @@ export default class ServerMonitorDuck extends DetailPage {
     }
   }
   *saga() {
-    const { types, creators } = this
     yield* super.saga()
-    yield takeLatest(types.FETCH_DONE, function*(action) {
-      const { interfaceList, podList } = action.payload
-      yield put(creators.selectInterface(interfaceList.map(item => item.value)))
-      yield put(creators.selectPod(podList.map(item => item.value)))
-    })
   }
   async getData() {
     const [interfaceList, podList] = await Promise.all([getMetricsInterface(), getNamespaceNodes()])

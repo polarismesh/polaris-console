@@ -21,6 +21,7 @@ export interface QuerySet {
   dataFormatter?: Function
   noLine?: boolean
   minStep?: number
+  color?: string
 }
 export class MetricCardFetcher extends Fetcher {
   Data: {

@@ -3,7 +3,7 @@ import React from 'react'
 import { useDuck } from 'saga-duck'
 import { BasicArea } from 'tea-chart'
 import { MetricCardFetcher, QuerySet } from './MetricCardFetcher'
-import { compressNumber, roundToN } from './types'
+import { compressNumber, DefaultLineColors, roundToN } from './types'
 
 interface Props {
   query: QuerySet[]
@@ -24,6 +24,8 @@ export default function(props: Props) {
   const { loading, data } = duck.selector(store)
   if (!data) return <LoadingTip />
   const { line, board } = data
+  const colorArray = query.filter(item => item.color).map(item => item.color)
+
   return (
     <Card {...cardProps}>
       <Card.Body {...cardBodyProps} style={{ height: '500px' }}>
@@ -60,8 +62,11 @@ export default function(props: Props) {
                   return values.map(metaData => ({ ...metaData, valueText: roundToN(metaData.value, 2).toString() }))
                 },
               }}
-              size={1}
-              theme={{ color: ['#006EFF', '#0ABF5B', '#E54545', '#FF7200', '#6E829D'] }}
+              size={1.5}
+              theme={{
+                color: colorArray.length ? colorArray : DefaultLineColors,
+              }}
+              areaStyle={{ fillOpacity: 0 }}
             ></BasicArea>
           )}
         </div>

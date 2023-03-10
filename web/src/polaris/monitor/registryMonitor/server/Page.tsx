@@ -1,6 +1,6 @@
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
-import { Col, Form, FormItem, FormText, Justify, Row, SelectMultiple } from 'tea-component'
+import { Col, Form, FormItem, FormText, Justify, Row, SelectMultiple, Text } from 'tea-component'
 import { combineVector } from '../../combvec'
 import MetricCard from '../MetricCard'
 import { SelectAllString } from '../service/Page'
@@ -118,7 +118,14 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
               {...basicQueryParam}
               query={getQueryMap[MetricName.Request]({ ...basicQueryParam })}
               cardProps={{ bordered: true }}
-              cardBodyProps={{ title: '总请求数' }}
+              cardBodyProps={{
+                title: '请求数',
+                subtitle: (
+                  <Text parent={'div'} theme={'label'}>
+                    客户端访问北极星服务端请求数
+                  </Text>
+                ),
+              }}
             ></MetricCard>
           </Col>
           <Col span={12}>
@@ -126,7 +133,14 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
               {...basicQueryParam}
               query={getQueryMap[MetricName.Timeout]({ ...basicQueryParam })}
               cardProps={{ bordered: true }}
-              cardBodyProps={{ title: '响应耗时' }}
+              cardBodyProps={{
+                title: '请求时延',
+                subtitle: (
+                  <Text parent={'div'} theme={'label'}>
+                    客户端访问北极星服务端请求时延
+                  </Text>
+                ),
+              }}
             ></MetricCard>
           </Col>
           <Col span={12}>
@@ -180,7 +194,7 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
                       {...basicQueryParam}
                       query={getQueryMap[MetricName.Timeout]({ ...basicQueryParam, interfaceName, podName })}
                       cardProps={{ bordered: true }}
-                      cardBodyProps={{ title: '响应耗时' }}
+                      cardBodyProps={{ title: '请求时延' }}
                     ></MetricCard>
                   </Col>
                   <Col span={12}>

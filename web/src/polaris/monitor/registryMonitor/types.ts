@@ -13,6 +13,16 @@ export enum MetricName {
   ErrorReq = 'ErrorReq',
   RetCode = 'RetCode',
 }
+export enum LineColor {
+  Blue = '#006EFF',
+  Green = '#0ABF5B',
+  Red = '#E54545',
+  Yellow = '#FF7200',
+  Gray = '#6E829D',
+}
+
+export const DefaultLineColors = Object.values(LineColor)
+
 const LatestValueReduceFunction = (prev, curr, index, array) => {
   const [, value] = curr
   if (index === array?.length - 1) return Math.floor(Number(value))
@@ -142,6 +152,7 @@ export const getQueryMap = {
         boardFunction: AvgReduceFunction,
         unit: 'ms',
         minStep: 60,
+        color: LineColor.Blue,
       },
       {
         name: '最大值',
@@ -149,23 +160,25 @@ export const getQueryMap = {
           interfaceName && podName
             ? `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
             : interfaceName
-              ? `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
-              : `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`,
+            ? `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
+            : `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`,
         boardFunction: MaxReduceFunction,
         unit: 'ms',
         minStep: 60,
+        color: LineColor.Red,
       },
       {
         name: '最小值',
         query:
           interfaceName && podName
-          ? `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
-          : interfaceName
+            ? `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
+            : interfaceName
             ? `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
             : `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`,
         boardFunction: MinReduceFunction,
         unit: 'ms',
         minStep: 60,
+        color: LineColor.Green,
       },
       {
         name: 'P99',
@@ -194,6 +207,7 @@ export const getQueryMap = {
         },
         unit: 'ms',
         minStep: 60,
+        color: LineColor.Yellow,
       },
       {
         name: 'P95',
@@ -222,6 +236,7 @@ export const getQueryMap = {
         },
         unit: 'ms',
         minStep: 60,
+        color: LineColor.Gray,
       },
     ]
   },
@@ -371,8 +386,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName},polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}"}) or on() vector(0)`
-              : 'sum(client_rq_interval_count{err_code=~"4.+"}) or on() vector(0)',
+            ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}"}) or on() vector(0)`
+            : 'sum(client_rq_interval_count{err_code=~"4.+"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
@@ -409,8 +424,8 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName},polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-              ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}"}) or on() vector(0)`
-              : 'sum(client_rq_interval_count{err_code=~"4.+"}) or on() vector(0)',
+            ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}"}) or on() vector(0)`
+            : 'sum(client_rq_interval_count{err_code=~"4.+"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
