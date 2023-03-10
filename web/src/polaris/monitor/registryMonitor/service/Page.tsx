@@ -5,7 +5,7 @@ import MetricCard from '../MetricCard'
 import SimpleCollapse from '../SimpleCollapse'
 import { getQueryMap, MetricName } from '../types'
 import BaseInfoDuck from './PageDuck'
-
+export const SelectAllString = '__all__'
 export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
   const { duck, store, dispatch } = props
   const { selector, creators, selectors } = duck
@@ -20,16 +20,16 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
   const basicQueryParam = { start, end, step }
   const configGroupMap = selectors.configGroupMap(store)
   const serviceMap = selectors.serviceMap(store)
-  const selectAllService = selectedService?.length === data?.serviceList?.length
-  const selectAllConfigGroup = selectedConfigGroup?.length === data?.configGroupList?.length
+  const selectAllService = selectedService?.includes(SelectAllString)
+  const selectAllConfigGroup = selectedConfigGroup?.includes(SelectAllString)
   const onChangeFunction = v => {
     setActiveIds(v)
   }
 
   React.useEffect(() => {
     const partitions = [
-      ...(selectAllConfigGroup ? [] : selectedConfigGroup),
-      ...(selectAllService ? [] : selectedService),
+      ...(selectAllConfigGroup ? [] : selectedConfigGroup.filter(item => item !== SelectAllString)),
+      ...(selectAllService ? [] : selectedService.filter(item => item !== SelectAllString)),
     ]
     partitions.length ? setActiveIds([partitions[0]]) : setActiveIds(['all'])
   }, [selectedService.length, selectedConfigGroup.length, namespace])
@@ -44,10 +44,9 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
                   <SelectMultiple
                     searchable
                     appearance='button'
-                    options={[...(data?.serviceList || [])]}
+                    options={[{ text: '全部服务汇总', value: SelectAllString }, ...(data?.serviceList || [])]}
                     value={selectedService}
                     onChange={v => dispatch(creators.selectService(v))}
-                    allOption={{ text: '全部服务汇总', value: '' }}
                   ></SelectMultiple>
                 ) : (
                   <FormText>无可选服务</FormText>
@@ -58,10 +57,9 @@ export default function Service(props: DuckCmpProps<BaseInfoDuck>) {
                   <SelectMultiple
                     searchable
                     appearance='button'
-                    options={[...(data?.configGroupList || [])]}
+                    options={[{ text: '全部配置分组汇总', value: SelectAllString }, ...(data?.configGroupList || [])]}
                     value={selectedConfigGroup}
                     onChange={v => dispatch(creators.selectConfigGroup(v))}
-                    allOption={{ text: '全部配置分组汇总', value: '' }}
                   ></SelectMultiple>
                 ) : (
                   <FormText>无配置分组</FormText>

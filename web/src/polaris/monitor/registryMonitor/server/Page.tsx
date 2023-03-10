@@ -3,6 +3,7 @@ import { DuckCmpProps } from 'saga-duck'
 import { Col, Form, FormItem, FormText, Justify, Row, SelectMultiple } from 'tea-component'
 import { combineVector } from '../../combvec'
 import MetricCard from '../MetricCard'
+import { SelectAllString } from '../service/Page'
 import SimpleCollapse from '../SimpleCollapse'
 import { getQueryMap, MetricName, MonitorFeature, MonitorFeatureOptions, MonitorFeatureTextMap } from '../types'
 import BaseInfoDuck from './PageDuck'
@@ -23,8 +24,8 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
   }, [namespace])
   const basicQueryParam = { start, end, step }
   const interfaceMap = selectors.interfaceMap(store)
-  const selectAllInterface = selectedInterface?.length === data?.interfaceList?.length
-  const selectAllPod = selectedPod?.length === data?.podList?.length
+  const selectAllInterface = selectedInterface?.includes(SelectAllString)
+  const selectAllPod = selectedPod?.includes(SelectAllString)
   const onChangeFunction = v => {
     setActiveIds(v)
   }
@@ -32,9 +33,9 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
   if (selectAllInterface && selectAllPod) {
     partitions = []
   } else if (selectAllInterface) {
-    partitions = selectedPod.map(item => ({ podName: item }))
+    partitions = selectedPod.filter(item => item !== SelectAllString).map(item => ({ podName: item }))
   } else if (selectAllPod) {
-    partitions = selectedInterface.map(item => ({ interfaceId: item }))
+    partitions = selectedInterface.filter(item => item !== SelectAllString).map(item => ({ interfaceId: item }))
   } else {
     partitions = combineVector(
       selectedPod.map(podName =>
@@ -83,10 +84,9 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
                   <SelectMultiple
                     searchable
                     appearance='button'
-                    options={currentInterfaceList}
+                    options={[{ text: '全部接口汇总', value: SelectAllString }, ...currentInterfaceList]}
                     value={selectedInterface}
                     onChange={v => dispatch(creators.selectInterface(v))}
-                    allOption={{ text: '全部接口汇总', value: '' }}
                   ></SelectMultiple>
                 ) : (
                   <FormText>无可选接口</FormText>
@@ -97,7 +97,7 @@ export default function Server(props: DuckCmpProps<BaseInfoDuck>) {
                   <SelectMultiple
                     searchable
                     appearance='button'
-                    options={[...(data?.podList || [])]}
+                    options={[{ text: '全部节点汇总', value: SelectAllString }, ...(data?.podList || [])]}
                     value={selectedPod}
                     onChange={v => dispatch(creators.selectPod(v))}
                     allOption={{ text: '全部节点汇总', value: '' }}
