@@ -58,20 +58,20 @@ var (
 			Desc: "服务发现",
 			Type: "Discovery",
 			QueryLabels: []string{
-				"POST:/v1/Discover", "/v1.PolarisGRPC/Discover",
+				"POST:/v1/Discover", "/v1.PolarisGRPC/Discover", "GET:/eureka/apps", "GET:/eureka/apps/{application}", "GET:/eureka/apps/{application}/{instanceId}",
 			},
 		},
 		{
 			Name:        "/config/v1/GetConfigFile",
 			Desc:        "获取单个配置文件",
 			Type:        "Config",
-			QueryLabels: []string{"GET:/config/v1/GetConfigFile"},
+			QueryLabels: []string{"GET:/config/v1/GetConfigFile", "/v1.PolarisConfigGRPC/GetConfigFile"},
 		},
 		{
 			Name:        "/config/v1/WatchConfigFile",
 			Desc:        "监听配置文件",
 			Type:        "Config",
-			QueryLabels: []string{"GET:/config/v1/WatchConfigFile"},
+			QueryLabels: []string{"GET:/config/v1/WatchConfigFile", "/v1.PolarisConfigGRPC/WatchConfigFiles"},
 		},
 	}
 )

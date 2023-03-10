@@ -17,8 +17,9 @@ webServer:
   configURL: "/config/v1"
   monitorURL: "/api/v1"
   webPath: "web/dist/"
+  mainUser: "polaris"
 polarisServer:
-  address: "43.139.245.248:8090"
+  address: "127.0.0.1:8090"
   polarisToken: "nu/0WRA4EqSR1FagrjRj0fZwPXuGlMpX+zCuWu4uMqy8xr1vRjisSbA25aAC3mtU8MeeRsKhQiDAynUR09I="
 monitorServer:
-  address: "43.139.245.248:9090"
+  address: "127.0.0.1:29090"
