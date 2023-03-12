@@ -74,6 +74,7 @@ type WebServer struct {
 	LogURL      string `yaml:"logURL"`
 	WebPath     string `yaml:"webPath"`
 	JWT         JWT    `yaml:"jwt"`
+	MainUser    string `yaml:"mainUser"`
 }
 
 // JWT jwtToken 相关的配置

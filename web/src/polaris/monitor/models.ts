@@ -1,4 +1,4 @@
-import { APIRequestOption, ApiResponse } from '@src/polaris/common/util/apiRequest'
+import { APIRequestOption, getApiRequest } from '@src/polaris/common/util/apiRequest'
 import axios from 'axios'
 
 interface PromethusResponse<T> {
@@ -36,6 +36,7 @@ export interface GetMonitorDataParams {
   end: number
   step: number
 }
+
 export interface GetLabelDataParams {
   match?: string[]
   start?: number
@@ -61,5 +62,30 @@ export async function getLabelData(params: GetLabelDataParams) {
     action: `api/v1/label/${params.labelKey}/values`,
     data: searchParams,
   })
+  return res.data
+}
+
+export interface MetricInterface {
+  name: string // 接口名称
+  desc: string // 接口描述
+  type: string // 接口类型
+  query_labels: string[]
+}
+
+export async function getMetricsInterface() {
+  const res = await getApiRequest<MetricInterface[]>({
+    action: '/metrics/server/interfaces',
+    data: {},
+  })
+
+  return res
+}
+
+export async function getNamespaceNodes() {
+  const res = await getApiRequest<{ data: string[] }>({
+    action: 'server/nodes',
+    data: {},
+  })
+
   return res.data
 }

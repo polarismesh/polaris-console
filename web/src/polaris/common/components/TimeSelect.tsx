@@ -36,6 +36,7 @@ interface TimeSelectProps {
   range?: Range
   style?: React.CSSProperties
   header?: React.ReactNode
+  format?: string
 }
 
 export default class TimeSelect extends Component<TimeSelectProps, any> {
@@ -210,7 +211,7 @@ export default class TimeSelect extends Component<TimeSelectProps, any> {
 
   render() {
     const { pickerIndex, dateValue } = this.state
-    const { range, header } = this.props
+    const { range, header, format } = this.props
 
     return (
       <div style={this.props.style}>
@@ -235,7 +236,7 @@ export default class TimeSelect extends Component<TimeSelectProps, any> {
           disabledDate={this.disabledDate.bind(this)}
           disabledTime={this.disabledTime.bind(this)}
           range={range ? [range.min, range.max] : null}
-          showTime={{ format: 'HH:mm:ss' }}
+          showTime={{ format: format || 'HH:mm:ss' }}
           onChange={value => {
             this.setPickerIndex(null)
             this.setDateValue(value)
