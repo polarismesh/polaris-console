@@ -1,9 +1,9 @@
 export enum TAB {
   Info = 'info',
   Instance = 'instance',
-  Route = 'route',
-  AccessLimit = 'AccessLimit',
-  CircuitBreaker = 'circuitBreaker',
+  Route = 'router',
+  AccessLimit = 'ratelimit',
+  CircuitBreaker = 'circuitbreaker',
 }
 export const TAB_LABLES = {
   [TAB.Info]: '服务信息',

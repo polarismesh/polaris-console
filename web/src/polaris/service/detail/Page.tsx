@@ -2,7 +2,7 @@ import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import ServiceDetailDuck from './PageDuck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
-import { Tab, TabPanel, Tabs } from 'tea-component'
+import { Tab, TabPanel, Tabs, Text } from 'tea-component'
 import { TAB, TAB_LABLES } from './types'
 import BaseInfo from './info/Page'
 import Instance from './instance/Page'
@@ -10,8 +10,9 @@ import AccessLimit from '@src/polaris/administration/accessLimiting/Page'
 import Route from '@src/polaris/administration/dynamicRoute/customRoute/Page'
 
 import CircuitBreaker from '@src/polaris/administration/breaker/Page'
+import { FeatureDisplayType, useCheckFeatureValid } from '@src/polaris/common/util/checkFeature'
 
-const tabs: Array<Tab> = [TAB.Instance, TAB.Route, TAB.CircuitBreaker, TAB.AccessLimit, TAB.Info].map((id) => ({
+const tabs: Array<Tab> = [TAB.Instance, TAB.Route, TAB.CircuitBreaker, TAB.AccessLimit, TAB.Info].map(id => ({
   id,
   label: TAB_LABLES[id],
 }))
@@ -26,9 +27,22 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
     }),
     [],
   )
+  const features = useCheckFeatureValid()
+  const filterTabs = tabs
+    .map(item => {
+      const currentFeature = features.find(feature => feature.name === item.id)
+      if (!currentFeature || currentFeature.display === FeatureDisplayType.visible) return item
+      if (currentFeature.display === FeatureDisplayType.block) {
+        return { ...item, disabled: true, label: <Text tooltip={currentFeature.tip}>{item.label}</Text> }
+      }
+      if (currentFeature.display === FeatureDisplayType.hidden) {
+        return undefined
+      }
+    })
+    .filter(item => item)
   return (
     <DetailPage store={store} duck={duck} dispatch={dispatch} title={`${name}(${namespace})`} backRoute={'/#/service'}>
-      <Tabs ceiling tabs={tabs} activeId={tab} onActive={handlers.switch}>
+      <Tabs ceiling tabs={filterTabs} activeId={tab} onActive={handlers.switch}>
         <TabPanel id={TAB.Info}>
           <BaseInfo duck={ducks[TAB.Info]} store={store} dispatch={dispatch} />
         </TabPanel>
