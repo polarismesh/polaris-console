@@ -265,10 +265,13 @@ export const getQueryMap = {
     ]
   },
   [MetricName.Service]: queryParam => {
-    const { namespace } = queryParam
+    const { namespace, start, end } = queryParam
+    const interval = Math.floor(moment.duration(end - start, 's').asHours())
+    const minStep = interval > 24 ? 10 : 1
     return [
       {
         name: '总服务数',
+        minStep: minStep,
         query: namespace
           ? `max(sum(service_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
           : 'max(sum(service_count) by(polaris_server_instance)) or on() vector(0)',
@@ -276,6 +279,7 @@ export const getQueryMap = {
       },
       {
         name: '在线服务数',
+        minStep: minStep,
         query: namespace
           ? `max(sum(service_online_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
           : 'max(sum(service_online_count) by(polaris_server_instance)) or on() vector(0)',
@@ -283,6 +287,7 @@ export const getQueryMap = {
       },
       {
         name: '异常服务数',
+        minStep: minStep,
         query: namespace
           ? `max(sum(service_abnormal_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
           : 'max(sum(service_abnormal_count) by(polaris_server_instance)) or on() vector(0)',
@@ -290,6 +295,7 @@ export const getQueryMap = {
       },
       {
         name: '离线服务数',
+        minStep: minStep,
         query: namespace
           ? `max(sum(service_offline_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
           : 'max(sum(service_offline_count) by(polaris_server_instance)) or on() vector(0)',
@@ -298,10 +304,13 @@ export const getQueryMap = {
     ]
   },
   [MetricName.Instance]: queryParam => {
-    const { namespace, service } = queryParam
+    const { namespace, service, start, end, step } = queryParam
+    const interval = Math.floor(moment.duration(end - start, 's').asHours())
+    const minStep = interval > 24 ? 10 : 1
     return [
       {
         name: '总实例数',
+        minStep: minStep,
         query:
           namespace && service
             ? `max(sum(instance_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance)) or on() vector(0)`
@@ -312,6 +321,7 @@ export const getQueryMap = {
       },
       {
         name: '在线实例数',
+        minStep: minStep,
         query:
           namespace && service
             ? `max(sum(instance_online_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance)) or on() vector(0)`
@@ -322,6 +332,7 @@ export const getQueryMap = {
       },
       {
         name: '隔离实例数',
+        minStep: minStep,
         query:
           namespace && service
             ? `max(sum(instance_isolate_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance)) or on() vector(0)`
@@ -332,6 +343,7 @@ export const getQueryMap = {
       },
       {
         name: '异常实例数',
+        minStep: minStep,
         query:
           namespace && service
             ? `max(sum(instance_abnormal_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance)) or on() vector(0)`
@@ -343,10 +355,13 @@ export const getQueryMap = {
     ]
   },
   [MetricName.ConfigGroup]: queryParam => {
-    const { namespace } = queryParam
+    const { namespace, start, end } = queryParam
+    const interval = Math.floor(moment.duration(end - start, 's').asHours())
+    const minStep = interval > 24 ? 10 : 1
     return [
       {
         name: '配置分组总数',
+        minStep: minStep,
         query: namespace
           ? `max(sum(config_group_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
           : 'max(sum(config_group_count) by(polaris_server_instance)) or on() vector(0)',
@@ -355,10 +370,13 @@ export const getQueryMap = {
     ]
   },
   [MetricName.ConfigFile]: queryParam => {
-    const { namespace, configGroup } = queryParam
+    const { namespace, configGroup, start, end } = queryParam
+    const interval = Math.floor(moment.duration(end - start, 's').asHours())
+    const minStep = interval > 24 ? 10 : 1
     return [
       {
         name: '配置文件数',
+        minStep: minStep,
         query:
           namespace && configGroup
             ? `max(sum(config_file_count{namespace="${namespace}",group="${configGroup}"}) by(polaris_server_instance)) or on() vector(0)`
@@ -369,6 +387,7 @@ export const getQueryMap = {
       },
       {
         name: '已发布配置文件数',
+        minStep: minStep,
         query:
           namespace && configGroup
             ? `max(sum(config_release_file_count{namespace="${namespace}",group="${configGroup}"}) by(polaris_server_instance)) or on() vector(0)`
