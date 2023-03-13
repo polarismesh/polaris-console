@@ -6,6 +6,7 @@ import Action from '@src/polaris/common/duckComponents/grid/Action'
 import { checkRuleType, CircuitBreakerRule } from './types'
 import { DuckCmpProps } from 'saga-duck'
 import router from '@src/polaris/common/util/router'
+import { LimitMethodTypeMap } from '../accessLimiting/types'
 
 export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerRule>[] => {
   const {
@@ -55,7 +56,12 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
           <>
             <Text parent={'div'}>命名空间: {x.ruleMatcher?.destination?.namespace}</Text>
             <Text parent={'div'}>服务: {x.ruleMatcher?.destination?.service}</Text>
-            <Text parent={'div'}>接口: {x.ruleMatcher?.destination?.method?.value}</Text>
+            {x.ruleMatcher?.destination?.method?.value && (
+              <Text parent={'div'}>
+                接口: {LimitMethodTypeMap[x.ruleMatcher?.destination?.method?.type]}
+                {x.ruleMatcher?.destination?.method?.value}
+              </Text>
+            )}
           </>
         )
       },
