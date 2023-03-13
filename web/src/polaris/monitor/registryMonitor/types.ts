@@ -35,27 +35,32 @@ const SumUpReduceFunction = (prev, curr, index, array) => {
 }
 
 const AvgReduceFunction = (prev, curr, index, array) => {
-  const [, value] = curr
-  if (index === array.length - 1) return (prev / array.filter(item => item.value !== '0').length).toFixed(2)
-  return prev + Number(value)
+  const [, value, oldVal] = curr
+  let numVal = Number(value)
+  if (oldVal === 'NaN') {
+    numVal = 0
+  }
+  if (index === array.length - 1)
+    return roundToN(prev / array.filter(item => item.value !== '0' || item.value !== 'NaN').length, 2)
+  return prev + numVal
 }
 
-const MaxReduceFunction = (prev, curr, index, array) => {
+const MaxReduceFunction = (prev, curr) => {
+  const ppre = prev ? prev : Number.MIN_VALUE
   const [, value] = curr
   if (!value) {
-    return prev ? prev : 0
+    return ppre
   }
-  if (index === array.length - 1) return roundToN(Math.max(prev, Number(value)), 2)
-  return Math.max(prev, Number(value)).toFixed(2)
+  return roundToN(Math.max(ppre, Number(value)), 2)
 }
 
-const MinReduceFunction = (prev, curr, index, array) => {
+const MinReduceFunction = (prev, curr) => {
+  const ppre = prev ? prev : Number.MAX_VALUE
   const [, value] = curr
   if (!value) {
-    return prev ? prev : Number.MAX_VALUE
+    return ppre
   }
-  if (index === array.length - 1) return roundToN(Math.min(prev, Number(value)), 2)
-  return Math.min(prev, Number(value)).toFixed(2)
+  return roundToN(Math.min(ppre, Number(value)), 2)
 }
 
 export const getQueryMap = {
@@ -145,20 +150,19 @@ export const getQueryMap = {
     ]
   },
   [MetricName.Timeout]: queryParam => {
-    const { interfaceName, podName, start, end, step } = queryParam
-    const stepInterval = step <= 60 ? 60 : step
-    const interval = Math.floor(moment.duration(end - start, 's').asMinutes()) + 'm'
+    const { interfaceName, podName, start, end } = queryParam
+    const interval = Math.floor(moment.duration(end - start, 's').asSeconds())
     return [
       {
         name: '均值',
         query:
           interfaceName && podName
-            ? `sum(rate(client_rq_time_ms_sum{api=~"${interfaceName}"}[${interval}]))/sum(rate(client_rq_time_ms_count{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${interval}])) or on() vector(0)`
+            ? `avg(sum(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"})) or on() vector(0)`
             : interfaceName
-            ? `sum(rate(client_rq_time_ms_sum{api=~"${interfaceName}"}[${interval}]))/sum(rate(client_rq_time_ms_count{api=~"${interfaceName}"}[${interval}])) or on() vector(0)`
+            ? `avg(sum(client_rq_timeout{api=~"${interfaceName}"})) or on() vector(0)`
             : podName
-            ? `sum(rate(client_rq_time_ms_sum{polaris_server_instance="${podName}"}[${interval}]))/sum(rate(client_rq_time_ms_count{polaris_server_instance="${podName}"}[${interval}])) or on() vector(0)`
-            : `sum(rate(client_rq_time_ms_sum[${interval}]))/sum(rate(client_rq_time_ms_count[${interval}])) or on() vector(0)`,
+            ? `avg(sum(client_rq_timeout{polaris_server_instance="${podName}"})) or on() vector(0)`
+            : `avg(sum(client_rq_timeout)) or on() vector(0)`,
         boardFunction: AvgReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -168,12 +172,12 @@ export const getQueryMap = {
         name: '最大值',
         query:
           interfaceName && podName
-            ? `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
+            ? `max(client_rq_timeout_max{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
+            ? `max(client_rq_timeout_max{api=~"${interfaceName}"}) or on() vector(0)`
             : podName
-            ? `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{polaris_server_instance="${podName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
-            : `max_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`,
+            ? `max(client_rq_timeout_max{polaris_server_instance="${podName}"}) or on() vector(0)`
+            : `max(client_rq_timeout_max) or on() vector(0)`,
         boardFunction: MaxReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -183,12 +187,12 @@ export const getQueryMap = {
         name: '最小值',
         query:
           interfaceName && podName
-            ? `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
+            ? `min(client_rq_timeout_min{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
+            ? `min(client_rq_timeout_min{api=~"${interfaceName}"}) or on() vector(0)`
             : podName
-            ? `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket{polaris_server_instance="${podName}"}[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`
-            : `min_over_time(histogram_quantile(1, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s])))[${stepInterval}s:]) or on() vector(0)`,
+            ? `min(client_rq_timeout_min{polaris_server_instance="${podName}"}) or on() vector(0)`
+            : `min(client_rq_timeout_min) or on() vector(0)`,
         boardFunction: MinReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -198,25 +202,25 @@ export const getQueryMap = {
         name: 'P99',
         query:
           interfaceName && podName
-            ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s]))) or on() vector(0)`
+            ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s]))) or on() vector(0)`
+            ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
             : podName
-            ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{polaris_server_instance="${podName}"}[${stepInterval}s]))) or on() vector(0)`
-            : `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s]))) or on() vector(0)`,
+            ? `quantile(0.99, client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
+            : `quantile(0.99, client_rq_timeout) or on() vector(0)`,
         asyncBoardFunction: async () => {
           const res = await getMonitorData({
             start,
             end,
-            step,
+            step: interval,
             query:
               interfaceName && podName
-                ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${interval}])))`
+                ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
                 : interfaceName
-                ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${interval}])))`
+                ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
                 : podName
-                ? `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket{polaris_server_instance="${podName}"}[${interval}])))`
-                : `histogram_quantile(0.99, sum by(le) (rate(client_rq_time_ms_bucket[${interval}])))`,
+                ? `quantile(0.99, client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
+                : `quantile(0.99, client_rq_timeout) or on() vector(0)`,
           })
           const point = res?.[0]?.values?.[0]
           if (!point) return '-'
@@ -231,25 +235,25 @@ export const getQueryMap = {
         name: 'P95',
         query:
           interfaceName && podName
-            ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${stepInterval}s]))) or on() vector(0)`
+            ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${stepInterval}s]))) or on() vector(0)`
+            ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
             : podName
-            ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{polaris_server_instance="${podName}"}[${stepInterval}s]))) or on() vector(0)`
-            : `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket[${stepInterval}s]))) or on() vector(0)`,
+            ? `quantile(0.95, client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
+            : `quantile(0.95, client_rq_timeout) or on() vector(0)`,
         asyncBoardFunction: async () => {
           const res = await getMonitorData({
             start,
             end,
-            step,
+            step: interval,
             query:
               interfaceName && podName
-                ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}",polaris_server_instance="${podName}"}[${interval}])))`
+                ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
                 : interfaceName
-                ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{api=~"${interfaceName}"}[${interval}])))`
+                ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
                 : podName
-                ? `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket{polaris_server_instance="${podName}"}[${interval}])))`
-                : `histogram_quantile(0.95, sum by(le) (rate(client_rq_time_ms_bucket[${interval}])))`,
+                ? `quantile(0.95, client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
+                : `quantile(0.95, client_rq_timeout) or on() vector(0)`,
           })
           const point = res?.[0]?.values?.[0]
           if (!point) return '-'
