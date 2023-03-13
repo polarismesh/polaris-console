@@ -8,6 +8,7 @@ import moment from 'moment'
 import TimeSelect from '@src/polaris/common/components/TimeSelect'
 import Service from './service/Page'
 import Server from './server/Page'
+import insertCSS from '@src/polaris/common/helpers/insertCSS'
 export enum TAB {
   Overview = 'overview',
   Service = 'service',
@@ -18,6 +19,14 @@ export const TAB_LABLES = {
   [TAB.Service]: '服务和配置统计',
   [TAB.Server]: '北极星服务端请求统计',
 }
+insertCSS(
+  `monitor`,
+  `
+.black-placeholder-text .tea-text-weak{
+  color: #000 !important;
+}
+`,
+)
 const tabs: Array<Tab> = [TAB.Overview, TAB.Service, TAB.Server].map(id => ({
   id,
   label: TAB_LABLES[id],
@@ -85,68 +94,62 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
       disabled: gap < 3600,
     },
   ]
-
+  const filterSlot = (
+    <section style={{ borderBottom: '1px solid #d0d5dd', padding: '40px 0px', marginBottom: '20px' }}>
+      <Form layout={'inline'} style={{ display: 'inline-block' }}>
+        <FormItem label={'命名空间'}>
+          <Select
+            searchable
+            appearance='button'
+            options={[{ text: '全部命名空间汇总', value: '' }, ...data]}
+            value={namespace}
+            onChange={v => dispatch(creators.setNamespace(v))}
+          ></Select>
+        </FormItem>
+        <FormItem label={'时间范围'} align={'middle'}>
+          <TimeSelect
+            tabs={TimePickerTab()}
+            style={{ display: 'inline-block' }}
+            changeDate={({ from, to }) => {
+              dispatch(creators.setStart(moment(from).unix()))
+              dispatch(creators.setEnd(moment(to).unix()))
+            }}
+            from={start ? new Date(start * 1000).toString() : undefined}
+            to={end ? new Date(end * 1000).toString() : undefined}
+            range={{
+              min: moment().subtract(29, 'y'),
+              max: moment(),
+              maxLength: 3,
+            }}
+            ref={timePicker}
+            format={'HH:mm:ss'}
+          />
+          <Button type={'icon'} icon={'refresh'} onClick={flush}></Button>
+        </FormItem>
+        <FormItem label={'时间粒度'}>
+          <Select
+            appearance='button'
+            options={StepOptions}
+            value={step.toString()}
+            onChange={v => dispatch(creators.setStep(Number(v)))}
+          ></Select>
+        </FormItem>
+      </Form>
+    </section>
+  )
   return (
-    <DetailPage
-      store={store}
-      duck={duck}
-      dispatch={dispatch}
-      title={'注册配置监控'}
-      headerComponent={
-        <>
-          <Form layout={'inline'} style={{ width: '1200px', display: 'inline-block' }}>
-            <FormItem label={'命名空间'}>
-              <Select
-                searchable
-                appearance='button'
-                options={[{ text: '全部命名空间汇总', value: '' }, ...data]}
-                value={namespace}
-                onChange={v => dispatch(creators.setNamespace(v))}
-              ></Select>
-            </FormItem>
-            <FormItem label={'时间范围'} align={'middle'}>
-              <TimeSelect
-                tabs={TimePickerTab()}
-                style={{ display: 'inline-block' }}
-                changeDate={({ from, to }) => {
-                  dispatch(creators.setStart(moment(from).unix()))
-                  dispatch(creators.setEnd(moment(to).unix()))
-                }}
-                from={start ? new Date(start * 1000).toString() : undefined}
-                to={end ? new Date(end * 1000).toString() : undefined}
-                range={{
-                  min: moment().subtract(29, 'y'),
-                  max: moment(),
-                  maxLength: 3,
-                }}
-                ref={timePicker}
-                format={'HH:mm:ss'}
-              />
-              <Button type={'icon'} icon={'refresh'} onClick={flush}></Button>
-            </FormItem>
-            <FormItem label={'时间粒度'}>
-              <Select
-                appearance='button'
-                options={StepOptions}
-                value={step.toString()}
-                onChange={v => dispatch(creators.setStep(Number(v)))}
-              ></Select>
-            </FormItem>
-          </Form>
-        </>
-      }
-    >
+    <DetailPage store={store} duck={duck} dispatch={dispatch} title={'注册配置监控'}>
       <Card>
         <Card.Body>
           <Tabs tabs={tabs} activeId={tab} onActive={handlers.switch}>
             <TabPanel id={TAB.Overview}>
-              <Overview duck={ducks[TAB.Overview]} store={store} dispatch={dispatch} />
+              <Overview duck={ducks[TAB.Overview]} store={store} dispatch={dispatch} filterSlot={filterSlot} />
             </TabPanel>
             <TabPanel id={TAB.Service}>
-              <Service duck={ducks[TAB.Service]} store={store} dispatch={dispatch} />
+              <Service duck={ducks[TAB.Service]} store={store} dispatch={dispatch} filterSlot={filterSlot} />
             </TabPanel>
             <TabPanel id={TAB.Server}>
-              <Server duck={ducks[TAB.Server]} store={store} dispatch={dispatch} />
+              <Server duck={ducks[TAB.Server]} store={store} dispatch={dispatch} filterSlot={filterSlot} />
             </TabPanel>
           </Tabs>
         </Card.Body>

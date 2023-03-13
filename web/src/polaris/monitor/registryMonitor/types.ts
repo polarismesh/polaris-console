@@ -97,8 +97,10 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `sum(client_rq_interval_count{api=~"${interfaceName}"}) or on() vector(0)`
-            : 'sum(client_rq_interval_count) or on() vector(0)',
+              ? `sum(client_rq_interval_count{api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `sum(client_rq_interval_count{polaris_server_instance="${podName}"}) or on() vector(0)`
+                : 'sum(client_rq_interval_count) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
@@ -108,8 +110,10 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) or on() vector(0)`
-            : 'sum(client_rq_interval_count{err_code=~"2.+|0"}) or on() vector(0)',
+              ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `sum(client_rq_interval_count{err_code=~"2.+|0",polaris_server_instance="${podName}"}) or on() vector(0)`
+                : 'sum(client_rq_interval_count{err_code=~"2.+|0"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
@@ -119,8 +123,10 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"}) or on() vector(0)`
-            : 'sum(client_rq_interval_count{err_code!~"2.+|0"}) or on() vector(0)',
+              ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `sum(client_rq_interval_count{err_code!~"2.+|0",polaris_server_instance="${podName}"}) or on() vector(0)`
+                : 'sum(client_rq_interval_count{err_code!~"2.+|0"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
@@ -128,13 +134,14 @@ export const getQueryMap = {
         name: '请求成功率',
         query:
           interfaceName && podName
-            ? `((sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName},polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}})) * 100) or on() vector(0)`
+            ? `((sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}"})) * 100) or on() vector(0)`
             : interfaceName
-            ? `((sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})) * 100) or on() vector(0)`
-            : '((sum(client_rq_interval_count{err_code=~"2.+|0"}) / sum(client_rq_interval_count)) * 100) or on() vector(0)',
+              ? `((sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}"})) * 100) or on() vector(0)`
+              : podName
+                ? `((sum(client_rq_interval_count{err_code=~"2.+|0",polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}"})) * 100) or on() vector(0)`
+                : '((sum(client_rq_interval_count{err_code=~"2.+|0"}) / sum(client_rq_interval_count)) * 100) or on() vector(0)',
         boardFunction: LatestValueReduceFunction,
         minStep: 60,
-
         unit: '%',
         noLine: true,
       },
@@ -148,10 +155,12 @@ export const getQueryMap = {
         name: '均值',
         query:
           interfaceName && podName
-            ? `avg(sum(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}})) or on() vector(0)`
+            ? `avg(sum(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"})) or on() vector(0)`
             : interfaceName
-            ? `avg(sum(client_rq_timeout{api=~"${interfaceName}"})) or on() vector(0)`
-            : `avg(sum(client_rq_timeout)) or on() vector(0)`,
+              ? `avg(sum(client_rq_timeout{api=~"${interfaceName}"})) or on() vector(0)`
+              : podName
+                ? `avg(sum(client_rq_timeout{polaris_server_instance="${podName}"})) or on() vector(0)`
+                : `avg(sum(client_rq_timeout)) or on() vector(0)`,
         boardFunction: AvgReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -163,8 +172,10 @@ export const getQueryMap = {
           interfaceName && podName
             ? `max(client_rq_timeout_max{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `max(client_rq_timeout_max{api=~"${interfaceName}"}) or on() vector(0)`
-            : `max(client_rq_timeout_max) or on() vector(0)`,
+              ? `max(client_rq_timeout_max{api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `max(client_rq_timeout_max{polaris_server_instance="${podName}"}) or on() vector(0)`
+                : `max(client_rq_timeout_max) or on() vector(0)`,
         boardFunction: MaxReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -174,10 +185,12 @@ export const getQueryMap = {
         name: '最小值',
         query:
           interfaceName && podName
-          ? `min(client_rq_timeout_min{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
-          : interfaceName
-          ? `min(client_rq_timeout_min{api=~"${interfaceName}"}) or on() vector(0)`
-          : `min(client_rq_timeout_min) or on() vector(0)`,
+            ? `min(client_rq_timeout_min{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+            : interfaceName
+              ? `min(client_rq_timeout_min{api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `min(polaris_server_instance="${podName}"}) or on() vector(0)`
+                : `min(client_rq_timeout_min) or on() vector(0)`,
         boardFunction: MinReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -189,8 +202,10 @@ export const getQueryMap = {
           interfaceName && podName
             ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}") or on() vector(0)`
             : interfaceName
-            ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}") or on() vector(0)`
-            : `quantile(0.99, client_rq_timeout) or on() vector(0)`,
+              ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}") or on() vector(0)`
+              : podName
+                ? `quantile(0.99, client_rq_timeout{polaris_server_instance="${podName}") or on() vector(0)`
+                : `quantile(0.99, client_rq_timeout) or on() vector(0)`,
         asyncBoardFunction: async () => {
           const res = await getMonitorData({
             start,
@@ -198,10 +213,12 @@ export const getQueryMap = {
             step: interval,
             query:
               interfaceName && podName
-              ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}") or on() vector(0)`
-              : interfaceName
-              ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}") or on() vector(0)`
-              : `quantile(0.99, client_rq_timeout) or on() vector(0)`,
+                ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}") or on() vector(0)`
+                : interfaceName
+                  ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}") or on() vector(0)`
+                  : podName
+                    ? `quantile(0.99, client_rq_timeout{polaris_server_instance="${podName}") or on() vector(0)`
+                    : `quantile(0.99, client_rq_timeout) or on() vector(0)`,
           })
           const point = res?.[0]?.values?.[0]
           if (!point) return '-'
@@ -216,10 +233,12 @@ export const getQueryMap = {
         name: 'P95',
         query:
           interfaceName && podName
-          ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}") or on() vector(0)`
-          : interfaceName
-          ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}") or on() vector(0)`
-          : `quantile(0.95, client_rq_timeout) or on() vector(0)`,
+            ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}") or on() vector(0)`
+            : interfaceName
+              ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}") or on() vector(0)`
+              : podName
+                ? `quantile(0.95, client_rq_timeout{polaris_server_instance="${podName}") or on() vector(0)`
+                : `quantile(0.95, client_rq_timeout) or on() vector(0)`,
         asyncBoardFunction: async () => {
           const res = await getMonitorData({
             start,
@@ -227,10 +246,12 @@ export const getQueryMap = {
             step: interval,
             query:
               interfaceName && podName
-              ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}") or on() vector(0)`
-              : interfaceName
-              ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}") or on() vector(0)`
-              : `quantile(0.95, client_rq_timeout) or on() vector(0)`,
+                ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}") or on() vector(0)`
+                : interfaceName
+                  ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}") or on() vector(0)`
+                  : podName
+                    ? `quantile(0.95, client_rq_timeout{polaris_server_instance="${podName}") or on() vector(0)`
+                    : `quantile(0.95, client_rq_timeout) or on() vector(0)`,
           })
           const point = res?.[0]?.values?.[0]
           if (!point) return '-'
@@ -244,10 +265,13 @@ export const getQueryMap = {
     ]
   },
   [MetricName.Service]: queryParam => {
-    const { namespace } = queryParam
+    const { namespace, start, end } = queryParam
+    const interval = Math.floor(moment.duration(end - start, 's').asHours())
+    const minStep = interval > 24 ? 10 : 1
     return [
       {
         name: '总服务数',
+        minStep: minStep,
         query: namespace
           ? `max(sum(service_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
           : 'max(sum(service_count) by(polaris_server_instance)) or on() vector(0)',
@@ -255,6 +279,7 @@ export const getQueryMap = {
       },
       {
         name: '在线服务数',
+        minStep: minStep,
         query: namespace
           ? `max(sum(service_online_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
           : 'max(sum(service_online_count) by(polaris_server_instance)) or on() vector(0)',
@@ -262,6 +287,7 @@ export const getQueryMap = {
       },
       {
         name: '异常服务数',
+        minStep: minStep,
         query: namespace
           ? `max(sum(service_abnormal_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
           : 'max(sum(service_abnormal_count) by(polaris_server_instance)) or on() vector(0)',
@@ -269,6 +295,7 @@ export const getQueryMap = {
       },
       {
         name: '离线服务数',
+        minStep: minStep,
         query: namespace
           ? `max(sum(service_offline_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
           : 'max(sum(service_offline_count) by(polaris_server_instance)) or on() vector(0)',
@@ -277,55 +304,64 @@ export const getQueryMap = {
     ]
   },
   [MetricName.Instance]: queryParam => {
-    const { namespace, service } = queryParam
+    const { namespace, service, start, end, step } = queryParam
+    const interval = Math.floor(moment.duration(end - start, 's').asHours())
+    const minStep = interval > 24 ? 10 : 1
     return [
       {
         name: '总实例数',
+        minStep: minStep,
         query:
           namespace && service
             ? `max(sum(instance_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance)) or on() vector(0)`
             : namespace
-            ? `max(sum(instance_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
-            : 'max(sum(instance_count) by(polaris_server_instance)) or on() vector(0)',
+              ? `max(sum(instance_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
+              : 'max(sum(instance_count) by(polaris_server_instance)) or on() vector(0)',
         boardFunction: LatestValueReduceFunction,
       },
       {
         name: '在线实例数',
+        minStep: minStep,
         query:
           namespace && service
             ? `max(sum(instance_online_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance)) or on() vector(0)`
             : namespace
-            ? `max(sum(instance_online_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
-            : 'max(sum(instance_online_count) by(polaris_server_instance)) or on() vector(0)',
+              ? `max(sum(instance_online_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
+              : 'max(sum(instance_online_count) by(polaris_server_instance)) or on() vector(0)',
         boardFunction: LatestValueReduceFunction,
       },
       {
         name: '隔离实例数',
+        minStep: minStep,
         query:
           namespace && service
             ? `max(sum(instance_isolate_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance)) or on() vector(0)`
             : namespace
-            ? `max(sum(instance_isolate_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
-            : 'max(sum(instance_isolate_count) by(polaris_server_instance)) or on() vector(0)',
+              ? `max(sum(instance_isolate_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
+              : 'max(sum(instance_isolate_count) by(polaris_server_instance)) or on() vector(0)',
         boardFunction: LatestValueReduceFunction,
       },
       {
         name: '异常实例数',
+        minStep: minStep,
         query:
           namespace && service
             ? `max(sum(instance_abnormal_count{namespace="${namespace}",service="${service}"}) by(polaris_server_instance)) or on() vector(0)`
             : namespace
-            ? `max(sum(instance_abnormal_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
-            : 'max(sum(instance_abnormal_count) by(polaris_server_instance)) or on() vector(0)',
+              ? `max(sum(instance_abnormal_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
+              : 'max(sum(instance_abnormal_count) by(polaris_server_instance)) or on() vector(0)',
         boardFunction: LatestValueReduceFunction,
       },
     ]
   },
   [MetricName.ConfigGroup]: queryParam => {
-    const { namespace } = queryParam
+    const { namespace, start, end } = queryParam
+    const interval = Math.floor(moment.duration(end - start, 's').asHours())
+    const minStep = interval > 24 ? 10 : 1
     return [
       {
         name: '配置分组总数',
+        minStep: minStep,
         query: namespace
           ? `max(sum(config_group_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
           : 'max(sum(config_group_count) by(polaris_server_instance)) or on() vector(0)',
@@ -334,26 +370,30 @@ export const getQueryMap = {
     ]
   },
   [MetricName.ConfigFile]: queryParam => {
-    const { namespace, configGroup } = queryParam
+    const { namespace, configGroup, start, end } = queryParam
+    const interval = Math.floor(moment.duration(end - start, 's').asHours())
+    const minStep = interval > 24 ? 10 : 1
     return [
       {
         name: '配置文件数',
+        minStep: minStep,
         query:
           namespace && configGroup
             ? `max(sum(config_file_count{namespace="${namespace}",group="${configGroup}"}) by(polaris_server_instance)) or on() vector(0)`
             : namespace
-            ? `max(sum(config_file_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
-            : 'max(sum(config_file_count) by(polaris_server_instance)) or on() vector(0)',
+              ? `max(sum(config_file_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
+              : 'max(sum(config_file_count) by(polaris_server_instance)) or on() vector(0)',
         boardFunction: LatestValueReduceFunction,
       },
       {
         name: '已发布配置文件数',
+        minStep: minStep,
         query:
           namespace && configGroup
             ? `max(sum(config_release_file_count{namespace="${namespace}",group="${configGroup}"}) by(polaris_server_instance)) or on() vector(0)`
             : namespace
-            ? `max(sum(config_release_file_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
-            : 'max(sum(config_release_file_count) by(polaris_server_instance)) or on() vector(0)',
+              ? `max(sum(config_release_file_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
+              : 'max(sum(config_release_file_count) by(polaris_server_instance)) or on() vector(0)',
         boardFunction: LatestValueReduceFunction,
       },
     ]
@@ -367,8 +407,10 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"}) or on() vector(0)`
-            : 'sum(client_rq_interval_count{err_code!~"2.+|0"}) or on() vector(0)',
+              ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `sum(client_rq_interval_count{err_code!~"2.+|0",polaris_server_instance="${podName}"}) or on() vector(0)`
+                : 'sum(client_rq_interval_count{err_code!~"2.+|0"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
@@ -378,8 +420,10 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"}) or on() vector(0)`
-            : 'sum(client_rq_interval_count{err_code=~"5.+"}) or on() vector(0)',
+              ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `sum(client_rq_interval_count{err_code=~"5.+",polaris_server_instance="${podName}"}) or on() vector(0)`
+                : 'sum(client_rq_interval_count{err_code=~"5.+"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
@@ -387,10 +431,12 @@ export const getQueryMap = {
         name: '4xx失败请求数',
         query:
           interfaceName && podName
-            ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName},polaris_server_instance="${podName}"}) or on() vector(0)`
+            ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}"}) or on() vector(0)`
-            : 'sum(client_rq_interval_count{err_code=~"4.+"}) or on() vector(0)',
+              ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `sum(client_rq_interval_count{err_code=~"4.+",polaris_server_instance="${podName}"}) or on() vector(0)`
+                : 'sum(client_rq_interval_count{err_code=~"4.+"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
@@ -405,8 +451,10 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) or on() vector(0)`
-            : 'sum(client_rq_interval_count{err_code=~"2.+|0"}) or on() vector(0)',
+              ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `sum(client_rq_interval_count{err_code=~"2.+|0",polaris_server_instance="${podName}"}) or on() vector(0)`
+                : 'sum(client_rq_interval_count{err_code=~"2.+|0"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
@@ -416,8 +464,10 @@ export const getQueryMap = {
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"}) or on() vector(0)`
-            : 'sum(client_rq_interval_count{err_code=~"5.+"}) or on() vector(0)',
+              ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `sum(client_rq_interval_count{err_code=~"5.+",polaris_server_instance="${podName}"}) or on() vector(0)`
+                : 'sum(client_rq_interval_count{err_code=~"5.+"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
@@ -425,10 +475,12 @@ export const getQueryMap = {
         name: '4xx',
         query:
           interfaceName && podName
-            ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName},polaris_server_instance="${podName}"}) or on() vector(0)`
+            ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}"}) or on() vector(0)`
-            : 'sum(client_rq_interval_count{err_code=~"4.+"}) or on() vector(0)',
+              ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `sum(client_rq_interval_count{err_code=~"4.+",polaris_server_instance="${podName}"}) or on() vector(0)`
+                : 'sum(client_rq_interval_count{err_code=~"4.+"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
