@@ -4,7 +4,6 @@ import { describeConfigFileGroups } from '@src/polaris/configuration/fileGroup/m
 import { describeServices } from '@src/polaris/service/model'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
 import { ComposedId } from '../PageDuck'
-import { SelectAllString } from './Page'
 
 export default class ServiceMonitorDuck extends DetailPage {
   get baseUrl() {
@@ -40,8 +39,8 @@ export default class ServiceMonitorDuck extends DetailPage {
     return {
       ...super.reducers,
       composedId: reduceFromPayload(types.LOAD, {} as ComposedId),
-      selectedService: reduceFromPayload(types.SELECT_SERVICE, [SelectAllString]),
-      selectedConfigGroup: reduceFromPayload(types.SELECT_CONFIG_GROUP, [SelectAllString]),
+      selectedService: reduceFromPayload(types.SELECT_SERVICE, []),
+      selectedConfigGroup: reduceFromPayload(types.SELECT_CONFIG_GROUP, []),
     }
   }
   get creators() {
