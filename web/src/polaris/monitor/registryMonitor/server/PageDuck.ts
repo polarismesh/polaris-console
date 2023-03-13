@@ -2,7 +2,6 @@ import DetailPage from '@src/polaris/common/ducks/DetailPage'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
 import { ComposedId } from '../PageDuck'
 import { getMetricsInterface, getNamespaceNodes } from '../../models'
-import { SelectAllString } from '../service/Page'
 
 export default class ServerMonitorDuck extends DetailPage {
   get baseUrl() {
@@ -38,8 +37,8 @@ export default class ServerMonitorDuck extends DetailPage {
     return {
       ...super.reducers,
       composedId: reduceFromPayload(types.LOAD, {} as ComposedId),
-      selectedInterface: reduceFromPayload(types.SELECT_INTERFACE, [SelectAllString]),
-      selectedPod: reduceFromPayload(types.SELECT_POD, [SelectAllString]),
+      selectedInterface: reduceFromPayload(types.SELECT_INTERFACE, []),
+      selectedPod: reduceFromPayload(types.SELECT_POD, []),
     }
   }
   get creators() {

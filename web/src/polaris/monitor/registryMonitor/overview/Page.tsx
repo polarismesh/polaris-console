@@ -4,9 +4,11 @@ import { Col, Row, Text } from 'tea-component'
 import MetricCard from '../MetricCard'
 import { getQueryMap, MetricName } from '../types'
 import BaseInfoDuck from './PageDuck'
-
-export default function Overview(props: DuckCmpProps<BaseInfoDuck>) {
-  const { duck, store } = props
+interface Props extends DuckCmpProps<BaseInfoDuck> {
+  filterSlot: React.ReactNode
+}
+export default function Overview(props: Props) {
+  const { duck, store, filterSlot } = props
   const { selector } = duck
   const {
     composedId: { start, end, step, namespace },
@@ -15,6 +17,7 @@ export default function Overview(props: DuckCmpProps<BaseInfoDuck>) {
 
   return (
     <>
+      {filterSlot}
       <Row>
         <Col span={12}>
           <MetricCard
