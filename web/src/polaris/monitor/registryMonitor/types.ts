@@ -170,12 +170,12 @@ export const getQueryMap = {
         name: '最大值',
         query:
           interfaceName && podName
-            ? `max(client_rq_timeout_max{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+            ? `max(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-              ? `max(client_rq_timeout_max{api=~"${interfaceName}"}) or on() vector(0)`
+              ? `max(client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
               : podName
-                ? `max(client_rq_timeout_max{polaris_server_instance="${podName}"}) or on() vector(0)`
-                : `max(client_rq_timeout_max) or on() vector(0)`,
+                ? `max(client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
+                : `max(client_rq_timeout) or on() vector(0)`,
         boardFunction: MaxReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -185,12 +185,12 @@ export const getQueryMap = {
         name: '最小值',
         query:
           interfaceName && podName
-            ? `min(client_rq_timeout_min{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+            ? `min(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-              ? `min(client_rq_timeout_min{api=~"${interfaceName}"}) or on() vector(0)`
+              ? `min(client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
               : podName
-                ? `min(polaris_server_instance="${podName}"}) or on() vector(0)`
-                : `min(client_rq_timeout_min) or on() vector(0)`,
+                ? `min(client_rq_timeout={polaris_server_instance="${podName}"}) or on() vector(0)`
+                : `min(client_rq_timeout) or on() vector(0)`,
         boardFunction: MinReduceFunction,
         unit: 'ms',
         minStep: 60,
