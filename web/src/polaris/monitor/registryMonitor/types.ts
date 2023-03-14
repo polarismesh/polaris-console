@@ -155,12 +155,12 @@ export const getQueryMap = {
         name: '均值',
         query:
           interfaceName && podName
-            ? `avg(sum(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"})) or on() vector(0)`
+            ? `avg(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-              ? `avg(sum(client_rq_timeout{api=~"${interfaceName}"})) or on() vector(0)`
+              ? `avg(client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
               : podName
-                ? `avg(sum(client_rq_timeout{polaris_server_instance="${podName}"})) or on() vector(0)`
-                : `avg(sum(client_rq_timeout)) or on() vector(0)`,
+                ? `avg(client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
+                : `avg(client_rq_timeout) or on() vector(0)`,
         boardFunction: AvgReduceFunction,
         unit: 'ms',
         minStep: 60,
