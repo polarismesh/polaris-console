@@ -223,7 +223,7 @@ export default function Server(props: Props) {
         <>
           {partitions.map(({ podName, interfaceId, id }) => {
             const curInterface = interfaceMap[interfaceId]
-            const interfaceName = curInterface.interfaceName
+            const interfaceName = curInterface?.interfaceName
             const key = `${interfaceName ? `${interfaceName}-` : '所有接口汇总-'}${podName ? podName : '所有节点汇总'}`
             return (
               <SimpleCollapse
