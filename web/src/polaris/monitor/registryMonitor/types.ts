@@ -440,6 +440,19 @@ export const getQueryMap = {
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
+      {
+        name: '网络失败数',
+        query:
+          interfaceName && podName
+            ? `sum(client_rq_interval_count{err_code=~"-1",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+            : interfaceName
+              ? `sum(client_rq_interval_count{err_code=~"-1",api=~"${interfaceName}"}) or on() vector(0)`
+              : podName
+                ? `sum(client_rq_interval_count{err_code=~"-1",polaris_server_instance="${podName}"}) or on() vector(0)`
+                : 'sum(client_rq_interval_count{err_code=~"-1"}) or on() vector(0)',
+        boardFunction: SumUpReduceFunction,
+        minStep: 60,
+      },
     ]
   },
   [MetricName.RetCode]: (queryParam = {} as any) => {
