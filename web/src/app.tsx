@@ -154,7 +154,6 @@ export default function root() {
     fetchAuth()
     fetchFeature()
   }, [fetchAuth && fetchFeature])
-
   function recursiveRenderMenuItem(menuItem: MenuItemConfig) {
     if (!menuItem) {
       return <noscript />
@@ -175,7 +174,7 @@ export default function root() {
             icon={menuItem.icon}
             className={'block-menu-item'}
             onClick={() => {
-              notification.warning({ description: currentFeature.tips || '暂不支持此功能' })
+              notification.warning({ description: currentFeature.tip || '暂不支持此功能' })
             }}
           ></Menu.Item>
         )
