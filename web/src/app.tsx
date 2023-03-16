@@ -58,7 +58,7 @@ import PolicyCreatePage from '@src/polaris/auth/policy/operation/Create'
 import PolicyCreatePageDuck from '@src/polaris/auth/policy/operation/CreateDuck'
 const PolicyCreate = connectWithDuck(PolicyCreatePage, PolicyCreatePageDuck as any)
 
-import { userLogout, getUin, getLoginName } from './polaris/common/util/common'
+import { userLogout, getUin, getLoginName, handleInfo } from './polaris/common/util/common'
 import router from './polaris/common/util/router'
 
 import ServiceAliasPage from '@src/polaris/serviceAlias/Page'
@@ -126,6 +126,11 @@ insertCSS(
   `
   .block-menu-item .tea-menu__item{
     cursor: not-allowed !important;
+    background-color: #979797 !important;
+  }
+  .block-menu-item .tea-menu__item::hover{
+    cursor: not-allowed !important;
+    background-color: #979797 !important;
   }
 `,
 )
@@ -174,7 +179,7 @@ export default function root() {
             icon={menuItem.icon}
             className={'block-menu-item'}
             onClick={() => {
-              notification.warning({ description: currentFeature.tip || '暂不支持此功能' })
+              notification.warning({ description: handleInfo(currentFeature.tip) || '暂不支持此功能' })
             }}
           ></Menu.Item>
         )

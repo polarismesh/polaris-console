@@ -20,6 +20,7 @@ import { describeServices, modifyServices } from '@src/polaris/service/model'
 import { Service } from '@src/polaris/service/types'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { enableNearbyString } from '@src/polaris/service/operation/CreateDuck'
+import { checkFeatureValid } from '@src/polaris/common/util/checkFeature'
 
 interface Filter {
   namespace: string
@@ -298,6 +299,8 @@ export default class CustomRouteDuck extends GridPageDuck {
       offset: (page - 1) * count,
       limit: count,
     }
+    const available = await checkFeatureValid('circuitbreaker')
+    if (!available) return { totalCount: 0, list: [] }
     if (validTags.length) {
       validTags.forEach(tag => {
         if (tag.attr.key === 'name') {

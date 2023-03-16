@@ -26,6 +26,10 @@ export const cacheCheckFeature = once(checkFeature, ttl(30 * 60 * 1000))
 export const checkFeatureKey = (feature: Feature[], key: string) => {
   return feature.find(item => item.name === key)?.display === FeatureDisplayType.visible
 }
+export async function checkFeatureValid(featureKey) {
+  const feature = await cacheCheckFeature()
+  return feature.find(item => item.name === featureKey)?.display === FeatureDisplayType.visible
+}
 export function useCheckFeatureValid(features: string[] = []) {
   const [result, setResult] = React.useState([] as Feature[])
   const getValidity = React.useCallback(async () => {

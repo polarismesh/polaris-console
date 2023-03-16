@@ -15,6 +15,7 @@ import { describeNamespaces } from '@src/polaris/service/model'
 import { deleteCircuitBreaker, DescribeCircuitBreakers, enableCircuitBreaker } from './model'
 import { DefaultBreakerTag, TagSearchType } from './Page'
 import FaultDetectDuck from './faultDetect/PageDuck'
+import { checkFeatureValid } from '@src/polaris/common/util/checkFeature'
 
 export const EmptyCustomFilter = {
   name: '',
@@ -260,6 +261,8 @@ export default class ServicePageDuck extends GridPageDuck {
     if (type === BreakerType.Interface) {
       level = InterfaceLevelType.map(item => BreakLevelSearchParamMap[item]).join(',')
     }
+    const available = await checkFeatureValid('circuitbreaker')
+    if (!available) return { totalCount: 0, list: [] }
     const { totalCount, list } = await DescribeCircuitBreakers({
       limit: count,
       offset: (page - 1) * count,

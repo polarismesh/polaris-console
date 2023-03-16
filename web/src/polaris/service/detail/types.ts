@@ -2,7 +2,7 @@ export enum TAB {
   Info = 'info',
   Instance = 'instance',
   Route = 'router',
-  AccessLimit = 'ratelimit',
+  AccessLimit = 'ratelimiter',
   CircuitBreaker = 'circuitbreaker',
 }
 export const TAB_LABLES = {

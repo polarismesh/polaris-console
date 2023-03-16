@@ -69,9 +69,8 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
   )
   const inService = !!loadData
   const [showType, setShowType] = React.useState('router')
-  const [routerFeature, nearbyFeature] = useCheckFeatureValid(['router', 'router-nearby'])
+  const [routerFeature] = useCheckFeatureValid(['router'])
   const isRouterEnable = routerFeature?.display === FeatureDisplayType.visible
-  const isNearbyEnable = nearbyFeature?.display === FeatureDisplayType.visible
   const customRouteComponent = (
     <>
       <Table.ActionPanel>
@@ -128,8 +127,8 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
     </>
   )
   React.useEffect(() => {
-    setShowType(isRouterEnable ? 'router' : isNearbyEnable ? 'router-nearby' : '')
-  }, [isRouterEnable, isNearbyEnable])
+    setShowType(isRouterEnable ? 'router' : '')
+  }, [isRouterEnable])
   return (
     <BasicLayout
       title={'自定义路由'}
@@ -153,8 +152,8 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
               {
                 text: '就近路由',
                 value: 'router-nearby',
-                disabled: !isNearbyEnable,
-                tooltip: nearbyFeature?.tip,
+                disabled: !isRouterEnable,
+                tooltip: routerFeature?.tip,
               },
             ]}
             onChange={v => {

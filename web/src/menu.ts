@@ -80,7 +80,7 @@ export const MenuConfig: MenuItemConfig = {
           id: 'accesslimit',
           title: '访问限流',
           icon: 'static/img/dynamic-route.svg',
-          featureKey: 'ratelimit',
+          featureKey: 'ratelimiter',
           subMenus: null,
         },
 
@@ -88,7 +88,7 @@ export const MenuConfig: MenuItemConfig = {
           id: 'flow-monitor',
           title: '流量监控',
           icon: 'static/img/circuit-monitor.svg',
-          featureKey: 'metricGovernance',
+          featureKey: 'metricsBase',
           subMenus: null,
         },
       ],

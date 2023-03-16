@@ -2,7 +2,7 @@ import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import ServiceDetailDuck from './PageDuck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
-import { Tab, TabPanel, Tabs, Text } from 'tea-component'
+import { Bubble, Tab, TabPanel, Tabs } from 'tea-component'
 import { TAB, TAB_LABLES } from './types'
 import BaseInfo from './info/Page'
 import Instance from './instance/Page'
@@ -11,6 +11,7 @@ import Route from '@src/polaris/administration/dynamicRoute/customRoute/Page'
 
 import CircuitBreaker from '@src/polaris/administration/breaker/Page'
 import { FeatureDisplayType, useCheckFeatureValid } from '@src/polaris/common/util/checkFeature'
+import { handleInfo } from '@src/polaris/common/util/common'
 
 const tabs: Array<Tab> = [TAB.Instance, TAB.Route, TAB.CircuitBreaker, TAB.AccessLimit, TAB.Info].map(id => ({
   id,
@@ -33,7 +34,15 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
       const currentFeature = features.find(feature => feature.name === item.id)
       if (!currentFeature || currentFeature.display === FeatureDisplayType.visible) return item
       if (currentFeature.display === FeatureDisplayType.block) {
-        return { ...item, disabled: true, label: <Text tooltip={currentFeature.tip}>{item.label}</Text> }
+        return {
+          ...item,
+          disabled: true,
+          label: (
+            <Bubble placement={'bottom'} content={handleInfo(currentFeature.tip)}>
+              {item.label}
+            </Bubble>
+          ),
+        }
       }
       if (currentFeature.display === FeatureDisplayType.hidden) {
         return undefined
