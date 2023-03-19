@@ -6,8 +6,11 @@ import { AuthStrategy } from '../../model'
 import { AUTH_SUBJECT_TYPE_MAP } from '../../policy/Page'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import SearchableTransfer from '@src/polaris/common/duckComponents/SearchableTransfer'
+import { useTranslation } from 'react-i18next'
 
 export default purify(function(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { ducks, selectors } = duck
   const options = selectors.options(store)
@@ -16,10 +19,10 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       duck={duck}
       store={store}
       dispatch={dispatch}
-      title={'授权'}
+      title={t('授权')}
       size={'l'}
-      defaultSubmitText={'授权'}
-      defaultCancelText={'取消'}
+      defaultSubmitText={t('授权')}
+      defaultCancelText={t('取消')}
     >
       <Form>
         <FormItem label={AUTH_SUBJECT_TYPE_MAP[options?.authSubjectType]?.text}>
@@ -27,9 +30,9 @@ export default purify(function(props: DuckCmpProps<Duck>) {
             {options?.name || '-'}({options?.id || '-'})
           </FormText>
         </FormItem>
-        <FormItem label={'授权策略'}>
+        <FormItem label={t('授权策略')}>
           <SearchableTransfer
-            title={'请选择策略'}
+            title={t('请选择策略')}
             duck={ducks.policy}
             store={store}
             dispatch={dispatch}

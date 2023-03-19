@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import { Checkbox, Col, Form, FormItem, FormText, Row, SelectMultiple, Text } from 'tea-component'
@@ -9,6 +10,8 @@ interface Props extends DuckCmpProps<BaseInfoDuck> {
   filterSlot: React.ReactNode
 }
 export default function Server(props: Props) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch, filterSlot } = props
   const { selector, creators, selectors } = duck
   const {
@@ -55,7 +58,7 @@ export default function Server(props: Props) {
       {filterSlot}
       <section style={{ borderBottom: '1px solid #d0d5dd', padding: '40px 0px', marginBottom: '20px' }}>
         <Form layout={'inline'} style={{ display: 'inline-block' }}>
-          <FormItem label={'功能'}>
+          <FormItem label={t('功能')}>
             <SelectMultiple
               appearance='button'
               options={MonitorFeatureOptions}
@@ -75,12 +78,12 @@ export default function Server(props: Props) {
                 }
                 dispatch(creators.selectInterface(availableInterface))
               }}
-              allOption={{ text: '全部功能汇总', value: '' }}
+              allOption={{ text: t('全部功能汇总'), value: '' }}
               size={'m'}
             ></SelectMultiple>
           </FormItem>
           <FormItem
-            label={'接口'}
+            label={t('接口')}
             suffix={
               <>
                 <Checkbox
@@ -94,7 +97,7 @@ export default function Server(props: Props) {
                     }
                   }}
                 >
-                  汇总
+                  <Trans>汇总</Trans>
                 </Checkbox>
               </>
             }
@@ -114,15 +117,17 @@ export default function Server(props: Props) {
                   }
                 }}
                 size={'m'}
-                placeholder={'全部接口汇总'}
+                placeholder={t('全部接口汇总')}
                 className={'black-placeholder-text'}
               ></SelectMultiple>
             ) : (
-              <FormText>无可选接口</FormText>
+              <FormText>
+                <Trans>无可选接口</Trans>
+              </FormText>
             )}
           </FormItem>
           <FormItem
-            label={'节点'}
+            label={t('节点')}
             align={'middle'}
             suffix={
               <>
@@ -137,7 +142,7 @@ export default function Server(props: Props) {
                     }
                   }}
                 >
-                  汇总
+                  <Trans>汇总</Trans>
                 </Checkbox>
               </>
             }
@@ -157,17 +162,19 @@ export default function Server(props: Props) {
                   }
                 }}
                 size={'m'}
-                placeholder={'全部节点汇总'}
+                placeholder={t('全部节点汇总')}
                 className={'black-placeholder-text'}
               ></SelectMultiple>
             ) : (
-              <FormText>无节点</FormText>
+              <FormText>
+                <Trans>无节点</Trans>
+              </FormText>
             )}
           </FormItem>
         </Form>
       </section>
       {selectAllInterface && selectAllPod && (
-        <SimpleCollapse id={'all'} activeIds={activeIds} title={'汇总'} onChange={onChangeFunction}>
+        <SimpleCollapse id={'all'} activeIds={activeIds} title={t('汇总')} onChange={onChangeFunction}>
           <Row>
             <Col span={12}>
               <MetricCard
@@ -175,10 +182,10 @@ export default function Server(props: Props) {
                 query={getQueryMap[MetricName.Request]({ ...basicQueryParam })}
                 cardProps={{ bordered: true }}
                 cardBodyProps={{
-                  title: '请求数',
+                  title: t('请求数'),
                   subtitle: (
                     <Text parent={'div'} theme={'label'}>
-                      客户端访问北极星服务端请求数
+                      <Trans>客户端访问北极星服务端请求数</Trans>
                     </Text>
                   ),
                 }}
@@ -190,10 +197,10 @@ export default function Server(props: Props) {
                 query={getQueryMap[MetricName.Timeout]({ ...basicQueryParam })}
                 cardProps={{ bordered: true }}
                 cardBodyProps={{
-                  title: '请求时延',
+                  title: t('请求时延'),
                   subtitle: (
                     <Text parent={'div'} theme={'label'}>
-                      客户端访问北极星服务端请求时延
+                      <Trans>客户端访问北极星服务端请求时延</Trans>
                     </Text>
                   ),
                 }}
@@ -204,7 +211,7 @@ export default function Server(props: Props) {
                 {...basicQueryParam}
                 query={getQueryMap[MetricName.ErrorReq]()}
                 cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '失败请求数' }}
+                cardBodyProps={{ title: t('失败请求数') }}
               ></MetricCard>
             </Col>
             <Col span={12}>
@@ -212,32 +219,42 @@ export default function Server(props: Props) {
                 {...basicQueryParam}
                 query={getQueryMap[MetricName.RetCode]()}
                 cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '返回码分布' }}
+                cardBodyProps={{ title: t('返回码分布') }}
               ></MetricCard>
             </Col>
           </Row>
         </SimpleCollapse>
       )}
-
       {partitions.length > 0 && (
         <>
           {partitions.map(({ podName, interfaceId, id }) => {
             const curInterface = interfaceMap[interfaceId]
             const interfaceName = curInterface?.interfaceName
-            const key = `${interfaceName ? `${interfaceName}-` : '所有接口汇总-'}${podName ? podName : '所有节点汇总'}`
+            const key = `${interfaceName ? `${interfaceName}-` : t('所有接口汇总-')}${
+              podName ? podName : t('所有节点汇总')
+            }`
             return (
               <SimpleCollapse
                 id={id}
                 key={key}
                 activeIds={activeIds}
                 title={`
-                ${
-                  curInterface
-                    ? `${MonitorFeatureTextMap[curInterface.type]}功能-${curInterface.desc}接口`
-                    : '所有接口汇总'
-                }
-                ${podName && interfaceName ? '-' : ''}
-                ${podName ? `${podName}节点` : '所有节点汇总'}`}
+              ${
+                curInterface
+                  ? t('{{attr0}}功能-{{attr1}}接口', {
+                      attr0: MonitorFeatureTextMap[curInterface.type],
+                      attr1: curInterface.desc,
+                    })
+                  : t('所有接口汇总')
+              }
+              ${podName && interfaceName ? '-' : ''}
+              ${
+                podName
+                  ? t('{{attr0}}节点', {
+                      attr0: podName,
+                    })
+                  : t('所有节点汇总')
+              }`}
                 onChange={onChangeFunction}
               >
                 <Row>
@@ -246,7 +263,7 @@ export default function Server(props: Props) {
                       {...basicQueryParam}
                       query={getQueryMap[MetricName.Request]({ interfaceName, podName })}
                       cardProps={{ bordered: true }}
-                      cardBodyProps={{ title: '总请求数' }}
+                      cardBodyProps={{ title: t('总请求数') }}
                     ></MetricCard>
                   </Col>
                   <Col span={12}>
@@ -254,7 +271,7 @@ export default function Server(props: Props) {
                       {...basicQueryParam}
                       query={getQueryMap[MetricName.Timeout]({ ...basicQueryParam, interfaceName, podName })}
                       cardProps={{ bordered: true }}
-                      cardBodyProps={{ title: '请求时延' }}
+                      cardBodyProps={{ title: t('请求时延') }}
                     ></MetricCard>
                   </Col>
                   <Col span={12}>
@@ -262,7 +279,7 @@ export default function Server(props: Props) {
                       {...basicQueryParam}
                       query={getQueryMap[MetricName.ErrorReq]({ interfaceName, podName })}
                       cardProps={{ bordered: true }}
-                      cardBodyProps={{ title: '失败请求数' }}
+                      cardBodyProps={{ title: t('失败请求数') }}
                     ></MetricCard>
                   </Col>
                   <Col span={12}>
@@ -270,7 +287,7 @@ export default function Server(props: Props) {
                       {...basicQueryParam}
                       query={getQueryMap[MetricName.RetCode]({ interfaceName, podName })}
                       cardProps={{ bordered: true }}
-                      cardBodyProps={{ title: '返回码分布' }}
+                      cardBodyProps={{ title: t('返回码分布') }}
                     ></MetricCard>
                   </Col>
                 </Row>

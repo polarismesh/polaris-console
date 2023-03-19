@@ -160,8 +160,10 @@ export default class AccessLimitingDuck extends GridPageDuck {
         watch: types.DELETE,
         fn: function*(item) {
           const confirm = yield Modal.confirm({
-            message: `确认删除限流规则 ${item.name} 吗？`,
-            description: '删除后，无法恢复',
+            message: this.t('确认删除限流规则 {{attr0}} 吗？', {
+              attr0: item.name,
+            }),
+            description: this.t('删除后，无法恢复'),
           })
           if (confirm) {
             yield deleteRateLimit([{ id: item.id }])
@@ -174,10 +176,13 @@ export default class AccessLimitingDuck extends GridPageDuck {
         type: OperationType.SINGLE,
         watch: types.SWITCH_STATUS,
         fn: function*(item: any) {
-          const ops = item.swtichStatusAction === SwitchStatusAction.disable ? '禁用' : '启用'
+          const ops = item.swtichStatusAction === SwitchStatusAction.disable ? this.t('禁用') : this.t('启用')
           const disable = item.swtichStatusAction === SwitchStatusAction.disable ? true : false
           const confirm = yield Modal.confirm({
-            message: `确认${ops}限流规则 ${item.name} 吗？`,
+            message: this.t('确认{{attr0}}限流规则 {{attr1}} 吗？', {
+              attr0: ops,
+              attr1: item.name,
+            }),
           })
           if (confirm) {
             yield enableRateLimit([{ id: item.id, disable }])
@@ -189,7 +194,7 @@ export default class AccessLimitingDuck extends GridPageDuck {
   }
 
   *getColumns() {
-    return getColumns(this)
+    return getColumns(this, this.t)
   }
 
   *saga() {

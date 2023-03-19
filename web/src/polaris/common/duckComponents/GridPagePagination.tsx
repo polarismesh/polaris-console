@@ -1,46 +1,32 @@
 /**
  * GridPage中的Pagination
  */
-import * as React from "react";
-import { Pagination, PaginationProps } from "tea-component";
-import { memorize, purify, DuckCmpProps } from "saga-duck";
+import * as React from 'react'
+import { Pagination, PaginationProps } from 'tea-component'
+import { memorize, purify, DuckCmpProps } from 'saga-duck'
 
-import Duck from "../ducks/GridPage";
+import Duck from '../ducks/GridPage'
 
 const getHandler = memorize((duck, dispatch) => {
   return ({ pageIndex, pageSize }) => {
-    dispatch(duck.creators.paginate(pageIndex, pageSize));
-  };
-});
+    dispatch(duck.creators.paginate(pageIndex, pageSize))
+  }
+})
 
-interface Props
-  extends Omit<
-    PaginationProps,
-    "pageSize" | "onPagingChange" | "pageIndex" | "recordCount"
-  > {
-  minPageSize?: number;
-  maxPageSize?: number;
-  pageSizeInterval?: number;
+interface Props extends Omit<PaginationProps, 'pageSize' | 'onPagingChange' | 'pageIndex' | 'recordCount'> {
+  minPageSize?: number
+  maxPageSize?: number
+  pageSizeInterval?: number
 }
 
-export default purify(function DuckGridPagePagination(
-  props: DuckCmpProps<Duck> & Props
-) {
-  const {
-    store,
-    dispatch,
-    duck,
-    minPageSize,
-    maxPageSize,
-    pageSizeInterval,
-    ...rest
-  } = props;
+export default purify(function DuckGridPagePagination(props: DuckCmpProps<Duck> & Props) {
+  const { store, dispatch, duck, minPageSize, maxPageSize, pageSizeInterval, ...rest } = props
   const {
     selectors,
     ducks: { grid },
-  } = duck;
+  } = duck
 
-  const onPageChange = getHandler(props);
+  const onPageChange = getHandler(props)
 
   return (
     <Pagination
@@ -51,21 +37,17 @@ export default purify(function DuckGridPagePagination(
       pageSizeOptions={getCountList(
         minPageSize || duck.minPageSize,
         maxPageSize || duck.maxPageSize,
-        pageSizeInterval || duck.pageSizeInterval
+        pageSizeInterval || duck.pageSizeInterval,
       )}
       {...rest}
     />
-  );
-});
+  )
+})
 
 function getCountList(minPageSize = 5, maxPageSize = 50, pageSizeInterval = 5) {
-  const listArr = [];
-  for (
-    let pageSize = minPageSize;
-    pageSize <= maxPageSize;
-    pageSize += pageSizeInterval
-  ) {
-    listArr.push(pageSize);
+  const listArr = []
+  for (let pageSize = minPageSize; pageSize <= maxPageSize; pageSize += pageSizeInterval) {
+    listArr.push(pageSize)
   }
-  return listArr;
+  return listArr
 }

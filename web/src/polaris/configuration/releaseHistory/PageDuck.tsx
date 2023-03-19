@@ -189,7 +189,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
 
       const modal = Modal.show({
         size: 'xl',
-        caption: '内容对比',
+        caption: this.t('内容对比'),
         children: <FileDiff original={previousRelease?.[0]?.content || ''} now={content || ''} format={format} />,
         destroyOnClose: true,
         onClose: () => modal.destroy(),
@@ -209,7 +209,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
           attr: {
             type: 'single',
             key: GroupNameTagKey,
-            name: '分组',
+            name: this.t('分组'),
             values: configFileGroupList,
           },
           values: [option],
@@ -220,7 +220,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
           attr: {
             type: 'input',
             key: FileNameTagKey,
-            name: '配置文件名',
+            name: this.t('配置文件名'),
           },
           values: [{ name: routes.fileName }],
         })

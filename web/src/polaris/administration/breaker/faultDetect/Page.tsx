@@ -1,3 +1,5 @@
+import { t } from 'i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import FaultDetectDuck from './PageDuck'
@@ -19,9 +21,11 @@ export enum TagSearchType {
 export const DefaultBreakerTag = {
   type: 'input',
   key: TagSearchType.Name,
-  name: '规则名',
+  name: t('规则名'),
 }
 function getTagAttributes(props: DuckCmpProps<FaultDetectDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store } = props
   const { namespaceList } = duck.selector(store)
   return [
@@ -29,23 +33,23 @@ function getTagAttributes(props: DuckCmpProps<FaultDetectDuck>) {
     {
       type: 'single',
       key: TagSearchType.DestNamespace,
-      name: '目标命名空间',
+      name: t('目标命名空间'),
       values: namespaceList,
     },
     {
       type: 'input',
       key: TagSearchType.DestService,
-      name: '目标服务',
+      name: t('目标服务'),
     },
     {
       type: 'input',
       key: TagSearchType.DestMethod,
-      name: '目标方法',
+      name: t('目标方法'),
     },
     {
       type: 'input',
       key: TagSearchType.Description,
-      name: '描述',
+      name: t('描述'),
     },
   ]
 }
@@ -57,8 +61,8 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
   const { loadData, expandedKeys, ruleInfoMap } = selector(store)
   const handlers = React.useMemo(
     () => ({
-      changeTags: (tags) => dispatch(creators.changeTags(tags)),
-      setExpandedKeys: (v) => dispatch(creators.setExpandedKeys(v)),
+      changeTags: tags => dispatch(creators.changeTags(tags)),
+      setExpandedKeys: v => dispatch(creators.setExpandedKeys(v)),
     }),
     [],
   )
@@ -78,7 +82,7 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
                 router.navigate(`/faultDetect-create`)
               }}
             >
-              新建主动探测规则
+              <Trans>新建主动探测规则</Trans>
             </Button>
           }
           right={
@@ -90,8 +94,8 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
                   verticalAlign: 'middle',
                   width: '400px',
                 }}
-                onChange={(value) => handlers.changeTags(value)}
-                tips={'请选择条件进行过滤'}
+                onChange={value => handlers.changeTags(value)}
+                tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
             </>
@@ -109,21 +113,24 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
               // 已经展开的产品
               expandedKeys,
               // 发生展开行为时，回调更新展开键值
-              onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
-              render: (record) => {
+              onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
+              render: record => {
                 const ruleDetail = ruleInfoMap[record.id] as FaultDetectRule
                 return ruleDetail ? (
                   <Form>
-                    <FormItem label='描述'>
+                    <FormItem label={t('描述')}>
                       <FormText>{ruleDetail.description || '-'}</FormText>
                     </FormItem>
-                    <FormItem label='周期'>
-                      <FormText>{ruleDetail.interval || '-'}秒</FormText>
+                    <FormItem label={t('周期')}>
+                      <FormText>
+                        {ruleDetail.interval || '-'}
+                        <Trans>秒</Trans>
+                      </FormText>
                     </FormItem>
-                    <FormItem label='端口'>
+                    <FormItem label={t('端口')}>
                       <FormText>{ruleDetail.port || '-'}</FormText>
                     </FormItem>
-                    <FormItem label='协议'>
+                    <FormItem label={t('协议')}>
                       <FormText>{ruleDetail.protocol || '-'}</FormText>
                     </FormItem>
                     {ruleDetail.protocol === FaultDetectProtocol.HTTP && (
@@ -136,7 +143,7 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
                         </FormItem>
                         <FormItem label={'Header'}>
                           <FormText>
-                            {ruleDetail.httpConfig.headers.map((item) => {
+                            {ruleDetail.httpConfig.headers.map(item => {
                               return (
                                 <Text parent={'p'} key={item.key}>
                                   {item.key}:{item.value}

@@ -47,14 +47,14 @@ export default class CreateUserDuck extends FormDialog {
           new_password,
         })
         if (result) {
-          notification.success({ description: '修改密码成功' })
+          notification.success({ description: this.t('修改密码成功') })
           if (id === getUin()) {
-            notification.warning({ description: '您已成功重置密码，请重新登录。' })
+            notification.warning({ description: this.t('您已成功重置密码，请重新登录。') })
             yield delay(3000)
             userLogout()
           }
         } else {
-          notification.error({ description: '修改密码失败' })
+          notification.error({ description: this.t('修改密码失败') })
         }
       } else {
         result = yield modifyGovernanceUser({
@@ -63,9 +63,9 @@ export default class CreateUserDuck extends FormDialog {
           email,
         })
         if (result) {
-          notification.success({ description: '编辑成功' })
+          notification.success({ description: this.t('编辑成功') })
         } else {
-          notification.error({ description: '编辑失败' })
+          notification.error({ description: this.t('编辑失败') })
         }
       }
       return result
@@ -81,9 +81,9 @@ export default class CreateUserDuck extends FormDialog {
         },
       ])
       if (result) {
-        notification.success({ description: '创建成功' })
+        notification.success({ description: this.t('创建成功') })
       } else {
-        notification.error({ description: '创建失败' })
+        notification.error({ description: this.t('创建失败') })
       }
       return result
     }
@@ -139,13 +139,13 @@ const validator = CreateForm.combineValidators<Values, DialogOptions>({
       return
     }
     if (!v) {
-      return '请输入名称'
+      return this.t('请输入名称')
     }
     if (!v.match(/^[\u4E00-\u9FA5A-Za-z0-9_\\-]+$/)) {
-      return '只能使用中文、数字、大小写字母 以及- _组成'
+      return this.t('只能使用中文、数字、大小写字母 以及- _组成')
     }
     if (v.length > 64) {
-      return '最大长度为64'
+      return this.t('最大长度为64')
     }
   },
   password(v, values) {
@@ -153,7 +153,7 @@ const validator = CreateForm.combineValidators<Values, DialogOptions>({
       return
     }
     if (!v) {
-      return '请输入密码'
+      return this.t('请输入密码')
     }
     if (v.length < 6 || v.length > 17) {
       return passwordRuleText
@@ -167,7 +167,7 @@ const validator = CreateForm.combineValidators<Values, DialogOptions>({
       return
     }
     if (!v && values.id) {
-      return '请输入旧密码'
+      return this.t('请输入旧密码')
     }
   },
   new_password(v, values, meta) {
@@ -175,7 +175,7 @@ const validator = CreateForm.combineValidators<Values, DialogOptions>({
       return
     }
     if (!v && values.id) {
-      return '请输入新密码'
+      return this.t('请输入新密码')
     }
     if (v.length < 6 || v.length > 17) {
       return passwordRuleText
@@ -184,13 +184,13 @@ const validator = CreateForm.combineValidators<Values, DialogOptions>({
   confirmPassword(v, values, meta) {
     if (meta.isModifyPassword || !meta.isModify) {
       if (!v) {
-        return '请确认密码'
+        return this.t('请确认密码')
       }
       if (meta.isModify && values.new_password !== v) {
-        return '两次输入密码不一致'
+        return this.t('两次输入密码不一致')
       }
       if (!meta.isModify && values.password !== v) {
-        return '两次输入密码不一致'
+        return this.t('两次输入密码不一致')
       }
     }
   },

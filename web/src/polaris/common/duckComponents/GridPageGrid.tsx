@@ -1,19 +1,19 @@
 /**
  * 与ducks/GridPage关联的Grid
  */
-import * as React from "react";
-import DuckGrid, { Props as BaseProps } from "./Grid";
-import { memorize, purify, DuckCmpProps } from "saga-duck";
-import { TableColumn } from "tea-component";
-import Duck from "../ducks/GridPage";
+import * as React from 'react'
+import DuckGrid, { Props as BaseProps } from './Grid'
+import { memorize, purify, DuckCmpProps } from 'saga-duck'
+import { TableColumn } from 'tea-component'
+import Duck from '../ducks/GridPage'
 
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   onClear: () => dispatch(creators.clearSearchCondition()),
   onRetry: () => dispatch(creators.reload()),
-}));
+}))
 
 interface Props extends BaseProps {
-  columns: TableColumn<any>[];
+  columns: TableColumn<any>[]
 }
 
 export default purify(function DuckGridPageGrid({
@@ -25,7 +25,7 @@ export default purify(function DuckGridPageGrid({
   columns,
   ...rest
 }: DuckCmpProps<Duck> & Props) {
-  const handlers = getHandlers(arguments[0]);
+  const handlers = getHandlers(arguments[0])
   return (
     <DuckGrid
       duck={gridDuck}
@@ -36,5 +36,5 @@ export default purify(function DuckGridPageGrid({
       onRetry={handlers.onRetry}
       {...rest}
     />
-  );
-});
+  )
+})

@@ -15,7 +15,7 @@ function Switch(props: Props) {
     <TeaSwitch
       value={field.getValue() === trueValue}
       onChange={() => {
-        let value = field.getValue() === trueValue ? falseValue : trueValue
+        const value = field.getValue() === trueValue ? falseValue : trueValue
         field.setValue(value)
       }}
       {...rest}

@@ -25,7 +25,7 @@ export default function useControlled<T>(
   outerChange: (v: T) => any,
   innerValue: T,
   innerChange: (v: T) => any,
-  equal: (a: T, b: T) => boolean = (a, b) => a === b
+  equal: (a: T, b: T) => boolean = (a, b) => a === b,
 ) {
   const lastOuterValue = React.useRef<T>()
   React.useEffect(() => {

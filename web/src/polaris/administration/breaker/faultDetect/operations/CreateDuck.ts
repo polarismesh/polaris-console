@@ -187,45 +187,45 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
 const validator = Form.combineValidators<FaultDetectRule>({
   name(v) {
     if (!v) {
-      return '请填写规则名称'
+      return this.t('请填写规则名称')
     }
     if (!/^[a-zA-Z0-9-_]([a-zA-Z0-9-_]{1,64})?$/.test(v)) {
-      return '名称只能含有数字，字母，下划线及中划线'
+      return this.t('名称只能含有数字，字母，下划线及中划线')
     }
   },
   targetService: {
     namespace(v) {
       if (!v) {
-        return '请选择命名空间'
+        return this.t('请选择命名空间')
       }
     },
     service(v) {
       if (!v) {
-        return '请选择服务名'
+        return this.t('请选择服务名')
       }
     },
   },
   timeout(v) {
-    if (!v) return '请输入超时时间'
+    if (!v) return this.t('请输入超时时间')
   },
   httpConfig(v, values) {
     if (values.protocol !== FaultDetectProtocol.HTTP) return
     const res = Form.combineValidators<FaultDetectRule['httpConfig']>({
       url(v) {
         if (!v) {
-          return '请输入url'
+          return this.t('请输入url')
         }
       },
       headers: [
         {
           key(v) {
             if (!v) {
-              return '请输入键'
+              return this.t('请输入键')
             }
           },
           value(v) {
             if (!v) {
-              return '请输入值'
+              return this.t('请输入值')
             }
           },
         },
@@ -238,7 +238,7 @@ const validator = Form.combineValidators<FaultDetectRule>({
     return Form.combineValidators<FaultDetectRule['tcpConfig']>({
       send(v) {
         if (!v) {
-          return '请输入值'
+          return this.t('请输入值')
         }
       },
     })(v, values.tcpConfig)
@@ -248,7 +248,7 @@ const validator = Form.combineValidators<FaultDetectRule>({
     return Form.combineValidators<FaultDetectRule['udpConfig']>({
       send(v) {
         if (!v) {
-          return '请输入值'
+          return this.t('请输入值')
         }
       },
     })(v, values.udpConfig)

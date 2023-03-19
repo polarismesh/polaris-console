@@ -137,41 +137,41 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, {}>({
   name(v) {
-    if (!v) return '请填写名称'
+    if (!v) return this.t('请填写名称')
   },
   monitor_type(v) {
-    if (!v) return '请填写监控类型'
+    if (!v) return this.t('请填写监控类型')
   },
   alter_expr(v, meta) {
     const res = CreateForm.combineValidators<AlterExpr>({
       metrics_name(v) {
-        if (!v) return '请选择请求指标'
+        if (!v) return this.t('请选择请求指标')
       },
       expr(v) {
-        if (!v) return '请选择表达式'
+        if (!v) return this.t('请选择表达式')
       },
       value(v) {
-        if (!v) return '请选择阈值'
+        if (!v) return this.t('请选择阈值')
       },
       for(v) {
-        if (!v) return '请输入持续时长'
+        if (!v) return this.t('请输入持续时长')
       },
       for_unit(v) {
-        if (!v) return '请选择持续时长单位'
+        if (!v) return this.t('请选择持续时长单位')
       },
     })(v, meta)
     return res
   },
   interval(v) {
-    if (!v) return '请选择告警周期'
+    if (!v) return this.t('请选择告警周期')
   },
   interval_unit(v) {
-    if (!v) return '请选择告警周期'
+    if (!v) return this.t('请选择告警周期')
   },
   topic(v) {
-    if (!v) return '请输入告警主题'
+    if (!v) return this.t('请输入告警主题')
   },
   message(v) {
-    if (!v) return '请输入告警消息'
+    if (!v) return this.t('请输入告警消息')
   },
 })

@@ -129,12 +129,12 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, {}>({
   service(v) {
-    if (!v) return '请选择指向服务'
+    if (!v) return this.t('请选择指向服务')
   },
   alias_namespace(v) {
-    if (!v) return '请选择别名所在命名空间'
+    if (!v) return this.t('请选择别名所在命名空间')
   },
   alias(v) {
-    if (!v) return '请填写别名'
+    if (!v) return this.t('请填写别名')
   },
 })

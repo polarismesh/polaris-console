@@ -56,9 +56,9 @@ export default class CreateDuck extends FormDialog {
         },
       ])
       if (result) {
-        notification.success({ description: '编辑成功' })
+        notification.success({ description: this.t('编辑成功') })
       } else {
-        notification.error({ description: '编辑失败' })
+        notification.error({ description: this.t('编辑失败') })
       }
       return result
     } else {
@@ -68,9 +68,9 @@ export default class CreateDuck extends FormDialog {
         relation: { users: selection.map(item => ({ id: item.id })) },
       })
       if (result) {
-        notification.success({ description: '创建成功' })
+        notification.success({ description: this.t('创建成功') })
       } else {
-        notification.error({ description: '创建失败' })
+        notification.error({ description: this.t('创建失败') })
       }
       return result
     }
@@ -120,13 +120,13 @@ class CreateForm extends Form {
 const validator = CreateForm.combineValidators<Values, {}>({
   name(v) {
     if (!v) {
-      return '请输入名称'
+      return this.t('请输入名称')
     }
     if (!v.match(/^[\u4E00-\u9FA5A-Za-z0-9_\\-]+$/)) {
-      return '只能使用中文、数字、大小写字母 以及- _组成'
+      return this.t('只能使用中文、数字、大小写字母 以及- _组成')
     }
     if (v.length > 64) {
-      return '最大长度为64'
+      return this.t('最大长度为64')
     }
   },
 })

@@ -43,8 +43,8 @@ export default class CreateDuck extends FormDialog {
       selectors,
       ducks: { form, userGroupSelect, userSelect },
     } = this
-    const userIds = userSelect.selector(yield select()).selection.map((user) => user.id)
-    const groupIds = userGroupSelect.selector(yield select()).selection.map((group) => group.id)
+    const userIds = userSelect.selector(yield select()).selection.map(user => user.id)
+    const groupIds = userGroupSelect.selector(yield select()).selection.map(group => group.id)
     const { userIds: originUserIds, groupIds: originGroupIds } = selectors.data(yield select())
     const options = selectors.options(yield select())
 
@@ -119,8 +119,8 @@ export default class CreateDuck extends FormDialog {
         type: types.UPDATE,
         payload: {
           ...data,
-          userIds: users.map((user) => user.id),
-          groupIds: groups.map((group) => group.id),
+          userIds: users.map(user => user.id),
+          groupIds: groups.map(group => group.id),
         },
       })
     }
@@ -128,14 +128,14 @@ export default class CreateDuck extends FormDialog {
       type: types.SET_OPTIONS,
       payload: {
         ...options,
-        namespaceList: namespaceList.map((item) => {
+        namespaceList: namespaceList.map(item => {
           const disabled = isReadOnlyNamespace(item)
           return {
             ...item,
             text: item.name,
             value: item.name,
             disabled,
-            tooltip: disabled && '该命名空间为只读命名空间',
+            tooltip: disabled && this.t('该命名空间为只读命名空间'),
           }
         }),
       },
@@ -166,9 +166,9 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, any>({
   name(v) {
-    if (!v) return '请填写分组名'
+    if (!v) return this.t('请填写分组名')
   },
   namespace(v) {
-    if (!v) return '请填写命名空间'
+    if (!v) return this.t('请填写命名空间')
   },
 })

@@ -132,13 +132,13 @@ export default class ServicePageDuck extends GridPageDuck {
       const { name } = action.payload
 
       const confirm = yield Modal.confirm({
-        message: `确认删除命名空间`,
-        description: '删除后，无法恢复',
-        okText: '删除',
+        message: this.t('确认删除命名空间', {}),
+        description: this.t('删除后，无法恢复'),
+        okText: this.t('删除'),
       })
       if (confirm) {
         const res = yield deleteNamespace([{ name, token: 'polaris@12345678' }])
-        if (res) notification.success({ description: '删除成功' })
+        if (res) notification.success({ description: this.t('删除成功') })
         yield put(creators.reload())
       }
     })

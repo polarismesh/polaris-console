@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import * as React from 'react'
 import { purify, DuckCmpProps } from 'saga-duck'
 
@@ -15,12 +16,14 @@ overflow:hidden;
 
 }`,
 )
-export default purify(function (props: DuckCmpProps<Duck>) {
+export default purify(function(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { ducks, creators, selector } = duck
   const { userName, password } = ducks.form.getAPI(store, dispatch).getFields(['userName', 'password'])
   const { preError } = selector(store)
-  const licenseToolTip = preError && 'License已超过最大过期时间'
+  const licenseToolTip = preError && t('License已超过最大过期时间')
   return (
     <div
       style={{ background: 'url(static/img/login-background.png)', backgroundSize: '100% 100%' }}
@@ -46,10 +49,12 @@ export default purify(function (props: DuckCmpProps<Duck>) {
               >
                 <Card.Body>
                   <Text parent={'div'} style={{ color: '#fff', fontSize: '24px', width: '550px' }}>
-                    北极星服务治理中心
+                    <Trans>北极星服务治理中心</Trans>
                   </Text>
                   <Text parent={'div'} style={{ color: 'rgba(255, 255, 255, 0.6)', width: '450px' }}>
-                    一个支持多语言、多框架和异构基础设施的服务治理中心，提供服务发现、流量调度、熔断降级、限流鉴权和可观测性等服务治理功能。北极星治理中心默认提供服务注册功能，也可以搭配其他服务注册中心使用。
+                    <Trans>
+                      一个支持多语言、多框架和异构基础设施的服务治理中心，提供服务发现、流量调度、熔断降级、限流鉴权和可观测性等服务治理功能。北极星治理中心默认提供服务注册功能，也可以搭配其他服务注册中心使用。
+                    </Trans>
                   </Text>
                 </Card.Body>
               </Card>
@@ -61,7 +66,7 @@ export default purify(function (props: DuckCmpProps<Duck>) {
                     <Col>
                       <H2>
                         <Text align={'center'} parent={'div'} style={{ width: '100%' }}>
-                          登录
+                          <Trans>登录</Trans>
                         </Text>
                       </H2>
                     </Col>
@@ -69,26 +74,27 @@ export default purify(function (props: DuckCmpProps<Duck>) {
                   <Row>
                     <Col>
                       <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
-                        外网访问建议设置访问控制策略
+                        <Trans>外网访问建议设置访问控制策略</Trans>
                       </Text>
                     </Col>
                   </Row>
                   <Row>
                     <Col>
                       <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
-                        初始用户名和密码为<Copy text={'polaris'}>polaris</Copy>/<Copy text={'polaris'}>polaris</Copy>
+                        <Trans>初始用户名和密码为</Trans>
+                        <Copy text={'polaris'}>polaris</Copy>/<Copy text={'polaris'}>polaris</Copy>
                       </Text>
                     </Col>
                   </Row>
                   <Form style={{ padding: '20px 0px' }}>
-                    <FormField field={userName} label={'用户名'}>
+                    <FormField field={userName} label={t('用户名')}>
                       <Input field={userName} size={'full'} disabled={preError} placeholder={licenseToolTip} />
                     </FormField>
-                    <FormField field={password} label={'密码'}>
+                    <FormField field={password} label={t('密码')}>
                       <TeaInput.Password
                         value={password.getValue() || ''}
                         size={'full'}
-                        onChange={(v) => {
+                        onChange={v => {
                           password.setValue(v)
                           password.setTouched(true)
                           password.setError('')
@@ -116,7 +122,7 @@ export default purify(function (props: DuckCmpProps<Duck>) {
                           }}
                           disabled={preError}
                         >
-                          登录
+                          <Trans>登录</Trans>
                         </Button>
                       </Col>
                     </Bubble>

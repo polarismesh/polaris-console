@@ -1,8 +1,9 @@
+import { t } from 'i18next'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { notification } from 'tea-component'
 import tips from './tips'
 import { userLogout } from './common'
-import insertCSS from "../helpers/insertCSS";
+import insertCSS from '../helpers/insertCSS'
 
 insertCSS(
   `request-notification`,
@@ -40,7 +41,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response.status === TokenNotExistCode) {
           handleTokenNotExist()
           return
@@ -53,7 +54,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
           notification.error({
             style: { zIndex: 9999 },
             unique: true,
-            title: '请求错误',
+            title: t('请求错误'),
             description: error.response?.data?.info,
           })
         }
@@ -82,7 +83,7 @@ export async function getApiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response.status === TokenNotExistCode) {
           handleTokenNotExist()
           return
@@ -94,7 +95,7 @@ export async function getApiRequest<T>(options: APIRequestOption) {
           }
           notification.error({
             unique: true,
-            title: '请求错误',
+            title: t('请求错误'),
             description: error.response?.data?.info,
           })
         }
@@ -121,7 +122,7 @@ export async function putApiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response.status === TokenNotExistCode) {
           handleTokenNotExist()
           return
@@ -134,7 +135,7 @@ export async function putApiRequest<T>(options: APIRequestOption) {
           notification.error({
             style: { zIndex: 9999 },
             unique: true,
-            title: '请求错误',
+            title: t('请求错误'),
             description: error.response?.data?.info,
           })
         }
@@ -162,7 +163,7 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response.status === TokenNotExistCode) {
           handleTokenNotExist()
           return
@@ -174,7 +175,7 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
           }
           notification.error({
             unique: true,
-            title: '请求错误',
+            title: t('请求错误'),
             description: error.response?.data?.info,
           })
         }
@@ -207,7 +208,7 @@ const DefaultOptions = {
  * @param listKey 返回结果中列表的键名称 默认list
  */
 export function getAllList(fetchFun: (params?: any) => Promise<any>, options: FetchAllOptions = {}) {
-  return async function (params: any) {
+  return async function(params: any) {
     const fetchOptions = { ...DefaultOptions, ...options }
     let allList = [],
       pageNo = 0

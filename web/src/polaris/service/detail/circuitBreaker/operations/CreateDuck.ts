@@ -368,7 +368,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
       try {
         JSON.parse(v)
       } catch (e) {
-        return '请输入正确的JSON字符串'
+        return this.t('请输入正确的JSON字符串')
       }
     }
   },
@@ -377,28 +377,28 @@ const validator = CreateForm.combineValidators<Values, {}>({
       try {
         JSON.parse(v)
       } catch (e) {
-        return '请输入正确的JSON字符串'
+        return this.t('请输入正确的JSON字符串')
       }
     }
   },
   inboundNamespace(v, meta) {
     if (!v && meta.ruleType === RuleType.Inbound && meta.editType !== EditType.Json) {
-      return '请输入命名空间'
+      return this.t('请输入命名空间')
     }
   },
   inboundService(v, meta) {
     if (!v && meta.ruleType === RuleType.Inbound && meta.editType !== EditType.Json) {
-      return '请输入服务名'
+      return this.t('请输入服务名')
     }
   },
   outboundNamespace(v, meta) {
     if (!v && meta.ruleType === RuleType.Outbound && meta.editType !== EditType.Json) {
-      return '请输入命名空间'
+      return this.t('请输入命名空间')
     }
   },
   outboundService(v, meta) {
     if (!v && meta.ruleType === RuleType.Outbound && meta.editType !== EditType.Json) {
-      return '请输入服务名'
+      return this.t('请输入服务名')
     }
   },
 })

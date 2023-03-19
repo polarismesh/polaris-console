@@ -166,7 +166,9 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
           })),
         }))
         return {
-          name: `规则${index}`,
+          name: this.t('规则{{attr0}}', {
+            attr0: index,
+          }),
           sources: handledSources,
           destinations: handledDestinations,
         }
@@ -363,30 +365,30 @@ export interface Values {
 const validator = Form.combineValidators<Values>({
   name(v) {
     if (!v) {
-      return '请填写路由规则名称'
+      return this.t('请填写路由规则名称')
     }
   },
   source: {
     namespace(v) {
       if (!v) {
-        return '请选择命名空间'
+        return this.t('请选择命名空间')
       }
     },
     service(v) {
       if (!v) {
-        return '请选择服务名'
+        return this.t('请选择服务名')
       }
     },
   },
   destination: {
     namespace(v) {
       if (!v) {
-        return '请选择命名空间'
+        return this.t('请选择命名空间')
       }
     },
     service(v) {
       if (!v) {
-        return '请选择服务名'
+        return this.t('请选择服务名')
       }
     },
   },
@@ -398,15 +400,15 @@ const validator = Form.combineValidators<Values>({
             {
               key(v) {
                 if (!v) {
-                  return '请输入key值'
+                  return this.t('请输入key值')
                 }
               },
               value(v, data) {
                 if (!v && data.type === RoutingArgumentsType.CALLER_IP) {
-                  return '请输入IP'
+                  return this.t('请输入IP')
                 }
                 if (!v && data.type !== RoutingArgumentsType.CALLER_IP) {
-                  return '请输入value值'
+                  return this.t('请输入value值')
                 }
               },
             },
@@ -417,7 +419,7 @@ const validator = Form.combineValidators<Values>({
         {
           labels(v) {
             if (!v.length) {
-              return '请输入标签分组'
+              return this.t('请输入标签分组')
             }
           },
         },
@@ -449,7 +451,7 @@ export class RouteCreateDuck extends Form {
       },
       rules: [
         {
-          name: '规则1',
+          name: this.t('规则1'),
           sources: [
             {
               service: '*',

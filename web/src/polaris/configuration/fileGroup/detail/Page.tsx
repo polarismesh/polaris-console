@@ -1,3 +1,4 @@
+import { t } from 'i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import ServiceDetailDuck from './PageDuck'
@@ -8,7 +9,7 @@ export enum TAB {
   File = 'file',
 }
 export const TAB_LABLES = {
-  [TAB.File]: '配置文件',
+  [TAB.File]: t('配置文件'),
 }
 const tabs: Array<Tab> = [TAB.File].map(id => ({
   id,

@@ -249,8 +249,8 @@ export default class ServicePageDuck extends GridPageDuck {
         })
         .filter(item => item)
       const confirm = yield Modal.confirm({
-        message: `确认删除服务`,
-        description: '删除后，无法恢复',
+        message: this.t('确认删除服务', {}),
+        description: this.t('删除后，无法恢复'),
       })
       if (confirm) {
         yield deleteService(params)

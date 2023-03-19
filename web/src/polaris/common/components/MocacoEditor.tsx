@@ -10,7 +10,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { setDiagnosticsOptions } from 'monaco-yaml'
 
 import insertCSS from '../helpers/insertCSS'
-
+import { useTranslation } from 'react-i18next'
 
 setDiagnosticsOptions({
   enableSchemaRequest: true,
@@ -49,6 +49,8 @@ insertCSS(
 type MonacoEditorProps = Omit<CodeEditorProps, 'monaco'>
 
 export default function MonacoEditor({ style, ...props }: MonacoEditorProps) {
+  const { t } = useTranslation()
+
   const editorRef = React.useRef<{ editor: any }>(null)
   const [isFullScreen, setFullScreen] = React.useState(false)
   const [rect, setRect] = React.useState({ width: 0, height: 0 })
@@ -116,7 +118,7 @@ export default function MonacoEditor({ style, ...props }: MonacoEditorProps) {
       description={
         <>
           <Icon type='loading' />
-          &nbsp;{'编辑器正在加载中...'}
+          &nbsp;{t('编辑器正在加载中...')}
         </>
       }
       className={FontSizeReset}

@@ -1,34 +1,34 @@
-import * as React from "react";
-import { purify } from "saga-duck";
-import { Dispatch } from "redux";
-import { Button } from "tea-component";
-import DispatchProvider from "../DispatchProvider";
+import * as React from 'react'
+import { purify } from 'saga-duck'
+import { Dispatch } from 'redux'
+import { Button } from 'tea-component'
+import DispatchProvider from '../DispatchProvider'
 
 export interface Props {
-  text?: string;
-  fn(dispatch?: Dispatch<any>, e?);
-  className?: string;
-  disabled?: boolean;
-  tip?: string;
-  visible?: boolean;
-  children?: React.ReactNode;
+  text?: string
+  fn(dispatch?: Dispatch<any>, e?)
+  className?: string
+  disabled?: boolean
+  tip?: string
+  visible?: boolean
+  children?: React.ReactNode
 }
 
 @purify
 export default class Action extends React.Component<Props, {}> {
   render() {
-    const props = this.props;
+    const props = this.props
     if (props.visible === false) {
-      return <noscript />;
+      return <noscript />
     }
     return (
       <DispatchProvider>
-        {(dispatch) => (
+        {dispatch => (
           <Button
-            type="link"
+            type='link'
             disabled={props.disabled}
             key={props.text}
-            onClick={(e) => !props.disabled && props.fn(dispatch, e)}
+            onClick={e => !props.disabled && props.fn(dispatch, e)}
             tooltip={props.tip}
             className={props.className}
           >
@@ -36,6 +36,6 @@ export default class Action extends React.Component<Props, {}> {
           </Button>
         )}
       </DispatchProvider>
-    );
+    )
   }
 }

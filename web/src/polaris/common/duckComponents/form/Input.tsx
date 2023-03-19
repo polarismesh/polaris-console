@@ -13,11 +13,10 @@ function Input<T>(props: Props) {
       value={field.getValue() || ''}
       onChange={value => {
         field.setValue(value)
-        if(onChange) {
+        if (onChange) {
           return onChange(value, this)
         }
-      }
-      }
+      }}
       onBlur={e => {
         field.setTouched()
         if (onBlur) {

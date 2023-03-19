@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import * as React from 'react'
 import AccessLimitingDuck from './PageDuck'
 import { Text, Copy } from 'tea-component'
@@ -8,10 +9,10 @@ import { RateLimit } from './model'
 import { SwitchStatusAction } from './types'
 import { Link } from 'react-router-dom'
 
-export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
+export default ({ creators }: AccessLimitingDuck, t): Column<RateLimit>[] => [
   {
     key: 'idName',
-    header: 'ID/规则名',
+    header: t('ID/规则名'),
     width: 280,
     render: x => (
       <>
@@ -26,27 +27,36 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
   },
   {
     key: 'disable',
-    header: '状态',
-    render: x => (x.disable ? <Text theme='success'>已启用</Text> : <Text theme='danger'>未启用</Text>),
+    header: t('状态'),
+    render: x =>
+      x.disable ? (
+        <Text theme='success'>
+          <Trans>已启用</Trans>
+        </Text>
+      ) : (
+        <Text theme='danger'>
+          <Trans>未启用</Trans>
+        </Text>
+      ),
   },
   {
     key: 'namespace',
-    header: '命名空间',
+    header: t('命名空间'),
     render: x => <Text>{x.namespace || '-'}</Text>,
   },
   {
     key: 'service',
-    header: '服务名称',
+    header: t('服务名称'),
     render: x => <Text>{x.service || '-'}</Text>,
   },
   {
     key: 'method',
-    header: '接口名称',
+    header: t('接口名称'),
     render: x => <Text>{x.method.value || '-'}</Text>,
   },
   {
     key: 'ctimeMtime',
-    header: '创建时间/修改时间',
+    header: t('创建时间/修改时间'),
     render: x => (
       <>
         <Text>
@@ -59,7 +69,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
   },
   {
     key: 'etime',
-    header: '启用时间',
+    header: t('启用时间'),
     render: x => (
       <>
         <Text>{x.etime || '-'}</Text>
@@ -68,7 +78,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
   },
   {
     key: 'action',
-    header: '操作',
+    header: t('操作'),
     render: x => {
       const actions: {
         id: string
@@ -77,7 +87,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
       }[] = [
         {
           id: 'switchStatus',
-          text: x.disable ? '禁用' : '启用',
+          text: x.disable ? t('禁用') : t('启用'),
           fn: dispatch => {
             const swtichStatusAction = x.disable ? SwitchStatusAction.disable : SwitchStatusAction.start
             dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
@@ -85,14 +95,14 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
         },
         {
           id: 'modify',
-          text: '编辑',
+          text: t('编辑'),
           fn: dispatch => {
             dispatch(creators.modify(x))
           },
         },
         {
           id: 'remove',
-          text: '删除',
+          text: t('删除'),
           fn: dispatch => {
             dispatch(creators.delete(x))
           },

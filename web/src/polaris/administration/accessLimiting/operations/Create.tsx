@@ -1,3 +1,5 @@
+import { t } from 'i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import LimitRuleCreatePageDuck from './CreateDuck'
@@ -54,17 +56,27 @@ insertCSS(
 )
 export const MatchingLabelTips = (
   <>
-    <Text parent={'div'}>多个请求匹配规则之间是且的关系</Text>
-    <Text parent={'div'}>部分匹配运算符的说明如下：</Text>
     <Text parent={'div'}>
-      包含：多字符串取OR匹配，传入的值只要匹配到其中一个字符串，就算匹配成功。字符串之间使用逗号进行分割。值格式为'value1,value2,value3‘，匹配到其中一个就算成功。
+      <Trans>多个请求匹配规则之间是且的关系</Trans>
     </Text>
     <Text parent={'div'}>
-      不包含：多字符串取反匹配，传入的值必须都没有出现在所配置的字符串列表中，才算匹配通过。值格式为'value1,value2,value3‘，全部不等于才算成功。
+      <Trans>部分匹配运算符的说明如下：</Trans>
+    </Text>
+    <Text parent={'div'}>
+      <Trans>
+        包含：多字符串取OR匹配，传入的值只要匹配到其中一个字符串，就算匹配成功。字符串之间使用逗号进行分割。值格式为'value1,value2,value3‘，匹配到其中一个就算成功。
+      </Trans>
+    </Text>
+    <Text parent={'div'}>
+      <Trans>
+        不包含：多字符串取反匹配，传入的值必须都没有出现在所配置的字符串列表中，才算匹配通过。值格式为'value1,value2,value3‘，全部不等于才算成功。
+      </Trans>
     </Text>
   </>
 )
 export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRuleCreatePageDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -128,7 +140,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
           type={'simulate'}
           appearance={'button'}
           matchButtonWidth
-          placeholder='请选择命名空间'
+          placeholder={t('请选择命名空间')}
           size='m'
         />
       )
@@ -139,7 +151,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
       keyField.setValue('$caller_ip')
       keyComponent = <TeaInput placeholder='$caller_ip' disabled />
     } else {
-      keyComponent = <Input placeholder='请输入Key值' field={keyField} onChange={key => keyField.setValue(key)} />
+      keyComponent = <Input placeholder={t('请输入Key值')} field={keyField} onChange={key => keyField.setValue(key)} />
     }
 
     return (
@@ -179,13 +191,13 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
           type={'simulate'}
           appearance={'button'}
           matchButtonWidth
-          placeholder='请选择服务名'
+          placeholder={t('请选择服务名')}
           size='m'
         ></Select>
       )
     } else {
       valueComponent = (
-        <Input placeholder='请输入Value值' field={valueField} onChange={value => valueField.setValue(value)} />
+        <Input placeholder={t('请输入Value值')} field={valueField} onChange={value => valueField.setValue(value)} />
       )
     }
 
@@ -223,16 +235,16 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
       store={store}
       duck={duck}
       dispatch={dispatch}
-      title={composedId?.id ? '编辑服务限流规则' : '新建服务限流规则'}
+      title={composedId?.id ? t('编辑服务限流规则') : t('新建服务限流规则')}
       backRoute={backRoute}
     >
       <Card>
         <Card.Body>
           <Form>
-            <FormField label='限流规则名称' field={nameField} message='最长64个字符' required>
+            <FormField label={t('限流规则名称')} field={nameField} message={t('最长64个字符')} required>
               <Input field={nameField} maxLength={64} size='l' />
             </FormField>
-            <FormField label='限流类型' field={typeField} required>
+            <FormField label={t('限流类型')} field={typeField} required>
               <Segment
                 value={typeField.getValue()}
                 options={filteredLimitTypeOptions}
@@ -245,14 +257,16 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
               />
             </FormField>
 
-            <Form.Item label='限流规则详情'>
+            <Form.Item label={t('限流规则详情')}>
               <Card>
                 <Card.Body
-                  title='目标服务'
-                  subtitle='您可以对目标服务的指定接口设置限流规则。当该接口被调用时，符合匹配规则的请求，则会触发限流规则'
+                  title={t('目标服务')}
+                  subtitle={t(
+                    '您可以对目标服务的指定接口设置限流规则。当该接口被调用时，符合匹配规则的请求，则会触发限流规则',
+                  )}
                 >
                   <Form style={{ padding: '20px' }}>
-                    <FormField field={namespaceField} label='命名空间' required>
+                    <FormField field={namespaceField} label={t('命名空间')} required>
                       <Select
                         value={namespaceField.getValue()}
                         options={data?.namespaceList}
@@ -265,12 +279,12 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                         type={'simulate'}
                         appearance={'button'}
                         matchButtonWidth
-                        placeholder='请选择命名空间'
+                        placeholder={t('请选择命名空间')}
                         size='m'
                         disabled={!!composedId?.namespace}
                       />
                     </FormField>
-                    <FormField field={serviceField} label='服务名称' required>
+                    <FormField field={serviceField} label={t('服务名称')} required>
                       <AutoComplete
                         options={data?.serviceList.filter(o => {
                           if (namespaceField.getValue()) {
@@ -279,7 +293,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             return o.text.includes(serviceInputValue)
                           }
                         })}
-                        tips='没有匹配的服务名称'
+                        tips={t('没有匹配的服务名称')}
                         onChange={value => {
                           const option = data?.serviceList.find(opt => opt.value === value)
                           setServiceInputValue(option.value)
@@ -299,10 +313,10 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                         )}
                       </AutoComplete>
                     </FormField>
-                    <FormField label='接口名称' field={methodField} align='middle'>
+                    <FormField label={t('接口名称')} field={methodField} align='middle'>
                       <Input
                         field={methodValueField}
-                        placeholder='请输入接口名称，默认全选'
+                        placeholder={t('请输入接口名称，默认全选')}
                         className='form-item-space'
                       />
                       <Select
@@ -315,7 +329,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                         matchButtonWidth
                       />
                     </FormField>
-                    <Form.Item label='请求匹配规则' align='middle' tips={MatchingLabelTips}>
+                    <Form.Item label={t('请求匹配规则')} align='middle' tips={MatchingLabelTips}>
                       {argumentsList?.length > 0 && (
                         <Table
                           hideHeader
@@ -330,7 +344,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                           columns={[
                             {
                               key: 'type',
-                              header: '类型',
+                              header: t('类型'),
                               render: item => {
                                 const { type, key } = item.getFields(['type', 'key'])
                                 const validate = type.getTouched() && type.getError()
@@ -431,11 +445,11 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             })
                           }
                         >
-                          添加
+                          <Trans>添加</Trans>
                         </Button>
                         {argumentsList?.length > 0 && (
                           <Button type='link' onClick={() => argumentsField.asArray().splice(0, argumentsList?.length)}>
-                            删除所有
+                            <Trans>删除所有</Trans>
                           </Button>
                         )}
                       </div>
@@ -445,13 +459,17 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
               </Card>
 
               <Card>
-                <Card.Body title='限流规则'>
+                <Card.Body title={t('限流规则')}>
                   <div>
-                    <H6 className='card-module-h6-title-style'>限流条件</H6>
-                    <Text theme='label'>满足以下任意条件即可触发限流</Text>
+                    <H6 className='card-module-h6-title-style'>
+                      <Trans>限流条件</Trans>
+                    </H6>
+                    <Text theme='label'>
+                      <Trans>满足以下任意条件即可触发限流</Trans>
+                    </Text>
                   </div>
                   <Form style={{ padding: '20px' }}>
-                    <Form.Item label='限流阈值' align='middle'>
+                    <Form.Item label={t('限流阈值')} align='middle'>
                       {amountsList?.length > 0 && (
                         <Table
                           recordKey={o => {
@@ -463,7 +481,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                           columns={[
                             {
                               key: 'validDuration',
-                              header: '统计窗口时长',
+                              header: t('统计窗口时长'),
                               render: item => {
                                 const { validDurationNum, validDurationUnit } = item.getFields([
                                   'validDurationNum',
@@ -495,11 +513,11 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             },
                             {
                               key: 'maxAmount',
-                              header: '请求数阈值',
+                              header: t('请求数阈值'),
                               render: item => {
                                 const { maxAmount } = item.getFields(['maxAmount'])
                                 return (
-                                  <InputAdornment after='次'>
+                                  <InputAdornment after={t('次')}>
                                     <InputNumber
                                       field={maxAmount}
                                       min={1}
@@ -551,29 +569,35 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             })
                           }
                         >
-                          添加
+                          <Trans>添加</Trans>
                         </Button>
                         {amountsList?.length > 0 && (
                           <Button type='link' onClick={() => amountsField.asArray().splice(1, amountsList?.length)}>
-                            删除所有
+                            <Trans>删除所有</Trans>
                           </Button>
                         )}
                       </div>
                     </Form.Item>
                     <FormField
                       field={regex_combine_Field}
-                      label='合并计算阈值'
-                      message='如果目标请求匹配到多个接口及参数，则将匹配到的所有请求汇合，合并计算阈值，具体规则查看'
+                      label={t('合并计算阈值')}
+                      message={t(
+                        '如果目标请求匹配到多个接口及参数，则将匹配到的所有请求汇合，合并计算阈值，具体规则查看',
+                      )}
                     >
                       <Switch field={regex_combine_Field}></Switch>
                     </FormField>
                   </Form>
                   <div style={{ marginTop: '10px' }}>
-                    <H6 className='card-module-h6-title-style'>限流方案</H6>
-                    <Text theme='label'>满足限流触发条件后的处理方案</Text>
+                    <H6 className='card-module-h6-title-style'>
+                      <Trans>限流方案</Trans>
+                    </H6>
+                    <Text theme='label'>
+                      <Trans>满足限流触发条件后的处理方案</Trans>
+                    </Text>
                   </div>
                   <Form style={{ padding: '20px' }}>
-                    <Form.Item label='限流效果'>
+                    <Form.Item label={t('限流效果')}>
                       <Segment
                         value={actionField.getValue()}
                         options={limitActionOptions}
@@ -582,8 +606,8 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                     </Form.Item>
                     {limitType === LimitType.GLOBAL && (
                       <Form.Item
-                        label='失败处理策略'
-                        message='当出现通信失败或者 Token Server 不可用时，限流方案退化到单机限流的模式'
+                        label={t('失败处理策略')}
+                        message={t('当出现通信失败或者 Token Server 不可用时，限流方案退化到单机限流的模式')}
                       >
                         <Segment
                           value={failoverField.getValue()}
@@ -593,8 +617,8 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                       </Form.Item>
                     )}
                     {actionField.getValue() === LimitAction.UNIRATE && (
-                      <FormField field={max_queue_delay_Field} label='最大排队时长'>
-                        <InputAdornment after='秒'>
+                      <FormField field={max_queue_delay_Field} label={t('最大排队时长')}>
+                        <InputAdornment after={t('秒')}>
                           <InputNumber field={max_queue_delay_Field} min={1} hideButton />
                         </InputAdornment>
                       </FormField>
@@ -604,13 +628,13 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
               </Card>
             </Form.Item>
 
-            <FormField label='是否启用' field={disableField}>
+            <FormField label={t('是否启用')} field={disableField}>
               <Switch field={disableField} />
             </FormField>
           </Form>
           <Form.Action>
             <Button type='primary' onClick={() => dispatch(creators.submit())}>
-              提交
+              <Trans>提交</Trans>
             </Button>
             <Button
               onClick={() => {
@@ -623,7 +647,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                 }
               }}
             >
-              取消
+              <Trans>取消</Trans>
             </Button>
           </Form.Action>
         </Card.Body>

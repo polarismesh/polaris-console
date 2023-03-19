@@ -213,8 +213,10 @@ export default class ServicePageDuck extends GridPageDuck {
     yield takeLatest(types.REMOVE, function*(action) {
       const rule = action.payload
       const confirm = yield Modal.confirm({
-        message: `确认删除规则 ${rule.name} 吗？`,
-        description: '删除后，无法恢复',
+        message: this.t('确认删除规则 {{attr0}} 吗？', {
+          attr0: rule.name,
+        }),
+        description: this.t('删除后，无法恢复'),
       })
       if (confirm) {
         yield deleteCircuitBreaker([{ id: rule.id }])
@@ -227,9 +229,12 @@ export default class ServicePageDuck extends GridPageDuck {
     })
     yield takeLatest(types.TOGGLE_RULE, function*(action) {
       const rule = action.payload
-      const ops = rule.enable ? '禁用' : '启用'
+      const ops = rule.enable ? this.t('禁用') : this.t('启用')
       const confirm = yield Modal.confirm({
-        message: `确认${ops}规则 ${rule.name} 吗？`,
+        message: this.t('确认{{attr0}}规则 {{attr1}} 吗？', {
+          attr0: ops,
+          attr1: rule.name,
+        }),
       })
       if (confirm) {
         yield enableCircuitBreaker([{ id: rule.id, enable: !rule.enable }])

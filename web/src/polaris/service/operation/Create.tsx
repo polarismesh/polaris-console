@@ -1,3 +1,5 @@
+import { t } from 'i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
@@ -10,6 +12,8 @@ import ResourcePrincipalAuth from '@src/polaris/auth/user/operation/ResourcePrin
 import { TagTable } from '@src/polaris/common/components/TagTable'
 
 export default function Create(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { selectors } = duck
   const visible = selectors.visible(store)
@@ -18,7 +22,7 @@ export default function Create(props: DuckCmpProps<Duck>) {
   }
   const data = selectors.data(store)
   return (
-    <Dialog duck={duck} store={store} dispatch={dispatch} size='xl' title={data.name ? '编辑服务' : '新建服务'}>
+    <Dialog duck={duck} store={store} dispatch={dispatch} size='xl' title={data.name ? t('编辑服务') : t('新建服务')}>
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
   )
@@ -48,7 +52,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   return (
     <>
       <Form>
-        <FormField field={namespace} label='命名空间' required>
+        <FormField field={namespace} label={t('命名空间')} required>
           <Select
             disabled={options.isModify}
             value={namespace.getValue()}
@@ -60,29 +64,31 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           ></Select>
         </FormField>
 
-        <FormField field={name} label={'服务名'} required>
+        <FormField field={name} label={t('服务名')} required>
           <Input
             disabled={options.isModify}
             field={name}
             maxLength={128}
-            placeholder={'允许数字、英文字母、.、-、_，限制128个字符'}
+            placeholder={t('允许数字、英文字母、.、-、_，限制128个字符')}
             size={'l'}
           />
         </FormField>
-        <FormField field={department} label={'部门'}>
+        <FormField field={department} label={t('部门')}>
           <Input field={department} size={'l'} />
         </FormField>
-        <FormField field={business} label={'业务'}>
+        <FormField field={business} label={t('业务')}>
           <Input field={business} size={'l'} />
         </FormField>
-        <FormField field={enableNearby} label={'开启就近访问'}>
+        <FormField field={enableNearby} label={t('开启就近访问')}>
           <Switch field={enableNearby} />
         </FormField>
         <FormItem
           label={
             <>
-              <Text>服务标签</Text>
-              <Bubble content={'服务标签可用于标识服务的用处、特征，格式为key:value'}>
+              <Text>
+                <Trans>服务标签</Trans>
+              </Text>
+              <Bubble content={t('服务标签可用于标识服务的用处、特征，格式为key:value')}>
                 <Icon type={'info'}></Icon>
               </Bubble>
             </>
@@ -90,11 +96,11 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         >
           <TagTable tags={metadata} />
         </FormItem>
-        <FormField field={comment} label={'描述'}>
+        <FormField field={comment} label={t('描述')}>
           <Input
             field={comment}
             maxLength={1024}
-            placeholder={'长度不超过1024个字符,标签数量不能超过64个'}
+            placeholder={t('长度不超过1024个字符,标签数量不能超过64个')}
             size={'l'}
           />
         </FormField>
@@ -103,10 +109,10 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           <>
             <Button type={'link'} onClick={() => setShowAdvance(!showAdvance)} style={{ cursor: 'pointer' }}>
               <Icon type={showAdvance ? 'arrowup' : 'arrowdown'} />
-              {'高级设置'}
+              {t('高级设置')}
             </Button>
             {showAdvance && (
-              <FormItem label={'授权'}>
+              <FormItem label={t('授权')}>
                 <ResourcePrincipalAuth
                   userDuck={userSelect}
                   userGroupDuck={userGroupSelect}

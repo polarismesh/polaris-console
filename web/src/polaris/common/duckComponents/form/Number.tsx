@@ -16,7 +16,7 @@ function Number<T>(props: Props) {
   const stringValue = typeof value === 'number' ? String(value) : ''
   return (
     <Input
-      type="number"
+      type='number'
       value={stringValue}
       onChange={value => field.setValue(+value || 0)}
       onBlur={e => {

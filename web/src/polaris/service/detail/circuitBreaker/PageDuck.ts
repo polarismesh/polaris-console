@@ -136,7 +136,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const { types, creators, selector, ducks } = this
     yield* this.sagaInitLoad()
     yield* super.saga()
-    yield takeLatest(types.CREATE, function* (action) {
+    yield takeLatest(types.CREATE, function*(action) {
       const {
         data: { name, namespace },
         circuitBreaker,
@@ -149,7 +149,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: '新建熔断规则',
+          title: this.t('新建熔断规则'),
           visible: true,
           createId,
           ruleIndex,
@@ -169,7 +169,7 @@ export default class ServicePageDuck extends GridPageDuck {
         }),
       )
     })
-    yield takeLatest(types.EDIT, function* (action) {
+    yield takeLatest(types.EDIT, function*(action) {
       const {
         data: { name, namespace },
         ruleType,
@@ -182,7 +182,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: '编辑规则',
+          title: this.t('编辑规则'),
           visible: true,
           createId,
           ruleIndex,
@@ -202,10 +202,10 @@ export default class ServicePageDuck extends GridPageDuck {
         }),
       )
     })
-    yield takeLatest(types.REMOVE, function* (action) {
+    yield takeLatest(types.REMOVE, function*(action) {
       const confirm = yield Modal.confirm({
-        message: `确认删除规则`,
-        description: '删除后，无法恢复',
+        message: this.t('确认删除规则', {}),
+        description: this.t('删除后，无法恢复'),
       })
       if (confirm) {
         const removeIndex = action.payload
@@ -225,7 +225,7 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.DRAWER_SUBMIT, function* () {
+    yield takeLatest(types.DRAWER_SUBMIT, function*() {
       const {
         drawerStatus: { createId, ruleType, ruleIndex, isEdit },
         circuitBreaker,
@@ -234,7 +234,7 @@ export default class ServicePageDuck extends GridPageDuck {
       const formValue = yield* ducks.dynamicCreateDuck.getDuck(createId).submit()
       if (!formValue) return
       const originData =
-        circuitBreaker || ({ service: name, namespace, inbounds: [], outbounds: [] } as unknown as CircuitBreaker)
+        circuitBreaker || (({ service: name, namespace, inbounds: [], outbounds: [] } as unknown) as CircuitBreaker)
       if (ruleType === RuleType.Inbound) {
         let newArray
         const tempArray = [...originData.inbounds] || []
@@ -274,12 +274,12 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
       const { circuitBreaker, originData } = action.payload
       yield put({ type: types.SET_CIRCUIT_BREAKER, payload: circuitBreaker })
       if (originData || originData === null) yield put({ type: types.SET_ORIGIN_DATA, payload: originData })
     })
-    yield takeLatest(types.RESET_DATA, function* () {
+    yield takeLatest(types.RESET_DATA, function*() {
       const { originData } = selector(yield select())
       yield put({ type: types.SET_CIRCUIT_BREAKER, payload: originData })
       yield put({
@@ -288,7 +288,7 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put(creators.reload())
     })
-    yield takeLatest(types.SUBMIT, function* () {
+    yield takeLatest(types.SUBMIT, function*() {
       const {
         originData,
         circuitBreaker,

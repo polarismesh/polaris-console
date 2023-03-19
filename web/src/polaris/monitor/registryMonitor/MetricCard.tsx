@@ -4,6 +4,7 @@ import { useDuck } from 'saga-duck'
 import { BasicArea } from 'tea-chart'
 import { MetricCardFetcher, QuerySet } from './MetricCardFetcher'
 import { compressNumber, DefaultLineColors, roundToN } from './types'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   query: QuerySet[]
@@ -14,6 +15,8 @@ interface Props {
   cardBodyProps?: CardBodyProps
 }
 export default function(props: Props) {
+  const { t } = useTranslation()
+
   const { query, start, end, step, cardProps = {}, cardBodyProps = {} } = props
   const { dispatch, duck, store } = useDuck(MetricCardFetcher)
   const queryString = query.map(item => item.query).join(',')
@@ -50,7 +53,7 @@ export default function(props: Props) {
           {line && (
             <BasicArea
               interaction={{
-                zoom: { resetText: '重置' },
+                zoom: { resetText: t('重置') },
               }}
               height={300}
               position={'time*value'}

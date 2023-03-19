@@ -43,8 +43,8 @@ export default class GetFileTemplateDuck extends FormDialog {
     const { currentTemplateId } = form.selectors.values(yield select())
     const currentTemplate = templateList.find(item => item.id === currentTemplateId)
     const confirm = yield Modal.confirm({
-      message: '请确认应用模板',
-      description: '应用所选模板将会覆盖当前已编辑的内容',
+      message: this.t('请确认应用模板'),
+      description: this.t('应用所选模板将会覆盖当前已编辑的内容'),
     })
     if (!confirm) throw 'not confirm'
     return currentTemplate.content
@@ -125,7 +125,7 @@ const validator = CreateForm.combineValidators<Values, any>({
   currentTemplateId(v, data?, meta?) {
     const currentTemplate = meta?.templateOptions?.find(item => item.id === v)
     if (currentTemplate?.format !== meta?.file?.format) {
-      return '您当前选择的模板与配置文件格式不符，请检查后重试。'
+      return this.t('您当前选择的模板与配置文件格式不符，请检查后重试。')
     }
   },
 })

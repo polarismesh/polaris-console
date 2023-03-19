@@ -14,7 +14,8 @@
       "@src/*": ["./src/*"],
       "@common/*": ["./src/polaris/common/*"],
       "@polaris/*": ["./src/polaris/*"]
-    }
+    },
+    "resolveJsonModule": true
   },
   "exclude": ["dist", "node_modules"]
 }

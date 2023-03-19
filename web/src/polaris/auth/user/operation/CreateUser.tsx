@@ -1,3 +1,4 @@
+import { t } from 'i18next'
 import * as React from 'react'
 import { purify, DuckCmpProps } from 'saga-duck'
 import Duck from './CreateUserDuck'
@@ -6,8 +7,11 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { isOwner } from '@src/polaris/common/util/common'
-export const passwordRuleText = '请输入6至17位的密码'
+import { useTranslation } from 'react-i18next'
+export const passwordRuleText = t('请输入6至17位的密码')
 export default purify(function(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { ducks, selector } = duck
   const { options } = selector(store)
@@ -19,10 +23,10 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       duck={duck}
       store={store}
       dispatch={dispatch}
-      title={options?.isModify ? (options?.isModifyPassword ? '修改密码' : '编辑用户') : '新建用户'}
+      title={options?.isModify ? (options?.isModifyPassword ? t('修改密码') : t('编辑用户')) : t('新建用户')}
       size={'s'}
-      defaultSubmitText={'确定'}
-      defaultCancelText={'取消'}
+      defaultSubmitText={t('确定')}
+      defaultCancelText={t('取消')}
     >
       <Form>
         {options?.isModify ? (
@@ -31,48 +35,48 @@ export default purify(function(props: DuckCmpProps<Duck>) {
               {!isOwner() && (
                 <FormField
                   field={old_password}
-                  label={'旧密码'}
+                  label={t('旧密码')}
                   required
-                  message={'如果您忘记了您的旧密码，可以联系您的主账号来重置密码'}
+                  message={t('如果您忘记了您的旧密码，可以联系您的主账号来重置密码')}
                 >
                   <Input field={old_password} size={'m'} type={'password'} />
                 </FormField>
               )}
-              <FormField field={new_password} label={'新密码'} required message={passwordRuleText}>
+              <FormField field={new_password} label={t('新密码')} required message={passwordRuleText}>
                 <Input field={new_password} size={'m'} type={'password'} />
               </FormField>
-              <FormField field={confirmPassword} label={'确认密码'} required>
+              <FormField field={confirmPassword} label={t('确认密码')} required>
                 <Input field={confirmPassword} size={'m'} type={'password'} />
               </FormField>
             </>
           ) : (
             <>
-              <FormField field={mobile} label={'手机号'}>
+              <FormField field={mobile} label={t('手机号')}>
                 <Input field={mobile} size={'m'} />
               </FormField>
-              <FormField field={email} label={'邮箱'}>
+              <FormField field={email} label={t('邮箱')}>
                 <Input field={email} size={'m'} />
               </FormField>
             </>
           )
         ) : (
           <>
-            <FormField field={name} label={'名称'} required>
+            <FormField field={name} label={t('名称')} required>
               <Input field={name} size={'m'} />
             </FormField>
-            <FormField field={password} label={'密码'} required message={passwordRuleText}>
+            <FormField field={password} label={t('密码')} required message={passwordRuleText}>
               <Input field={password} size={'m'} type={'password'} />
             </FormField>
-            <FormField field={confirmPassword} label={'确认密码'} required>
+            <FormField field={confirmPassword} label={t('确认密码')} required>
               <Input field={confirmPassword} size={'m'} type={'password'} />
             </FormField>
-            <FormField field={mobile} label={'手机号'}>
+            <FormField field={mobile} label={t('手机号')}>
               <Input field={mobile} size={'m'} />
             </FormField>
-            <FormField field={email} label={'邮箱'}>
+            <FormField field={email} label={t('邮箱')}>
               <Input field={email} size={'m'} />
             </FormField>
-            <FormField field={comment} label={'备注'}>
+            <FormField field={comment} label={t('备注')}>
               <Input field={comment} size={'m'} />
             </FormField>
           </>

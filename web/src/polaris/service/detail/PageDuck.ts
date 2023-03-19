@@ -105,7 +105,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
   *watchTabs() {
     const duck = this
     const { types, ducks, selectors } = duck
-    yield takeLatest([types.SWITCH, types.FETCH_DONE], function* () {
+    yield takeLatest([types.SWITCH, types.FETCH_DONE], function*() {
       const composedId = selectors.composedId(yield select())
       const tab = selectors.tab(yield select())
       const data = selectors.data(yield select())

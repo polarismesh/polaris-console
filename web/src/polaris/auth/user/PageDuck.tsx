@@ -123,20 +123,20 @@ export default class PageDuck extends GridPageDuck {
     yield takeLatest(types.DELETE, function*(action) {
       const users = action.payload
       const confirm = yield Modal.confirm({
-        message: '确认删除用户？',
+        message: this.t('确认删除用户？'),
         description: (
           <>
-            <Text>{'删除后，用户不可用且无法恢复'}</Text>
+            <Text>{this.t('删除后，用户不可用且无法恢复')}</Text>
           </>
         ),
       })
       if (confirm) {
         const result = yield deleteGovernanceUsers(users.map(item => ({ id: item.id })))
         if (result) {
-          notification.success({ description: '删除成功' })
+          notification.success({ description: this.t('删除成功') })
           yield put(creators.reload())
         } else {
-          notification.error({ description: '删除失败' })
+          notification.error({ description: this.t('删除失败') })
         }
       }
     })
@@ -186,7 +186,7 @@ export default class PageDuck extends GridPageDuck {
         }),
       )
       if (result) {
-        notification.success({ description: '编辑成功' })
+        notification.success({ description: this.t('编辑成功') })
         yield put(creators.reload())
       }
     })
@@ -212,7 +212,7 @@ export default class PageDuck extends GridPageDuck {
         }),
       )
       if (result) {
-        notification.success({ description: '编辑成功' })
+        notification.success({ description: this.t('编辑成功') })
         yield put(creators.reload())
       }
     })
@@ -239,7 +239,7 @@ export default class PageDuck extends GridPageDuck {
         }),
       )
       if (result) {
-        notification.success({ description: '编辑成功' })
+        notification.success({ description: this.t('编辑成功') })
         yield put(creators.reload())
       }
     })
@@ -251,7 +251,9 @@ export default class PageDuck extends GridPageDuck {
       } = yield describeGovernanceUserToken({ id })
       const { destroy } = Modal.show({
         size: 'xl',
-        caption: `查看${name}的token`,
+        caption: this.t('查看{{attr0}}的token', {
+          attr0: name,
+        }),
         children: <ShowToken token={auth_token} name={name}></ShowToken>,
         onClose: () => destroy(),
       })

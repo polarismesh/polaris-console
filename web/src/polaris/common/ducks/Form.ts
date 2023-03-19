@@ -1,3 +1,4 @@
+import { t } from 'i18next'
 /**
  * 基于redux saga-duck的通用表单实现
  *
@@ -94,6 +95,8 @@ export default class Form extends Base {
       ...Types,
     }
   }
+  t: (key: string) => string
+
   /** 表单初始值 */
   get defaultValue(): this['Values']{
     return null
@@ -391,7 +394,7 @@ export default class Form extends Base {
           // louis版的嵌套，返回validators
           if (resultValues.length && resultValues.every(r => typeof r === 'function')) {
             // eslint-disable-next-line @tencent/tea-i18n/no-bare-zh-in-js
-            warnOnce(`[deprecated] 建议使用对象递归，而不在返回值内递归`)
+            warnOnce(t("[deprecated] 建议使用对象递归，而不在返回值内递归", {}))
             results[field] = this.combineValidators(res)(value, meta)
           } else {
             results[field] = res
@@ -404,7 +407,7 @@ export default class Form extends Base {
         return results
       }, {})
       return invalids
-    }
+    };
   }
 
   static makeMapValidator<TValue = any, TMeta = any>(

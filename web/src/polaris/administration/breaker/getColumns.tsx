@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import * as React from 'react'
 import CircuitBreakerDuck from './PageDuck'
 import { Text, Copy } from 'tea-component'
@@ -9,6 +10,7 @@ import router from '@src/polaris/common/util/router'
 import { LimitMethodTypeMap } from '../accessLimiting/types'
 
 export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerRule>[] => {
+  const { t } = useTranslation()
   const {
     duck: { creators },
     dispatch,
@@ -16,7 +18,7 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
   return [
     {
       key: 'idName',
-      header: 'ID/规则名',
+      header: t('ID/规则名'),
       width: 280,
       render: x => {
         return (
@@ -33,32 +35,54 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
     },
     {
       key: 'enable',
-      header: '状态',
-      render: x => (x.enable ? <Text theme='success'>已启用</Text> : <Text theme='danger'>未启用</Text>),
+      header: t('状态'),
+      render: x =>
+        x.enable ? (
+          <Text theme='success'>
+            <Trans>已启用</Trans>
+          </Text>
+        ) : (
+          <Text theme='danger'>
+            <Trans>未启用</Trans>
+          </Text>
+        ),
     },
     {
       key: 'source',
-      header: '主调服务',
+      header: t('主调服务'),
       render: x => {
         return (
           <>
-            <Text parent={'div'}>命名空间: {x.ruleMatcher?.source?.namespace}</Text>
-            <Text parent={'div'}>服务: {x.ruleMatcher?.source?.service}</Text>
+            <Text parent={'div'}>
+              <Trans>命名空间:</Trans>
+              {x.ruleMatcher?.source?.namespace}
+            </Text>
+            <Text parent={'div'}>
+              <Trans>服务:</Trans>
+              {x.ruleMatcher?.source?.service}
+            </Text>
           </>
         )
       },
     },
     {
       key: 'destination',
-      header: '被调服务',
+      header: t('被调服务'),
       render: x => {
         return (
           <>
-            <Text parent={'div'}>命名空间: {x.ruleMatcher?.destination?.namespace}</Text>
-            <Text parent={'div'}>服务: {x.ruleMatcher?.destination?.service}</Text>
+            <Text parent={'div'}>
+              <Trans>命名空间:</Trans>
+              {x.ruleMatcher?.destination?.namespace}
+            </Text>
+            <Text parent={'div'}>
+              <Trans>服务:</Trans>
+              {x.ruleMatcher?.destination?.service}
+            </Text>
             {x.ruleMatcher?.destination?.method?.value && (
               <Text parent={'div'}>
-                接口: {LimitMethodTypeMap[x.ruleMatcher?.destination?.method?.type]}
+                <Trans>接口:</Trans>
+                {LimitMethodTypeMap[x.ruleMatcher?.destination?.method?.type]}
                 {x.ruleMatcher?.destination?.method?.value}
               </Text>
             )}
@@ -68,7 +92,7 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
     },
     {
       key: 'ctimemtime',
-      header: '创建时间/修改时间',
+      header: t('创建时间/修改时间'),
       render: x => {
         return (
           <>
@@ -80,7 +104,7 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
     },
     {
       key: 'etime',
-      header: '启用时间',
+      header: t('启用时间'),
       render: x => {
         return (
           <>
@@ -91,25 +115,25 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
     },
     {
       key: 'action',
-      header: '操作',
+      header: t('操作'),
       render: x => {
         return (
           <React.Fragment>
             <Action
-              text={x.enable ? '禁用' : '启用'}
+              text={x.enable ? t('禁用') : t('启用')}
               fn={() => {
                 dispatch(creators.toggle(x))
               }}
             />
             <Action
-              text={'编辑'}
+              text={t('编辑')}
               fn={() => {
                 const type = checkRuleType(x?.level)
                 router.navigate(`/circuitBreaker-create?id=${x.id}&type=${type}`)
               }}
             />
             <Action
-              text={'删除'}
+              text={t('删除')}
               fn={() => {
                 dispatch(creators.remove(x))
               }}

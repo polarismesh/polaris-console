@@ -5,7 +5,7 @@ interface Props {
   field: FieldAPI<any>
   children: React.ReactNode
 }
-export default function (props: Props) {
+export default function(props: Props) {
   const { field, children } = props
   return (
     <FormControl

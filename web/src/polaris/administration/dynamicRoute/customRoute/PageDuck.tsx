@@ -180,8 +180,10 @@ export default class CustomRouteDuck extends GridPageDuck {
         watch: types.DELETE,
         fn: function*(item) {
           const confirm = yield Modal.confirm({
-            message: `确认删除路由规则 ${item.name} 吗？`,
-            description: '删除后，无法恢复',
+            message: this.t('确认删除路由规则 {{attr0}} 吗？', {
+              attr0: item.name,
+            }),
+            description: this.t('删除后，无法恢复'),
           })
           if (confirm) {
             yield deleteCustomRoute([{ id: item.id }])
@@ -194,10 +196,13 @@ export default class CustomRouteDuck extends GridPageDuck {
         type: OperationType.SINGLE,
         watch: types.SWITCH_STATUS,
         fn: function*(item: any) {
-          const ops = item.swtichStatusAction === SwitchStatusAction.disable ? '禁用' : '启用'
+          const ops = item.swtichStatusAction === SwitchStatusAction.disable ? this.t('禁用') : this.t('启用')
           const disable = item.swtichStatusAction === SwitchStatusAction.disable ? true : false
           const confirm = yield Modal.confirm({
-            message: `确认${ops}路由规则 ${item.name} 吗？`,
+            message: this.t('确认{{attr0}}路由规则 {{attr1}} 吗？', {
+              attr0: ops,
+              attr1: item.name,
+            }),
           })
           if (confirm) {
             if (disable) {
@@ -233,7 +238,7 @@ export default class CustomRouteDuck extends GridPageDuck {
             attr: {
               type: 'input',
               key: TagSearchType.RuleName,
-              name: '规则名',
+              name: this.t('规则名'),
             },
           }
       })

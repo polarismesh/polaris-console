@@ -1,8 +1,10 @@
-import React, { useCallback } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
+import React, { useCallback, useState, useEffect } from 'react'
 import { Layout, NavMenu, Menu, List } from 'tea-component'
 import { Switch, Route, useHistory } from 'react-router-dom'
 const { Header, Body, Sider, Content } = Layout
-import { MenuConfig, MenuItemConfig } from './menu'
+import { getMenuConfig, MenuItemConfig } from './menu'
+
 import { connectWithDuck } from './polaris/common/helpers'
 import MonitorPage from '@src/polaris/monitor/Page'
 import FlowMonitorDuck from '@src/polaris/monitor/FlowMonitorDuck'
@@ -119,6 +121,8 @@ import RegistryMonitorPageDuck from '@src/polaris/monitor/registryMonitor/PageDu
 const RegistryMonitor = connectWithDuck(RegistryMonitorPage, RegistryMonitorPageDuck)
 
 export default function root() {
+  const { t, i18n } = useTranslation()
+
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1] || 'service')
   const getMenuItemProps = id => ({
@@ -129,13 +133,19 @@ export default function root() {
     },
   })
   const [authOpen, setAuthOpen] = React.useState(null)
+  const [lang, setLang] = useState('zh')
   const fetchAuth = useCallback(async () => {
     const authOpen = await cacheCheckAuth({})
     setAuthOpen(authOpen)
   }, [])
-  React.useEffect(() => {
+
+  useEffect(() => {
     fetchAuth()
   }, [fetchAuth])
+
+  useEffect(() => {
+    i18n.changeLanguage(lang)
+  }, [lang])
 
   function recursiveRenderMenuItem(menuItem: MenuItemConfig) {
     if (!menuItem) {
@@ -159,6 +169,8 @@ export default function root() {
       ></Menu.Item>
     )
   }
+
+  const MenuConfig = getMenuConfig(t)
   return (
     <>
       <Layout>
@@ -174,6 +186,31 @@ export default function root() {
             }
             right={
               <>
+                <NavMenu.Item
+                  type='dropdown'
+                  overlay={close => (
+                    <List type='option'>
+                      <List.Item
+                        onClick={() => {
+                          setLang('zh')
+                          close()
+                        }}
+                      >
+                        <Trans>中文</Trans>
+                      </List.Item>
+                      <List.Item
+                        onClick={() => {
+                          setLang('en')
+                          close()
+                        }}
+                      >
+                        <Trans>英语</Trans>
+                      </List.Item>
+                    </List>
+                  )}
+                >
+                  <Trans>语言</Trans>
+                </NavMenu.Item>
                 <NavMenu.Item type='default'>
                   <a
                     href={
@@ -182,7 +219,7 @@ export default function root() {
                     target={'_blank'}
                     rel='noreferrer'
                   >
-                    文档
+                    <Trans>文档</Trans>
                   </a>
                 </NavMenu.Item>
                 <NavMenu.Item
@@ -195,7 +232,7 @@ export default function root() {
                           close()
                         }}
                       >
-                        账号信息
+                        <Trans>账号信息</Trans>
                       </List.Item>
                       <List.Item
                         onClick={() => {
@@ -203,7 +240,7 @@ export default function root() {
                           close()
                         }}
                       >
-                        退出
+                        <Trans>退出</Trans>
                       </List.Item>
                     </List>
                   )}

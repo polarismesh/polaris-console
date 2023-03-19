@@ -42,35 +42,31 @@
  */
 
 export abstract class Completer<TItem, TExtra, TFilter = any> {
-  protected list: TItem[];
-  protected totalCount: number;
-  protected update: UPDATE<TExtra>;
+  protected list: TItem[]
+  protected totalCount: number
+  protected update: UPDATE<TExtra>
   /** 如果列表为空，不进行补全 */
   protected get ignoreEmptyList() {
-    return true;
+    return true
   }
   /** 请求参数 */
   constructor(protected filter: TFilter = null) {}
   *init(filter?: TFilter): IterableIterator<any> {
     if (filter) {
-      this.filter = filter;
+      this.filter = filter
     }
-    yield* this.onInit();
+    yield* this.onInit()
   }
   /** 列表刚开始加载，此时可访问 this.filter  */
   *onInit(): IterableIterator<any> {}
-  *fetched(
-    list: TItem[],
-    totalCount: number,
-    update: UPDATE<TExtra>
-  ): IterableIterator<any> {
-    this.list = list;
-    this.totalCount = totalCount;
-    this.update = update;
+  *fetched(list: TItem[], totalCount: number, update: UPDATE<TExtra>): IterableIterator<any> {
+    this.list = list
+    this.totalCount = totalCount
+    this.update = update
     if (this.ignoreEmptyList && list.length <= 0) {
-      return;
+      return
     }
-    yield* this.onFetched();
+    yield* this.onFetched()
   }
   /** 列表加载完成，此时可访问 this.list, this.totalCount, this.update */
   *onFetched(): IterableIterator<any> {}
@@ -78,6 +74,6 @@ export abstract class Completer<TItem, TExtra, TFilter = any> {
 
 /** 数据更新方法 */
 export interface UPDATE<TExtra> {
-  (index: number, o: TExtra): any;
-  (list: TExtra[]): any;
+  (index: number, o: TExtra): any
+  (list: TExtra[]): any
 }

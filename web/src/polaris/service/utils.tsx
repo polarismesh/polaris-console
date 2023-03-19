@@ -1,3 +1,4 @@
+import { t } from 'i18next'
 import { Namespace, READ_ONLY_NAMESPACE } from './types'
 import { Modal, Table } from 'tea-component'
 import React from 'react'
@@ -17,9 +18,9 @@ export const isReadOnlyConfigGroup = (group: ConfigFileGroup) => {
   return !group.editable
 }
 
-export const showAllLabels = (labels) => {
+export const showAllLabels = labels => {
   Modal.confirm({
-    message: `标签展示`,
+    message: t('标签展示', {}),
     description: (
       <>
         <LabelTable labels={labels}></LabelTable>

@@ -149,6 +149,6 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, {}>({
   name(v) {
-    if (!v) return '请填写名称'
+    if (!v) return this.t('请填写名称')
   },
 })

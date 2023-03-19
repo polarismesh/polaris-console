@@ -1,3 +1,5 @@
+import { t } from 'i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
@@ -38,10 +40,11 @@ insertCSS(
 `,
 )
 
-const formatNamespace = value => (value === '*' ? '全部命名空间' : value)
-const formatService = value => (value === '*' ? '全部服务' : value)
+const formatNamespace = value => (value === '*' ? t('全部命名空间') : value)
+const formatService = value => (value === '*' ? t('全部服务') : value)
 
 export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
+  const { t } = useTranslation()
   const { duck, store, dispatch } = props
   const { selectors, selector } = duck
   const composedId = selectors.composedId(store)
@@ -64,16 +67,16 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
         <Card>
           <Card.Body>
             <Form>
-              <FormItem label={'规则名称'}>
+              <FormItem label={t('规则名称')}>
                 <FormText>{name || '-'}</FormText>
               </FormItem>
-              <FormItem label={'描述'}>
+              <FormItem label={t('描述')}>
                 <FormText>{description || '-'}</FormText>
               </FormItem>
-              <FormItem label={'优先级'}>
+              <FormItem label={t('优先级')}>
                 <FormText>{priority}</FormText>
               </FormItem>
-              <Form.Item label='匹配条件' className='compact-form-control'>
+              <Form.Item label={t('匹配条件')} className='compact-form-control'>
                 <Form style={{ position: 'relative', width: '95%' }}>
                   <div
                     style={{
@@ -90,19 +93,19 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                     <Col span={12}>
                       <div style={{ margin: '10px 0' }}>
                         <Text parent={'div'} style={{ width: '100%', textAlign: 'center', fontWeight: 'bolder' }}>
-                          主调服务
+                          <Trans>主调服务</Trans>
                         </Text>
                         <Text parent={'div'} theme={'label'} style={{ width: '100%', textAlign: 'center' }}>
-                          主调请求按照匹配规则匹配成功后，将按照当前规则进行目标服务路由
+                          <Trans>主调请求按照匹配规则匹配成功后，将按照当前规则进行目标服务路由</Trans>
                         </Text>
                       </div>
                       <Card bordered>
                         <Card.Body>
                           <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                            <FormItem label={'命名空间'}>
+                            <FormItem label={t('命名空间')}>
                               <FormText>{formatNamespace(source?.namespace)}</FormText>
                             </FormItem>
-                            <FormItem label={'服务名称'}>
+                            <FormItem label={t('服务名称')}>
                               <FormText>{formatService(source?.service)}</FormText>
                             </FormItem>
                           </Form>
@@ -112,19 +115,19 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                     <Col span={12}>
                       <div style={{ margin: '10px 0' }}>
                         <Text parent={'div'} style={{ width: '100%', textAlign: 'center', fontWeight: 'bolder' }}>
-                          被调服务
+                          <Trans>被调服务</Trans>
                         </Text>
                         <Text parent={'div'} theme={'label'} style={{ width: '100%', textAlign: 'center' }}>
-                          请求会按照规则路由到目标服务分组
+                          <Trans>请求会按照规则路由到目标服务分组</Trans>
                         </Text>
                       </div>
                       <Card bordered>
                         <Card.Body>
                           <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                            <FormItem label={'命名空间'}>
+                            <FormItem label={t('命名空间')}>
                               <FormText>{formatNamespace(destination?.namespace)}</FormText>
                             </FormItem>
-                            <FormItem label={'服务名称'}>
+                            <FormItem label={t('服务名称')}>
                               <FormText>{formatService(destination?.service)}</FormText>
                             </FormItem>
                           </Form>
@@ -134,17 +137,26 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                   </Row>
                 </Form>
               </Form.Item>
-              <Form.Item label={'路由策略'}>
+              <Form.Item label={t('路由策略')}>
                 {rules?.map((rule, index) => {
                   const { sources, destinations } = rule
                   return (
                     <Card key={index} style={{ width: 'calc(95% + 20px)', margin: '0' }} bordered>
                       <Card.Header>
-                        <Justify style={{ padding: '10px' }} left={<Text reset>{`规则${index + 1}`}</Text>}></Justify>
+                        <Justify
+                          style={{ padding: '10px' }}
+                          left={
+                            <Text reset>
+                              {t('规则{{attr0}}', {
+                                attr0: index + 1,
+                              })}
+                            </Text>
+                          }
+                        ></Justify>
                       </Card.Header>
                       <Card.Body>
                         <Text parent={'div'} theme={'strong'} style={{ marginBottom: '20px' }}>
-                          来源服务的请求满足以下匹配条件
+                          <Trans>来源服务的请求满足以下匹配条件</Trans>
                         </Text>
                         <section style={{ marginBottom: '20px' }}>
                           {sources?.[0]?.arguments?.length > 0 && (
@@ -155,7 +167,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                               columns={[
                                 {
                                   key: 'type',
-                                  header: '类型',
+                                  header: t('类型'),
                                   render: item => {
                                     const { type } = item
 
@@ -168,7 +180,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                 },
                                 {
                                   key: 'key',
-                                  header: '键',
+                                  header: t('键'),
                                   render: item => {
                                     const { key } = item
                                     return (
@@ -180,7 +192,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                 },
                                 {
                                   key: 'value_type',
-                                  header: '匹配方式',
+                                  header: t('匹配方式'),
                                   width: 80,
                                   render: item => {
                                     const { value_type } = item
@@ -193,7 +205,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                 },
                                 {
                                   key: 'value',
-                                  header: '值',
+                                  header: t('值'),
                                   render: item => {
                                     const { value } = item
                                     return (
@@ -208,7 +220,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                           )}
                         </section>
                         <Text parent={'div'} theme={'strong'} style={{ marginBottom: '20px' }}>
-                          将转发至目标服务的以下实例分组
+                          <Trans>将转发至目标服务的以下实例分组</Trans>
                         </Text>
                         <section style={{ marginBottom: '20px' }}>
                           {destinations?.length > 0 && (
@@ -219,7 +231,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                               columns={[
                                 {
                                   key: 'labels',
-                                  header: '实例标签',
+                                  header: t('实例标签'),
                                   render: item => {
                                     const { labels } = item
                                     return (
@@ -238,7 +250,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                 },
                                 {
                                   key: 'weight',
-                                  header: '权重',
+                                  header: t('权重'),
                                   render: item => {
                                     const { weight } = item
                                     return weight
@@ -246,10 +258,10 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                 },
                                 {
                                   key: 'isolate',
-                                  header: '是否隔离',
+                                  header: t('是否隔离'),
                                   render: item => {
                                     const { isolate } = item
-                                    return isolate ? '是' : '否'
+                                    return isolate ? t('是') : t('否')
                                   },
                                 },
                               ]}

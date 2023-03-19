@@ -8,15 +8,15 @@ import { Completer } from './Base'
  * yield* completer.init(filter)
  * yield* completer.fetched(list, totalCount, update)
  * ```
- * 
+ *
  * 代码参考模板： http://code.qcm.oa.com/?tpl=gridpage&addons=drawerdetail-completer&patchOnly=1
- * 
+ *
  * @param completer 原始更新函数
  * @param filter 指定哪些条目需要更新
  */
 export function filterCompleter<TItem, TExtra, TFilter = any>(
   OriginCompleter: new (filter?) => Completer<TItem, TExtra, TFilter>,
-  filterFn: (item: TItem, filter: TFilter) => boolean
+  filterFn: (item: TItem, filter: TFilter) => boolean,
 ) {
   return class FilteredCompleter extends Completer<TItem, TExtra, TFilter> {
     private childCompleter: Completer<TItem, TExtra, TFilter>
@@ -38,10 +38,7 @@ export function filterCompleter<TItem, TExtra, TFilter = any>(
           filtered.push(item)
         }
       }
-      yield* this.childCompleter.fetched(filtered, totalCount, function*(
-        index: number | TExtra[],
-        data?: any
-      ) {
+      yield* this.childCompleter.fetched(filtered, totalCount, function*(index: number | TExtra[], data?: any) {
         if (arguments.length <= 1) {
           // 将过滤后的列表恢复为原列表的对应位置
           const list = index as TExtra[]

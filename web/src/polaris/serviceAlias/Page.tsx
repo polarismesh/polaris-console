@@ -1,3 +1,5 @@
+import { t } from 'i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
 import ServiceAliasDuck from './PageDuck'
@@ -21,23 +23,27 @@ const getHandlers = memorize(({ creators }: ServiceAliasDuck, dispatch) => ({
 }))
 const alias_namespaceTagKey = 'alias_namespace'
 function getTagAttributes(props: DuckCmpProps<ServiceAliasDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store } = props
   const { namespaceList } = duck.selector(store)
   return [
     {
       type: 'single',
       key: alias_namespaceTagKey,
-      name: '命名空间',
+      name: t('命名空间'),
       values: namespaceList,
     },
     {
       type: 'input',
       key: 'service',
-      name: '指向服务',
+      name: t('指向服务'),
     },
   ]
 }
 export default function ServiceAliasPage(props: DuckCmpProps<ServiceAliasDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { selector } = duck
   const handlers = getHandlers(props)
@@ -49,21 +55,21 @@ export default function ServiceAliasPage(props: DuckCmpProps<ServiceAliasDuck>) 
     'tse_service_alias_custom_columns',
   )
   return (
-    <BasicLayout title={'服务别名'} store={store} selectors={duck.selectors} header={<></>}>
+    <BasicLayout title={t('服务别名')} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
         <Card>
-          <Card.Body title={'服务别名'} style={{ marginBottom: '20px' }}>
-            服务别名可以看作是服务的映射，访问服务别名等同于访问服务，允许多个服务别名指向同一个服务
+          <Card.Body title={t('服务别名')} style={{ marginBottom: '20px' }}>
+            <Trans>服务别名可以看作是服务的映射，访问服务别名等同于访问服务，允许多个服务别名指向同一个服务</Trans>
           </Card.Body>
         </Card>
         <Justify
           left={
             <>
               <Button type='primary' onClick={handlers.create}>
-                {'新建别名'}
+                {t('新建别名')}
               </Button>
               <Button onClick={() => handlers.remove(selection)} disabled={selection?.length === 0}>
-                {'删除'}
+                {t('删除')}
               </Button>
             </>
           }
@@ -78,7 +84,7 @@ export default function ServiceAliasPage(props: DuckCmpProps<ServiceAliasDuck>) 
                 }}
                 value={tags}
                 onChange={value => handlers.changeTags(value)}
-                tips={'请选择条件进行过滤'}
+                tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
               <FieldManagerButton fields={fullColumns} onChange={reloadColumns} cacheKey={key}></FieldManagerButton>
@@ -108,13 +114,13 @@ export default function ServiceAliasPage(props: DuckCmpProps<ServiceAliasDuck>) 
                 const replacedTags = replaceTags(alias_namespaceTagKey, value, tags, namespaceList, {
                   type: 'single',
                   key: alias_namespaceTagKey,
-                  name: '命名空间',
+                  name: t('命名空间'),
                   values: namespaceList,
                 })
                 handlers.changeTags(replacedTags)
               },
               all: {
-                text: '全部',
+                text: t('全部'),
                 value: '',
               },
               // 选项列表

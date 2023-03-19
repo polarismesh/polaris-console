@@ -1,3 +1,5 @@
+import { t } from 'i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import * as React from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
 import Duck from './PageDuck'
@@ -39,20 +41,20 @@ export enum AuthResourceType {
   CONFIGURATION = 'config_groups',
 }
 export const AUTH_SUBJECT_TYPE_MAP = {
-  [AuthSubjectType.USER]: { text: '用户', urlKey: 'user' },
-  [AuthSubjectType.USERGROUP]: { text: '用户组', urlKey: 'usergroup' },
+  [AuthSubjectType.USER]: { text: t('用户'), urlKey: 'user' },
+  [AuthSubjectType.USERGROUP]: { text: t('用户组'), urlKey: 'usergroup' },
 }
 export const AUTH_RESOURCE_TYPE_MAP = {
   [AuthResourceType.NAMESPACE]: {
-    text: '命名空间',
+    text: t('命名空间'),
     columnsRender: x => x.name,
   },
   [AuthResourceType.SERVICE]: {
-    text: '服务',
+    text: t('服务'),
     columnsRender: x => `${x.name}（${x.namespace}）`,
   },
   [AuthResourceType.CONFIGURATION]: {
-    text: '配置分组',
+    text: t('配置分组'),
     columnsRender: x => x.name,
   },
 }
@@ -74,11 +76,11 @@ insertCSS(
 
 const formatPolicyName = (name: string) => {
   let trimName = name
-  if (name.indexOf('(用户组)') === 0) {
-    trimName = name.replace('(用户组)', '')
+  if (name.indexOf(t('(用户组)')) === 0) {
+    trimName = name.replace(t('(用户组)'), '')
   }
-  if (name.indexOf('(用户)') === 0) {
-    trimName = name.replace('(用户)', '')
+  if (name.indexOf(t('(用户)')) === 0) {
+    trimName = name.replace(t('(用户)'), '')
   }
   return trimName
 }
@@ -94,6 +96,8 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
 }))
 
 export default function AuthPage(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store } = props
   const { selector } = duck
   const { authList, currentAuthItem, composedId, searchword } = selector(store)
@@ -115,7 +119,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
     currentAuthItem?.principals?.users?.length === 1 &&
     currentAuthItem?.principals?.users?.[0]?.id === getOwnerUin()
   const renderListItem = (item: AuthStrategy) => {
-    const principalType = item.name.indexOf('用户组') > -1 ? AuthSubjectType.USERGROUP : AuthSubjectType.USER
+    const principalType = item.name.indexOf(t('用户组')) > -1 ? AuthSubjectType.USERGROUP : AuthSubjectType.USER
     const isActive = item.id === currentAuthItem.id
     const isOwnerDefaultPrinciple =
       item.default_strategy &&
@@ -141,7 +145,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
             {formatPolicyName(item.name)}
           </Text>
           {item.default_strategy && (
-            <Bubble content={principalType === AuthSubjectType.USER ? '用户' : '用户组'}>
+            <Bubble content={principalType === AuthSubjectType.USER ? t('用户') : t('用户组')}>
               {principalType === AuthSubjectType.USER ? (
                 <img
                   style={{ verticalAlign: 'middle' }}
@@ -159,10 +163,10 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
         <Dropdown button={<Button type='icon' icon='more' />} appearance='pure'>
           <List type='option'>
             <ListItem onClick={() => handlers.modify(item.id)} disabled={isOwnerDefaultPrinciple}>
-              <Text> {'编辑'}</Text>
+              <Text> {t('编辑')}</Text>
             </ListItem>
             <ListItem onClick={() => handlers.delete(item.id)} disabled={item.default_strategy}>
-              {'删除'}
+              {t('删除')}
             </ListItem>
           </List>
         </Dropdown>
@@ -177,7 +181,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
             <>
               {!isInDetailpage && isOwner() && (
                 <Button type={'primary'} onClick={handlers.create}>
-                  {'新建策略'}
+                  {t('新建策略')}
                 </Button>
               )}
             </>
@@ -204,7 +208,8 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                 current={false}
               >
                 <Icon type={collapseDefault ? 'arrowdown' : 'arrowup'} />
-                默认策略（{defaultList.length}）
+                <Trans>默认策略（</Trans>
+                {defaultList.length}）
               </ListItem>
               {defaultList.filter(() => collapseDefault).map(renderListItem)}
             </List>
@@ -218,7 +223,8 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                 current={false}
               >
                 <Icon type={collapseCustom ? 'arrowdown' : 'arrowup'} />
-                自定义策略（{customList.length}）
+                <Trans>自定义策略（</Trans>
+                {customList.length}）
               </ListItem>
               {customList.filter(() => collapseCustom).map(renderListItem)}
             </List>
@@ -238,14 +244,14 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                         onClick={() => handlers.modify(currentAuthItem.id)}
                         disabled={isCurrAuthItemOwnerDefaultPrinciple}
                       >
-                        {'编辑'}
+                        {t('编辑')}
                       </Button>
                       <Button
                         type='link'
                         onClick={() => handlers.delete(currentAuthItem.id)}
                         disabled={currentAuthItem.default_strategy}
                       >
-                        {'删除'}
+                        {t('删除')}
                       </Button>
                     </>
                   )
@@ -253,15 +259,15 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
               >
                 <Card bordered style={{ border: 'none' }}>
                   <Form>
-                    <FormItem label={'备注'}>
-                      <FormText>{currentAuthItem.comment || '无备注'}</FormText>
+                    <FormItem label={t('备注')}>
+                      <FormText>{currentAuthItem.comment || t('无备注')}</FormText>
                     </FormItem>
                   </Form>
                 </Card>
                 <section style={{ borderTop: '1px solid #cfd5de', margin: '20px 0' }}></section>
                 {isInDetailpage ? (
                   <Card bordered style={{ border: 'none' }}>
-                    <Card.Body title={'可操作资源'}>
+                    <Card.Body title={t('可操作资源')}>
                       <UseableResource
                         resources={{
                           namespaces: currentAuthItem?.resources?.['namespaces'],
@@ -274,7 +280,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                 ) : (
                   <>
                     <Card bordered>
-                      <Card.Body title={'用户｜用户组'}>
+                      <Card.Body title={t('用户｜用户组')}>
                         <Tabs
                           tabs={countedAuthSubjectTabs}
                           activeId={showAuthSubjectType}
@@ -303,14 +309,14 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                             })
                           ) : (
                             <Text style={{ margin: '20px 10px' }} parent={'p'}>
-                              {'暂无对应授权对象'}
+                              {t('暂无对应授权对象')}
                             </Text>
                           )}
                         </Tabs>
                       </Card.Body>
                     </Card>
                     <Card bordered>
-                      <Card.Body title={'资源'}>
+                      <Card.Body title={t('资源')}>
                         <Tabs
                           tabs={AuthResourceTabs}
                           activeId={showAuthResourceType}
@@ -320,7 +326,9 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                           {currentAuthItem.resources[showAuthResourceType].length === 1 &&
                           currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
                             <section style={{ margin: '20px 10px' }}>
-                              {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
+                              {t('全部{{attr0}}（含后续新增）', {
+                                attr0: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text,
+                              })}
                             </section>
                           ) : (
                             <Table
@@ -329,10 +337,10 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                               columns={[
                                 {
                                   key: 'name',
-                                  header: '名称',
+                                  header: t('名称'),
                                   render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
                                 },
-                                { key: 'auth', header: '权限', render: () => '读｜写' },
+                                { key: 'auth', header: t('权限'), render: () => t('读｜写') },
                               ]}
                               addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
                               style={{ marginTop: '20px' }}
@@ -345,7 +353,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                 )}
               </Card.Body>
             ) : (
-              <Card.Body title={'暂无选中策略'}></Card.Body>
+              <Card.Body title={t('暂无选中策略')}></Card.Body>
             )}
           </Card>
         </Col>
@@ -356,7 +364,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
   return isInDetailpage ? (
     contentElement
   ) : (
-    <BasicLayout title={'策略'} store={store} selectors={duck.selectors} header={<></>}>
+    <BasicLayout title={t('策略')} store={store} selectors={duck.selectors} header={<></>}>
       {contentElement}
     </BasicLayout>
   )

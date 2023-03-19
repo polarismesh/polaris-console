@@ -1,3 +1,4 @@
+import { t } from 'i18next'
 import * as React from 'react'
 import { Component } from 'react'
 import moment, { Moment } from 'moment'
@@ -78,17 +79,17 @@ export default class TimeSelect extends Component<TimeSelectProps, any> {
     }
     tabs = [
       {
-        text: '近24小时',
+        text: t('近24小时'),
         date: [moment().subtract(1, 'd'), moment()],
         value: 0,
       },
       {
-        text: '近3天',
+        text: t('近3天'),
         date: [moment().subtract(3, 'd'), moment()],
         value: 1,
       },
       {
-        text: '近7天',
+        text: t('近7天'),
         date: [moment().subtract(7, 'd'), moment()],
         value: 2,
       },

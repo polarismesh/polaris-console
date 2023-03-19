@@ -179,13 +179,13 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       const { name, namespace } = action.payload
 
       const confirm = yield Modal.confirm({
-        message: `确认删除配置组`,
-        description: '删除配置组也会同时删除配置组下所有配置文件，请谨慎删除。',
-        okText: '删除',
+        message: this.t('确认删除配置组', {}),
+        description: this.t('删除配置组也会同时删除配置组下所有配置文件，请谨慎删除。'),
+        okText: this.t('删除'),
       })
       if (confirm) {
         const res = yield deleteConfigFileGroups({ group: name, namespace })
-        if (res) notification.success({ description: '删除成功' })
+        if (res) notification.success({ description: this.t('删除成功') })
         yield put(creators.reload())
       }
     })

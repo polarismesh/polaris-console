@@ -3,10 +3,7 @@
  */
 
 import * as React from 'react'
-import {
-  FormControlProps as BaseProps,
-  FormControl as Base
-} from 'tea-component'
+import { FormControlProps as BaseProps, FormControl as Base } from 'tea-component'
 import { FieldAPI } from '../../ducks/Form'
 import { getErrorOfFields } from './Field'
 

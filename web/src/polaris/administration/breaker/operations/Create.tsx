@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
@@ -49,6 +50,7 @@ const removeArrayFieldValue = (field, index) => {
   field.setValue([...newValue])
 }
 export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) {
+  const { t } = useTranslation()
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -118,19 +120,19 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       store={store}
       duck={duck}
       dispatch={dispatch}
-      title={composedId?.id ? '编辑熔断规则' : '新建熔断规则'}
+      title={composedId?.id ? t('编辑熔断规则') : t('新建熔断规则')}
       backRoute={backRoute}
     >
       <Card>
         <Card.Body>
           <Form>
-            <FormField label='规则名称' field={name} message='最长64个字符' required>
+            <FormField label={t('规则名称')} field={name} message={t('最长64个字符')} required>
               <Input field={name} maxLength={64} size='l' />
             </FormField>
-            <FormField label='描述' field={description}>
+            <FormField label={t('描述')} field={description}>
               <Input field={description} maxLength={64} size='l' multiple />
             </FormField>
-            <Form.Item label='匹配条件' className='compact-form-control'>
+            <Form.Item label={t('匹配条件')} className='compact-form-control'>
               <Form style={{ position: 'relative', width: '1100px' }}>
                 <div
                   style={{
@@ -147,17 +149,21 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   <Col span={12}>
                     <div style={{ margin: '10px 0' }}>
                       <Text parent={'div'} style={{ width: '100%', textAlign: 'center', fontWeight: 'bolder' }}>
-                        主调服务
+                        <Trans>主调服务</Trans>
                       </Text>
                     </div>
                     <Card bordered>
-                      <Card.Body title='主调服务'>
+                      <Card.Body title={t('主调服务')}>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                          <FormField field={sourceNamespace} label='命名空间' required>
+                          <FormField field={sourceNamespace} label={t('命名空间')} required>
                             <TeaSelect
                               value={sourceNamespace.getValue()}
                               options={[
-                                { text: '全部命名空间', value: '*', disabled: destinationNamespace.getValue() === '*' },
+                                {
+                                  text: t('全部命名空间'),
+                                  value: '*',
+                                  disabled: destinationNamespace.getValue() === '*',
+                                },
                                 ...(data?.namespaceList || []),
                               ]}
                               onChange={value => {
@@ -173,24 +179,31 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               type={'simulate'}
                               appearance={'button'}
                               matchButtonWidth
-                              placeholder='请选择命名空间'
+                              placeholder={t('请选择命名空间')}
                               style={{ width: '80%', maxWidth: '600px' }}
                             />
                           </FormField>
-                          <FormField field={sourceService} label='服务名称' required>
+                          <FormField field={sourceService} label={t('服务名称')} required>
                             <AutoComplete
                               options={[
                                 ...new Set([
-                                  { text: '全部服务', value: '*' },
+                                  { text: t('全部服务'), value: '*' },
                                   ...(sourceService.getValue()
-                                    ? [{ text: `(输入值)${sourceService.getValue()}`, value: sourceService.getValue() }]
+                                    ? [
+                                        {
+                                          text: t('(输入值){{attr0}}', {
+                                            attr0: sourceService.getValue(),
+                                          }),
+                                          value: sourceService.getValue(),
+                                        },
+                                      ]
                                     : []),
                                   ...(data?.serviceList.filter(o => {
                                     return o.namespace === sourceNamespace.getValue()
                                   }) || []),
                                 ]),
                               ]}
-                              tips='没有匹配的服务名称'
+                              tips={t('没有匹配的服务名称')}
                               onChange={value => {
                                 sourceService.setValue(value)
                               }}
@@ -198,7 +211,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               {ref => (
                                 <TeaInput
                                   ref={ref}
-                                  value={sourceService.getValue() === '*' ? '全部服务' : sourceService.getValue()}
+                                  value={sourceService.getValue() === '*' ? t('全部服务') : sourceService.getValue()}
                                   onChange={value => {
                                     sourceService.setValue(value)
                                   }}
@@ -214,17 +227,17 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   <Col span={12}>
                     <div style={{ margin: '10px 0' }}>
                       <Text parent={'div'} style={{ width: '100%', textAlign: 'center', fontWeight: 'bolder' }}>
-                        目标服务
+                        <Trans>目标服务</Trans>
                       </Text>
                     </div>
                     <Card bordered>
-                      <Card.Body title='被调服务'>
+                      <Card.Body title={t('被调服务')}>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
-                          <FormField field={destinationNamespace} label='命名空间' required>
+                          <FormField field={destinationNamespace} label={t('命名空间')} required>
                             <TeaSelect
                               value={destinationNamespace.getValue()}
                               options={[
-                                { text: '全部命名空间', value: '*', disabled: sourceNamespace.getValue() === '*' },
+                                { text: t('全部命名空间'), value: '*', disabled: sourceNamespace.getValue() === '*' },
                                 ...(data?.namespaceList || []),
                               ]}
                               onChange={value => {
@@ -240,19 +253,21 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               type={'simulate'}
                               appearance={'button'}
                               matchButtonWidth
-                              placeholder='请选择命名空间'
+                              placeholder={t('请选择命名空间')}
                               style={{ width: '80%', maxWidth: '600px' }}
                             />
                           </FormField>
-                          <FormField field={destinationService} label='服务名称' required>
+                          <FormField field={destinationService} label={t('服务名称')} required>
                             <AutoComplete
                               options={[
                                 ...new Set([
-                                  { text: '全部服务', value: '*' },
+                                  { text: t('全部服务'), value: '*' },
                                   ...(destinationService.getValue()
                                     ? [
                                         {
-                                          text: `(输入值)${destinationService.getValue()}`,
+                                          text: t('(输入值){{attr0}}', {
+                                            attr0: destinationService.getValue(),
+                                          }),
                                           value: destinationService.getValue(),
                                         },
                                       ]
@@ -262,7 +277,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   }) || []),
                                 ]),
                               ]}
-                              tips='没有匹配的服务名称'
+                              tips={t('没有匹配的服务名称')}
                               onChange={value => {
                                 destinationService.setValue(value)
                               }}
@@ -271,7 +286,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 <TeaInput
                                   ref={ref}
                                   value={
-                                    destinationService.getValue() === '*' ? '全部服务' : destinationService.getValue()
+                                    destinationService.getValue() === '*'
+                                      ? t('全部服务')
+                                      : destinationService.getValue()
                                   }
                                   onChange={value => {
                                     destinationService.setValue(value)
@@ -283,10 +300,10 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             </AutoComplete>
                           </FormField>
                           {level.getValue() === BreakLevelType.Method && (
-                            <FormField label='接口名称' field={methodValue} align='middle'>
+                            <FormField label={t('接口名称')} field={methodValue} align='middle'>
                               <Input
                                 field={methodValue}
-                                placeholder='请输入接口名称'
+                                placeholder={t('请输入接口名称')}
                                 style={{ width: 'calc(80% - 101px)', borderRight: '0px' }}
                               />
                               <TeaSelect
@@ -307,12 +324,16 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Row>
               </Form>
             </Form.Item>
-            <Form.Item label='熔断配置' className='compact-form-control'>
+            <Form.Item label={t('熔断配置')} className='compact-form-control'>
               <Card style={{ width: '1100px', marginRight: '0px', marginLeft: '0px' }} bordered>
                 <Card.Body>
                   <div>
-                    <H6 className='card-module-h6-title-style'>错误判断条件</H6>
-                    <Text theme='label'>满足以下任意应答条件的请求会被标识为错误请求</Text>
+                    <H6 className='card-module-h6-title-style'>
+                      <Trans>错误判断条件</Trans>
+                    </H6>
+                    <Text theme='label'>
+                      <Trans>满足以下任意应答条件的请求会被标识为错误请求</Trans>
+                    </Text>
                   </div>
                   <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                     <FormItem required>
@@ -336,7 +357,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             </FormField>
                             {inputType.getValue() === ErrorConditionType.DELAY && (
                               <FormItem>
-                                <FormText>超过</FormText>
+                                <FormText>
+                                  <Trans>超过</Trans>
+                                </FormText>
                               </FormItem>
                             )}
                             {inputType.getValue() !== ErrorConditionType.DELAY && (
@@ -351,7 +374,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             <FormField
                               showStatusIcon={false}
                               field={value}
-                              suffix={inputType.getValue() === ErrorConditionType.DELAY ? '毫秒' : ''}
+                              suffix={inputType.getValue() === ErrorConditionType.DELAY ? t('毫秒') : ''}
                             >
                               <Input field={value} />
                             </FormField>
@@ -382,8 +405,12 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Card.Body>
                 <Card.Body>
                   <div>
-                    <H6 className='card-module-h6-title-style'>熔断触发条件</H6>
-                    <Text theme='label'>满足以下任意条件可触发熔断</Text>
+                    <H6 className='card-module-h6-title-style'>
+                      <Trans>熔断触发条件</Trans>
+                    </H6>
+                    <Text theme='label'>
+                      <Trans>满足以下任意条件可触发熔断</Trans>
+                    </Text>
                   </div>
                   <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                     <FormItem required>
@@ -426,7 +453,12 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                     hideButton
                                   />
                                 </FormField>
-                                <FormField showStatusIcon={false} label={'统计周期'} field={interval} suffix={'秒'}>
+                                <FormField
+                                  showStatusIcon={false}
+                                  label={t('统计周期')}
+                                  field={interval}
+                                  suffix={t('秒')}
+                                >
                                   <InputNumber
                                     value={interval.getValue()}
                                     onChange={v => {
@@ -438,9 +470,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 </FormField>
                                 <FormField
                                   showStatusIcon={false}
-                                  label={'最小请求数'}
+                                  label={t('最小请求数')}
                                   field={minimumRequest}
-                                  suffix={'个'}
+                                  suffix={t('个')}
                                 >
                                   <InputNumber
                                     value={minimumRequest.getValue()}
@@ -501,8 +533,12 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Card.Body>
                 <Card.Body>
                   <div>
-                    <H6 className='card-module-h6-title-style'>熔断粒度</H6>
-                    <Text theme='label'>熔断触发时影响的资源粒度</Text>
+                    <H6 className='card-module-h6-title-style'>
+                      <Trans>熔断粒度</Trans>
+                    </H6>
+                    <Text theme='label'>
+                      <Trans>熔断触发时影响的资源粒度</Trans>
+                    </Text>
                   </div>
                   <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                     <FormItem required>
@@ -522,15 +558,17 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Card.Body>
                 <Card.Body>
                   <div>
-                    <H6 className='card-module-h6-title-style'>熔断恢复</H6>
+                    <H6 className='card-module-h6-title-style'>
+                      <Trans>熔断恢复</Trans>
+                    </H6>
                     <Text theme='label'>
-                      经过熔断时长后，会触发熔断恢复机制，若符合预期，则结束熔断；否则重新回到熔断阶段
+                      <Trans>经过熔断时长后，会触发熔断恢复机制，若符合预期，则结束熔断；否则重新回到熔断阶段</Trans>
                     </Text>
                   </div>
                   <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                     <FormItem required>
                       <Form>
-                        <FormField field={sleepWindow} label={'熔断时长'} showStatusIcon={false} suffix={'秒'}>
+                        <FormField field={sleepWindow} label={t('熔断时长')} showStatusIcon={false} suffix={t('秒')}>
                           <InputNumber
                             value={sleepWindow.getValue()}
                             onChange={v => {
@@ -540,9 +578,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                             hideButton
                           />
                         </FormField>
-                        <FormField field={consecutiveSuccess} label={'熔断恢复策略'} showStatusIcon={false}>
+                        <FormField field={consecutiveSuccess} label={t('熔断恢复策略')} showStatusIcon={false}>
                           <FormText>
-                            当满足
+                            <Trans>当满足</Trans>
                             <InputNumber
                               value={consecutiveSuccess.getValue()}
                               onChange={v => {
@@ -551,7 +589,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               size={'m'}
                               hideButton
                             />
-                            个连续成功请求后恢复
+                            <Trans>个连续成功请求后恢复</Trans>
                           </FormText>
                         </FormField>
                       </Form>
@@ -561,17 +599,19 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               </Card>
             </Form.Item>
             <FormField
-              label='主动探测'
+              label={t('主动探测')}
               message={
                 <>
                   <Text parent={'div'}>
-                    开启主动探测时，客户端将会根据您配置的探测规则对目标被调服务进行探测；
-                    主动探测请求与业务调用合并判断熔断恢复（如未匹配到探测规则，则不会生效）；
-                    未开启主动探测时，会仅根据业务调用判断熔断恢复。
+                    <Trans>
+                      开启主动探测时，客户端将会根据您配置的探测规则对目标被调服务进行探测；
+                      主动探测请求与业务调用合并判断熔断恢复（如未匹配到探测规则，则不会生效）；
+                      未开启主动探测时，会仅根据业务调用判断熔断恢复。
+                    </Trans>
                   </Text>
                   <Text parent={'div'}>
                     <ExternalLink href={`/#/circuitBreaker?type=${BreakerType.FaultDetect}`}>
-                      查看主动探测规则
+                      <Trans>查看主动探测规则</Trans>
                     </ExternalLink>
                   </Text>
                 </>
@@ -581,19 +621,23 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               <Switch field={faultDetectEnable} />
             </FormField>
             {ServiceLevelType.indexOf(level.getValue() as any) > -1 && (
-              <Form.Item label='熔断后降级' className='compact-form-control'>
+              <Form.Item label={t('熔断后降级')} className='compact-form-control'>
                 <Switch field={fallbackConfigEnable} />
                 {fallbackConfigEnable.getValue() && (
                   <Card style={{ width: '1100px', marginRight: '0px', marginLeft: '0px', marginTop: '20px' }} bordered>
                     <Card.Body>
                       <div>
-                        <H6 className='card-module-h6-title-style'>自定义响应</H6>
-                        <Text theme='label'>熔断触发后的降级响应策略</Text>
+                        <H6 className='card-module-h6-title-style'>
+                          <Trans>自定义响应</Trans>
+                        </H6>
+                        <Text theme='label'>
+                          <Trans>熔断触发后的降级响应策略</Trans>
+                        </Text>
                       </div>
                       <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                         <FormItem>
                           <Form>
-                            <FormField field={code} label={'返回码'}>
+                            <FormField field={code} label={t('返回码')}>
                               <InputNumber
                                 value={code.getValue()}
                                 onChange={v => {
@@ -608,11 +652,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 const { key, value } = item.getFields(['key', 'value'])
                                 return (
                                   <Text parent={'div'} key={index} style={{ marginBottom: '15px' }}>
-                                    <Input field={key} size={'m'} placeholder={'header键'}></Input>
+                                    <Input field={key} size={'m'} placeholder={t('header键')}></Input>
                                     <Input
                                       field={value}
                                       size={'m'}
-                                      placeholder={'header值'}
+                                      placeholder={t('header值')}
                                       style={{ marginLeft: '20px' }}
                                     ></Input>
                                     <Button
@@ -664,13 +708,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 )}
               </Form.Item>
             )}
-            <FormField label='是否开启' field={enable}>
+            <FormField label={t('是否开启')} field={enable}>
               <Switch field={enable} />
             </FormField>
           </Form>
           <Form.Action>
             <Button type='primary' onClick={() => dispatch(creators.submit())}>
-              提交
+              <Trans>提交</Trans>
             </Button>
             <Button
               onClick={() => {
@@ -683,7 +727,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 }
               }}
             >
-              取消
+              <Trans>取消</Trans>
             </Button>
           </Form.Action>
         </Card.Body>

@@ -72,10 +72,10 @@ export default class CreateDuck extends FormDialog {
         tags,
       })
       if (configFile?.name) {
-        notification.success({ description: '编辑成功' })
+        notification.success({ description: this.t('编辑成功') })
         return true
       } else {
-        notification.error({ description: '编辑失败' })
+        notification.error({ description: this.t('编辑失败') })
         return false
       }
     } else {
@@ -89,10 +89,10 @@ export default class CreateDuck extends FormDialog {
         content: '',
       })
       if (configFile?.name) {
-        notification.success({ description: '创建成功' })
+        notification.success({ description: this.t('创建成功') })
         return true
       } else {
-        notification.error({ description: '创建失败' })
+        notification.error({ description: this.t('创建失败') })
         return false
       }
     }
@@ -115,7 +115,7 @@ export default class CreateDuck extends FormDialog {
       selectors,
     } = this
     super.saga()
-    yield takeLatest(form.types.SET_VALUE, function* (action) {
+    yield takeLatest(form.types.SET_VALUE, function*(action) {
       if (!action.path || action.path?.indexOf('namespace') === -1) {
         return
       }
@@ -127,18 +127,20 @@ export default class CreateDuck extends FormDialog {
       } = selector(yield select())
       const { list } = yield getAllList(describeConfigFileGroups, {})({ namespace })
       yield put({
-        type: types.SET_OPTIONS, payload: {
-          ...options, configFileGroupList: list.map(item => {
+        type: types.SET_OPTIONS,
+        payload: {
+          ...options,
+          configFileGroupList: list.map(item => {
             const disabled = isReadOnlyConfigGroup(item)
             return {
               ...item,
               text: item.name,
               value: item.name,
               disabled,
-              tooltip: disabled && '该配置分组为只读配置分组',
+              tooltip: disabled && this.t('该配置分组为只读配置分组'),
             }
-          })
-        }
+          }),
+        },
       })
     })
   }
@@ -170,7 +172,7 @@ export default class CreateDuck extends FormDialog {
             text: item.name,
             value: item.name,
             disabled,
-            tooltip: disabled && '该命名空间为只读命名空间',
+            tooltip: disabled && this.t('该命名空间为只读命名空间'),
           }
         }),
         configFileGroupList: configFileGroupList.map(item => {
@@ -180,7 +182,7 @@ export default class CreateDuck extends FormDialog {
             text: item.name,
             value: item.name,
             disabled,
-            tooltip: disabled && '该配置分组为只读配置分组',
+            tooltip: disabled && this.t('该配置分组为只读配置分组'),
           }
         }),
       },
@@ -227,19 +229,19 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, any>({
   name(v) {
-    if (!v) return '请填写文件名'
+    if (!v) return this.t('请填写文件名')
 
     if (v.split('/').filter(item => !item).length > 1) {
-      return '文件夹名字不可为空'
+      return this.t('文件夹名字不可为空')
     }
   },
   namespace(v) {
-    if (!v) return '请选择命名空间'
+    if (!v) return this.t('请选择命名空间')
   },
   group(v) {
-    if (!v) return '请选择分组'
+    if (!v) return this.t('请选择分组')
   },
   format(v) {
-    if (!v) return '请选择格式'
+    if (!v) return this.t('请选择格式')
   },
 })

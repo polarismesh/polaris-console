@@ -1,3 +1,5 @@
+import { t } from 'i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import React, { useRef } from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import CreateRouteDuck from './CreateDuck'
@@ -29,18 +31,18 @@ import Select from '@src/polaris/common/duckComponents/form/Select'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 
-export const REGEX_STAR_TIPS = '正则模式下，使用*代表选择所有'
+export const REGEX_STAR_TIPS = t('正则模式下，使用*代表选择所有')
 export enum EditType {
   Manual = 'Manual',
   Json = 'Json',
 }
 const EditTypeOptions = [
   {
-    text: '手动配置',
+    text: t('手动配置'),
     value: EditType.Manual,
   },
   {
-    text: 'JSON配置',
+    text: t('JSON配置'),
     value: EditType.Json,
   },
 ]
@@ -64,6 +66,8 @@ const addPolicy = field => {
 }
 
 const renderInboundRule = props => {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -100,22 +104,21 @@ const renderInboundRule = props => {
   return (
     <>
       <FormItem
-        label={<H4 style={{ margin: '10px 0' }}>{isInbound ? '以下服务' : '本服务调用以下服务或者接口时'}</H4>}
+        label={<H4 style={{ margin: '10px 0' }}>{isInbound ? t('以下服务') : t('本服务调用以下服务或者接口时')}</H4>}
       ></FormItem>
       <Form>
         <Form style={{ width: '850px' }}>
           <Form layout={'inline'}>
-            <FormField showStatusIcon={false} field={ruleNamespace} label={'命名空间'} message={REGEX_STAR_TIPS}>
+            <FormField showStatusIcon={false} field={ruleNamespace} label={t('命名空间')} message={REGEX_STAR_TIPS}>
               <Input field={ruleNamespace} />
             </FormField>
-            <FormField showStatusIcon={false} field={ruleService} label={'服务'} message={REGEX_STAR_TIPS}>
+            <FormField showStatusIcon={false} field={ruleService} label={t('服务')} message={REGEX_STAR_TIPS}>
               <Input field={ruleService} />
             </FormField>
           </Form>
         </Form>
       </Form>
-      <FormItem label={<H3 style={{ margin: '10px 0' }}>{isInbound ? '调用本服务的以下接口时' : ''}</H3>}></FormItem>
-
+      <FormItem label={<H3 style={{ margin: '10px 0' }}>{isInbound ? t('调用本服务的以下接口时') : ''}</H3>}></FormItem>
       <Form style={{ width: '100%' }}>
         <Form style={{ width: '850px', paddingLeft: '20px' }} layout={'inline'}>
           {[...destinations.asArray()].map(field => {
@@ -123,10 +126,10 @@ const renderInboundRule = props => {
             const { value: methodValue, type: methodType } = method.getFields(['value', 'type'])
             return (
               <>
-                <FormField showStatusIcon={false} field={methodValue} label={'接口'}>
+                <FormField showStatusIcon={false} field={methodValue} label={t('接口')}>
                   <Input field={methodValue} />
                 </FormField>
-                <FormField field={methodType} label={'匹配方式'}>
+                <FormField field={methodType} label={t('匹配方式')}>
                   <Select size='s' options={MATCH_TYPE_OPTIONS} field={methodType} />
                 </FormField>
               </>
@@ -134,7 +137,13 @@ const renderInboundRule = props => {
           })}
         </Form>
       </Form>
-      <FormItem label={<H3 style={{ margin: '10px 0' }}>如果满足以下任意条件，进行熔断 </H3>}></FormItem>
+      <FormItem
+        label={
+          <H3 style={{ margin: '10px 0' }}>
+            <Trans>如果满足以下任意条件，进行熔断</Trans>
+          </H3>
+        }
+      ></FormItem>
       {[...destinations.asArray()].map(field => {
         const { policy, resource, recover } = field.getFields(['policy', 'resource', 'recover', 'resourceSetMark'])
         const { sleepWindow, outlierDetectWhen } = recover.getFields(['sleepWindow', 'outlierDetectWhen'])
@@ -162,7 +171,7 @@ const renderInboundRule = props => {
                     policyName.getValue() === PolicyName.ErrorRate ? errorRateToOpen : consecutiveErrorToOpen
                   return (
                     <Form layout={'inline'} key='111'>
-                      <FormField field={policyName} label={'条件'} showStatusIcon={false}>
+                      <FormField field={policyName} label={t('条件')} showStatusIcon={false}>
                         <Select field={policyName} options={PolicyNameOptions} />
                       </FormField>
                       <FormItem>
@@ -178,13 +187,13 @@ const renderInboundRule = props => {
                         />
                       </FormField>
                       {policyName.getValue() === PolicyName.SlowRate && (
-                        <FormField showStatusIcon={false} field={maxRt} label={'最大响应时间'}>
-                          <InputNumber size='m' field={maxRt} unit={'秒'} min={0} />
+                        <FormField showStatusIcon={false} field={maxRt} label={t('最大响应时间')}>
+                          <InputNumber size='m' field={maxRt} unit={t('秒')} min={0} />
                         </FormField>
                       )}
                       {policyName.getValue() === PolicyName.ErrorRate && (
-                        <FormField showStatusIcon={false} field={requestVolumeThreshold} label={'请求数阈值'}>
-                          <InputNumber hideButton size='m' field={requestVolumeThreshold} unit={'个'} min={0} />
+                        <FormField showStatusIcon={false} field={requestVolumeThreshold} label={t('请求数阈值')}>
+                          <InputNumber hideButton size='m' field={requestVolumeThreshold} unit={t('个')} min={0} />
                         </FormField>
                       )}
                       {policy.getValue().length > 1 && (
@@ -203,17 +212,17 @@ const renderInboundRule = props => {
               </Form>
             </Form>
             <Form>
-              <FormItem label={'半开时间'}>
+              <FormItem label={t('半开时间')}>
                 <TeaInputNumber
                   value={Number(sleepWindow.getValue().replace('s', ''))}
                   hideButton
-                  unit='秒'
+                  unit={t('秒')}
                   min={0}
                   onChange={value => sleepWindow.setValue(`${value}s`)}
                 ></TeaInputNumber>
               </FormItem>
 
-              <FormItem label={'熔断粒度'}>
+              <FormItem label={t('熔断粒度')}>
                 <Segment
                   options={BreakResourceOptions}
                   value={resource.getValue()}
@@ -221,7 +230,7 @@ const renderInboundRule = props => {
                 ></Segment>
               </FormItem>
 
-              <FormItem label={'主动探测'}>
+              <FormItem label={t('主动探测')}>
                 <Segment
                   options={OUTLIER_DETECT_MAP_OPTIONS}
                   value={outlierDetectWhen.getValue()}
@@ -237,6 +246,8 @@ const renderInboundRule = props => {
 }
 
 export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -256,7 +267,7 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
   return (
     <>
       <Form>
-        <FormItem label={'编辑方式'}>
+        <FormItem label={t('编辑方式')}>
           <Segment
             options={EditTypeOptions}
             value={editType.getValue()}
@@ -264,18 +275,18 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
           ></Segment>
         </FormItem>
         {/* {!isEdit && (
-          <FormItem label={'规则类型'}>
-            <Segment
-              options={RULE_TYPE_OPTIONS}
-              value={ruleType.getValue()}
-              onChange={(value) => ruleType.setValue(value as any)}
-            ></Segment>
-          </FormItem>
-        )} */}
+        <FormItem label={'规则类型'}>
+          <Segment
+            options={RULE_TYPE_OPTIONS}
+            value={ruleType.getValue()}
+            onChange={(value) => ruleType.setValue(value as any)}
+          ></Segment>
+        </FormItem>
+      )} */}
         {editType.getValue() === EditType.Json && (
           <FormItem
             message={<Text theme={'danger'}>{currentJsonValue.getTouched() && currentJsonValue.getError()}</Text>}
-            label={'JSON编辑'}
+            label={t('JSON编辑')}
           >
             <section style={{ border: '1px solid #ebebeb', width: '1000px' }}>
               <MonacoEditor

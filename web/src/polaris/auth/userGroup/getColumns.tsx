@@ -1,3 +1,4 @@
+import { t } from 'i18next'
 import * as React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import Duck from './PageDuck'
@@ -13,7 +14,7 @@ export default ({ duck: { creators, selector }, store, dispatch }: DuckCmpProps<
   return [
     {
       key: 'name',
-      header: '用户组名称',
+      header: t('用户组名称'),
       render: x => (
         <a style={{ display: 'block' }} data-event={'nav'} href={`/#/usergroup-detail?id=${x.id}`}>
           <Text>{x.name}</Text>
@@ -23,17 +24,17 @@ export default ({ duck: { creators, selector }, store, dispatch }: DuckCmpProps<
     },
     {
       key: 'userCount',
-      header: '用户数量',
+      header: t('用户数量'),
       render: x => <Text>{x.user_count}</Text>,
     },
     {
       key: 'comment',
-      header: '备注',
+      header: t('备注'),
       render: x => <Text>{x.comment}</Text>,
     },
     {
       key: 'createTime',
-      header: '创建时间',
+      header: t('创建时间'),
       render: x => <Text>{x.ctime}</Text>,
     },
     ...(isInDetailpage
@@ -41,24 +42,24 @@ export default ({ duck: { creators, selector }, store, dispatch }: DuckCmpProps<
       : [
           {
             key: 'operation',
-            header: '操作',
+            header: t('操作'),
             render: x => (
               <>
                 {isOwner() && (
                   <Button type='link' onClick={() => dispatch(creators.edit(x))}>
-                    {'编辑'}
+                    {t('编辑')}
                   </Button>
                 )}
                 <Button type='link' onClick={() => dispatch(creators.showToken(x))}>
-                  {'查看Token'}
+                  {t('查看Token')}
                 </Button>
                 {isOwner() && (
-                  <Dropdown appearence='link' button={'更多'}>
+                  <Dropdown appearence='link' button={t('更多')}>
                     <List type='option'>
                       <ListItem onClick={() => dispatch(creators.auth(x))}>
-                        <Text> {'授权'}</Text>
+                        <Text> {t('授权')}</Text>
                       </ListItem>
-                      <ListItem onClick={() => dispatch(creators.delete(x))}>{'删除'}</ListItem>
+                      <ListItem onClick={() => dispatch(creators.delete(x))}>{t('删除')}</ListItem>
                     </List>
                   </Dropdown>
                 )}

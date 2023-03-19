@@ -1,4 +1,3 @@
 interface Navigator {
-    msSaveOrOpenBlob: (blob: Blob ,fileName: string) => void
+  msSaveOrOpenBlob: (blob: Blob, fileName: string) => void
 }
-  

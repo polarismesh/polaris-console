@@ -6,8 +6,11 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { TagTable } from '@src/polaris/common/components/TagTable'
+import { useTranslation } from 'react-i18next'
 
 export default function Create(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { selectors } = duck
   const visible = selectors.visible(store)
@@ -21,7 +24,7 @@ export default function Create(props: DuckCmpProps<Duck>) {
       store={store}
       dispatch={dispatch}
       size={'l'}
-      title={data.name ? '编辑配置文件' : '新建配置文件'}
+      title={data.name ? t('编辑配置文件') : t('新建配置文件')}
     >
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
@@ -39,6 +42,8 @@ export enum FileFormat {
 const FileFormatOptions = Object.values(FileFormat).map(item => ({ text: item, value: item }))
 
 const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -59,7 +64,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   return (
     <>
       <Form>
-        <FormField field={namespace} label={'命名空间'} required>
+        <FormField field={namespace} label={t('命名空间')} required>
           <Select
             searchable
             value={namespace.getValue()}
@@ -76,7 +81,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             disabled={options.isModify}
           ></Select>
         </FormField>
-        <FormField field={group} label={'配置分组'} required>
+        <FormField field={group} label={t('配置分组')} required>
           <Select
             searchable
             value={group.getValue()}
@@ -90,45 +95,45 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         </FormField>
         <FormField
           field={name}
-          label={'配置文件名'}
+          label={t('配置文件名')}
           required
-          message={'可通过/分隔符创建文件夹，强烈建议文件名带上后缀，如：datasource/master.json'}
+          message={t('可通过/分隔符创建文件夹，强烈建议文件名带上后缀，如：datasource/master.json')}
         >
-          <InputAdornment after={"文件格式: " + (format.getValue() === null ? "text" : format.getValue())}>
+          <InputAdornment after={t('文件格式: ') + (format.getValue() === null ? 'text' : format.getValue())}>
             <Input
               field={name}
               disabled={options.isModify}
               maxLength={128}
               onChange={val => {
                 if (val.lastIndexOf('.') === -1) {
-                  format.setValue("text")
+                  format.setValue('text')
                   return
                 }
                 const suffix = val.substring(val.lastIndexOf('.') + 1)
-                if (suffix === "") {
-                  format.setValue("text")
+                if (suffix === '') {
+                  format.setValue('text')
                 } else {
                   format.setValue(suffix)
                 }
               }}
-              placeholder={'允许数字、英文字母、.、-、_，限制128个字符'}
+              placeholder={t('允许数字、英文字母、.、-、_，限制128个字符')}
               size={'l'}
             />
           </InputAdornment>
         </FormField>
         {/* <FormField field={format} label={'文件格式'} required>
-          <Select
-            value={format.getValue()}
-            options={FileFormatOptions}
-            onChange={value => format.setValue(value)}
-            type={'simulate'}
-            appearance={'button'}
-          ></Select>
-        </FormField> */}
-        <FormField field={comment} label={'备注'}>
-          <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
+        <Select
+          value={format.getValue()}
+          options={FileFormatOptions}
+          onChange={value => format.setValue(value)}
+          type={'simulate'}
+          appearance={'button'}
+        ></Select>
+      </FormField> */}
+        <FormField field={comment} label={t('备注')}>
+          <Input field={comment} maxLength={1024} placeholder={t('长度不超过1024个字符')} size={'l'} />
         </FormField>
-        <FormItem label={'配置标签'}>
+        <FormItem label={t('配置标签')}>
           <TagTable tags={tags} />
         </FormItem>
       </Form>

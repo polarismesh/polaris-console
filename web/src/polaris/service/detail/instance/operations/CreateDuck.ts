@@ -277,17 +277,17 @@ class CreateForm extends Form {
 const validator = CreateForm.combineValidators<Values, {}>({
   host(v) {
     if (!v) {
-      return '请填写IP'
+      return this.t('请填写IP')
     }
   },
   port(v) {
     if (!v) {
-      return '请填写端口'
+      return this.t('请填写端口')
     }
   },
   weight(v) {
     if (v === undefined) {
-      return '请填写权重'
+      return this.t('请填写权重')
     }
   },
   healthCheckMethod(v, meta) {
@@ -295,7 +295,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
       return
     }
     if (!v) {
-      return '请选择检查方式'
+      return this.t('请选择检查方式')
     }
   },
   ttl(v, meta) {
@@ -303,7 +303,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
       return
     }
     if (!v) {
-      return '请填写TTL'
+      return this.t('请填写TTL')
     }
   },
 })

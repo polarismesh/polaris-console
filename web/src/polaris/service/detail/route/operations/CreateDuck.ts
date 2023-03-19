@@ -289,7 +289,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
       try {
         JSON.parse(v)
       } catch (e) {
-        return '请输入正确的JSON字符串'
+        return this.t('请输入正确的JSON字符串')
       }
     }
   },
@@ -298,7 +298,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
       try {
         JSON.parse(v)
       } catch (e) {
-        return '请输入正确的JSON字符串'
+        return this.t('请输入正确的JSON字符串')
       }
     }
   },
@@ -312,16 +312,16 @@ const validator = CreateForm.combineValidators<Values, {}>({
           const res = Form.combineValidators<MetadataItem[]>([
             {
               key(v) {
-                if (!v) return '标签键不能为空'
+                if (!v) return this.t('标签键不能为空')
               },
               value(v) {
-                if (!v) return '标签值不能为空'
+                if (!v) return this.t('标签值不能为空')
               },
             },
           ])(v, meta)
           const distinctArray = [...new Set(v?.map(item => item.key))]
           if (distinctArray?.length !== v?.length) {
-            return '标签键不能一致'
+            return this.t('标签键不能一致')
           }
           return res
         },
@@ -339,16 +339,16 @@ const validator = CreateForm.combineValidators<Values, {}>({
           const res = Form.combineValidators<MetadataItem[]>([
             {
               key(v) {
-                if (!v) return '标签键不能为空'
+                if (!v) return this.t('标签键不能为空')
               },
               value(v) {
-                if (!v) return '标签值不能为空'
+                if (!v) return this.t('标签值不能为空')
               },
             },
           ])(v, meta)
           const distinctArray = [...new Set(v?.map(item => item.key))]
           if (distinctArray?.length !== v?.length) {
-            return res.map(item => ({ ...item, key: '标签键不能一致' }))
+            return res.map(item => ({ ...item, key: this.t('标签键不能一致') }))
           }
           return res
         },
@@ -366,16 +366,16 @@ const validator = CreateForm.combineValidators<Values, {}>({
           const res = Form.combineValidators<MetadataItem[]>([
             {
               key(v) {
-                if (!v) return '标签键不能为空'
+                if (!v) return this.t('标签键不能为空')
               },
               value(v) {
-                if (!v) return '标签值不能为空'
+                if (!v) return this.t('标签值不能为空')
               },
             },
           ])(v, meta)
           const distinctArray = [...new Set(v?.map(item => item.key))]
           if (distinctArray?.length !== v?.length) {
-            return '标签键不能一致'
+            return this.t('标签键不能一致')
           }
           return res
         },
@@ -393,16 +393,16 @@ const validator = CreateForm.combineValidators<Values, {}>({
           const res = Form.combineValidators<MetadataItem[]>([
             {
               key(v) {
-                if (!v) return '标签键不能为空'
+                if (!v) return this.t('标签键不能为空')
               },
               value(v) {
-                if (!v) return '标签值不能为空'
+                if (!v) return this.t('标签值不能为空')
               },
             },
           ])(v, meta)
           const distinctArray = [...new Set(v?.map(item => item.key))]
           if (distinctArray?.length !== v?.length) {
-            return '标签键不能一致'
+            return this.t('标签键不能一致')
           }
           return res
         },
@@ -412,22 +412,22 @@ const validator = CreateForm.combineValidators<Values, {}>({
   },
   inboundNamespace(v, meta) {
     if (!v && meta.ruleType === RuleType.Inbound && meta.editType !== EditType.Json) {
-      return '请输入命名空间'
+      return this.t('请输入命名空间')
     }
   },
   inboundService(v, meta) {
     if (!v && meta.ruleType === RuleType.Inbound && meta.editType !== EditType.Json) {
-      return '请输入服务名'
+      return this.t('请输入服务名')
     }
   },
   outboundNamespace(v, meta) {
     if (!v && meta.ruleType === RuleType.Outbound && meta.editType !== EditType.Json) {
-      return '请输入命名空间'
+      return this.t('请输入命名空间')
     }
   },
   outboundService(v, meta) {
     if (!v && meta.ruleType === RuleType.Outbound && meta.editType !== EditType.Json) {
-      return '请输入服务名'
+      return this.t('请输入服务名')
     }
   },
 })
