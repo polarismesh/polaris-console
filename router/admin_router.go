@@ -24,14 +24,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/polarismesh/polaris-console/bootstrap"
 	"github.com/polarismesh/polaris-console/common/model"
-	"github.com/polarismesh/polaris-console/handlers"
 )
 
 // AdminRouter 路由请求
 func AdminRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	// 后端server路由组
 	v1 := webSvr.Group("/")
-	v1.GET("/server/nodes", handlers.DescribeServerNodes(&config.PolarisServer, config))
 	v1.GET("/console/ability", func(ctx *gin.Context) {
 		futures := strings.Split(config.Futures, ",")
 		resp := model.Response{
