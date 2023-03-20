@@ -235,23 +235,11 @@ const validator = Form.combineValidators<FaultDetectRule>({
   },
   tcpConfig(v, values) {
     if (values.protocol !== FaultDetectProtocol.TCP) return
-    return Form.combineValidators<FaultDetectRule['tcpConfig']>({
-      send(v) {
-        if (!v) {
-          return this.t('请输入值')
-        }
-      },
-    })(v, values.tcpConfig)
+    return Form.combineValidators<FaultDetectRule['tcpConfig']>({})(v, values.tcpConfig)
   },
   udpConfig(v, values) {
     if (values.protocol !== FaultDetectProtocol.UDP) return
-    return Form.combineValidators<FaultDetectRule['udpConfig']>({
-      send(v) {
-        if (!v) {
-          return this.t('请输入值')
-        }
-      },
-    })(v, values.udpConfig)
+    return Form.combineValidators<FaultDetectRule['udpConfig']>({})(v, values.udpConfig)
   },
 })
 
