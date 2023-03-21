@@ -10,7 +10,7 @@ import { delay } from 'redux-saga'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
 import { createFaultDetect, DescribeFaultDetects, modifyFaultDetect } from '../model'
-import { FaultDetectProtocol, FaultDetectRule } from '../types'
+import { BlockHttpBodyMethod, FaultDetectProtocol, FaultDetectRule } from '../types'
 import { BreakerType } from '../../types'
 
 interface ComposedId {
@@ -118,10 +118,14 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
       const values = ducks.form.selectors.values(yield select())
       const { id, namespace, service } = yield select(selectors.composedId)
       let result
+      const cloneValues = JSON.parse(JSON.stringify(values))
+      if (BlockHttpBodyMethod.includes(values.httpConfig.method as any)) {
+        delete cloneValues.httpConfig.body
+      }
       if (id) {
-        delete values['@type']
-        delete values.ctime
-        delete values.mtime
+        delete cloneValues['@type']
+        delete cloneValues.ctime
+        delete cloneValues.mtime
         result = yield modifyFaultDetect([values])
       } else {
         result = yield createFaultDetect([values])

@@ -39,7 +39,7 @@ export enum FaultDetectProtocol {
   TCP = 'TCP',
   UDP = 'UDP',
 }
-export const FaultDetectProtocolOptions = Object.keys(FaultDetectProtocol).map((item) => ({ text: item, value: item }))
+export const FaultDetectProtocolOptions = Object.keys(FaultDetectProtocol).map(item => ({ text: item, value: item }))
 export enum FaultDetectHttpMethod {
   GET = 'GET',
   POST = 'POST',
@@ -51,7 +51,12 @@ export enum FaultDetectHttpMethod {
   CONNECT = 'CONNECT',
   TRACE = 'TRACE',
 }
-export const FaultDetectHttpMethodOptions = Object.keys(FaultDetectHttpMethod).map((item) => ({
+export const FaultDetectHttpMethodOptions = Object.keys(FaultDetectHttpMethod).map(item => ({
   text: item,
   value: item,
 }))
+export const BlockHttpBodyMethod = [
+  FaultDetectHttpMethod.GET,
+  FaultDetectHttpMethod.DELETE,
+  FaultDetectHttpMethod.HEAD,
+] as string[]
