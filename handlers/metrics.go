@@ -38,6 +38,17 @@ import (
 	"github.com/polarismesh/polaris-console/common/swagger"
 )
 
+type RetStatus string
+
+const (
+	RetUnknown     RetStatus = "unknown"
+	RetSuccess     RetStatus = "success"
+	RetFail        RetStatus = "fail"
+	RetTimeout     RetStatus = "timeout"
+	RetReject      RetStatus = "reject"
+	RetFlowControl RetStatus = "flow_control"
+)
+
 type (
 	Description struct {
 		Name        string   `json:"name"`
@@ -286,11 +297,11 @@ func describeServiceMetricsRequestTotal(conf *bootstrap.Config, start, end, step
 		}
 
 		switch callResult {
-		case "failed":
+		case string(RetFail):
 			svc.FailedRequest += total
-		case "limited":
+		case string(RetFlowControl):
 			svc.LimitedRequest += total
-		case "circuitbreaker":
+		case string(RetReject):
 			svc.CircuitbreakerRequest += total
 		}
 		svc.TotalRequest = int64(total)
@@ -536,13 +547,13 @@ func describeServiceInterfaceMetricsRequestTotal(conf *bootstrap.Config, start, 
 		}
 
 		switch callResult {
-		case "success":
+		case string(RetSuccess):
 			allInter.SuccessRequest += total
 			inter.SuccessRequest += total
-		case "failed":
+		case string(RetFail):
 			allInter.AbnormalRequest += total
 			inter.AbnormalRequest += total
-		case "limited", "circuitbreaker":
+		case string(RetReject), string(RetFlowControl):
 			allInter.FlowControlRequest += total
 			inter.FlowControlRequest += total
 		}
@@ -782,11 +793,11 @@ func describeServiceInstanceRequestTotal(conf *bootstrap.Config, start, end, ste
 		}
 
 		switch callResult {
-		case "failed":
+		case string(RetFail):
 			ins.FailedRequest += total
-		case "limited":
+		case string(RetFlowControl):
 			ins.LimitedRequest += total
-		case "circuitbreaker":
+		case string(RetReject):
 			ins.CircuitbreakerRequest += total
 		}
 
