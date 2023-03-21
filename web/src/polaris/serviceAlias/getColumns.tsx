@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { DuckCmpProps } from 'saga-duck'
+import { Link } from 'react-router-dom'
 import ServiceAliasPageDuck, { GovernanceAliasItem } from './PageDuck'
 import { Column } from '../common/ducks/GridPage'
 import { Tag, Text } from 'tea-component'
@@ -24,9 +25,9 @@ export default ({ duck: { creators } }: DuckCmpProps<ServiceAliasPageDuck>): Col
       header: '指向服务',
       render: x => (
         <>
-          <a href={`/#/service-detail?name=${x.service}&namespace=${x.namespace}`} target={'_blank'} rel='noreferrer'>
+          <Link to={`/service-detail?name=${x.service}&namespace=${x.namespace}`} target={'_blank'} rel='noreferrer'>
             {x.service}
-          </a>
+          </Link>
           <Tag style={{ verticalAlign: 'bottom', margin: '0 5px' }}>{x.namespace}</Tag>
         </>
       ),
