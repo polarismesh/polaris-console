@@ -118,10 +118,11 @@ const FaultDetectCreate = connectWithDuck(FaultDetectCreatePage, FaultDetectCrea
 
 import RegistryMonitorPage from '@src/polaris/monitor/registryMonitor/Page'
 import RegistryMonitorPageDuck from '@src/polaris/monitor/registryMonitor/PageDuck'
+import { useI18n } from './polaris/common/hooks/useI18n'
 const RegistryMonitor = connectWithDuck(RegistryMonitorPage, RegistryMonitorPageDuck)
 
 export default function root() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
 
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1] || 'service')
@@ -133,7 +134,6 @@ export default function root() {
     },
   })
   const [authOpen, setAuthOpen] = React.useState(null)
-  const [lang, setLang] = useState('zh')
   const fetchAuth = useCallback(async () => {
     const authOpen = await cacheCheckAuth({})
     setAuthOpen(authOpen)
@@ -142,10 +142,7 @@ export default function root() {
   useEffect(() => {
     fetchAuth()
   }, [fetchAuth])
-
-  useEffect(() => {
-    i18n.changeLanguage(lang)
-  }, [lang])
+  const updateLang = useI18n()
 
   function recursiveRenderMenuItem(menuItem: MenuItemConfig) {
     if (!menuItem) {
@@ -192,7 +189,7 @@ export default function root() {
                     <List type='option'>
                       <List.Item
                         onClick={() => {
-                          setLang('zh')
+                          updateLang('zh')
                           close()
                         }}
                       >
@@ -200,7 +197,7 @@ export default function root() {
                       </List.Item>
                       <List.Item
                         onClick={() => {
-                          setLang('en')
+                          updateLang('en')
                           close()
                         }}
                       >

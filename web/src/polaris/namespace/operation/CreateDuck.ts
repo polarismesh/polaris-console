@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { put, select } from 'redux-saga/effects'
 
 import { NamespaceItem } from '../PageDuck'
@@ -149,6 +150,6 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, {}>({
   name(v) {
-    if (!v) return this.t('请填写名称')
+    if (!v) return i18n.t('请填写名称')
   },
 })

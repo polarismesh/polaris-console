@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify, useDuck } from 'saga-duck'
@@ -111,7 +110,6 @@ const getEmptyDestination = () => ({
   name: '',
 })
 export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) {
-
   const { t } = useTranslation()
 
   const { duck, store, dispatch } = props
@@ -319,7 +317,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     labelsField: FieldAPI<RouteDestinationArgument[]>
     id: string
   }) {
-
     const tempLabelForm = useDuck(FormDuck)
     const { duck: tempLabelFormDuck, store: tempLabelFormStore, dispatch: tempLabelFormDispatch } = tempLabelForm
     const labelField = tempLabelFormDuck.getAPI(tempLabelFormStore, tempLabelFormDispatch)

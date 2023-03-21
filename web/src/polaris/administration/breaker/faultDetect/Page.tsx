@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
@@ -10,6 +9,7 @@ import { expandable } from 'tea-component/lib/table/addons'
 import getColumns from './getColumns'
 import router from '@src/polaris/common/util/router'
 import { FaultDetectProtocol, FaultDetectRule } from './types'
+import i18n from '@src/polaris/common/util/i18n'
 
 export enum TagSearchType {
   Name = 'name',
@@ -21,11 +21,9 @@ export enum TagSearchType {
 export const DefaultBreakerTag = {
   type: 'input',
   key: TagSearchType.Name,
-  name: t('规则名'),
+  name: i18n.t('规则名'),
 }
 function getTagAttributes(props: DuckCmpProps<FaultDetectDuck>) {
-  const { t } = useTranslation()
-
   const { duck, store } = props
   const { namespaceList } = duck.selector(store)
   return [
@@ -33,28 +31,29 @@ function getTagAttributes(props: DuckCmpProps<FaultDetectDuck>) {
     {
       type: 'single',
       key: TagSearchType.DestNamespace,
-      name: t('目标命名空间'),
+      name: i18n.t('目标命名空间'),
       values: namespaceList,
     },
     {
       type: 'input',
       key: TagSearchType.DestService,
-      name: t('目标服务'),
+      name: i18n.t('目标服务'),
     },
     {
       type: 'input',
       key: TagSearchType.DestMethod,
-      name: t('目标方法'),
+      name: i18n.t('目标方法'),
     },
     {
       type: 'input',
       key: TagSearchType.Description,
-      name: t('描述'),
+      name: i18n.t('描述'),
     },
   ]
 }
 
 export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDuck>) {
+  const { t } = useTranslation()
   const { duck, store, dispatch } = props
   const { selector, creators } = duck
   const columns = getColumns(props)

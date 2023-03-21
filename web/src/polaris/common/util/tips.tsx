@@ -1,8 +1,8 @@
-import { t } from 'i18next'
 import React from 'react'
 import { Card, Icon, Text } from 'tea-component'
 import ReactDOM from 'react-dom'
 import { useTranslation } from 'react-i18next'
+import i18n from './i18n'
 
 interface TipProps {
   text: string
@@ -96,7 +96,7 @@ export default {
     if (tipHandler) {
       return
     }
-    const { text = t('加载中'), duration = 2000 } = options
+    const { text = i18n.t('加载中'), duration = 2000 } = options
 
     tipHandler = showReactDialog(<Tip icon='loading' text={text} />)
   },

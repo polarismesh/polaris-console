@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
@@ -36,6 +35,7 @@ import {
 } from './types'
 import { LimitMethodTypeMap } from '../accessLimiting/types'
 import FaultDetectPage from './faultDetect/Page'
+import i18n from '@src/polaris/common/util/i18n'
 export enum TagSearchType {
   Name = 'name',
   Enable = 'enable',
@@ -48,26 +48,24 @@ export enum TagSearchType {
 }
 const EnableOptions = [
   {
-    text: t('已启用'),
+    text: i18n.t('已启用'),
     value: 'true',
-    name: t('已启用'),
+    name: i18n.t('已启用'),
     key: 'true',
   },
   {
-    text: t('未启用'),
+    text: i18n.t('未启用'),
     value: 'false',
-    name: t('未启用'),
+    name: i18n.t('未启用'),
     key: 'false',
   },
 ]
 export const DefaultBreakerTag = {
   type: 'input',
   key: TagSearchType.Name,
-  name: t('规则名'),
+  name: i18n.t('规则名'),
 }
 function getTagAttributes(props: DuckCmpProps<CircuitBreakerDuck>) {
-  const { t } = useTranslation()
-
   const { duck, store } = props
   const { namespaceList } = duck.selector(store)
   return [
@@ -75,39 +73,40 @@ function getTagAttributes(props: DuckCmpProps<CircuitBreakerDuck>) {
     {
       type: 'single',
       key: TagSearchType.SourceNamespace,
-      name: t('源命名空间'),
+      name: i18n.t('源命名空间'),
       values: namespaceList,
     },
     {
       type: 'input',
       key: TagSearchType.SourceService,
-      name: t('源服务'),
+      name: i18n.t('源服务'),
     },
     {
       type: 'single',
       key: TagSearchType.DestNamespace,
-      name: t('目标命名空间'),
+      name: i18n.t('目标命名空间'),
       values: namespaceList,
     },
     {
       type: 'input',
       key: TagSearchType.DestService,
-      name: t('目标服务'),
+      name: i18n.t('目标服务'),
     },
     {
       type: 'input',
       key: TagSearchType.DestMethod,
-      name: t('目标方法'),
+      name: i18n.t('目标方法'),
     },
     {
       type: 'input',
       key: TagSearchType.Description,
-      name: t('描述'),
+      name: i18n.t('描述'),
     },
   ]
 }
 
 export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBreakerDuck>) {
+  const { t } = useTranslation()
   const { duck, store, dispatch } = props
   const { selector, creators, ducks } = duck
   const columns = getColumns(props)

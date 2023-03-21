@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/GridPage'
 import { RuleType } from './types'
@@ -149,7 +150,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: this.t('新建熔断规则'),
+          title: i18n.t('新建熔断规则'),
           visible: true,
           createId,
           ruleIndex,
@@ -182,7 +183,7 @@ export default class ServicePageDuck extends GridPageDuck {
       yield put({
         type: types.SET_DRAWER_STATUS,
         payload: {
-          title: this.t('编辑规则'),
+          title: i18n.t('编辑规则'),
           visible: true,
           createId,
           ruleIndex,
@@ -204,8 +205,8 @@ export default class ServicePageDuck extends GridPageDuck {
     })
     yield takeLatest(types.REMOVE, function*(action) {
       const confirm = yield Modal.confirm({
-        message: this.t('确认删除规则', {}),
-        description: this.t('删除后，无法恢复'),
+        message: i18n.t('确认删除规则'),
+        description: i18n.t('删除后，无法恢复'),
       })
       if (confirm) {
         const removeIndex = action.payload

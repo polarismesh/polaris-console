@@ -1,9 +1,10 @@
+import i18n from '@src/polaris/common/util/i18n'
 import * as React from 'react'
 import * as classnames from 'classnames'
 import { Modal, ModalProps, Icon, Button } from 'tea-component'
 import { DuckCmpProps, memorize, purify } from 'saga-duck'
 import Duck from '../ducks/DialogPure'
-import { useTranslation } from 'react-i18next'
+
 export interface DialogProps {
   size?: ModalProps['size']
   title?: string | JSX.Element
@@ -50,18 +51,14 @@ export default purify(function DuckDialog({
   disableEscape = true,
   disableCloseIcon = false,
   defaultSubmit = true,
-  defaultSubmitText = '提交',
+  defaultSubmitText = i18n.t('提交'),
   onSubmit,
   onClose,
   defaultCancel = true,
-  defaultCancelText = '关闭',
+  defaultCancelText = i18n.t('关闭'),
   showFooter = true,
   submitTooltip,
 }: DuckCmpProps<Duck> & DialogProps) {
-  const { t } = useTranslation()
-
-  defaultSubmitText = t('提交')
-  defaultCancelText = t('关闭')
   const loading = selectors.loading(store)
   const canSubmit = selectors.canSubmit(store)
   const options = getOptions(arguments[0])

@@ -1,7 +1,8 @@
-import { t } from 'i18next'
 import * as React from 'react'
+import { withTranslation } from 'react-i18next'
 import insertCSS from '../helpers/insertCSS'
 import { getClosest } from '../util/common'
+import { TFunction } from 'i18next'
 
 insertCSS(
   'sortlist',
@@ -35,6 +36,7 @@ export interface SortListProps<T> {
   renderItem(list: Array<T>, item: T, index: number): string
   onChange?(list: ReadonlyArray<T>): void
   onSave?(list: ReadonlyArray<T>): void
+  t: TFunction
 }
 
 interface SortListState<T> {
@@ -46,7 +48,7 @@ interface SortListState<T> {
   maskTop?: number
 }
 
-export default class SortList<T> extends React.Component<SortListProps<T>, SortListState<T>> {
+class SortList<T> extends React.Component<SortListProps<T>, SortListState<T>> {
   constructor(props: SortListProps<T>) {
     super(props)
 
@@ -61,7 +63,7 @@ export default class SortList<T> extends React.Component<SortListProps<T>, SortL
     return renderItem(this.props.list, item, index)
   }
   render() {
-    const { list, canSort = true } = this.props
+    const { list, canSort = true, t } = this.props
     const { isDragging, sortMode, dragIndex, leftOffset, maskTop } = this.state
     const sort = this.sort.bind(this)
     const finish = this.finish.bind(this)
@@ -241,3 +243,5 @@ export default class SortList<T> extends React.Component<SortListProps<T>, SortL
     onChange && onChange(Object.freeze(list))
   }
 }
+
+export default withTranslation()(SortList)

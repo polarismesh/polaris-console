@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
 import Form from '@src/polaris/common/ducks/Form'
@@ -166,9 +167,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
           })),
         }))
         return {
-          name: this.t('规则{{attr0}}', {
-            attr0: index,
-          }),
+          name: i18n.t('规则{{attr0}}'),
           sources: handledSources,
           destinations: handledDestinations,
         }
@@ -365,30 +364,30 @@ export interface Values {
 const validator = Form.combineValidators<Values>({
   name(v) {
     if (!v) {
-      return this.t('请填写路由规则名称')
+      return i18n.t('请填写路由规则名称')
     }
   },
   source: {
     namespace(v) {
       if (!v) {
-        return this.t('请选择命名空间')
+        return i18n.t('请选择命名空间')
       }
     },
     service(v) {
       if (!v) {
-        return this.t('请选择服务名')
+        return i18n.t('请选择服务名')
       }
     },
   },
   destination: {
     namespace(v) {
       if (!v) {
-        return this.t('请选择命名空间')
+        return i18n.t('请选择命名空间')
       }
     },
     service(v) {
       if (!v) {
-        return this.t('请选择服务名')
+        return i18n.t('请选择服务名')
       }
     },
   },
@@ -400,15 +399,15 @@ const validator = Form.combineValidators<Values>({
             {
               key(v) {
                 if (!v) {
-                  return this.t('请输入key值')
+                  return i18n.t('请输入key值')
                 }
               },
               value(v, data) {
                 if (!v && data.type === RoutingArgumentsType.CALLER_IP) {
-                  return this.t('请输入IP')
+                  return i18n.t('请输入IP')
                 }
                 if (!v && data.type !== RoutingArgumentsType.CALLER_IP) {
-                  return this.t('请输入value值')
+                  return i18n.t('请输入value值')
                 }
               },
             },
@@ -419,7 +418,7 @@ const validator = Form.combineValidators<Values>({
         {
           labels(v) {
             if (!v.length) {
-              return this.t('请输入标签分组')
+              return i18n.t('请输入标签分组')
             }
           },
         },
@@ -451,7 +450,7 @@ export class RouteCreateDuck extends Form {
       },
       rules: [
         {
-          name: this.t('规则1'),
+          name: i18n.t('规则1'),
           sources: [
             {
               service: '*',

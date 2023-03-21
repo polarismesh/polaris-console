@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
@@ -24,6 +23,7 @@ import PageDuck from './PageDuck'
 import { Values } from '../operations/CreateDuck'
 import { RouteArgumentTextMap, RouteLabelTextMap } from '../types'
 import { getLabelTag } from '../operations/Create'
+import i18n from '@src/polaris/common/util/i18n'
 
 insertCSS(
   'create-rule-form',
@@ -40,8 +40,8 @@ insertCSS(
 `,
 )
 
-const formatNamespace = value => (value === '*' ? t('全部命名空间') : value)
-const formatService = value => (value === '*' ? t('全部服务') : value)
+const formatNamespace = value => (value === '*' ? i18n.t('全部命名空间') : value)
+const formatService = value => (value === '*' ? i18n.t('全部服务') : value)
 
 export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
   const { t } = useTranslation()

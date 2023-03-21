@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
@@ -24,11 +23,12 @@ import {
 } from 'tea-component'
 import MonitorDuck from './PageDuck'
 import { BasicLine } from 'tea-chart'
-import { MetricNameMap, LabelKeyMap, OptionAllKey } from './types'
+import { MetricNameMap, OptionAllKey, getLabelKeyMap } from './types'
 import moment from 'moment'
 import insertCSS from '../common/helpers/insertCSS'
 import TimeSelect from '../common/components/TimeSelect'
 import FlowMonitorDuck from './FlowMonitorDuck'
+import i18n from '../common/util/i18n'
 const { Body, Content } = Layout
 insertCSS(
   `monitor`,
@@ -46,15 +46,15 @@ insertCSS(
 )
 export const TimePickerTab = () => [
   {
-    text: t('近1小时'),
+    text: i18n.t('近1小时'),
     date: [moment().subtract(1, 'h'), moment()],
   },
   {
-    text: t('近1天'),
+    text: i18n.t('近1天'),
     date: [moment().subtract(1, 'd'), moment()],
   },
   {
-    text: t('近1周'),
+    text: i18n.t('近1周'),
     date: [moment().subtract(1, 'w'), moment()],
   },
 ]
@@ -85,6 +85,7 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
   const flush = () => {
     timePicker?.current?.flush()
   }
+  const LabelKeyMap = getLabelKeyMap()
   return (
     <Content.Body className={'monitor-content'}>
       <Table.ActionPanel>

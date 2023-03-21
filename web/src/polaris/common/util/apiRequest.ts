@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { notification } from 'tea-component'
 import tips from './tips'
@@ -54,7 +55,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
           notification.error({
             style: { zIndex: 9999 },
             unique: true,
-            title: t('请求错误'),
+            title: i18n.t('请求错误'),
             description: error.response?.data?.info,
           })
         }
@@ -95,7 +96,7 @@ export async function getApiRequest<T>(options: APIRequestOption) {
           }
           notification.error({
             unique: true,
-            title: t('请求错误'),
+            title: i18n.t('请求错误'),
             description: error.response?.data?.info,
           })
         }
@@ -135,7 +136,7 @@ export async function putApiRequest<T>(options: APIRequestOption) {
           notification.error({
             style: { zIndex: 9999 },
             unique: true,
-            title: t('请求错误'),
+            title: i18n.t('请求错误'),
             description: error.response?.data?.info,
           })
         }
@@ -175,7 +176,7 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
           }
           notification.error({
             unique: true,
-            title: t('请求错误'),
+            title: i18n.t('请求错误'),
             description: error.response?.data?.info,
           })
         }

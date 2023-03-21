@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import FormDialog from '@src/polaris/common/ducks/FormDialog'
 import Form from '@src/polaris/common/ducks/Form'
 import { put, select } from 'redux-saga/effects'
@@ -161,7 +162,7 @@ export default class CreateDuck extends FormDialog {
             ...item,
             value: item.name,
             disabled,
-            tooltip: disabled && this.t('该命名空间为只读命名空间'),
+            tooltip: disabled && i18n.t('该命名空间为只读命名空间'),
           }
         }),
       },
@@ -197,9 +198,9 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, {}>({
   name(v) {
-    if (!v) return this.t('请填写名称')
+    if (!v) return i18n.t('请填写名称')
   },
   namespace(v) {
-    if (!v) return this.t('请填写命名空间')
+    if (!v) return i18n.t('请填写命名空间')
   },
 })

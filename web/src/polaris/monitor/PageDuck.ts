@@ -1,7 +1,8 @@
+import i18n from '@src/polaris/common/util/i18n'
 import Page from '@src/polaris/common/ducks/Page'
 import { ComposedId } from '../service/detail/types'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
-import { MonitorLabelKey, MetricNameMap, LabelKeyMap, MetricName } from './types'
+import { MonitorLabelKey, MetricNameMap, MetricName, getLabelKeyMap } from './types'
 import { takeLatest, runAndTakeLatest } from 'redux-saga-catch'
 
 import CreateDuck from './operations/CreateDuck'
@@ -48,7 +49,7 @@ export default class MonitorDuck extends Page {
     return 'monitor'
   }
   get titleName() {
-    return this.t('监控')
+    return i18n.t('监控')
   }
   get initialFetch() {
     return false
@@ -57,7 +58,7 @@ export default class MonitorDuck extends Page {
     return Object.keys(MetricNameMap)
   }
   get monitorLabels() {
-    return Object.keys(LabelKeyMap)
+    return Object.keys(getLabelKeyMap())
   }
   get params() {
     const { types } = this
@@ -185,10 +186,10 @@ export default class MonitorDuck extends Page {
     let confirmResult = false
     if (queryNumber >= 50) {
       yield Modal.confirm({
-        message: this.t('本次筛选配置将会请求大量数据'),
-        description: this.t('请确认是否请求'),
-        okText: this.t('确认'),
-        cancelText: this.t('取消'),
+        message: i18n.t('本次筛选配置将会请求大量数据'),
+        description: i18n.t('请确认是否请求'),
+        okText: i18n.t('确认'),
+        cancelText: i18n.t('取消'),
         onOk: () => {
           confirmResult = true
         },
@@ -400,7 +401,7 @@ export default class MonitorDuck extends Page {
     yield takeLatest(types.SAVE_CONFIG, function*() {
       const filterConfig = selectors.filterConfig(yield select())
       window.localStorage.setItem(`${duck.type}MonitorConfigLocalStorageKey`, JSON.stringify(filterConfig))
-      notification.success({ description: this.t('已保存') })
+      notification.success({ description: i18n.t('已保存') })
       yield put({
         type: types.SET_FILTER_CONFIG,
         payload: filterConfig,
@@ -424,7 +425,7 @@ export class CircuitBreakerMonitorDuck extends MonitorDuck {
     return '/#/flow-monitor'
   }
   get titleName() {
-    return this.t('熔断监控')
+    return i18n.t('熔断监控')
   }
   get type() {
     return 'circuit-breaker'
@@ -433,7 +434,7 @@ export class CircuitBreakerMonitorDuck extends MonitorDuck {
     return [MetricName.CircuitbreakerOpen, MetricName.CircuitbreakerHalfopen]
   }
   get monitorLabels() {
-    return Object.keys(LabelKeyMap).filter(
+    return Object.keys(getLabelKeyMap).filter(
       labelKey =>
         labelKey !== MonitorLabelKey.CalleeLabels &&
         labelKey !== MonitorLabelKey.RetCode &&
@@ -446,7 +447,7 @@ export class RouteMonitorDuck extends MonitorDuck {
     return '/#/flow-monitor'
   }
   get titleName() {
-    return this.t('路由监控')
+    return i18n.t('路由监控')
   }
   get type() {
     return 'route'
@@ -460,7 +461,7 @@ export class RouteMonitorDuck extends MonitorDuck {
     ]
   }
   get monitorLabels() {
-    return Object.keys(LabelKeyMap).filter(labelKey => labelKey !== MonitorLabelKey.CalleeLabels)
+    return Object.keys(getLabelKeyMap()).filter(labelKey => labelKey !== MonitorLabelKey.CalleeLabels)
   }
 }
 export class RatelimitMonitorDuck extends MonitorDuck {
@@ -468,7 +469,7 @@ export class RatelimitMonitorDuck extends MonitorDuck {
     return '/#/flow-monitor'
   }
   get titleName() {
-    return this.t('限流监控')
+    return i18n.t('限流监控')
   }
   get type() {
     return 'ratelimit'
@@ -486,7 +487,7 @@ export class BusinessMonitorDuck extends MonitorDuck {
     return '/#/alert'
   }
   get titleName() {
-    return this.t('业务监控')
+    return i18n.t('业务监控')
   }
   get type() {
     return 'business'

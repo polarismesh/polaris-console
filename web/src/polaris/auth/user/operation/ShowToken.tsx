@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form, FormItem, Button, FormText, Text } from 'tea-component'
 import CopyableText from '@src/polaris/common/components/CopyableText'
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'
 
 export default function ShowToken(props: { token: string; name: string }) {
   const { t } = useTranslation()

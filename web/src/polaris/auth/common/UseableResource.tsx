@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import * as React from 'react'
 import { purify } from 'saga-duck'
 import { Table, Justify, Segment, SearchBox } from 'tea-component'
@@ -6,11 +5,12 @@ import { Link } from 'react-router-dom'
 import { autotip } from 'tea-component/lib/table/addons'
 import { StrategyResourceEntry } from '../model'
 import { useTranslation } from 'react-i18next'
+import i18n from '@src/polaris/common/util/i18n'
 
 const ResourceOptions = [
-  { text: t('命名空间'), value: 'namespaces' },
-  { text: t('服务'), value: 'services' },
-  { text: t('配置分组'), value: 'config_groups' },
+  { text: i18n.t('命名空间'), value: 'namespaces' },
+  { text: i18n.t('服务'), value: 'services' },
+  { text: i18n.t('配置分组'), value: 'config_groups' },
 ]
 
 interface Props {

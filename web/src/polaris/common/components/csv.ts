@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 /**
  * csv导出相关
  * Created by cluezhang on 2016/6/7.
@@ -107,7 +108,7 @@ export function save(fileName: string, csvString: string, onExceedTruncate = tru
     let message
     // 人为限定2M？chrome只支持这个数
     if (/Chrome\/\d+/.test(navigator.userAgent) && dataURI.length > chromeMaxSize) {
-      message = t('因为浏览器限制，此文件仅保存了部分内容')
+      message = i18n.t('因为浏览器限制，此文件仅保存了部分内容')
       if (!onExceedTruncate) {
         return message
       }

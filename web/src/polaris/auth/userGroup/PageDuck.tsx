@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { takeLatest } from 'redux-saga-catch'
 import {
   describeGovernanceGroups,
@@ -164,27 +165,27 @@ export default class PageDuck extends GridPageDuck {
         }),
       )
       if (result) {
-        notification.success({ description: this.t('关联成功') })
+        notification.success({ description: i18n.t('关联成功') })
         yield put(creators.reload())
       }
     })
     yield takeLatest(types.DELETE, function*(action) {
       const group = action.payload as UserGroup
       const confirm = yield Modal.confirm({
-        message: this.t('确认删除用户组？'),
+        message: i18n.t('确认删除用户组？'),
         description: (
           <>
-            <Text>{this.t('删除后，用户组不可用且无法恢复')}</Text>
+            <Text>{i18n.t('删除后，用户组不可用且无法恢复')}</Text>
           </>
         ),
       })
       if (confirm) {
         const result = yield deleteGovernanceGroups([{ id: group.id }])
         if (result) {
-          notification.success({ description: this.t('删除成功') })
+          notification.success({ description: i18n.t('删除成功') })
           yield put(creators.reload())
         } else {
-          notification.error({ description: this.t('删除失败') })
+          notification.error({ description: i18n.t('删除失败') })
         }
       }
     })
@@ -211,7 +212,7 @@ export default class PageDuck extends GridPageDuck {
         }),
       )
       if (result) {
-        notification.success({ description: this.t('编辑成功') })
+        notification.success({ description: i18n.t('编辑成功') })
         yield put(creators.reload())
       }
     })
@@ -236,7 +237,7 @@ export default class PageDuck extends GridPageDuck {
         }),
       )
       if (result) {
-        notification.success({ description: this.t('编辑成功') })
+        notification.success({ description: i18n.t('编辑成功') })
         yield put(creators.reload())
       }
     })
@@ -247,9 +248,7 @@ export default class PageDuck extends GridPageDuck {
       } = yield describeGovernanceGroupToken({ id })
       const { destroy } = Modal.show({
         size: 'xl',
-        caption: this.t('查看{{attr0}}的token', {
-          attr0: name,
-        }),
+        caption: i18n.t('查看{{attr0}}的token'),
         children: <ShowToken token={auth_token} name={name}></ShowToken>,
         onClose: () => destroy(),
       })

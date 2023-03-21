@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React, { useRef } from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
@@ -12,6 +11,7 @@ import Select from '@src/polaris/common/duckComponents/form/Select'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import i18n from '@src/polaris/common/util/i18n'
 
 export enum EditType {
   Manual = 'Manual',
@@ -19,11 +19,11 @@ export enum EditType {
 }
 const EditTypeOptions = [
   {
-    text: t('手动配置'),
+    text: i18n.t('手动配置'),
     value: EditType.Manual,
   },
   {
-    text: t('JSON配置'),
+    text: i18n.t('JSON配置'),
     value: EditType.Json,
   },
 ]
@@ -53,14 +53,14 @@ const getMetadataForm = field => {
   return [...field.asArray()].map((metadataField, index) => {
     const { key, value, type } = metadataField.getFields(['key', 'value', 'type'])
     return (
-      <Form layout={'inline'}>
-        <FormField showStatusIcon={false} field={key} label={t('标签键')}>
+      <Form layout={'inline'} key={key}>
+        <FormField showStatusIcon={false} field={key} label={i18n.t('标签键')}>
           <Input field={key} />
         </FormField>
-        <FormField showStatusIcon={false} field={value} label={t('标签值')}>
+        <FormField showStatusIcon={false} field={value} label={i18n.t('标签值')}>
           <Input field={value} />
         </FormField>
-        <FormField field={type} label={t('匹配方式')}>
+        <FormField field={type} label={i18n.t('匹配方式')}>
           <Select size='s' options={MATCH_TYPE_OPTIONS} field={type} />
         </FormField>
         {field.getValue()?.length > 1 && (

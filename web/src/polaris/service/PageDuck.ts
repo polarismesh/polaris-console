@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '../common/ducks/GridPage'
 import { Service, Namespace } from './types'
@@ -249,8 +250,8 @@ export default class ServicePageDuck extends GridPageDuck {
         })
         .filter(item => item)
       const confirm = yield Modal.confirm({
-        message: this.t('确认删除服务', {}),
-        description: this.t('删除后，无法恢复'),
+        message: i18n.t('确认删除服务'),
+        description: i18n.t('删除后，无法恢复'),
       })
       if (confirm) {
         yield deleteService(params)

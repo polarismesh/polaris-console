@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import * as React from 'react'
 import { Component } from 'react'
 import { Modal, ModalProps, Button, notification } from 'tea-component'
@@ -7,6 +6,8 @@ import DialogDuck from '../ducks/DialogPure'
 import classnames from 'classnames'
 import { showDialog } from '../helpers/showDialog'
 import tips from '../util/tips'
+import { useTranslation } from 'react-i18next'
+import { TFunction } from 'i18next'
 
 interface Identifiable {
   id: number | string
@@ -138,7 +139,8 @@ export default class FieldManagerButton extends React.Component<ButtonProps, any
           onClick={() => {
             showDialog(
               function(props: MyDialogProps) {
-                return <FieldManager {...{ model, ...rest, ...props }} />
+                const { t } = useTranslation()
+                return <FieldManager {...{ model, ...rest, ...props, t }} />
               },
               Duck,
               function*(duck: Duck) {
@@ -216,6 +218,7 @@ class CustomFields {
  */
 interface MyDialogProps extends Omit<Props, 'fields' | 'cacheKey'>, DuckCmpProps<DialogDuck> {
   model: CustomFields
+  t: TFunction
 }
 class FieldManager extends Component<MyDialogProps, State> {
   state: State = {
@@ -258,6 +261,8 @@ class FieldManager extends Component<MyDialogProps, State> {
     return selection
   }
   setSelection(selection: string[] = []) {
+    const { t } = this.props
+
     this.props.model.setSelection(selection)
     notification.success({ description: t('设置成功') })
   }
@@ -306,6 +311,7 @@ class FieldManager extends Component<MyDialogProps, State> {
     })
   }
   renderContent() {
+    const { t } = this.props
     const count = this._countFields()
     const {
       tipText = t('请选择您想显示的列表详细信息。'),
@@ -331,6 +337,8 @@ class FieldManager extends Component<MyDialogProps, State> {
   }
   render() {
     const _this = this
+    const { t } = this.props
+
     const {
       duck: { creators, selectors },
       dispatch,

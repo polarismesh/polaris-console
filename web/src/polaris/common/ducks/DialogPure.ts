@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 /**
  * 与DialogDuck相比，DialogPure将保存、提交逻辑移到外部实现
  */
@@ -48,7 +49,7 @@ export default abstract class DialogPure extends DuckMap {
           case types.SUBMIT:
             return null
           case types.SUBMIT_FAIL:
-            return action.payload || new Error(this.t('提交失败'))
+            return action.payload || new Error(i18n.t('提交失败'))
           default:
             return state
         }

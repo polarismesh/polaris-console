@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import { takeLatest } from 'redux-saga-catch'
 import Create from './operation/Create'
@@ -132,13 +133,13 @@ export default class ServicePageDuck extends GridPageDuck {
       const { name } = action.payload
 
       const confirm = yield Modal.confirm({
-        message: this.t('确认删除命名空间', {}),
-        description: this.t('删除后，无法恢复'),
-        okText: this.t('删除'),
+        message: i18n.t('确认删除命名空间'),
+        description: i18n.t('删除后，无法恢复'),
+        okText: i18n.t('删除'),
       })
       if (confirm) {
         const res = yield deleteNamespace([{ name, token: 'polaris@12345678' }])
-        if (res) notification.success({ description: this.t('删除成功') })
+        if (res) notification.success({ description: i18n.t('删除成功') })
         yield put(creators.reload())
       }
     })

@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React, { useRef } from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
@@ -30,19 +29,20 @@ import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Select from '@src/polaris/common/duckComponents/form/Select'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import i18n from '@src/polaris/common/util/i18n'
 
-export const REGEX_STAR_TIPS = t('正则模式下，使用*代表选择所有')
+export const REGEX_STAR_TIPS = i18n.t('正则模式下，使用*代表选择所有')
 export enum EditType {
   Manual = 'Manual',
   Json = 'Json',
 }
 const EditTypeOptions = [
   {
-    text: t('手动配置'),
+    text: i18n.t('手动配置'),
     value: EditType.Manual,
   },
   {
-    text: t('JSON配置'),
+    text: i18n.t('JSON配置'),
     value: EditType.Json,
   },
 ]

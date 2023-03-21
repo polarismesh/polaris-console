@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 // 接口类型
 // 接口类型
 export enum RouteLabelMatchType {
@@ -12,27 +13,27 @@ export enum RouteLabelMatchType {
 export const RouteLabelMatchTypeOptions = [
   {
     value: RouteLabelMatchType.EXACT,
-    text: t('等于'),
+    text: i18n.t('等于'),
   },
   {
     value: RouteLabelMatchType.REGEX,
-    text: t('正则表达式匹配'),
+    text: i18n.t('正则表达式匹配'),
   },
   {
     value: RouteLabelMatchType.NOT_EQUALS,
-    text: t('不等于'),
+    text: i18n.t('不等于'),
   },
   {
     value: RouteLabelMatchType.IN,
-    text: t('包含'),
+    text: i18n.t('包含'),
   },
   {
     value: RouteLabelMatchType.NOT_IN,
-    text: t('不包含'),
+    text: i18n.t('不包含'),
   },
   {
     value: RouteLabelMatchType.RANGE,
-    text: t('范围表达式'),
+    text: i18n.t('范围表达式'),
   },
 ]
 export const RouteLabelTextMap = RouteLabelMatchTypeOptions.reduce((map, curr) => {
@@ -56,12 +57,12 @@ export enum RoutingValueType {
   PARAMETER = 'PARAMETER',
 }
 export const RoutingValueTextMap = {
-  [RoutingValueType.TEXT]: t('值'),
-  [RoutingValueType.PARAMETER]: t('变量'),
+  [RoutingValueType.TEXT]: i18n.t('值'),
+  [RoutingValueType.PARAMETER]: i18n.t('变量'),
 }
 export const RoutingValueTypeOptions = [
   {
-    text: t('值'),
+    text: i18n.t('值'),
     value: RoutingValueType.TEXT,
   },
   // {
@@ -72,31 +73,31 @@ export const RoutingValueTypeOptions = [
 export const RoutingArgumentsTypeOptions = [
   {
     value: RoutingArgumentsType.CUSTOM,
-    text: t('自定义'),
+    text: i18n.t('自定义'),
   },
   {
     value: RoutingArgumentsType.HEADER,
-    text: t('请求头(HEADER)'),
+    text: i18n.t('请求头(HEADER)'),
   },
   {
     value: RoutingArgumentsType.COOKIE,
-    text: t('请求Cookie(COOKIE)'),
+    text: i18n.t('请求Cookie(COOKIE)'),
   },
   {
     value: RoutingArgumentsType.QUERY,
-    text: t('请求参数(QUERY)'),
+    text: i18n.t('请求参数(QUERY)'),
   },
   {
     value: RoutingArgumentsType.METHOD,
-    text: t('方法(METHOD)'),
+    text: i18n.t('方法(METHOD)'),
   },
   {
     value: RoutingArgumentsType.CALLER_IP,
-    text: t('主调IP'),
+    text: i18n.t('主调IP'),
   },
   {
     value: RoutingArgumentsType.PATH,
-    text: t('路径'),
+    text: i18n.t('路径'),
   },
 ]
 export const RouteArgumentTextMap = RoutingArgumentsTypeOptions.reduce((map, curr) => {

@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 // 仅用于加载单项数据的Duck
 import { DuckMap as Base, createToPayload, reduceFromPayload } from 'saga-duck'
 import { select, put, call, fork, join, take, race, spawn } from 'redux-saga/effects'
@@ -182,7 +183,7 @@ export default abstract class Fetcher extends Base {
     } catch (e) {
       yield put({
         type: types.FETCH_FAIL,
-        payload: e || t('加载失败'),
+        payload: e || i18n.t('加载失败'),
       })
       throw e
     }

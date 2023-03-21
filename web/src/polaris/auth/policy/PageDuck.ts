@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { put, select } from 'redux-saga/effects'
 import { takeLatest } from 'redux-saga-catch'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
@@ -112,16 +113,16 @@ export default abstract class PolicyPageDuck extends PageDuck {
     yield takeLatest(types.DELETE, function*(action) {
       const id = action.payload
       const confirm = yield Modal.confirm({
-        message: this.t('确认删除如下策略？'),
-        description: this.t('删除后，策略不可用且无法恢复'),
+        message: i18n.t('确认删除如下策略？'),
+        description: i18n.t('删除后，策略不可用且无法恢复'),
       })
       if (confirm) {
         const result = yield deleteGovernanceStrategies([{ id }])
         if (result) {
-          notification.success({ description: this.t('删除成功') })
+          notification.success({ description: i18n.t('删除成功') })
           yield put(creators.reload())
         } else {
-          notification.error({ description: this.t('删除失败') })
+          notification.error({ description: i18n.t('删除失败') })
         }
       }
     })

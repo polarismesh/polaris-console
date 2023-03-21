@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import ServiceDetailDuck from './PageDuck'
@@ -11,15 +10,16 @@ import Service from './service/Page'
 import Server from './server/Page'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { useTranslation } from 'react-i18next'
+import i18n from '@src/polaris/common/util/i18n'
 export enum TAB {
   Overview = 'overview',
   Service = 'service',
   Server = 'server',
 }
 export const TAB_LABLES = {
-  [TAB.Overview]: t('概览'),
-  [TAB.Service]: t('服务和配置统计'),
-  [TAB.Server]: t('北极星服务端请求统计'),
+  [TAB.Overview]: i18n.t('概览'),
+  [TAB.Service]: i18n.t('服务和配置统计'),
+  [TAB.Server]: i18n.t('北极星服务端请求统计'),
 }
 insertCSS(
   `monitor`,

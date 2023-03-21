@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 import moment from 'moment'
 import { getMonitorData } from '../models'
 
@@ -67,25 +68,25 @@ const MinReduceFunction = (prev, curr, index, array) => {
 export const getQueryMap = {
   [MetricName.Node]: () => [
     {
-      name: t('总节点数'),
+      name: i18n.t('总节点数'),
       query: 'max(max(client_total) by (polaris_server_instance) or on() vector(0))',
       boardFunction: LatestValueReduceFunction,
-      unit: t('个'),
+      unit: i18n.t('个'),
     },
   ],
   [MetricName.Connect]: () => [
     {
-      name: t('总连接数'),
+      name: i18n.t('总连接数'),
       query: 'sum(sdk_client_total) or on() vector(0)',
       boardFunction: LatestValueReduceFunction,
     },
     {
-      name: t('注册中心连接数'),
+      name: i18n.t('注册中心连接数'),
       query: 'sum(discovery_conn_total) or on() vector(0)',
       boardFunction: LatestValueReduceFunction,
     },
     {
-      name: t('配置中心连接数'),
+      name: i18n.t('配置中心连接数'),
       query: 'sum(config_conn_total) or on() vector(0)',
       boardFunction: LatestValueReduceFunction,
     },
@@ -94,7 +95,7 @@ export const getQueryMap = {
     const { interfaceName, podName } = queryParam
     return [
       {
-        name: t('总请求数'),
+        name: i18n.t('总请求数'),
         query:
           interfaceName && podName
             ? `sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
@@ -107,7 +108,7 @@ export const getQueryMap = {
         minStep: 60,
       },
       {
-        name: t('成功请求数'),
+        name: i18n.t('成功请求数'),
         query:
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
@@ -120,7 +121,7 @@ export const getQueryMap = {
         minStep: 60,
       },
       {
-        name: t('失败请求数'),
+        name: i18n.t('失败请求数'),
         query:
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
@@ -133,7 +134,7 @@ export const getQueryMap = {
         minStep: 60,
       },
       {
-        name: t('请求成功率'),
+        name: i18n.t('请求成功率'),
         query:
           interfaceName && podName
             ? `((sum(client_rq_interval_count{err_code=~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"}) / sum(client_rq_interval_count{api=~"${interfaceName}",polaris_server_instance="${podName}"})) * 100) or on() vector(0)`
@@ -154,7 +155,7 @@ export const getQueryMap = {
     const interval = Math.floor(moment.duration(end - start, 's').asSeconds())
     return [
       {
-        name: t('均值'),
+        name: i18n.t('均值'),
         query:
           interfaceName && podName
             ? `avg(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
@@ -169,7 +170,7 @@ export const getQueryMap = {
         color: LineColor.Blue,
       },
       {
-        name: t('最大值'),
+        name: i18n.t('最大值'),
         query:
           interfaceName && podName
             ? `max(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
@@ -184,7 +185,7 @@ export const getQueryMap = {
         color: LineColor.Red,
       },
       {
-        name: t('最小值'),
+        name: i18n.t('最小值'),
         query:
           interfaceName && podName
             ? `min(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
@@ -272,7 +273,7 @@ export const getQueryMap = {
     const minStep = interval > 24 ? 10 : 1
     return [
       {
-        name: t('总服务数'),
+        name: i18n.t('总服务数'),
         minStep: minStep,
         query: namespace
           ? `max(sum(service_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
@@ -280,7 +281,7 @@ export const getQueryMap = {
         boardFunction: LatestValueReduceFunction,
       },
       {
-        name: t('在线服务数'),
+        name: i18n.t('在线服务数'),
         minStep: minStep,
         query: namespace
           ? `max(sum(service_online_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
@@ -288,7 +289,7 @@ export const getQueryMap = {
         boardFunction: LatestValueReduceFunction,
       },
       {
-        name: t('异常服务数'),
+        name: i18n.t('异常服务数'),
         minStep: minStep,
         query: namespace
           ? `max(sum(service_abnormal_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
@@ -296,7 +297,7 @@ export const getQueryMap = {
         boardFunction: LatestValueReduceFunction,
       },
       {
-        name: t('离线服务数'),
+        name: i18n.t('离线服务数'),
         minStep: minStep,
         query: namespace
           ? `max(sum(service_offline_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
@@ -311,7 +312,7 @@ export const getQueryMap = {
     const minStep = interval > 24 ? 10 : 1
     return [
       {
-        name: t('总实例数'),
+        name: i18n.t('总实例数'),
         minStep: minStep,
         query:
           namespace && service
@@ -322,7 +323,7 @@ export const getQueryMap = {
         boardFunction: LatestValueReduceFunction,
       },
       {
-        name: t('在线实例数'),
+        name: i18n.t('在线实例数'),
         minStep: minStep,
         query:
           namespace && service
@@ -333,7 +334,7 @@ export const getQueryMap = {
         boardFunction: LatestValueReduceFunction,
       },
       {
-        name: t('隔离实例数'),
+        name: i18n.t('隔离实例数'),
         minStep: minStep,
         query:
           namespace && service
@@ -344,7 +345,7 @@ export const getQueryMap = {
         boardFunction: LatestValueReduceFunction,
       },
       {
-        name: t('异常实例数'),
+        name: i18n.t('异常实例数'),
         minStep: minStep,
         query:
           namespace && service
@@ -362,7 +363,7 @@ export const getQueryMap = {
     const minStep = interval > 24 ? 10 : 1
     return [
       {
-        name: t('配置分组总数'),
+        name: i18n.t('配置分组总数'),
         minStep: minStep,
         query: namespace
           ? `max(sum(config_group_count{namespace="${namespace}"}) by(polaris_server_instance)) or on() vector(0)`
@@ -377,7 +378,7 @@ export const getQueryMap = {
     const minStep = interval > 24 ? 10 : 1
     return [
       {
-        name: t('配置文件数'),
+        name: i18n.t('配置文件数'),
         minStep: minStep,
         query:
           namespace && configGroup
@@ -388,7 +389,7 @@ export const getQueryMap = {
         boardFunction: LatestValueReduceFunction,
       },
       {
-        name: t('已发布配置文件数'),
+        name: i18n.t('已发布配置文件数'),
         minStep: minStep,
         query:
           namespace && configGroup
@@ -404,7 +405,7 @@ export const getQueryMap = {
     const { interfaceName, podName } = queryParam
     return [
       {
-        name: t('总失败请求数'),
+        name: i18n.t('总失败请求数'),
         query:
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code!~"2.+|0",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
@@ -417,7 +418,7 @@ export const getQueryMap = {
         minStep: 60,
       },
       {
-        name: t('5xx失败请求数'),
+        name: i18n.t('5xx失败请求数'),
         query:
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"5.+",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
@@ -430,7 +431,7 @@ export const getQueryMap = {
         minStep: 60,
       },
       {
-        name: t('4xx失败请求数'),
+        name: i18n.t('4xx失败请求数'),
         query:
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"4.+",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
@@ -443,7 +444,7 @@ export const getQueryMap = {
         minStep: 60,
       },
       {
-        name: t('网络失败数'),
+        name: i18n.t('网络失败数'),
         query:
           interfaceName && podName
             ? `sum(client_rq_interval_count{err_code=~"-1",api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
@@ -510,10 +511,10 @@ export enum MonitorFeature {
   OpenAPI = 'OpenAPI',
 }
 export const MonitorFeatureTextMap = {
-  [MonitorFeature.Register]: t('服务注册'),
-  [MonitorFeature.Discovery]: t('服务发现'),
-  [MonitorFeature.HealthCheck]: t('健康检查'),
-  [MonitorFeature.Config]: t('配置读取'),
+  [MonitorFeature.Register]: i18n.t('服务注册'),
+  [MonitorFeature.Discovery]: i18n.t('服务发现'),
+  [MonitorFeature.HealthCheck]: i18n.t('健康检查'),
+  [MonitorFeature.Config]: i18n.t('配置读取'),
   [MonitorFeature.OpenAPI]: 'OpenAPI',
 }
 export const MonitorFeatureOptions = Object.entries(MonitorFeatureTextMap).map(([key, value]) => ({

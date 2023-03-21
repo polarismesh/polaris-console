@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 export interface AlertInfo {
   id: string
   name: string
@@ -45,9 +46,9 @@ export const AlterExprMap = {
   [AlterExprType.Ge]: '>=',
   [AlterExprType.Eq]: '==',
   [AlterExprType.Ne]: '!=',
-  [AlterExprType.Fluctuation]: t('环比波动'),
-  [AlterExprType.Rise]: t('环比上升'),
-  [AlterExprType.Decline]: t('环比下降'),
+  [AlterExprType.Fluctuation]: i18n.t('环比波动'),
+  [AlterExprType.Rise]: i18n.t('环比上升'),
+  [AlterExprType.Decline]: i18n.t('环比下降'),
 }
 export const AlterExprOptions = Object.entries(AlterExprMap).map(([key, value]) => {
   return { text: value, value: key }
@@ -59,10 +60,10 @@ export enum AlertTimeInterval {
   day = 'd',
 }
 export const AlertTimeIntervalMap = {
-  [AlertTimeInterval.second]: t('秒'),
-  [AlertTimeInterval.minute]: t('分钟'),
-  [AlertTimeInterval.hour]: t('小时'),
-  [AlertTimeInterval.day]: t('天'),
+  [AlertTimeInterval.second]: i18n.t('秒'),
+  [AlertTimeInterval.minute]: i18n.t('分钟'),
+  [AlertTimeInterval.hour]: i18n.t('小时'),
+  [AlertTimeInterval.day]: i18n.t('天'),
 }
 export const AlertTimeIntervalOptions = Object.entries(AlertTimeIntervalMap).map(([key, value]) => {
   return { text: value, value: key }
@@ -71,7 +72,7 @@ export enum MonitorType {
   Business = 'Business',
 }
 export const MonitorTypeMap = {
-  [MonitorType.Business]: t('业务监控'),
+  [MonitorType.Business]: i18n.t('业务监控'),
 }
 export const MonitorTypeOption = Object.entries(MonitorTypeMap).map(([key, value]) => {
   return { text: value, value: key }
@@ -83,16 +84,16 @@ export enum MetricName {
 }
 export const MetricNameMap = {
   [MetricName.DiscoveryConnTotal]: {
-    text: t('服务发现连接数'),
-    unit: t('个'),
+    text: i18n.t('服务发现连接数'),
+    unit: i18n.t('个'),
   },
   [MetricName.ConfigConnTotal]: {
-    text: t('配置获取连接数'),
-    unit: t('个'),
+    text: i18n.t('配置获取连接数'),
+    unit: i18n.t('个'),
   },
   [MetricName.SdkClientTotal]: {
-    text: t('客户端数'),
-    unit: t('个'),
+    text: i18n.t('客户端数'),
+    unit: i18n.t('个'),
   },
 }
 export const MetricNameOptions = Object.entries(MetricNameMap).map(([key, value]) => {
@@ -100,37 +101,37 @@ export const MetricNameOptions = Object.entries(MetricNameMap).map(([key, value]
 })
 export const IntervalOptions = [
   {
-    text: t('每1分钟告警一次'),
+    text: i18n.t('每1分钟告警一次'),
     value: '1m',
     interval: 1,
     unit: AlertTimeInterval.minute,
   },
   {
-    text: t('每5分钟告警一次'),
+    text: i18n.t('每5分钟告警一次'),
     value: '5m',
     interval: 5,
     unit: AlertTimeInterval.minute,
   },
   {
-    text: t('每15分钟告警一次'),
+    text: i18n.t('每15分钟告警一次'),
     value: '15m',
     interval: 15,
     unit: AlertTimeInterval.minute,
   },
   {
-    text: t('每1小时告警一次'),
+    text: i18n.t('每1小时告警一次'),
     value: '1h',
     interval: 1,
     unit: AlertTimeInterval.hour,
   },
   {
-    text: t('每4小时告警一次'),
+    text: i18n.t('每4小时告警一次'),
     value: '4h',
     interval: 4,
     unit: AlertTimeInterval.hour,
   },
   {
-    text: t('每天告警一次'),
+    text: i18n.t('每天告警一次'),
     value: '1d',
     interval: 1,
     unit: AlertTimeInterval.day,

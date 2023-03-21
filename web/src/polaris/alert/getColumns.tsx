@@ -1,5 +1,4 @@
-import { t } from 'i18next'
-import { Trans, useTranslation } from 'react-i18next'
+import { Trans } from 'react-i18next'
 import * as React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import AlertPageDuck from './PageDuck'
@@ -9,12 +8,13 @@ import Action from '../common/duckComponents/grid/Action'
 import { AlertInfo, AlertTimeIntervalMap, AlterExprMap, MonitorTypeMap } from './types'
 import { MetricNameMap } from '../monitor/types'
 import { Link } from 'react-router-dom'
+import i18n from '../common/util/i18n'
 
 export default ({ duck: { creators } }: DuckCmpProps<AlertPageDuck>): Column<AlertInfo>[] => {
   return [
     {
       key: 'name',
-      header: t('策略ID/名称'),
+      header: i18n.t('策略ID/名称'),
       render: x => (
         <>
           <React.Fragment>
@@ -26,12 +26,12 @@ export default ({ duck: { creators } }: DuckCmpProps<AlertPageDuck>): Column<Ale
     },
     {
       key: 'monitor_type',
-      header: t('监控类型'),
+      header: i18n.t('监控类型'),
       render: x => <Text tooltip={MonitorTypeMap[x.monitor_type]}>{MonitorTypeMap[x.monitor_type] || '-'}</Text>,
     },
     {
       key: 'rules',
-      header: t('触发条件'),
+      header: i18n.t('触发条件'),
       render: x => (
         <>
           <Text parent={'div'}>
@@ -48,7 +48,7 @@ export default ({ duck: { creators } }: DuckCmpProps<AlertPageDuck>): Column<Ale
     },
     {
       key: 'interval',
-      header: t('告警规则'),
+      header: i18n.t('告警规则'),
       render: x => (
         <Text>
           <Trans>每隔</Trans>
@@ -59,7 +59,7 @@ export default ({ duck: { creators } }: DuckCmpProps<AlertPageDuck>): Column<Ale
     },
     {
       key: 'ctime',
-      header: t('创建时间'),
+      header: i18n.t('创建时间'),
       render: x => (
         <>
           <Text parent={'div'}>{x.create_time}</Text>
@@ -69,18 +69,18 @@ export default ({ duck: { creators } }: DuckCmpProps<AlertPageDuck>): Column<Ale
     },
     {
       key: 'action',
-      header: t('操作'),
+      header: i18n.t('操作'),
       render: x => {
         return (
           <React.Fragment>
-            <Action fn={dispatch => dispatch(creators.toggle(x))} tip={x.enable ? t('禁用') : t('启用')}>
-              {x.enable ? t('禁用') : t('启用')}
+            <Action fn={dispatch => dispatch(creators.toggle(x))} tip={x.enable ? i18n.t('禁用') : i18n.t('启用')}>
+              {x.enable ? i18n.t('禁用') : i18n.t('启用')}
             </Action>
-            <Action fn={dispatch => dispatch(creators.edit(x))} tip={t('编辑')}>
-              {t('编辑')}
+            <Action fn={dispatch => dispatch(creators.edit(x))} tip={i18n.t('编辑')}>
+              {i18n.t('编辑')}
             </Action>
-            <Action fn={dispatch => dispatch(creators.remove(x))} tip={t('删除')}>
-              {t('删除')}
+            <Action fn={dispatch => dispatch(creators.remove(x))} tip={i18n.t('删除')}>
+              {i18n.t('删除')}
             </Action>
           </React.Fragment>
         )

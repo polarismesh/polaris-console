@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload } from 'saga-duck'
 import { takeLatest } from 'redux-saga-catch'
 import Create from './operation/Create'
@@ -179,13 +180,13 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       const { name, namespace } = action.payload
 
       const confirm = yield Modal.confirm({
-        message: this.t('确认删除配置组', {}),
-        description: this.t('删除配置组也会同时删除配置组下所有配置文件，请谨慎删除。'),
-        okText: this.t('删除'),
+        message: i18n.t('确认删除配置组'),
+        description: i18n.t('删除配置组也会同时删除配置组下所有配置文件，请谨慎删除。'),
+        okText: i18n.t('删除'),
       })
       if (confirm) {
         const res = yield deleteConfigFileGroups({ group: name, namespace })
-        if (res) notification.success({ description: this.t('删除成功') })
+        if (res) notification.success({ description: i18n.t('删除成功') })
         yield put(creators.reload())
       }
     })

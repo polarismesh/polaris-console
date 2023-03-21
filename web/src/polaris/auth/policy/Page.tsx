@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import * as React from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
@@ -30,6 +29,7 @@ import router from '@src/polaris/common/util/router'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
 import { AuthStrategy } from '../model'
 import UseableResource from '../common/UseableResource'
+import i18n from '@src/polaris/common/util/i18n'
 
 export enum AuthSubjectType {
   USER = 'user',
@@ -41,20 +41,20 @@ export enum AuthResourceType {
   CONFIGURATION = 'config_groups',
 }
 export const AUTH_SUBJECT_TYPE_MAP = {
-  [AuthSubjectType.USER]: { text: t('用户'), urlKey: 'user' },
-  [AuthSubjectType.USERGROUP]: { text: t('用户组'), urlKey: 'usergroup' },
+  [AuthSubjectType.USER]: { text: i18n.t('用户'), urlKey: 'user' },
+  [AuthSubjectType.USERGROUP]: { text: i18n.t('用户组'), urlKey: 'usergroup' },
 }
 export const AUTH_RESOURCE_TYPE_MAP = {
   [AuthResourceType.NAMESPACE]: {
-    text: t('命名空间'),
+    text: i18n.t('命名空间'),
     columnsRender: x => x.name,
   },
   [AuthResourceType.SERVICE]: {
-    text: t('服务'),
+    text: i18n.t('服务'),
     columnsRender: x => `${x.name}（${x.namespace}）`,
   },
   [AuthResourceType.CONFIGURATION]: {
-    text: t('配置分组'),
+    text: i18n.t('配置分组'),
     columnsRender: x => x.name,
   },
 }
@@ -76,11 +76,11 @@ insertCSS(
 
 const formatPolicyName = (name: string) => {
   let trimName = name
-  if (name.indexOf(t('(用户组)')) === 0) {
-    trimName = name.replace(t('(用户组)'), '')
+  if (name.indexOf(i18n.t('(用户组)')) === 0) {
+    trimName = name.replace(i18n.t('(用户组)'), '')
   }
-  if (name.indexOf(t('(用户)')) === 0) {
-    trimName = name.replace(t('(用户)'), '')
+  if (name.indexOf(i18n.t('(用户)')) === 0) {
+    trimName = name.replace(i18n.t('(用户)'), '')
   }
   return trimName
 }

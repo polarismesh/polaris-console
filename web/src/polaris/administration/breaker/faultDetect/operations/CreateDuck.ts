@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
 import Form from '@src/polaris/common/ducks/Form'
@@ -191,45 +192,45 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
 const validator = Form.combineValidators<FaultDetectRule>({
   name(v) {
     if (!v) {
-      return this.t('请填写规则名称')
+      return i18n.t('请填写规则名称')
     }
     if (!/^[a-zA-Z0-9-_]([a-zA-Z0-9-_]{1,64})?$/.test(v)) {
-      return this.t('名称只能含有数字，字母，下划线及中划线')
+      return i18n.t('名称只能含有数字，字母，下划线及中划线')
     }
   },
   targetService: {
     namespace(v) {
       if (!v) {
-        return this.t('请选择命名空间')
+        return i18n.t('请选择命名空间')
       }
     },
     service(v) {
       if (!v) {
-        return this.t('请选择服务名')
+        return i18n.t('请选择服务名')
       }
     },
   },
   timeout(v) {
-    if (!v) return this.t('请输入超时时间')
+    if (!v) return i18n.t('请输入超时时间')
   },
   httpConfig(v, values) {
     if (values.protocol !== FaultDetectProtocol.HTTP) return
     const res = Form.combineValidators<FaultDetectRule['httpConfig']>({
       url(v) {
         if (!v) {
-          return this.t('请输入url')
+          return i18n.t('请输入url')
         }
       },
       headers: [
         {
           key(v) {
             if (!v) {
-              return this.t('请输入键')
+              return i18n.t('请输入键')
             }
           },
           value(v) {
             if (!v) {
-              return this.t('请输入值')
+              return i18n.t('请输入值')
             }
           },
         },

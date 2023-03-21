@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 import * as csvUtil from '../components/csv'
 import { call, fork, put, select } from 'redux-saga/effects'
 import GridDuck, { GridResult } from '../ducks/Grid'
@@ -469,9 +470,7 @@ export default abstract class GridPageDuck extends PageDuck {
   }
   protected *sagaExportProgress(process) {
     tips.showLoading({
-      text: t('当前导出进度：{{attr0}}%', {
-        attr0: process,
-      }),
+      text: i18n.t('当前导出进度：{{attr0}}%'),
     })
   }
   protected *doExport(action) {
@@ -486,7 +485,7 @@ export default abstract class GridPageDuck extends PageDuck {
       ducks: { grid },
     } = duck
     if (!csvUtil.isSupportSave()) {
-      notification.error({ description: t('此浏览器版本过低，不支持导出功能') })
+      notification.error({ description: i18n.t('此浏览器版本过低，不支持导出功能') })
       return
     }
     const columns = action.payload
@@ -551,14 +550,14 @@ export default abstract class GridPageDuck extends PageDuck {
       } while (exceed || exported < fullList.length)
 
       if (fileNum > 1) {
-        tips.info({ text: t('因文件过大，自动拆分为多个文件下载') })
+        tips.info({ text: i18n.t('因文件过大，自动拆分为多个文件下载') })
       } else {
-        notification.success({ description: t('导出成功') })
+        notification.success({ description: i18n.t('导出成功') })
       }
       yield put({ type: types.EXPORT_DONE })
     } catch (e) {
       notification.error({
-        description: `${t('导出失败')} [${e.code || 0}]${e.message}`,
+        description: `${i18n.t('导出失败')} [${e.code || 0}]${e.message}`,
       })
     }
   }

@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import React from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
 import ConfigFileGroupDuck from './PageDuck'
@@ -11,6 +10,7 @@ import { replaceTags } from '../utils'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
 import { useTranslation } from 'react-i18next'
+import i18n from '@src/polaris/common/util/i18n'
 
 insertCSS(
   'service',
@@ -29,24 +29,22 @@ export const FileNameTagKey = 'fileName'
 export const DefaultGroupTagAttribute = {
   type: 'input',
   key: GroupNameTagKey,
-  name: t('分组名'),
+  name: i18n.t('分组名'),
 }
 function getTagAttributes(props: DuckCmpProps<ConfigFileGroupDuck>) {
-  const { t } = useTranslation()
-
   const { duck, store } = props
   const { configFileGroupList } = duck.selector(store)
   return [
     {
       type: 'single',
       key: GroupNameTagKey,
-      name: t('分组名'),
+      name: i18n.t('分组名'),
       values: configFileGroupList,
     },
     {
       type: 'input',
       key: FileNameTagKey,
-      name: t('配置文件名'),
+      name: i18n.t('配置文件名'),
     },
   ]
 }

@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
@@ -61,6 +60,8 @@ export default function Create(props: DuckCmpProps<Duck>) {
 }
 
 const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const {
     ducks: { form },

@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '../../../common/ducks/GridPage'
 import { takeLatest } from 'redux-saga-catch'
@@ -173,10 +174,8 @@ export default class FaultDetectDuck extends GridPageDuck {
     yield takeLatest(types.REMOVE, function*(action) {
       const rule = action.payload
       const confirm = yield Modal.confirm({
-        message: this.t('确认删除规则 {{attr0}} 吗？', {
-          attr0: rule.name,
-        }),
-        description: this.t('删除后，无法恢复'),
+        message: i18n.t('确认删除规则 {{attr0}} 吗？'),
+        description: i18n.t('删除后，无法恢复'),
       })
       if (confirm) {
         yield deleteFaultDetect([{ id: rule.id }])

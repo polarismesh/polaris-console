@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
@@ -9,22 +8,23 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import Select from '@src/polaris/common/duckComponents/form/Select'
-import { MetricNameOptions, LabelKeyOptions } from '../types'
+import { getLabelKeyOptions, MetricNameOptions } from '../types'
 import moment from 'moment'
 import TimeSelect from '@src/polaris/common/components/TimeSelect'
 import { useTranslation } from 'react-i18next'
+import i18n from '@src/polaris/common/util/i18n'
 
 export const TimePickerTab = [
   {
-    text: t('近1小时'),
+    text: i18n.t('近1小时'),
     date: [moment().subtract(1, 'h'), moment()],
   },
   {
-    text: t('近1天'),
+    text: i18n.t('近1天'),
     date: [moment().subtract(1, 'd'), moment()],
   },
   {
-    text: t('近1周'),
+    text: i18n.t('近1周'),
     date: [moment().subtract(1, 'w'), moment()],
   },
 ]
@@ -54,6 +54,7 @@ const removeArrayFieldValue = (field, index) => {
   field.setValue([...newValue])
 }
 const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -63,7 +64,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   const formApi = form.getAPI(store, dispatch)
   const { metricName, monitorFilters, filterTime } = formApi.getFields(['metricName', 'monitorFilters', 'filterTime'])
   const { isModify } = selectors.options(store)
-  const filteredLabelKeyOptions = LabelKeyOptions.map(item => {
+  const filteredLabelKeyOptions = getLabelKeyOptions().map(item => {
     const hasThisKey = !!monitorFilters.getValue()?.find(filter => {
       return filter.labelKey === item.value
     })
@@ -103,7 +104,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             {[...monitorFilters.asArray()].map((field, index) => {
               const { labelKey, labelValue } = field.getFields(['labelKey', 'labelValue'])
               return (
-                <Form layout={'inline'}>
+                <Form layout={'inline'} key={index}>
                   <FormField showStatusIcon={false} field={labelKey} label={t('条件')}>
                     <Select
                       type={'simulate'}

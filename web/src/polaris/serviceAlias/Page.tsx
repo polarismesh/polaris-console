@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
@@ -12,6 +11,7 @@ import { replaceTags } from '../configuration/utils'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import { useFieldManager } from '../common/components/UseFieldManager'
 import BasicLayout from '../common/components/BaseLayout'
+import i18n from '../common/util/i18n'
 const getHandlers = memorize(({ creators }: ServiceAliasDuck, dispatch) => ({
   reload: () => dispatch(creators.reload()),
   create: () => dispatch(creators.create()),
@@ -23,21 +23,19 @@ const getHandlers = memorize(({ creators }: ServiceAliasDuck, dispatch) => ({
 }))
 const alias_namespaceTagKey = 'alias_namespace'
 function getTagAttributes(props: DuckCmpProps<ServiceAliasDuck>) {
-  const { t } = useTranslation()
-
   const { duck, store } = props
   const { namespaceList } = duck.selector(store)
   return [
     {
       type: 'single',
       key: alias_namespaceTagKey,
-      name: t('命名空间'),
+      name: i18n.t('命名空间'),
       values: namespaceList,
     },
     {
       type: 'input',
       key: 'service',
-      name: t('指向服务'),
+      name: i18n.t('指向服务'),
     },
   ]
 }

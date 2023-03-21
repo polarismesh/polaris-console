@@ -1,19 +1,20 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 export default [
   {
-    name: t('服务名'),
+    name: i18n.t('服务名'),
     key: 'name',
   },
   {
-    name: t('命名空间'),
+    name: i18n.t('命名空间'),
     key: 'namespace',
   },
   {
-    name: t('创建时间'),
+    name: i18n.t('创建时间'),
     key: 'ctime',
   },
   {
-    name: t('更新时间'),
+    name: i18n.t('更新时间'),
     key: 'mtime',
   },
 ]

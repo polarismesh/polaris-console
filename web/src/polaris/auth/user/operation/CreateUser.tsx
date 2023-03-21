@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import * as React from 'react'
 import { purify, DuckCmpProps } from 'saga-duck'
 import Duck from './CreateUserDuck'
@@ -8,7 +7,9 @@ import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { isOwner } from '@src/polaris/common/util/common'
 import { useTranslation } from 'react-i18next'
-export const passwordRuleText = t('请输入6至17位的密码')
+import i18n from '@src/polaris/common/util/i18n'
+
+export const passwordRuleText = i18n.t('请输入6至17位的密码')
 export default purify(function(props: DuckCmpProps<Duck>) {
   const { t } = useTranslation()
 

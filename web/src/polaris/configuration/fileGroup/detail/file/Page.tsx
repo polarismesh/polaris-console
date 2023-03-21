@@ -33,6 +33,7 @@ import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
 import { Link } from 'react-router-dom'
 import { FileFormat } from './operation/Create'
+import i18n from '@src/polaris/common/util/i18n'
 
 export const NoSearchResultKey = '__NO_SEARCH_RESULT__'
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
@@ -95,8 +96,6 @@ function toHighlightLanguage(format?: string) {
 }
 
 function fetchConfigFile(props: DuckCmpProps<Duck>) {
-  const { t } = useTranslation()
-
   const { duck, store } = props
   const { selectors } = duck
   const handlers = getHandlers(props)
@@ -108,7 +107,7 @@ function fetchConfigFile(props: DuckCmpProps<Duck>) {
     name: searchKeyword || undefined,
   })
   handlers.cancel()
-  notification.success({ description: t('刷新成功') })
+  notification.success({ description: i18n.t('刷新成功') })
 }
 
 export default function Page(props: DuckCmpProps<Duck>) {
@@ -126,6 +125,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
   const currentHistoryDuck = ducks.configFileDynamicDuck.getDuck(currentNode?.name)
 
   function RefreshConfigButton(): JSX.Element {
+    const { t } = useTranslation()
     const [modalVisible, setModalVisible] = React.useState(false)
     const refreshFiles = () => {
       if (editing) {

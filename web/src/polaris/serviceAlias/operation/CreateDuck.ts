@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { put, select } from 'redux-saga/effects'
 import { ServiceItem, NamespaceItem } from '@src/polaris/service/PageDuck'
 import FormDialog from '@src/polaris/common/ducks/FormDialog'
@@ -129,12 +130,12 @@ class CreateForm extends Form {
 }
 const validator = CreateForm.combineValidators<Values, {}>({
   service(v) {
-    if (!v) return this.t('请选择指向服务')
+    if (!v) return i18n.t('请选择指向服务')
   },
   alias_namespace(v) {
-    if (!v) return this.t('请选择别名所在命名空间')
+    if (!v) return i18n.t('请选择别名所在命名空间')
   },
   alias(v) {
-    if (!v) return this.t('请填写别名')
+    if (!v) return i18n.t('请填写别名')
   },
 })

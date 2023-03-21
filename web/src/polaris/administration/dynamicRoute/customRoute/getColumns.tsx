@@ -1,5 +1,4 @@
-import { t } from 'i18next'
-import { Trans, useTranslation } from 'react-i18next'
+import { Trans } from 'react-i18next'
 import * as React from 'react'
 import AccessLimitingDuck from './PageDuck'
 import { Text, Copy } from 'tea-component'
@@ -9,6 +8,7 @@ import { Dispatch } from 'redux'
 import { CustomRoute } from './model'
 import { SwitchStatusAction } from '../../accessLimiting/types'
 import { Link } from 'react-router-dom'
+import i18n from '@src/polaris/common/util/i18n'
 
 export default (
   { creators, selector }: AccessLimitingDuck,
@@ -18,7 +18,7 @@ export default (
   return [
     {
       key: 'idName',
-      header: t('ID/规则名'),
+      header: i18n.t('ID/规则名'),
       width: 280,
       render: x => (
         <>
@@ -35,7 +35,7 @@ export default (
     },
     {
       key: 'enable',
-      header: t('状态'),
+      header: i18n.t('状态'),
       render: x =>
         x.enable ? (
           <Text theme='success'>
@@ -49,12 +49,12 @@ export default (
     },
     {
       key: 'description',
-      header: t('描述'),
+      header: i18n.t('描述'),
       render: x => x.description || '-',
     },
     {
       key: 'source',
-      header: t('主调服务'),
+      header: i18n.t('主调服务'),
       render: x => {
         const { namespace, service } = x?.routing_config?.rules?.[0]?.sources?.[0] || {}
         return (
@@ -73,7 +73,7 @@ export default (
     },
     {
       key: 'destination',
-      header: t('被调服务'),
+      header: i18n.t('被调服务'),
       render: x => {
         const { namespace, service } = x?.routing_config?.rules?.[0]?.destinations?.[0] || {}
         return (
@@ -92,7 +92,7 @@ export default (
     },
     {
       key: 'ctimeMtime',
-      header: t('创建时间/修改时间'),
+      header: i18n.t('创建时间/修改时间'),
       render: x => (
         <>
           <Text>
@@ -105,7 +105,7 @@ export default (
     },
     {
       key: 'etime',
-      header: t('启用时间'),
+      header: i18n.t('启用时间'),
       render: x => (
         <>
           <Text>{x.etime || '-'}</Text>
@@ -114,7 +114,7 @@ export default (
     },
     {
       key: 'action',
-      header: t('操作'),
+      header: i18n.t('操作'),
       render: x => {
         const actions: {
           id: string
@@ -123,7 +123,7 @@ export default (
         }[] = [
           {
             id: 'switchStatus',
-            text: x.enable ? t('禁用') : t('启用'),
+            text: x.enable ? i18n.t('禁用') : i18n.t('启用'),
             fn: dispatch => {
               const swtichStatusAction = x.enable ? SwitchStatusAction.disable : SwitchStatusAction.start
               dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
@@ -131,14 +131,14 @@ export default (
           },
           {
             id: 'modify',
-            text: t('编辑'),
+            text: i18n.t('编辑'),
             fn: dispatch => {
               dispatch(creators.modify(x))
             },
           },
           {
             id: 'remove',
-            text: t('删除'),
+            text: i18n.t('删除'),
             fn: dispatch => {
               dispatch(creators.delete(x))
             },

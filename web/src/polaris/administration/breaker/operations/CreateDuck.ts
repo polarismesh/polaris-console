@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
 import Form from '@src/polaris/common/ducks/Form'
@@ -207,10 +208,10 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
 const validator = Form.combineValidators<CircuitBreakerRule>({
   name(v) {
     if (!v) {
-      return this.t('请填写路由规则名称')
+      return i18n.t('请填写路由规则名称')
     }
     if (!/^[a-zA-Z0-9-_]([a-zA-Z0-9-_]{1,64})?$/.test(v)) {
-      return this.t('名称只能含有数字，字母，下划线及中划线')
+      return i18n.t('名称只能含有数字，字母，下划线及中划线')
     }
   },
   ruleMatcher(v, values) {
@@ -218,31 +219,31 @@ const validator = Form.combineValidators<CircuitBreakerRule>({
       source: {
         namespace(v) {
           if (!v) {
-            return this.t('请选择命名空间')
+            return i18n.t('请选择命名空间')
           }
         },
         service(v) {
           if (!v) {
-            return this.t('请选择服务名')
+            return i18n.t('请选择服务名')
           }
         },
       },
       destination: {
         namespace(v) {
           if (!v) {
-            return this.t('请选择命名空间')
+            return i18n.t('请选择命名空间')
           }
         },
         service(v) {
           if (!v) {
-            return this.t('请选择服务名')
+            return i18n.t('请选择服务名')
           }
         },
         method: {
           value(v) {
             if (values?.level !== BreakLevelType.Method) return
             if (!v) {
-              return this.t('请输入接口名')
+              return i18n.t('请输入接口名')
             }
           },
         },
@@ -254,7 +255,7 @@ const validator = Form.combineValidators<CircuitBreakerRule>({
       condition: {
         value(v) {
           if (!v) {
-            return this.t('请输入条件')
+            return i18n.t('请输入条件')
           }
         },
       },
@@ -262,7 +263,7 @@ const validator = Form.combineValidators<CircuitBreakerRule>({
   ],
   level(v) {
     if (!v) {
-      return this.t('请选择熔断粒度')
+      return i18n.t('请选择熔断粒度')
     }
   },
   fallbackConfig(v, values) {
@@ -273,13 +274,13 @@ const validator = Form.combineValidators<CircuitBreakerRule>({
             key(v) {
               if (!values.fallbackConfig.enable) return
               if (!v) {
-                return this.t('请输入键')
+                return i18n.t('请输入键')
               }
             },
             value(v) {
               if (!values.fallbackConfig.enable) return
               if (!v) {
-                return this.t('请输入值')
+                return i18n.t('请输入值')
               }
             },
           },

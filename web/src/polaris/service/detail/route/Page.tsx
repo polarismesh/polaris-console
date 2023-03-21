@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React, { useRef } from 'react'
 import { DuckCmpProps } from 'saga-duck'

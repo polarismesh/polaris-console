@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import BasicLayout from '../common/components/BaseLayout'
 import React from 'react'
@@ -15,6 +14,7 @@ import { enableNearbyString } from './operation/CreateDuck'
 import { isReadOnly, showAllLabels } from './utils'
 import MetadataSelectPanel from '../common/components/MetadataSelectPanel'
 import { replaceTags } from '../configuration/utils'
+import i18n from '../common/util/i18n'
 
 insertCSS(
   'service',
@@ -31,48 +31,46 @@ insertCSS(
 export const DefaultServiceTagAttribute = {
   type: 'input',
   key: 'serviceName',
-  name: t('服务名'),
+  name: i18n.t('服务名'),
 }
 export const NamespaceTagKey = 'namespace'
 export const ServiceNameTagKey = 'serviceName'
 export const MetadataTagKey = 'serviceTag'
 
 function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
-  const { t } = useTranslation()
-
   const { duck, store } = props
   const { namespaceList, customFilters } = duck.selector(store)
   return [
     {
       type: 'single',
       key: NamespaceTagKey,
-      name: t('命名空间'),
+      name: i18n.t('命名空间'),
       values: namespaceList,
     },
     {
       type: 'input',
       key: ServiceNameTagKey,
-      name: t('服务名'),
+      name: i18n.t('服务名'),
     },
     {
       type: 'input',
       key: 'department',
-      name: t('部门'),
+      name: i18n.t('部门'),
     },
     {
       type: 'input',
       key: 'business',
-      name: t('业务'),
+      name: i18n.t('业务'),
     },
     {
       type: 'input',
       key: 'instanceIp',
-      name: t('实例IP'),
+      name: i18n.t('实例IP'),
     },
     {
       type: 'render',
       key: MetadataTagKey,
-      name: t('标签'),
+      name: i18n.t('标签'),
       render: ({ onSelect }) => {
         return (
           <MetadataSelectPanel

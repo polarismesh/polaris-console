@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 import { Values } from './operations/CreateDuck'
 
 export interface Lists {
@@ -14,11 +15,11 @@ export enum LimitType {
 export const LimitTypeOptions = [
   {
     value: LimitType.LOCAL,
-    text: t('单机限流'),
+    text: i18n.t('单机限流'),
   },
   {
     value: LimitType.GLOBAL,
-    text: t('分布式限流'),
+    text: i18n.t('分布式限流'),
   },
 ]
 
@@ -35,11 +36,11 @@ export enum LimitAction {
 export const LimitActionOptions = [
   {
     value: LimitAction.REJECT,
-    text: t('快速失败'),
+    text: i18n.t('快速失败'),
   },
   {
     value: LimitAction.UNIRATE,
-    text: t('匀速排队'),
+    text: i18n.t('匀速排队'),
   },
 ]
 
@@ -62,11 +63,11 @@ export enum SwitchStatusAction {
 export const StatusOptions = [
   {
     value: RuleStatus.enabled,
-    text: t('已启用'),
+    text: i18n.t('已启用'),
   },
   {
     value: RuleStatus.notEnabled,
-    text: t('未启用'),
+    text: i18n.t('未启用'),
   },
 ]
 
@@ -81,23 +82,23 @@ export enum LimitMethodType {
 export const LimitMethodTypeOptions = [
   {
     value: LimitMethodType.EXACT,
-    text: t('全匹配'),
+    text: i18n.t('全匹配'),
   },
   {
     value: LimitMethodType.REGEX,
-    text: t('正则表达式'),
+    text: i18n.t('正则表达式'),
   },
   {
     value: LimitMethodType.NOT_EQUALS,
-    text: t('不等于'),
+    text: i18n.t('不等于'),
   },
   {
     value: LimitMethodType.IN,
-    text: t('包含'),
+    text: i18n.t('包含'),
   },
   {
     value: LimitMethodType.NOT_IN,
-    text: t('不包含'),
+    text: i18n.t('不包含'),
   },
 ]
 
@@ -118,27 +119,27 @@ export enum LimitArgumentsType {
 export const LimitArgumentsTypeOptions = [
   {
     value: LimitArgumentsType.CUSTOM,
-    text: t('自定义'),
+    text: i18n.t('自定义'),
   },
   {
     value: LimitArgumentsType.HEADER,
-    text: t('请求头(HEADER)'),
+    text: i18n.t('请求头(HEADER)'),
   },
   {
     value: LimitArgumentsType.QUERY,
-    text: t('请求参数(QUERY)'),
+    text: i18n.t('请求参数(QUERY)'),
   },
   {
     value: LimitArgumentsType.METHOD,
-    text: t('方法(METHOD)'),
+    text: i18n.t('方法(METHOD)'),
   },
   {
     value: LimitArgumentsType.CALLER_SERVICE,
-    text: t('主调服务'),
+    text: i18n.t('主调服务'),
   },
   {
     value: LimitArgumentsType.CALLER_IP,
-    text: t('主调IP'),
+    text: i18n.t('主调IP'),
   },
 ]
 
@@ -155,11 +156,11 @@ export enum LimitFailover {
 export const LimitFailoverOptions = [
   {
     value: LimitFailover.FAILOVER_LOCAL,
-    text: t('退化至单机限流'),
+    text: i18n.t('退化至单机限流'),
   },
   {
     value: LimitFailover.FAILOVER_PASS,
-    text: t('直接通过'),
+    text: i18n.t('直接通过'),
   },
 ]
 
@@ -178,15 +179,15 @@ export enum LimitAmountsValidationUnit {
 export const LimitAmountsValidationUnitOptions = [
   {
     value: LimitAmountsValidationUnit.s,
-    text: t('秒'),
+    text: i18n.t('秒'),
   },
   {
     value: LimitAmountsValidationUnit.m,
-    text: t('分钟'),
+    text: i18n.t('分钟'),
   },
   {
     value: LimitAmountsValidationUnit.h,
-    text: t('小时'),
+    text: i18n.t('小时'),
   },
 ]
 

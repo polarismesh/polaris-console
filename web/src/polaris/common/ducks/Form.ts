@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 /**
  * 基于redux saga-duck的通用表单实现
  *
@@ -394,7 +395,7 @@ export default class Form extends Base {
           // louis版的嵌套，返回validators
           if (resultValues.length && resultValues.every(r => typeof r === 'function')) {
             // eslint-disable-next-line @tencent/tea-i18n/no-bare-zh-in-js
-            warnOnce(t("[deprecated] 建议使用对象递归，而不在返回值内递归", {}))
+            warnOnce(i18n.t("[deprecated] 建议使用对象递归，而不在返回值内递归"))
             results[field] = this.combineValidators(res)(value, meta)
           } else {
             results[field] = res

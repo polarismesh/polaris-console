@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
@@ -27,6 +26,7 @@ import { HEALTH_STATUS, HEALTH_STATUS_MAP, ISOLATE_STATUS_MAP, ISOLATE_STATUS, H
 import { isReadOnly, showAllLabels } from '../../utils'
 import MetadataSelectPanel from '@src/polaris/common/components/MetadataSelectPanel'
 import { replaceTags } from '@src/polaris/configuration/utils'
+import i18n from '@src/polaris/common/util/i18n'
 
 insertCSS(
   'service-detail-instance',
@@ -59,10 +59,10 @@ insertCSS(
 
 export const HealthStatusOptions = [
   {
-    text: t('全部'),
+    text: i18n.t('全部'),
     value: '__all__',
     key: '__all__',
-    name: t('全部'),
+    name: i18n.t('全部'),
   },
   {
     text: HEALTH_STATUS_MAP[HEALTH_STATUS.HEALTH].text,
@@ -80,9 +80,9 @@ export const HealthStatusOptions = [
 
 export const IsolateStatusOptions = [
   {
-    text: t('全部'),
+    text: i18n.t('全部'),
     value: '__all__',
-    name: t('全部'),
+    name: i18n.t('全部'),
     key: '__all__',
   },
   {
@@ -107,7 +107,7 @@ export const IsolateTagKey = 'isolate'
 export const DefaultHostTagAttribute = {
   type: 'input',
   key: HostTagKey,
-  name: t('实例IP'),
+  name: i18n.t('实例IP'),
 }
 function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
   const { t } = useTranslation()

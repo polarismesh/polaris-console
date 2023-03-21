@@ -1,15 +1,15 @@
-import { t } from 'i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import ServiceDetailDuck from './PageDuck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { Tab, TabPanel, Tabs } from 'tea-component'
 import File from './file/Page'
+import i18n from '@src/polaris/common/util/i18n'
 export enum TAB {
   File = 'file',
 }
 export const TAB_LABLES = {
-  [TAB.File]: t('配置文件'),
+  [TAB.File]: i18n.t('配置文件'),
 }
 const tabs: Array<Tab> = [TAB.File].map(id => ({
   id,

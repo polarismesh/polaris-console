@@ -13,7 +13,7 @@ import LoginPage from '@src/polaris/auth/login/Page'
 import LoginPageDuck from '@src/polaris/auth/login/PageDuck'
 import { connectWithDuck } from './polaris/common/helpers'
 
-import { initI18n } from '../locales/i18n'
+import { initI18n } from './polaris/common/util/i18n'
 
 initI18n()
 

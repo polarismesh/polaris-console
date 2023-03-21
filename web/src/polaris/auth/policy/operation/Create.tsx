@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import * as React from 'react'
 import { purify, DuckCmpProps } from 'saga-duck'
 import {
@@ -28,10 +27,11 @@ import { Namespace, Service } from '@src/polaris/service/types'
 import router from '@src/polaris/common/util/router'
 import { ConfigFileGroup } from '@src/polaris/configuration/fileGroup/types'
 import { useTranslation } from 'react-i18next'
+import i18n from '@src/polaris/common/util/i18n'
 const steps = [
-  { id: '1', label: t('选择用户') },
-  { id: '2', label: t('授权') },
-  { id: '3', label: t('预览') },
+  { id: '1', label: i18n.t('选择用户') },
+  { id: '2', label: i18n.t('授权') },
+  { id: '3', label: i18n.t('预览') },
 ]
 
 export default purify(function(props: DuckCmpProps<Duck>) {

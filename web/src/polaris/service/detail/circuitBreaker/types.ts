@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 //主被调规则的目的地和源类型相反
 export interface InboundItem {
   destinations: Destination[]
@@ -105,7 +106,7 @@ export enum PolicyName {
 }
 export const PolicyMap = {
   [PolicyName.ErrorRate]: {
-    text: t('错误率'),
+    text: i18n.t('错误率'),
     unit: '%',
   },
   // [PolicyName.SlowRate]: {
@@ -113,8 +114,8 @@ export const PolicyMap = {
   //   unit: "%"
   // },
   [PolicyName.ConsecutiveError]: {
-    text: t('连续错误率'),
-    unit: t('个'),
+    text: i18n.t('连续错误率'),
+    unit: i18n.t('个'),
   },
 }
 export const PolicyNameOptions = [
@@ -129,10 +130,10 @@ export const PolicyNameOptions = [
 ]
 export const BREAK_RESOURCE_TYPE_MAP = {
   [BREAK_RESOURCE_TYPE.INSTANCE]: {
-    text: t('实例'),
+    text: i18n.t('实例'),
   },
   [BREAK_RESOURCE_TYPE.SUBSET]: {
-    text: t('实例分组'),
+    text: i18n.t('实例分组'),
   },
 }
 export const BreakResourceOptions = [
@@ -147,10 +148,10 @@ export const BreakResourceOptions = [
 ]
 export const MATCH_TYPE_MAP = {
   [MATCH_TYPE.EXACT]: {
-    text: t('精确'),
+    text: i18n.t('精确'),
   },
   [MATCH_TYPE.REGEX]: {
-    text: t('正则'),
+    text: i18n.t('正则'),
   },
 }
 
@@ -166,10 +167,10 @@ export enum RuleType {
 
 export const RULE_TYPE_STATUS_MAP = {
   [RuleType.Inbound]: {
-    text: t('被调规则'),
+    text: i18n.t('被调规则'),
   },
   [RuleType.Outbound]: {
-    text: t('主调规则'),
+    text: i18n.t('主调规则'),
   },
 }
 
@@ -201,13 +202,13 @@ export enum OutlierDetectWhen {
 }
 export const OUTLIER_DETECT_MAP = {
   [OutlierDetectWhen.NEVER]: {
-    text: t('关闭'),
+    text: i18n.t('关闭'),
   },
   [OutlierDetectWhen.ON_RECOVER]: {
-    text: t('仅用于恢复'),
+    text: i18n.t('仅用于恢复'),
   },
   [OutlierDetectWhen.ALWAYS]: {
-    text: t('用于熔断和恢复'),
+    text: i18n.t('用于熔断和恢复'),
   },
 }
 

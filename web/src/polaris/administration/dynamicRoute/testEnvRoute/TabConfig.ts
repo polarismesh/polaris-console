@@ -1,4 +1,5 @@
-import { t } from 'i18next'
+import i18n from '@src/polaris/common/util/i18n'
+
 enum TabId {
   client = 'client',
   dynamic = 'dynamic',
@@ -21,15 +22,15 @@ interface TabConfigInfo {
 }
 
 export const tabs = [
-  { id: TabId.client, label: t('客户端染色') },
-  { id: TabId.dynamic, label: t('网关动态染色') },
-  { id: TabId.static, label: t('网关静态染色') },
+  { id: TabId.client, label: i18n.t('客户端染色') },
+  { id: TabId.dynamic, label: i18n.t('网关动态染色') },
+  { id: TabId.static, label: i18n.t('网关静态染色') },
 ]
 
 export const tabConfigs: TabConfigInfo = {
   [TabId.client]: {
     imagePath: 'static/img/testEnvRoute-client.png',
-    alt: t('客户端染色流程指引'),
+    alt: i18n.t('客户端染色流程指引'),
     imageLinks: [
       {
         style: { top: '18.9%', left: '29.8%' },
@@ -45,7 +46,7 @@ export const tabConfigs: TabConfigInfo = {
   },
   [TabId.dynamic]: {
     imagePath: 'static/img/testEnvRoute-dynamic.png',
-    alt: t('网关动态染色流程指引'),
+    alt: i18n.t('网关动态染色流程指引'),
     imageLinks: [
       {
         style: { top: '18.9%', left: '29.8%' },
@@ -66,7 +67,7 @@ export const tabConfigs: TabConfigInfo = {
   },
   [TabId.static]: {
     imagePath: 'static/img/testEnvRoute-static.png',
-    alt: t('网关静态染色流程指引'),
+    alt: i18n.t('网关静态染色流程指引'),
     imageLinks: [
       {
         style: { top: '18.9%', left: '29.8%' },

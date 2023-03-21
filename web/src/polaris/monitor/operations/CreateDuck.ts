@@ -3,7 +3,7 @@ import Form from '@src/polaris/common/ducks/Form'
 import { put, select, call } from 'redux-saga/effects'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { MetricQuerySet, MonitorFilter } from '../PageDuck'
-import { LabelKeyOptions, MetricNameOptions } from '../types'
+import { MetricNameOptions } from '../types'
 import { TimePickerTab } from './Create'
 import { delay } from 'redux-saga'
 

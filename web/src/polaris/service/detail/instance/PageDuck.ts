@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '@src/polaris/common/ducks/GridPage'
 import { Instance, BATCH_EDIT_TYPE } from './types'
@@ -272,8 +273,8 @@ export default class ServicePageDuck extends GridPageDuck {
     yield takeLatest(types.REMOVE, function*(action) {
       const ids = action.payload
       const confirm = yield Modal.confirm({
-        message: this.t('确认删除实例', {}),
-        description: this.t('删除后，无法恢复'),
+        message: i18n.t('确认删除实例'),
+        description: i18n.t('删除后，无法恢复'),
       })
       if (confirm) {
         const res = yield deleteInstances(ids.map(id => ({ id })))
