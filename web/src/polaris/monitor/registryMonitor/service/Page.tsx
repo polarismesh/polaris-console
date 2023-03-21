@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import { Checkbox, Col, Form, FormItem, Row, SelectMultiple, Text } from 'tea-component'
@@ -10,6 +11,8 @@ interface Props extends DuckCmpProps<BaseInfoDuck> {
   filterSlot: React.ReactNode
 }
 export default function Service(props: Props) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch, filterSlot } = props
   const { selector, creators, selectors } = duck
   const {
@@ -41,7 +44,7 @@ export default function Service(props: Props) {
       <section style={{ borderBottom: '1px solid #d0d5dd', padding: '40px 0px', marginBottom: '20px' }}>
         <Form layout={'inline'} style={{ width: '100%', display: 'inline-block' }}>
           <FormItem
-            label={'服务'}
+            label={t('服务')}
             suffix={
               data?.serviceList.length && (
                 <>
@@ -52,7 +55,7 @@ export default function Service(props: Props) {
                       setSelectAllService(v)
                     }}
                   >
-                    汇总
+                    <Trans>汇总</Trans>
                   </Checkbox>
                 </>
               )
@@ -69,15 +72,17 @@ export default function Service(props: Props) {
                   setSelectAllConfigGroup(false)
                 }}
                 size={'m'}
-                placeholder={'全部汇总服务'}
+                placeholder={t('全部汇总服务')}
                 className={'black-placeholder-text'}
               ></SelectMultiple>
             ) : (
-              <Text reset>无可选服务</Text>
+              <Text reset>
+                <Trans>无可选服务</Trans>
+              </Text>
             )}
           </FormItem>
           <FormItem
-            label={'配置分组'}
+            label={t('配置分组')}
             suffix={
               data?.configGroupList.length && (
                 <>
@@ -88,7 +93,7 @@ export default function Service(props: Props) {
                       setSelectAllConfigGroup(v)
                     }}
                   >
-                    汇总
+                    <Trans>汇总</Trans>
                   </Checkbox>
                 </>
               )
@@ -98,7 +103,7 @@ export default function Service(props: Props) {
               <SelectMultiple
                 searchable
                 appearance='button'
-                options={[{ text: '全部配置分组汇总', value: SelectAllString }, ...(data?.configGroupList || [])]}
+                options={[{ text: t('全部配置分组汇总'), value: SelectAllString }, ...(data?.configGroupList || [])]}
                 value={selectedConfigGroup}
                 onChange={v => {
                   dispatch(creators.selectConfigGroup(v))
@@ -108,20 +113,22 @@ export default function Service(props: Props) {
                 className={'black-placeholder-text'}
               ></SelectMultiple>
             ) : (
-              <Text reset>无配置分组</Text>
+              <Text reset>
+                <Trans>无配置分组</Trans>
+              </Text>
             )}
           </FormItem>
         </Form>
       </section>
       {(selectAllService || selectAllConfigGroup) && (
-        <SimpleCollapse id={'all'} activeIds={activeIds} title={'汇总'} onChange={onChangeFunction}>
+        <SimpleCollapse id={'all'} activeIds={activeIds} title={t('汇总')} onChange={onChangeFunction}>
           <Row>
             <Col span={12}>
               <MetricCard
                 {...basicQueryParam}
                 query={getQueryMap[MetricName.Service]({ namespace })}
                 cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '服务数' }}
+                cardBodyProps={{ title: t('服务数') }}
               ></MetricCard>
             </Col>
             <Col span={12}>
@@ -129,7 +136,7 @@ export default function Service(props: Props) {
                 {...basicQueryParam}
                 query={getQueryMap[MetricName.Instance]({ namespace })}
                 cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '实例数' }}
+                cardBodyProps={{ title: t('实例数') }}
               ></MetricCard>
             </Col>
             <Col span={12}>
@@ -137,7 +144,7 @@ export default function Service(props: Props) {
                 {...basicQueryParam}
                 query={getQueryMap[MetricName.ConfigGroup]({ namespace })}
                 cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '配置分组数' }}
+                cardBodyProps={{ title: t('配置分组数') }}
               ></MetricCard>
             </Col>
             <Col span={12}>
@@ -145,7 +152,7 @@ export default function Service(props: Props) {
                 {...basicQueryParam}
                 query={getQueryMap[MetricName.ConfigFile]({ namespace })}
                 cardProps={{ bordered: true }}
-                cardBodyProps={{ title: '配置数' }}
+                cardBodyProps={{ title: t('配置数') }}
               ></MetricCard>
             </Col>
           </Row>
@@ -162,13 +169,18 @@ export default function Service(props: Props) {
                 id={service}
                 activeIds={activeIds}
                 onChange={onChangeFunction}
-                title={<Text>服务{curService?.name}</Text>}
+                title={
+                  <Text>
+                    <Trans>服务</Trans>
+                    {curService?.name}
+                  </Text>
+                }
               >
                 <MetricCard
                   {...basicQueryParam}
                   query={getQueryMap[MetricName.Instance]({ namespace, service })}
                   cardProps={{ bordered: true }}
-                  cardBodyProps={{ title: '实例数' }}
+                  cardBodyProps={{ title: t('实例数') }}
                 ></MetricCard>
               </SimpleCollapse>
             )
@@ -185,13 +197,18 @@ export default function Service(props: Props) {
                 id={configGroup}
                 activeIds={activeIds}
                 onChange={onChangeFunction}
-                title={<Text>配置分组{curConfigGroup?.name}</Text>}
+                title={
+                  <Text>
+                    <Trans>配置分组</Trans>
+                    {curConfigGroup?.name}
+                  </Text>
+                }
               >
                 <MetricCard
                   {...basicQueryParam}
                   query={getQueryMap[MetricName.ConfigFile]({ namespace, configGroup })}
                   cardProps={{ bordered: true }}
-                  cardBodyProps={{ title: '配置文件数' }}
+                  cardBodyProps={{ title: t('配置文件数') }}
                 ></MetricCard>
               </SimpleCollapse>
             )

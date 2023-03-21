@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import router from '@src/polaris/common/util/router'
 import { takeLatest } from 'redux-saga-catch'
@@ -180,8 +181,8 @@ export default class CustomRouteDuck extends GridPageDuck {
         watch: types.DELETE,
         fn: function*(item) {
           const confirm = yield Modal.confirm({
-            message: `确认删除路由规则 ${item.name} 吗？`,
-            description: '删除后，无法恢复',
+            message: i18n.t('确认删除路由规则 {{attr0}} 吗？'),
+            description: i18n.t('删除后，无法恢复'),
           })
           if (confirm) {
             yield deleteCustomRoute([{ id: item.id }])
@@ -194,10 +195,10 @@ export default class CustomRouteDuck extends GridPageDuck {
         type: OperationType.SINGLE,
         watch: types.SWITCH_STATUS,
         fn: function*(item: any) {
-          const ops = item.swtichStatusAction === SwitchStatusAction.disable ? '禁用' : '启用'
+          const ops = item.swtichStatusAction === SwitchStatusAction.disable ? i18n.t('禁用') : i18n.t('启用')
           const disable = item.swtichStatusAction === SwitchStatusAction.disable ? true : false
           const confirm = yield Modal.confirm({
-            message: `确认${ops}路由规则 ${item.name} 吗？`,
+            message: i18n.t('确认{{attr0}}路由规则 {{attr1}} 吗？'),
           })
           if (confirm) {
             if (disable) {
@@ -233,7 +234,7 @@ export default class CustomRouteDuck extends GridPageDuck {
             attr: {
               type: 'input',
               key: TagSearchType.RuleName,
-              name: '规则名',
+              name: i18n.t('规则名'),
             },
           }
       })

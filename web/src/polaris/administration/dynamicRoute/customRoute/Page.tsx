@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import CustomRouteDuck from './PageDuck'
@@ -18,36 +19,40 @@ export enum TagSearchType {
 }
 
 function getTagAttributes() {
+  const { t } = useTranslation()
+
   return [
     {
       type: 'input',
       key: TagSearchType.RuleName,
-      name: '规则名',
+      name: t('规则名'),
     },
     {
       type: 'input',
       key: TagSearchType.SourceNamespace,
-      name: '主调命名空间',
+      name: t('主调命名空间'),
     },
     {
       type: 'input',
       key: TagSearchType.SourceService,
-      name: '主调服务',
+      name: t('主调服务'),
     },
     {
       type: 'input',
       key: TagSearchType.DestNamespace,
-      name: '被调命名空间',
+      name: t('被调命名空间'),
     },
     {
       type: 'input',
       key: TagSearchType.DestService,
-      name: '被调服务',
+      name: t('被调服务'),
     },
   ]
 }
 
 export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { selector, creators } = duck
   const { loadData, status, sort } = selector(store)
@@ -67,7 +72,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
 
   return (
     <BasicLayout
-      title={'自定义路由'}
+      title={t('自定义路由')}
       store={store}
       selectors={duck.selectors}
       header={<></>}
@@ -77,7 +82,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
         <Justify
           left={
             <Button type='primary' onClick={handlers.jumpToCreateRulePage}>
-              新建路由规则
+              <Trans>新建路由规则</Trans>
             </Button>
           }
           right={
@@ -90,7 +95,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
                   width: '400px',
                 }}
                 onChange={value => handlers.changeTags(value)}
-                tips={'请选择条件进行过滤'}
+                tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
             </>
@@ -111,7 +116,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
               onChange: value => handlers.changeStatus(value),
               all: {
                 value: '',
-                text: '全部',
+                text: t('全部'),
               },
               options: StatusOptions,
             }),

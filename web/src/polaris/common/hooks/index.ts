@@ -2,11 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 
 export function takeLastAsyncEffectGen() {
   let lastPromise = null
-  return function(
-    callback,
-    effectFun: () => Promise<any>,
-    effectDependents?: any[]
-  ) {
+  return function(callback, effectFun: () => Promise<any>, effectDependents?: any[]) {
     useEffect(() => {
       const currentPromise = effectFun()
       lastPromise = currentPromise
@@ -27,7 +23,7 @@ export function takeLastAsyncEffectGen() {
  */
 export function useStateWithAsyncDependents<T>(
   fetchState: () => Promise<T>,
-  dependents?: any[]
+  dependents?: any[],
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [x, setX] = useState<T>(null)
   const asyncEffect = useMemo(takeLastAsyncEffectGen, [])
@@ -36,7 +32,7 @@ export function useStateWithAsyncDependents<T>(
       setX(newState)
     },
     fetchState,
-    dependents
+    dependents,
   )
   return [x, setX]
 }

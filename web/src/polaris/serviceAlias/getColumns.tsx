@@ -4,24 +4,25 @@ import ServiceAliasPageDuck, { GovernanceAliasItem } from './PageDuck'
 import { Column } from '../common/ducks/GridPage'
 import { Tag, Text } from 'tea-component'
 import Action from '../common/duckComponents/grid/Action'
+import i18n from '../common/util/i18n'
 
 export default ({ duck: { creators } }: DuckCmpProps<ServiceAliasPageDuck>): Column<GovernanceAliasItem>[] => {
   return [
     {
       key: 'alias',
-      header: '服务别名',
+      header: i18n.t('服务别名'),
       render: x => <Text>{x.alias}</Text>,
       required: true,
     },
     {
       key: 'alias_namespace',
-      header: '命名空间',
+      header: i18n.t('命名空间'),
       render: x => <Text>{x.alias_namespace}</Text>,
       required: true,
     },
     {
       key: 'toService',
-      header: '指向服务',
+      header: i18n.t('指向服务'),
       render: x => (
         <>
           <a href={`/#/service-detail?name=${x.service}&namespace=${x.namespace}`} target={'_blank'} rel='noreferrer'>
@@ -33,38 +34,38 @@ export default ({ duck: { creators } }: DuckCmpProps<ServiceAliasPageDuck>): Col
     },
     {
       key: 'comment',
-      header: '描述',
+      header: i18n.t('描述'),
       render: x => <Text>{x.comment || '-'}</Text>,
     },
     {
       key: 'createTime',
-      header: '创建时间',
+      header: i18n.t('创建时间'),
       render: x => <Text tooltip={x.ctime}>{x.ctime || '-'}</Text>,
     },
     {
       key: 'modifyTime',
-      header: '修改时间',
+      header: i18n.t('修改时间'),
       render: x => <Text tooltip={x.mtime}>{x.mtime || '-'}</Text>,
     },
     {
       key: 'action',
-      header: '操作',
+      header: i18n.t('操作'),
       render: x => {
         return (
           <React.Fragment>
             <Action
               disabled={!x.editable}
-              tip={!x.editable ? '无写权限' : '编辑'}
+              tip={!x.editable ? i18n.t('无写权限') : i18n.t('编辑')}
               fn={dispatch => dispatch(creators.edit(x))}
             >
-              {'编辑'}
+              {i18n.t('编辑')}
             </Action>
             <Action
               disabled={!x.editable}
-              tip={!x.editable ? '无写权限' : '删除'}
+              tip={!x.editable ? i18n.t('无写权限') : i18n.t('删除')}
               fn={dispatch => dispatch(creators.remove([x.id]))}
             >
-              {'删除'}
+              {i18n.t('删除')}
             </Action>
           </React.Fragment>
         )

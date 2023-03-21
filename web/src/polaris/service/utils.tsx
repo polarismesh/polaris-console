@@ -4,6 +4,7 @@ import React from 'react'
 import { scrollable } from 'tea-component/lib/table/addons'
 import LabelTable from '../common/components/LabelTable'
 import { ConfigFileGroup } from '../configuration/fileGroup/types'
+import i18n from '../common/util/i18n'
 
 export const isReadOnly = (namespace: string) => {
   return READ_ONLY_NAMESPACE.indexOf(namespace) !== -1
@@ -17,9 +18,9 @@ export const isReadOnlyConfigGroup = (group: ConfigFileGroup) => {
   return !group.editable
 }
 
-export const showAllLabels = (labels) => {
+export const showAllLabels = labels => {
   Modal.confirm({
-    message: `标签展示`,
+    message: i18n.t('标签展示', {}),
     description: (
       <>
         <LabelTable labels={labels}></LabelTable>

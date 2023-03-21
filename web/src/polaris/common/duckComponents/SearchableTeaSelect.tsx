@@ -1,59 +1,41 @@
-import * as React from "react";
-import * as classnames from "classnames";
-import {
-  Select,
-  SimulateSelectProps,
-  SelectOptionWithGroup,
-  StatusTip,
-} from "tea-component";
-import { DuckCmpProps } from "saga-duck";
-import Duck from "../ducks/SearchableSelect";
-import { handleStatus } from "./SearchableSelect";
+import * as React from 'react'
+import * as classnames from 'classnames'
+import { Select, SimulateSelectProps, SelectOptionWithGroup, StatusTip } from 'tea-component'
+import { DuckCmpProps } from 'saga-duck'
+import Duck from '../ducks/SearchableSelect'
+import { handleStatus } from './SearchableSelect'
 
 interface MyDuck<TItem> extends Duck {
-  ID: string;
-  Item: TItem;
+  ID: string
+  Item: TItem
 }
 export interface SearchableTeaSelectProps<TItem>
   extends DuckCmpProps<MyDuck<TItem>>,
     Omit<
       SimulateSelectProps,
-      | "options"
-      | "type"
-      | "value"
-      | "onChange"
-      | "searchValue"
-      | "onSearchValueChange"
-      | "onSearch"
-      | "onScrollBottom"
-      | "tips"
-      | "bottomTips"
+      | 'options'
+      | 'type'
+      | 'value'
+      | 'onChange'
+      | 'searchValue'
+      | 'onSearchValueChange'
+      | 'onSearch'
+      | 'onScrollBottom'
+      | 'tips'
+      | 'bottomTips'
     > {
-  toOption: (item: TItem) => SelectOptionWithGroup;
+  toOption: (item: TItem) => SelectOptionWithGroup
 }
-export default function SearchableTeaSelect<TItem>(
-  props: SearchableTeaSelectProps<TItem>
-) {
-  const { duck, store, dispatch, toOption, searchable = true, ...rest } = props;
-  const searchableProps = useSearchableTeaSelect(props);
-  return (
-    <Select
-      size="m"
-      appearance="button"
-      type="simulate"
-      searchable={searchable}
-      {...searchableProps}
-      {...rest}
-    />
-  );
+export default function SearchableTeaSelect<TItem>(props: SearchableTeaSelectProps<TItem>) {
+  const { duck, store, dispatch, toOption, searchable = true, ...rest } = props
+  const searchableProps = useSearchableTeaSelect(props)
+  return <Select size='m' appearance='button' type='simulate' searchable={searchable} {...searchableProps} {...rest} />
 }
 
 /** 为了配合Table Filterable使用，将props逻辑抽离出来 */
-export function useSearchableTeaSelect<TItem>(
-  props: SearchableTeaSelectProps<TItem>
-) {
-  const { duck, store, dispatch, toOption, ...rest } = props;
-  const { selector, creators } = duck;
+export function useSearchableTeaSelect<TItem>(props: SearchableTeaSelectProps<TItem>) {
+  const { duck, store, dispatch, toOption, ...rest } = props
+  const { selector, creators } = duck
   const {
     id,
     pendingKeyword,
@@ -63,22 +45,21 @@ export function useSearchableTeaSelect<TItem>(
     keyword,
     totalCount,
     fetcher: { loading, error },
-  } = selector(store);
+  } = selector(store)
   const handlers = React.useMemo(() => {
     return {
       select: (id: string) => dispatch(creators.select(id)),
-      inputKeyword: (keyword: string) =>
-        dispatch(creators.inputKeyword(keyword)),
-      clearKeyword: () => dispatch(creators.search("")),
-      search: (keyword) => dispatch(creators.search(keyword)),
+      inputKeyword: (keyword: string) => dispatch(creators.inputKeyword(keyword)),
+      clearKeyword: () => dispatch(creators.search('')),
+      search: keyword => dispatch(creators.search(keyword)),
       more: () => dispatch(creators.more()),
       reload: () => dispatch(creators.reload()),
-    };
-  }, [duck, dispatch]);
+    }
+  }, [duck, dispatch])
 
   // 如果是加载更多的模式，loading应该展示在列表下方
-  const isLoadMoreMode = loadingMore;
-  const { tipProps: statusTipProps } = handleStatus(props);
+  const isLoadMoreMode = loadingMore
+  const { tipProps: statusTipProps } = handleStatus(props)
 
   return {
     value: id,
@@ -90,15 +71,9 @@ export function useSearchableTeaSelect<TItem>(
     onScrollBottom: nomore ? null : handlers.more,
     filter: () => true,
     autoClearSearchValue: false,
-    tips:
-      !isLoadMoreMode && statusTipProps ? (
-        <StatusTip {...statusTipProps}></StatusTip>
-      ) : null,
-    bottomTips:
-      isLoadMoreMode && statusTipProps ? (
-        <StatusTip {...statusTipProps}></StatusTip>
-      ) : null,
-  };
+    tips: !isLoadMoreMode && statusTipProps ? <StatusTip {...statusTipProps}></StatusTip> : null,
+    bottomTips: isLoadMoreMode && statusTipProps ? <StatusTip {...statusTipProps}></StatusTip> : null,
+  }
 }
 
-SearchableTeaSelect["defaultLabelAlign"] = "middle";
+SearchableTeaSelect['defaultLabelAlign'] = 'middle'

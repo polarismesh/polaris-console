@@ -12,8 +12,11 @@ import {
   MetricNameOptions,
   MonitorTypeOption,
 } from '../types'
+import { useTranslation } from 'react-i18next'
 
 export default function Create(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { selectors } = duck
   const visible = selectors.visible(store)
@@ -22,13 +25,21 @@ export default function Create(props: DuckCmpProps<Duck>) {
   }
   const data = selectors.data(store)
   return (
-    <Dialog duck={duck} store={store} dispatch={dispatch} size={'xl'} title={data.id ? '编辑告警策略' : '新建告警策略'}>
+    <Dialog
+      duck={duck}
+      store={store}
+      dispatch={dispatch}
+      size={'xl'}
+      title={data.id ? t('编辑告警策略') : t('新建告警策略')}
+    >
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
   )
 }
 
 const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -59,10 +70,10 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   return (
     <>
       <Form>
-        <FormField field={name} label={'名字'} required>
+        <FormField field={name} label={t('名字')} required>
           <Input field={name} maxLength={128} size={'l'} disabled={options?.isModify} />
         </FormField>
-        <FormField field={monitor_type} label={'监控类型'}>
+        <FormField field={monitor_type} label={t('监控类型')}>
           <Select
             value={monitor_type.getValue()}
             options={MonitorTypeOption}
@@ -70,11 +81,11 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             appearance={'button'}
           ></Select>
         </FormField>
-        <FormItem label={'触发条件'}>
+        <FormItem label={t('触发条件')}>
           <Form>
             <Form layout={'inline'} key='111'>
               <FormItem>
-                <FormText>{'当'}</FormText>
+                <FormText>{t('当')}</FormText>
               </FormItem>
               <FormField field={metrics_name}>
                 <Select
@@ -102,12 +113,12 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                 />
               </FormField>
               <FormItem>
-                <FormText>{'个'}</FormText>
+                <FormText>{t('个')}</FormText>
               </FormItem>
             </Form>
           </Form>
         </FormItem>
-        <FormField field={expr_interval} label={'持续时间'}>
+        <FormField field={expr_interval} label={t('持续时间')}>
           <InputAdornment
             after={
               <Select
@@ -128,7 +139,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             />
           </InputAdornment>
         </FormField>
-        <FormItem label={'告警周期'}>
+        <FormItem label={t('告警周期')}>
           <Select
             value={`${interval.getValue()}${interval_unit.getValue()}`}
             options={IntervalOptions}
@@ -140,13 +151,13 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             appearance={'button'}
           ></Select>
         </FormItem>
-        <FormField field={url} label={'通知回调地址'} required>
+        <FormField field={url} label={t('通知回调地址')} required>
           <Input field={url} size={'l'} />
         </FormField>
-        <FormField field={topic} label={'告警主题'} required>
+        <FormField field={topic} label={t('告警主题')} required>
           <Input field={topic} size={'l'} />
         </FormField>
-        <FormField field={message} label={'告警消息'} required>
+        <FormField field={message} label={t('告警消息')} required>
           <TeaInput.TextArea
             value={message.getValue()}
             onChange={v => {

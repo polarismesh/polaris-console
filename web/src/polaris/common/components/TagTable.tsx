@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
 import React from 'react'
 import { Button, Table, FormControl } from 'tea-component'
@@ -9,6 +10,8 @@ export interface ITagTableProps {
 }
 
 export function TagTable(props: ITagTableProps) {
+  const { t } = useTranslation()
+
   return (
     <Table
       verticalTop
@@ -16,7 +19,7 @@ export function TagTable(props: ITagTableProps) {
       columns={[
         {
           key: 'tagName',
-          header: '标签名',
+          header: t('标签名'),
           width: '150px',
           render: item => {
             const { key } = item.getFields(['key'])
@@ -29,7 +32,7 @@ export function TagTable(props: ITagTableProps) {
                   showStatusIcon={false}
                   style={{ padding: 0, display: 'block' }}
                 >
-                  <Input size='m' field={key} placeholder='key 最长不超过128个字符' />
+                  <Input size='m' field={key} placeholder={t('key 最长不超过128个字符')} />
                 </FormControl>
               </>
             )
@@ -37,7 +40,7 @@ export function TagTable(props: ITagTableProps) {
         },
         {
           key: 'tagValue',
-          header: '标签值',
+          header: t('标签值'),
           render: item => {
             const { value } = item.getFields(['value'])
             const validate = value.getTouched() && value.getError()
@@ -49,7 +52,7 @@ export function TagTable(props: ITagTableProps) {
                   showStatusIcon={false}
                   style={{ padding: 0, display: 'block' }}
                 >
-                  <Input size='m' field={value} placeholder='value 最长不超过4096个字符' />
+                  <Input size='m' field={value} placeholder={t('value 最长不超过4096个字符')} />
                 </FormControl>
               </>
             )
@@ -57,18 +60,14 @@ export function TagTable(props: ITagTableProps) {
         },
         {
           key: 'close',
-          header: '删除',
+          header: t('删除'),
           width: '80px',
           render: (item, rowKey, recordIndex) => {
             const index = Number(recordIndex)
             // const length = [...props.tags.asArray()].length
             return (
               <>
-                <Button
-                  title={'删除'}
-                  icon={'close'}
-                  onClick={() => props.tags.asArray().remove(index)}
-                />
+                <Button title={t('删除')} icon={'close'} onClick={() => props.tags.asArray().remove(index)} />
               </>
             )
           },
@@ -85,7 +84,7 @@ export function TagTable(props: ITagTableProps) {
             })
           }}
         >
-          新增
+          <Trans>新增</Trans>
         </Button>
       }
     />

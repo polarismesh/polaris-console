@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload } from 'saga-duck'
 import { takeLatest } from 'redux-saga-catch'
 import { put, select, take } from 'redux-saga/effects'
@@ -189,7 +190,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
 
       const modal = Modal.show({
         size: 'xl',
-        caption: '内容对比',
+        caption: i18n.t('内容对比'),
         children: <FileDiff original={previousRelease?.[0]?.content || ''} now={content || ''} format={format} />,
         destroyOnClose: true,
         onClose: () => modal.destroy(),
@@ -209,7 +210,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
           attr: {
             type: 'single',
             key: GroupNameTagKey,
-            name: '分组',
+            name: i18n.t('分组'),
             values: configFileGroupList,
           },
           values: [option],
@@ -220,7 +221,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
           attr: {
             type: 'input',
             key: FileNameTagKey,
-            name: '配置文件名',
+            name: i18n.t('配置文件名'),
           },
           values: [{ name: routes.fileName }],
         })

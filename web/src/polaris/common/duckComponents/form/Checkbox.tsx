@@ -10,22 +10,14 @@ interface Props extends Omit<CheckboxProps, 'value' | 'onChange'> {
   onChange?: (value: string | boolean) => void
 }
 function Checkbox<T>(props: Props) {
-  const {
-    field,
-    onBlur,
-    trueValue = true,
-    falseValue = false,
-    disabled,
-    label,
-    ...rest
-  } = props
+  const { field, onBlur, trueValue = true, falseValue = false, disabled, label, ...rest } = props
 
   return (
     <TeaCheckbox
       disabled={disabled}
       value={field.getValue() === trueValue}
       onClick={() => {
-        let value = field.getValue() === trueValue ? falseValue : trueValue
+        const value = field.getValue() === trueValue ? falseValue : trueValue
         field.setValue(value)
         props.onChange && props.onChange(value)
       }}

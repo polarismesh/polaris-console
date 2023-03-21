@@ -1,3 +1,5 @@
+import i18n from '@src/polaris/common/util/i18n'
+
 export enum MetricName {
   UpstreamRqTotal = 'upstream_rq_total', //总请求数
   UpstreamRqSuccess = 'upstream_rq_success', //总成功数
@@ -18,52 +20,52 @@ export enum MetricName {
 
 export const MetricNameMap = {
   [MetricName.UpstreamRqTotal]: {
-    text: '总请求数',
-    unit: '个',
+    text: i18n.t('总请求数'),
+    unit: i18n.t('个'),
   },
   [MetricName.UpstreamRqSuccess]: {
-    text: '成功数',
-    unit: '个',
+    text: i18n.t('成功数'),
+    unit: i18n.t('个'),
   },
   [MetricName.UpstreamRqMaxTimeout]: {
-    text: '最大时延',
+    text: i18n.t('最大时延'),
     unit: 'ms',
   },
   [MetricName.UpstreamRqTimeout]: {
-    text: '平均时延',
+    text: i18n.t('平均时延'),
     unit: 'ms',
   },
   [MetricName.RatelimitRqTotal]: {
-    text: '总请求数',
-    unit: '个',
+    text: i18n.t('总请求数'),
+    unit: i18n.t('个'),
   },
   [MetricName.RatelimitRqPass]: {
-    text: '通过数',
-    unit: '个',
+    text: i18n.t('通过数'),
+    unit: i18n.t('个'),
   },
   [MetricName.RatelimitRqLimit]: {
-    text: '限流数',
-    unit: '个',
+    text: i18n.t('限流数'),
+    unit: i18n.t('个'),
   },
   [MetricName.CircuitbreakerOpen]: {
-    text: '熔断数',
-    unit: '个',
+    text: i18n.t('熔断数'),
+    unit: i18n.t('个'),
   },
   [MetricName.CircuitbreakerHalfopen]: {
-    text: '半开数',
-    unit: '个',
+    text: i18n.t('半开数'),
+    unit: i18n.t('个'),
   },
   [MetricName.DiscoveryConnTotal]: {
-    text: '服务发现连接数',
-    unit: '个',
+    text: i18n.t('服务发现连接数'),
+    unit: i18n.t('个'),
   },
   [MetricName.ConfigConnTotal]: {
-    text: '配置获取连接数',
-    unit: '个',
+    text: i18n.t('配置获取连接数'),
+    unit: i18n.t('个'),
   },
   [MetricName.SdkClientTotal]: {
-    text: '客户端数',
-    unit: '个',
+    text: i18n.t('客户端数'),
+    unit: i18n.t('个'),
   },
 }
 export enum MonitorLabelKey {
@@ -90,51 +92,56 @@ export enum MonitorLabelKey {
   CallerIp = 'caller_ip', //主调IP
 }
 
-export const MetricNameOptions = Object.keys(MetricNameMap).map((key) => ({
+export const MetricNameOptions = Object.keys(MetricNameMap).map(key => ({
   text: MetricNameMap[key].text,
   value: key,
 }))
 
-export const LabelKeyMap = {
-  [MonitorLabelKey.Namespace]: {
-    text: '被调命名空间',
-  },
-  [MonitorLabelKey.Service]: {
-    text: '被调服务名',
-  },
-  [MonitorLabelKey.Method]: {
-    text: '被调接口名',
-  },
-  [MonitorLabelKey.Subset]: {
-    text: '被调实例分组',
-  },
-  [MonitorLabelKey.Instance]: {
-    text: '被调实例',
-  },
-  [MonitorLabelKey.CalleeLabels]: {
-    text: '被调请求标签',
-  },
-  [MonitorLabelKey.RetCode]: {
-    text: '返回码',
-  },
-  [MonitorLabelKey.CallerNamespace]: {
-    text: '主调命名空间',
-  },
-  [MonitorLabelKey.CallerService]: {
-    text: '主调服务名',
-  },
-  [MonitorLabelKey.CallerIp]: {
-    text: '主调实例IP',
-  },
-  [MonitorLabelKey.CallerLabels]: {
-    text: '主调请求标签',
-  },
+export function getLabelKeyMap() {
+  return {
+    [MonitorLabelKey.Namespace]: {
+      text: i18n.t('被调命名空间'),
+    },
+    [MonitorLabelKey.Service]: {
+      text: i18n.t('被调服务名'),
+    },
+    [MonitorLabelKey.Method]: {
+      text: i18n.t('被调接口名'),
+    },
+    [MonitorLabelKey.Subset]: {
+      text: i18n.t('被调实例分组'),
+    },
+    [MonitorLabelKey.Instance]: {
+      text: i18n.t('被调实例'),
+    },
+    [MonitorLabelKey.CalleeLabels]: {
+      text: i18n.t('被调请求标签'),
+    },
+    [MonitorLabelKey.RetCode]: {
+      text: i18n.t('返回码'),
+    },
+    [MonitorLabelKey.CallerNamespace]: {
+      text: i18n.t('主调命名空间'),
+    },
+    [MonitorLabelKey.CallerService]: {
+      text: i18n.t('主调服务名'),
+    },
+    [MonitorLabelKey.CallerIp]: {
+      text: i18n.t('主调实例IP'),
+    },
+    [MonitorLabelKey.CallerLabels]: {
+      text: i18n.t('主调请求标签'),
+    },
+  }
 }
 
-export const LabelKeyOptions = Object.keys(LabelKeyMap).map((key) => ({
-  text: LabelKeyMap[key].text,
-  value: key,
-}))
+export function getLabelKeyOptions() {
+  const LabelKeyMap = getLabelKeyMap()
+  return Object.keys(LabelKeyMap).map(key => ({
+    text: LabelKeyMap[key].text,
+    value: key,
+  }))
+}
 
 export const OptionSumKey = '__SUM__'
 export const OptionAllKey = '__ALL__'

@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import {
@@ -22,11 +23,12 @@ import {
 } from 'tea-component'
 import MonitorDuck from './PageDuck'
 import { BasicLine } from 'tea-chart'
-import { MetricNameMap, LabelKeyMap, OptionAllKey } from './types'
+import { MetricNameMap, OptionAllKey, getLabelKeyMap } from './types'
 import moment from 'moment'
 import insertCSS from '../common/helpers/insertCSS'
 import TimeSelect from '../common/components/TimeSelect'
 import FlowMonitorDuck from './FlowMonitorDuck'
+import i18n from '../common/util/i18n'
 const { Body, Content } = Layout
 insertCSS(
   `monitor`,
@@ -44,20 +46,22 @@ insertCSS(
 )
 export const TimePickerTab = () => [
   {
-    text: '近1小时',
+    text: i18n.t('近1小时'),
     date: [moment().subtract(1, 'h'), moment()],
   },
   {
-    text: '近1天',
+    text: i18n.t('近1天'),
     date: [moment().subtract(1, 'd'), moment()],
   },
   {
-    text: '近1周',
+    text: i18n.t('近1周'),
     date: [moment().subtract(1, 'w'), moment()],
   },
 ]
 
 export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { selectors, creators, ducks, selector } = duck
   const { dynamicMonitorFetcher, dynamicLabelFetcher } = ducks
@@ -67,12 +71,12 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
   const handlers = React.useMemo(
     () => ({
       create: () => dispatch(creators.createGraph()),
-      modify: (payload) => dispatch(creators.modifyGraph(payload)),
-      remove: (payload) => dispatch(creators.removeGraph(payload)),
+      modify: payload => dispatch(creators.modifyGraph(payload)),
+      remove: payload => dispatch(creators.removeGraph(payload)),
       saveConfig: () => dispatch(creators.saveConfig()),
       search: () => dispatch(creators.search()),
-      changeFilterConfig: (payload) => dispatch(creators.changeFilterConfig(payload)),
-      fetchLabels: (payload) => dispatch(creators.fetchLabels(payload)),
+      changeFilterConfig: payload => dispatch(creators.changeFilterConfig(payload)),
+      fetchLabels: payload => dispatch(creators.fetchLabels(payload)),
       getFilterConfig: () => dispatch(creators.getFilterConfig()),
     }),
     [],
@@ -81,26 +85,27 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
   const flush = () => {
     timePicker?.current?.flush()
   }
+  const LabelKeyMap = getLabelKeyMap()
   return (
     <Content.Body className={'monitor-content'}>
       <Table.ActionPanel>
         <Justify
           left={
             <Form layout='inline'>
-              <FormItem label='指标名'>
+              <FormItem label={t('指标名')}>
                 <SelectMultiple
                   allOption={{
-                    text: '全部',
+                    text: t('全部'),
                     value: OptionAllKey,
                   }}
                   searchable
                   appearance={'button'}
-                  options={duck.metricNames.map((key) => ({
+                  options={duck.metricNames.map(key => ({
                     text: MetricNameMap[key].text,
                     value: key,
                   }))}
                   value={filterConfig.metricNames || []}
-                  onChange={(value) => {
+                  onChange={value => {
                     handlers.changeFilterConfig({
                       filterConfig: {
                         ...filterConfig,
@@ -112,7 +117,7 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                   size='m'
                 />
               </FormItem>
-              <FormItem label={'时间选择'} className={'modify-form-control'}>
+              <FormItem label={t('时间选择')} className={'modify-form-control'}>
                 <FormText>
                   <TimeSelect
                     tabs={TimePickerTab()}
@@ -147,36 +152,36 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                     ref={timePicker}
                   />
                   <Button type={'icon'} icon={'refresh'} onClick={flush}></Button>
-                  &nbsp; 步长 &nbsp;
+                  <Trans>步长</Trans>
                   <InputNumber
                     hideButton
                     value={step}
-                    onChange={(v) => {
+                    onChange={v => {
                       dispatch(creators.setStep(v))
                     }}
                   ></InputNumber>
-                  &nbsp;秒
+                  <Trans>秒</Trans>
                 </FormText>
               </FormItem>
             </Form>
           }
         />
-        {duck.monitorLabels.filter((labelKey) => labelKey.indexOf('caller') !== -1).length > 0 && (
+        {duck.monitorLabels.filter(labelKey => labelKey.indexOf('caller') !== -1).length > 0 && (
           <Text theme={'label'} parent={'div'} style={{ marginBottom: '10px' }}>
-            主调方
+            <Trans>主调方</Trans>
           </Text>
         )}
         <Justify
           left={
             <Form layout='inline'>
               {duck.monitorLabels
-                .filter((labelKey) => labelKey.indexOf('caller') !== -1)
-                .map((labelKey) => {
+                .filter(labelKey => labelKey.indexOf('caller') !== -1)
+                .map(labelKey => {
                   const fetcher = dynamicLabelFetcher.getDuck(labelKey)
                   if (!fetcher) return <noscript />
                   const { data: options, loading } = fetcher.selector(store)
                   return (
-                    <FormItem label={LabelKeyMap[labelKey].text.replace('主调', '')} key={labelKey}>
+                    <FormItem label={LabelKeyMap[labelKey].text.replace(t('主调'), '')} key={labelKey}>
                       {
                         <InputAdornment
                           after={
@@ -196,7 +201,7 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                                   })
                                 }}
                               >
-                                汇总
+                                <Trans>汇总</Trans>
                               </Button>
                             ) : (
                               <noscript />
@@ -204,17 +209,17 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                           }
                         >
                           <SelectMultiple
-                            placeholder={'汇总'}
+                            placeholder={t('汇总')}
                             searchable
                             allOption={{
-                              text: '全部',
+                              text: t('全部'),
                               value: OptionAllKey,
                             }}
                             className={'monitor-select-style'}
                             appearance={'button'}
                             options={options || []}
                             value={filterConfig.filterLabels?.[labelKey] || []}
-                            onChange={(value) => {
+                            onChange={value => {
                               handlers.changeFilterConfig({
                                 filterConfig: {
                                   ...filterConfig,
@@ -238,23 +243,23 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
             </Form>
           }
         />
-        {duck.monitorLabels.filter((labelKey) => labelKey.indexOf('callee') !== -1).length > 0 &&
+        {duck.monitorLabels.filter(labelKey => labelKey.indexOf('callee') !== -1).length > 0 &&
           duck.type !== 'ratelimit' && (
             <Text theme={'label'} parent={'div'} style={{ marginBottom: '10px' }}>
-              被调方
+              <Trans>被调方</Trans>
             </Text>
           )}
         <Justify
           left={
             <Form layout='inline'>
               {duck.monitorLabels
-                .filter((labelKey) => labelKey.indexOf('callee') !== -1)
-                .map((labelKey) => {
+                .filter(labelKey => labelKey.indexOf('callee') !== -1)
+                .map(labelKey => {
                   const fetcher = dynamicLabelFetcher.getDuck(labelKey)
                   if (!fetcher) return <noscript />
                   const { data: options, loading } = fetcher.selector(store)
                   return (
-                    <FormItem label={LabelKeyMap[labelKey].text.replace('被调', '')} key={labelKey}>
+                    <FormItem label={LabelKeyMap[labelKey].text.replace(t('被调'), '')} key={labelKey}>
                       {
                         <InputAdornment
                           after={
@@ -274,7 +279,7 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                                   })
                                 }}
                               >
-                                汇总
+                                <Trans>汇总</Trans>
                               </Button>
                             ) : (
                               <noscript />
@@ -283,17 +288,17 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                           appearance='pure'
                         >
                           <SelectMultiple
-                            placeholder={'汇总'}
+                            placeholder={t('汇总')}
                             searchable
                             allOption={{
-                              text: '全部',
+                              text: t('全部'),
                               value: OptionAllKey,
                             }}
                             className={'monitor-select-style'}
                             appearance={'button'}
                             options={options || []}
                             value={filterConfig.filterLabels?.[labelKey] || []}
-                            onChange={(value) => {
+                            onChange={value => {
                               handlers.changeFilterConfig({
                                 filterConfig: {
                                   ...filterConfig,
@@ -322,18 +327,18 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
             <Button
               type={'primary'}
               onClick={handlers.search}
-              onKeyPress={(event) => {
+              onKeyPress={event => {
                 console.log(event)
               }}
             >
-              查询
+              <Trans>查询</Trans>
             </Button>
           }
         />
       </Table.ActionPanel>
       <Card style={{ width: '100%' }}>
         <Card.Body
-          title={metricQuerySets.length === 0 ? '暂无图表数据' : '监控曲线'}
+          title={metricQuerySets.length === 0 ? t('暂无图表数据') : t('监控曲线')}
           operation={
             metricQuerySets.length === 0 ? (
               <noscript />
@@ -344,14 +349,16 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                     duck.baseUrl
                   }?filterConfig=${encodeURIComponent(JSON.stringify(filterConfig))}`}
                 >
-                  <Button type={'link'}>复制分享链接</Button>
+                  <Button type={'link'}>
+                    <Trans>复制分享链接</Trans>
+                  </Button>
                 </Copy>
                 <Button type={'link'} onClick={() => handlers.saveConfig()}>
-                  保存当前配置
+                  <Trans>保存当前配置</Trans>
                 </Button>
                 {window.localStorage.getItem(`${duck.type}MonitorConfigLocalStorageKey`) && (
                   <Button type={'link'} onClick={() => handlers.getFilterConfig()}>
-                    载入保存配置
+                    <Trans>载入保存配置</Trans>
                   </Button>
                 )}
               </>
@@ -370,7 +377,7 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                 const labelsTitle =
                   monitorFilters?.length > 0
                     ? monitorFilters
-                        .map((filter) => {
+                        .map(filter => {
                           return `${filter.labelValue}_`
                         })
                         .join('')
@@ -405,9 +412,9 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                       >
                         <>
                           <Text parent={'p'} theme={'weak'}>
-                            筛选条件：
+                            <Trans>筛选条件：</Trans>
                             {monitorFilters?.length > 0
-                              ? monitorFilters.map((filter) => {
+                              ? monitorFilters.map(filter => {
                                   return (
                                     <Text key={filter.labelKey}>
                                       {`${LabelKeyMap[filter.labelKey].text}
@@ -415,7 +422,7 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
                                     </Text>
                                   )
                                 })
-                              : '无'}
+                              : t('无')}
                           </Text>
                           <Text parent={'p'} theme={'weak'}>
                             {`${startString} - ${endString}`}
@@ -436,19 +443,21 @@ export function MonitorPanel(props: DuckCmpProps<MonitorDuck>) {
 }
 
 export default function Monitor(props: DuckCmpProps<FlowMonitorDuck>) {
+  const { t } = useTranslation()
+
   const { duck } = props
   return (
     <>
       <Layout>
         <Body>
           <Content>
-            <Content.Header title={'流量监控'}></Content.Header>
+            <Content.Header title={t('流量监控')}></Content.Header>
             <Content.Body className={'monitor-content'}>
               <Tabs
                 tabs={[
-                  { id: 'routes', label: '路由监控' },
-                  { id: 'circuit', label: '熔断监控' },
-                  { id: 'ratelimit', label: '限流监控' },
+                  { id: 'routes', label: t('路由监控') },
+                  { id: 'circuit', label: t('熔断监控') },
+                  { id: 'ratelimit', label: t('限流监控') },
                 ]}
                 ceiling
               >

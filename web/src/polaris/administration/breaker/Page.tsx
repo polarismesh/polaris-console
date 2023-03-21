@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import CircuitBreakerDuck from './PageDuck'
@@ -34,6 +35,7 @@ import {
 } from './types'
 import { LimitMethodTypeMap } from '../accessLimiting/types'
 import FaultDetectPage from './faultDetect/Page'
+import i18n from '@src/polaris/common/util/i18n'
 export enum TagSearchType {
   Name = 'name',
   Enable = 'enable',
@@ -46,22 +48,22 @@ export enum TagSearchType {
 }
 const EnableOptions = [
   {
-    text: '已启用',
+    text: i18n.t('已启用'),
     value: 'true',
-    name: '已启用',
+    name: i18n.t('已启用'),
     key: 'true',
   },
   {
-    text: '未启用',
+    text: i18n.t('未启用'),
     value: 'false',
-    name: '未启用',
+    name: i18n.t('未启用'),
     key: 'false',
   },
 ]
 export const DefaultBreakerTag = {
   type: 'input',
   key: TagSearchType.Name,
-  name: '规则名',
+  name: i18n.t('规则名'),
 }
 function getTagAttributes(props: DuckCmpProps<CircuitBreakerDuck>) {
   const { duck, store } = props
@@ -71,39 +73,40 @@ function getTagAttributes(props: DuckCmpProps<CircuitBreakerDuck>) {
     {
       type: 'single',
       key: TagSearchType.SourceNamespace,
-      name: '源命名空间',
+      name: i18n.t('源命名空间'),
       values: namespaceList,
     },
     {
       type: 'input',
       key: TagSearchType.SourceService,
-      name: '源服务',
+      name: i18n.t('源服务'),
     },
     {
       type: 'single',
       key: TagSearchType.DestNamespace,
-      name: '目标命名空间',
+      name: i18n.t('目标命名空间'),
       values: namespaceList,
     },
     {
       type: 'input',
       key: TagSearchType.DestService,
-      name: '目标服务',
+      name: i18n.t('目标服务'),
     },
     {
       type: 'input',
       key: TagSearchType.DestMethod,
-      name: '目标方法',
+      name: i18n.t('目标方法'),
     },
     {
       type: 'input',
       key: TagSearchType.Description,
-      name: '描述',
+      name: i18n.t('描述'),
     },
   ]
 }
 
 export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBreakerDuck>) {
+  const { t } = useTranslation()
   const { duck, store, dispatch } = props
   const { selector, creators, ducks } = duck
   const columns = getColumns(props)
@@ -133,7 +136,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                 router.navigate(`/circuitBreaker-create?type=${type}`)
               }}
             >
-              新建熔断规则
+              <Trans>新建熔断规则</Trans>
             </Button>
           }
           right={
@@ -146,7 +149,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                   width: '400px',
                 }}
                 onChange={value => handlers.changeTags(value)}
-                tips={'请选择条件进行过滤'}
+                tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
             </>
@@ -168,14 +171,14 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                 const replacedTags = replaceTags(TagSearchType.Enable, value, tags, EnableOptions, {
                   type: 'single',
                   key: TagSearchType.Enable,
-                  name: '状态',
+                  name: t('状态'),
                   values: EnableOptions,
                 })
                 handlers.changeTags(replacedTags)
               },
               all: {
                 value: '',
-                text: '全部',
+                text: t('全部'),
               },
               options: EnableOptions,
             }),
@@ -188,10 +191,10 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                 const ruleDetail = ruleInfoMap[record.id] as CircuitBreakerRule
                 return ruleDetail ? (
                   <Form>
-                    <FormItem label='描述'>
+                    <FormItem label={t('描述')}>
                       <FormText>{ruleDetail.description || '-'}</FormText>
                     </FormItem>
-                    <FormItem label='错误判断条件'>
+                    <FormItem label={t('错误判断条件')}>
                       <FormText>
                         {ruleDetail.errorConditions?.map(item => {
                           return (
@@ -199,7 +202,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                               <Text parent={'div'}>
                                 {ErrorConditionMap[item.inputType]}
                                 {item.inputType === ErrorConditionType.DELAY
-                                  ? '超过'
+                                  ? t('超过')
                                   : LimitMethodTypeMap[item.condition?.type]}
                                 {item.inputType === ErrorConditionType.DELAY
                                   ? `${item.condition?.value}ms`
@@ -210,7 +213,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                         })}
                       </FormText>
                     </FormItem>
-                    <FormItem label='描述'>
+                    <FormItem label={t('描述')}>
                       <FormText>
                         {ruleDetail.triggerCondition?.map(item => {
                           return (
@@ -220,14 +223,19 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                                   <>
                                     {TriggerTypeMap[item.triggerType].text}
                                     {'>='}
-                                    {item.errorPercent}% (统计周期：{item.interval}，最小请求数：{item.minimumRequest})
+                                    {item.errorPercent}
+                                    <Trans>% (统计周期：</Trans>
+                                    {item.interval}
+                                    <Trans>，最小请求数：</Trans>
+                                    {item.minimumRequest})
                                   </>
                                 )}
                                 {item.triggerType === TriggerType.CONSECUTIVE_ERROR && (
                                   <>
                                     {TriggerTypeMap[item.triggerType].text}
                                     {'>='}
-                                    {item.errorCount}个
+                                    {item.errorCount}
+                                    <Trans>个</Trans>
                                   </>
                                 )}
                               </Text>
@@ -236,19 +244,27 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                         })}
                       </FormText>
                     </FormItem>
-                    <FormItem label='熔断粒度'>
+                    <FormItem label={t('熔断粒度')}>
                       <FormText>{BreakLevelMap[ruleDetail.level]}</FormText>
                     </FormItem>
-                    <FormItem label='熔断时长'>
-                      <FormText>{`${ruleDetail.recoverCondition.sleepWindow}秒` || '-'}</FormText>
+                    <FormItem label={t('熔断时长')}>
+                      <FormText>
+                        {t('{{attr0}}秒', {
+                          attr0: ruleDetail.recoverCondition.sleepWindow,
+                        }) || '-'}
+                      </FormText>
                     </FormItem>
-                    <FormItem label='恢复策略'>
-                      <FormText>当满足{ruleDetail.recoverCondition.consecutiveSuccess}个连续成功请求后恢复</FormText>
+                    <FormItem label={t('恢复策略')}>
+                      <FormText>
+                        <Trans>当满足</Trans>
+                        {ruleDetail.recoverCondition.consecutiveSuccess}
+                        <Trans>个连续成功请求后恢复</Trans>
+                      </FormText>
                     </FormItem>
-                    <FormItem label='主动探测'>
-                      <FormText>{ruleDetail.faultDetectConfig.enable ? '开启' : '关闭' || '-'}</FormText>
+                    <FormItem label={t('主动探测')}>
+                      <FormText>{ruleDetail.faultDetectConfig.enable ? t('开启') : t('关闭') || '-'}</FormText>
                     </FormItem>
-                    <FormItem label='自定义响应'>
+                    <FormItem label={t('自定义响应')}>
                       <FormText>
                         {ruleDetail.fallbackConfig.enable ? (
                           <Table
@@ -256,12 +272,12 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                             columns={[
                               {
                                 key: 'code',
-                                header: '返回码',
+                                header: t('返回码'),
                                 width: 100,
                               },
                               {
                                 key: 'headers',
-                                header: '消息头',
+                                header: t('消息头'),
                                 render: x => {
                                   return (
                                     <>
@@ -278,12 +294,12 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                               },
                               {
                                 key: 'body',
-                                header: '消息体',
+                                header: t('消息体'),
                               },
                             ]}
                           ></Table>
                         ) : (
-                          '未开启'
+                          t('未开启')
                         )}
                       </FormText>
                     </FormItem>
@@ -301,7 +317,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
   )
   return (
     <BasicLayout
-      title={'熔断降级'}
+      title={t('熔断降级')}
       store={store}
       selectors={duck.selectors}
       header={<></>}

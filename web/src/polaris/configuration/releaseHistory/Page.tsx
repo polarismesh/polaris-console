@@ -9,6 +9,8 @@ import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import { replaceTags } from '../utils'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
+import { useTranslation } from 'react-i18next'
+import i18n from '@src/polaris/common/util/i18n'
 
 insertCSS(
   'service',
@@ -27,7 +29,7 @@ export const FileNameTagKey = 'fileName'
 export const DefaultGroupTagAttribute = {
   type: 'input',
   key: GroupNameTagKey,
-  name: '分组名',
+  name: i18n.t('分组名'),
 }
 function getTagAttributes(props: DuckCmpProps<ConfigFileGroupDuck>) {
   const { duck, store } = props
@@ -36,13 +38,13 @@ function getTagAttributes(props: DuckCmpProps<ConfigFileGroupDuck>) {
     {
       type: 'single',
       key: GroupNameTagKey,
-      name: '分组名',
+      name: i18n.t('分组名'),
       values: configFileGroupList,
     },
     {
       type: 'input',
       key: FileNameTagKey,
-      name: '配置文件名',
+      name: i18n.t('配置文件名'),
     },
   ]
 }
@@ -53,15 +55,17 @@ const getHandlers = memorize(({ creators }: ConfigFileGroupDuck, dispatch) => ({
   setNamespace: v => dispatch(creators.setNamespace(v)),
 }))
 export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { selector } = duck
   const columns = React.useMemo(() => getColumns(props), [])
   const handlers = getHandlers(props)
   const { tags, customFilters, namespaceList, configFileGroupList, namespace } = selector(store)
   const namespaceOptions = namespaceList.map(item => ({ text: item.name, value: item.name }))
-  namespaceOptions.unshift({ text: '全部命名空间', value: '' })
+  namespaceOptions.unshift({ text: t('全部命名空间'), value: '' })
   return (
-    <BasicLayout title={'发布历史'} store={store} selectors={duck.selectors} header={<></>}>
+    <BasicLayout title={t('发布历史')} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
         <Justify
           right={
@@ -86,7 +90,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                 }}
                 value={tags}
                 onChange={value => handlers.changeTags(value)}
-                tips={'请选择条件进行过滤'}
+                tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
               <Button type={'icon'} icon={'refresh'} onClick={handlers.reload}></Button>
@@ -109,13 +113,13 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                 const replacedTags = replaceTags(GroupNameTagKey, value, tags, configFileGroupList, {
                   type: 'single',
                   key: GroupNameTagKey,
-                  name: '分组',
+                  name: t('分组'),
                   values: configFileGroupList,
                 })
                 handlers.changeTags(replacedTags)
               },
               all: {
-                text: '全部',
+                text: t('全部'),
                 value: '',
               },
               // 选项列表

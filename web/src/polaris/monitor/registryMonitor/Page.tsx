@@ -9,15 +9,17 @@ import TimeSelect from '@src/polaris/common/components/TimeSelect'
 import Service from './service/Page'
 import Server from './server/Page'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
+import { useTranslation } from 'react-i18next'
+import i18n from '@src/polaris/common/util/i18n'
 export enum TAB {
   Overview = 'overview',
   Service = 'service',
   Server = 'server',
 }
 export const TAB_LABLES = {
-  [TAB.Overview]: '概览',
-  [TAB.Service]: '服务和配置统计',
-  [TAB.Server]: '北极星服务端请求统计',
+  [TAB.Overview]: i18n.t('概览'),
+  [TAB.Service]: i18n.t('服务和配置统计'),
+  [TAB.Server]: i18n.t('北极星服务端请求统计'),
 }
 insertCSS(
   `monitor`,
@@ -50,6 +52,7 @@ export const TimePickerTab = () => [
   },
 ]
 export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDuck>) {
+  const { t } = useTranslation()
   const { duck, store, dispatch } = props
   const { selector, creators, ducks } = duck
   const { tab, data, namespace, start, end, step } = selector(store)
@@ -74,22 +77,22 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
   const gap = end - start
   const StepOptions = [
     {
-      text: '1秒',
+      text: t('1秒'),
       value: '1',
       disabled: gap > 60 * 60,
     },
     {
-      text: '1分',
+      text: t('1分'),
       value: '60',
       disabled: gap > 60 * 60 * 24,
     },
     {
-      text: '5分',
+      text: t('5分'),
       value: '300',
       disabled: gap > 60 * 60 * 24 * 3,
     },
     {
-      text: '1小时',
+      text: t('1小时'),
       value: '3600',
       disabled: gap < 3600,
     },
@@ -97,16 +100,16 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
   const filterSlot = (
     <section style={{ borderBottom: '1px solid #d0d5dd', padding: '40px 0px', marginBottom: '20px' }}>
       <Form layout={'inline'} style={{ display: 'inline-block' }}>
-        <FormItem label={'命名空间'}>
+        <FormItem label={t('命名空间')}>
           <Select
             searchable
             appearance='button'
-            options={[{ text: '全部命名空间汇总', value: '' }, ...data]}
+            options={[{ text: t('全部命名空间汇总'), value: '' }, ...data]}
             value={namespace}
             onChange={v => dispatch(creators.setNamespace(v))}
           ></Select>
         </FormItem>
-        <FormItem label={'时间范围'} align={'middle'}>
+        <FormItem label={t('时间范围')} align={'middle'}>
           <TimeSelect
             tabs={TimePickerTab()}
             style={{ display: 'inline-block' }}
@@ -126,7 +129,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
           />
           <Button type={'icon'} icon={'refresh'} onClick={flush}></Button>
         </FormItem>
-        <FormItem label={'时间粒度'}>
+        <FormItem label={t('时间粒度')}>
           <Select
             appearance='button'
             options={StepOptions}
@@ -138,7 +141,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
     </section>
   )
   return (
-    <DetailPage store={store} duck={duck} dispatch={dispatch} title={'注册配置监控'}>
+    <DetailPage store={store} duck={duck} dispatch={dispatch} title={t('注册配置监控')}>
       <Card>
         <Card.Body>
           <Tabs tabs={tabs} activeId={tab} onActive={handlers.switch}>

@@ -8,14 +8,14 @@
  * 2. 不再有同步(syncList)的过程，Fetcher将作为一个工具使用
  */
 
-import Base from "./SearchableList";
-import { createToPayload, reduceFromPayload } from "saga-duck";
-import { put, select, take } from "redux-saga/effects";
-import { runAndWatchLatest } from "../helpers/saga";
+import Base from './SearchableList'
+import { createToPayload, reduceFromPayload } from 'saga-duck'
+import { put, select, take } from 'redux-saga/effects'
+import { runAndWatchLatest } from '../helpers/saga'
 
 export default abstract class SearchableSelect extends Base {
-  ID: string;
-  abstract getId(o: this["Item"]): this["ID"];
+  ID: string
+  abstract getId(o: this['Item']): this['ID']
   get quickTypes() {
     enum Types {
       SELECT,
@@ -24,81 +24,81 @@ export default abstract class SearchableSelect extends Base {
     return {
       ...super.quickTypes,
       ...Types,
-    };
+    }
   }
   /**
    * LocalStory 存储健
    * 如果 !lskey 为 true 就不存储
    */
   get lskey(): string {
-    return null;
+    return null
   }
   get reducers() {
-    const { types } = this;
+    const { types } = this
     return {
       ...super.reducers,
       id: reduceFromPayload(types.SELECT, this.defaultId),
-      selected: reduceFromPayload<this["Item"]>(types.SET_SELECTED, null),
-    };
+      selected: reduceFromPayload<this['Item']>(types.SET_SELECTED, null),
+    }
   }
   get rawSelectors() {
-    type State = this["State"];
+    type State = this['State']
     return {
       ...super.rawSelectors,
       selected: (state: State) => this.find(state.list, state.id),
-    };
+    }
   }
   get creators() {
-    const { types } = this;
-    type TID = this["ID"];
+    const { types } = this
+    type TID = this['ID']
     return {
       ...super.creators,
       select: createToPayload<TID>(types.SELECT),
-    };
+    }
   }
-  protected find(list: this["Item"][], id: this["ID"]): this["Item"] {
-    return (list || []).find((item) => this.getId(item) === id) || null;
+  protected find(list: this['Item'][], id: this['ID']): this['Item'] {
+    return (list || []).find(item => this.getId(item) === id) || null
   }
   *getSelectedItem(): any {
-    const { list, id } = this.selector(yield select());
-    return (list || []).find((item) => this.getId(item) === id) || null;
+    const { list, id } = this.selector(yield select())
+    return (list || []).find(item => this.getId(item) === id) || null
   }
   *initList() {
-    const { types } = this;
-    const { list } = this.selector(yield select());
-    if (list) return;
-    yield take(types.SET_LIST);
+    const { types } = this
+    const { list } = this.selector(yield select())
+    if (list) return
+    yield take(types.SET_LIST)
   }
   *saga() {
-    yield* super.saga();
-    const { types, selector, creators } = this;
-    const duck = this;
-    yield* this.initList();
+    yield* super.saga()
+    const { types, selector, creators } = this
+    const duck = this
+    yield* this.initList()
     yield runAndWatchLatest(
       types.SELECT,
-      (state) => {
-        return selector(state).id;
+      state => {
+        return selector(state).id
       },
-      function* () {
-        const { id, list } = selector(yield select());
+      function*() {
+        const { id, list } = selector(yield select())
         if (!id) {
-          yield put({ type: types.SET_SELECTED, payload: null });
-          return;
+          yield put({ type: types.SET_SELECTED, payload: null })
+          return
         }
-        localStorage.setItem(duck.lskey, id);
-        const selected = yield duck.getSelectedItem();
+        localStorage.setItem(duck.lskey, id)
+        const selected = yield duck.getSelectedItem()
         if (selected) {
-          yield put({ type: types.SET_SELECTED, payload: selected });
-          return;
+          yield put({ type: types.SET_SELECTED, payload: selected })
+          return
         }
         if (list?.length > 0) {
-          yield put(creators.select(duck.getId(list[0])));
+          yield put(creators.select(duck.getId(list[0])))
         }
-      }
-    );
+      },
+    )
   }
   /** 默认值 */
-  get defaultId(): this["ID"] {
-    return null;
+  get defaultId(): this['ID'] {
+    return null
   }
 }

@@ -1,43 +1,42 @@
-import * as React from "react";
-import * as classnames from "classnames";
-import { Modal, ModalProps, Icon, Button } from "tea-component";
-import { DuckCmpProps, memorize, purify } from "saga-duck";
-import Duck from "../ducks/DialogPure";
+import i18n from '@src/polaris/common/util/i18n'
+import * as React from 'react'
+import * as classnames from 'classnames'
+import { Modal, ModalProps, Icon, Button } from 'tea-component'
+import { DuckCmpProps, memorize, purify } from 'saga-duck'
+import Duck from '../ducks/DialogPure'
+
 export interface DialogProps {
-  size?: ModalProps["size"];
-  title?: string | JSX.Element;
-  className?: string;
-  children?: React.ReactChild | React.ReactChild[];
-  buttons?: JSX.Element | JSX.Element[] | string | ButtonsCreator;
-  disableEscape?: boolean;
-  disableCloseIcon?: boolean;
-  defaultSubmit?: boolean;
-  defaultSubmitText?: string;
-  onSubmit?: (e?) => void;
-  onClose?: (e?) => void;
-  defaultCancel?: boolean;
-  defaultCancelText?: string;
-  showFooter?: boolean;
-  submitTooltip?: string | React.ReactNode;
+  size?: ModalProps['size']
+  title?: string | JSX.Element
+  className?: string
+  children?: React.ReactChild | React.ReactChild[]
+  buttons?: JSX.Element | JSX.Element[] | string | ButtonsCreator
+  disableEscape?: boolean
+  disableCloseIcon?: boolean
+  defaultSubmit?: boolean
+  defaultSubmitText?: string
+  onSubmit?: (e?) => void
+  onClose?: (e?) => void
+  defaultCancel?: boolean
+  defaultCancelText?: string
+  showFooter?: boolean
+  submitTooltip?: string | React.ReactNode
 }
 interface ButtonProps {
-  className?: string;
-  text?: string;
-  tooltip?: string | React.ReactNode;
+  className?: string
+  text?: string
+  tooltip?: string | React.ReactNode
 }
-type ButtonCreator = (props?: ButtonProps) => JSX.Element;
-type ButtonsCreator = (
-  submitCreator?: ButtonCreator,
-  cancelCreator?: ButtonCreator
-) => JSX.Element[];
+type ButtonCreator = (props?: ButtonProps) => JSX.Element
+type ButtonsCreator = (submitCreator?: ButtonCreator, cancelCreator?: ButtonCreator) => JSX.Element[]
 const getOptions = memorize(({ creators }, dispatch) => ({
   onClose: () => {
-    dispatch(creators.hide());
+    dispatch(creators.hide())
   },
   onSubmit: () => {
-    dispatch(creators.submit());
+    dispatch(creators.submit())
   },
-}));
+}))
 
 function noop() {}
 
@@ -52,56 +51,47 @@ export default purify(function DuckDialog({
   disableEscape = true,
   disableCloseIcon = false,
   defaultSubmit = true,
-  defaultSubmitText = "提交",
+  defaultSubmitText = i18n.t('提交'),
   onSubmit,
   onClose,
   defaultCancel = true,
-  defaultCancelText = "关闭",
+  defaultCancelText = i18n.t('关闭'),
   showFooter = true,
   submitTooltip,
 }: DuckCmpProps<Duck> & DialogProps) {
-  const loading = selectors.loading(store);
-  const canSubmit = selectors.canSubmit(store);
-  const options = getOptions(arguments[0]);
-  const bodyStyle = showFooter ? {} : { margin: 0 };
+  const loading = selectors.loading(store)
+  const canSubmit = selectors.canSubmit(store)
+  const options = getOptions(arguments[0])
+  const bodyStyle = showFooter ? {} : { margin: 0 }
 
   if (!selectors.visible(store)) {
-    return <noscript />;
+    return <noscript />
   }
 
   const submitCreator: ButtonCreator = (props = {}) => {
-    const {
-      text = defaultSubmitText,
-      className = "",
-      tooltip = submitTooltip,
-    } = props;
+    const { text = defaultSubmitText, className = '', tooltip = submitTooltip } = props
     return (
       <Button
-        key="default-submit"
-        type="primary"
+        key='default-submit'
+        type='primary'
         className={className}
         disabled={!canSubmit}
         tooltip={!canSubmit && tooltip}
         onClick={canSubmit ? onSubmit || options.onSubmit : noop}
       >
-        {loading && <Icon type="loading" />}
+        {loading && <Icon type='loading' />}
         <span>{text}</span>
       </Button>
-    );
-  };
+    )
+  }
   const cancelCreator: ButtonCreator = (props = {}) => {
-    const { text = defaultCancelText, className } = props;
+    const { text = defaultCancelText, className } = props
     return (
-      <Button
-        key="default-cancel"
-        type="weak"
-        disabled={loading}
-        onClick={loading ? noop : onClose || options.onClose}
-      >
+      <Button key='default-cancel' type='weak' disabled={loading} onClick={loading ? noop : onClose || options.onClose}>
         <span>{text}</span>
       </Button>
-    );
-  };
+    )
+  }
 
   return (
     <Modal
@@ -116,13 +106,11 @@ export default purify(function DuckDialog({
       <Modal.Body style={bodyStyle}>{children}</Modal.Body>
       {showFooter && (
         <Modal.Footer>
-          {typeof buttons === "function"
-            ? buttons(submitCreator, cancelCreator)
-            : buttons}
+          {typeof buttons === 'function' ? buttons(submitCreator, cancelCreator) : buttons}
           {defaultSubmit && submitCreator()}
           {defaultCancel && cancelCreator()}
         </Modal.Footer>
       )}
     </Modal>
-  );
-});
+  )
+})

@@ -4,11 +4,13 @@ import { Table, Justify, Segment, SearchBox } from 'tea-component'
 import { Link } from 'react-router-dom'
 import { autotip } from 'tea-component/lib/table/addons'
 import { StrategyResourceEntry } from '../model'
+import { useTranslation } from 'react-i18next'
+import i18n from '@src/polaris/common/util/i18n'
 
 const ResourceOptions = [
-  { text: '命名空间', value: 'namespaces' },
-  { text: '服务', value: 'services' },
-  { text: '配置分组', value: 'config_groups' },
+  { text: i18n.t('命名空间'), value: 'namespaces' },
+  { text: i18n.t('服务'), value: 'services' },
+  { text: i18n.t('配置分组'), value: 'config_groups' },
 ]
 
 interface Props {
@@ -18,7 +20,9 @@ interface Props {
     configGroups: StrategyResourceEntry[]
   }
 }
-export default purify(function (props: Props) {
+export default purify(function(props: Props) {
+  const { t } = useTranslation()
+
   const { resources } = props
   const [filterResourceType, setFilterResourceType] = React.useState('namespaces')
   const [keyword, setKeyword] = React.useState('')
@@ -45,16 +49,16 @@ export default purify(function (props: Props) {
         columns={[
           {
             key: 'name',
-            header: '名称',
+            header: t('名称'),
             render: (x: any) => {
               if (x.name === '*') {
                 if (filterResourceType === 'namespaces') {
-                  return '所有命名空间'
+                  return t('所有命名空间')
                 }
                 if (filterResourceType === 'service') {
-                  return '所有服务'
+                  return t('所有服务')
                 }
-                return '所有配置分组'
+                return t('所有配置分组')
               }
               if (filterResourceType === 'namespaces') {
                 return x.name
@@ -67,9 +71,9 @@ export default purify(function (props: Props) {
           },
           {
             key: 'auth',
-            header: '权限',
+            header: t('权限'),
             render: () => {
-              return '读｜写'
+              return t('读｜写')
             },
           },
         ]}

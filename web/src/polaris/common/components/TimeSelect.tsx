@@ -3,6 +3,7 @@ import { Component } from 'react'
 import moment, { Moment } from 'moment'
 import { DatePicker, Segment } from 'tea-component'
 import insertCSS from '../helpers/insertCSS'
+import i18n from '../util/i18n'
 
 const { RangePicker } = DatePicker
 const curDate = new Date()
@@ -78,17 +79,17 @@ export default class TimeSelect extends Component<TimeSelectProps, any> {
     }
     tabs = [
       {
-        text: '近24小时',
+        text: i18n.t('近24小时'),
         date: [moment().subtract(1, 'd'), moment()],
         value: 0,
       },
       {
-        text: '近3天',
+        text: i18n.t('近3天'),
         date: [moment().subtract(3, 'd'), moment()],
         value: 1,
       },
       {
-        text: '近7天',
+        text: i18n.t('近7天'),
         date: [moment().subtract(7, 'd'), moment()],
         value: 2,
       },

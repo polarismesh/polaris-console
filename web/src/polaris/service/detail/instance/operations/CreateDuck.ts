@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import FormDialog from '@src/polaris/common/ducks/FormDialog'
 import Form from '@src/polaris/common/ducks/Form'
 import { put, select } from 'redux-saga/effects'
@@ -277,17 +278,17 @@ class CreateForm extends Form {
 const validator = CreateForm.combineValidators<Values, {}>({
   host(v) {
     if (!v) {
-      return '请填写IP'
+      return i18n.t('请填写IP')
     }
   },
   port(v) {
     if (!v) {
-      return '请填写端口'
+      return i18n.t('请填写端口')
     }
   },
   weight(v) {
     if (v === undefined) {
-      return '请填写权重'
+      return i18n.t('请填写权重')
     }
   },
   healthCheckMethod(v, meta) {
@@ -295,7 +296,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
       return
     }
     if (!v) {
-      return '请选择检查方式'
+      return i18n.t('请选择检查方式')
     }
   },
   ttl(v, meta) {
@@ -303,7 +304,7 @@ const validator = CreateForm.combineValidators<Values, {}>({
       return
     }
     if (!v) {
-      return '请填写TTL'
+      return i18n.t('请填写TTL')
     }
   },
 })

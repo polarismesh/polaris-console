@@ -30,11 +30,9 @@ interface DuckClass<TDuck> {
  * @param saga
  */
 export function showDialog<TDuck extends Dialog>(
-  Component:
-    | React.ComponentClass<DuckCmpProps<TDuck>>
-    | React.StatelessComponent<DuckCmpProps<TDuck>>,
+  Component: React.ComponentClass<DuckCmpProps<TDuck>> | React.StatelessComponent<DuckCmpProps<TDuck>>,
   Duck: DuckClass<TDuck>,
-  saga?: (duck: TDuck) => any
+  saga?: (duck: TDuck) => any,
 ) {
   // duck内进行dispose有可能导致递归，放在下次展示时清理
   // 因为DialogDuck本身会让对话框隐藏
@@ -42,16 +40,13 @@ export function showDialog<TDuck extends Dialog>(
     disposer()
     disposer = null
   }
-  const middlewares =
-    process.env.NODE_ENV === 'development'
-      ? [createLogger({ collapsed: true })]
-      : []
+  const middlewares = process.env.NODE_ENV === 'development' ? [createLogger({ collapsed: true })] : []
   const duck = new Duck({
     namespace: 'OrphanDialog',
     route: '',
     selector(a) {
       return a
-    }
+    },
   })
   const duckRuntime = new DuckRuntime(duck, ...middlewares)
   const ConnectedComponent = duckRuntime.connectRoot()(Component)
@@ -69,12 +64,12 @@ export function showDialog<TDuck extends Dialog>(
         // 标记窗口已关闭
         fireVisibleChange(false)
       }
-    }
+    },
   ])
   disposer = showReactDialog(
     <Provider store={duckRuntime.store}>
       <ConnectedComponent />
-    </Provider>
+    </Provider>,
   )
 }
 let disposer: () => void
@@ -118,7 +113,7 @@ type Watcher = (visible: boolean) => any
 const duckDialogVisibleWatchers = new Set<Watcher>()
 function fireVisibleChange(visible: boolean) {
   duckDialogVisible = visible
-  for (let watcher of duckDialogVisibleWatchers) {
+  for (const watcher of duckDialogVisibleWatchers) {
     watcher(visible)
   }
 }
@@ -135,11 +130,7 @@ function watchVisibleOnce(callback: () => any) {
  * 如果没有弹窗，以true立即完成
  * 否则，等待弹窗关闭后再以false完成
  */
-export const waitDialogHide = makeWaitFunction(
-  () => !duckDialogVisible,
-  watchVisibleOnce,
-  1000
-)
+export const waitDialogHide = makeWaitFunction(() => !duckDialogVisible, watchVisibleOnce, 1000)
 
 /**
  * 确认当前页面主体为可见状态

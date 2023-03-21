@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import { takeLatest } from 'redux-saga-catch'
 import { put, select } from 'redux-saga/effects'
@@ -12,6 +13,7 @@ import { getAllList } from '../common/util/apiRequest'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '../common/helpers/showDialog'
 import { describeComplicatedNamespaces } from '../namespace/model'
+
 const EmptyCustomFilter = {
   alias: '',
   service: '',
@@ -21,7 +23,7 @@ const AliasTagKey = 'alias'
 export const DefaultAliasTagAttribute = {
   type: 'input',
   key: 'alias',
-  name: '服务别名',
+  name: i18n.t('服务别名'),
 }
 interface Filter extends BaseFilter {
   alias: string
@@ -208,13 +210,13 @@ export default class ServiceAliasPageDuck extends GridPageDuck {
         return { alias_namespace, alias }
       })
       const confirm = yield Modal.confirm({
-        message: `确认删除服务别名`,
-        description: '删除后，无法恢复',
-        okText: '删除',
+        message: i18n.t('确认删除服务别名'),
+        description: i18n.t('删除后，无法恢复'),
+        okText: i18n.t('删除'),
       })
       if (confirm) {
         const res = yield deleteGovernanceAliases(aliases)
-        if (res) notification.success({ description: '删除成功' })
+        if (res) notification.success({ description: i18n.t('删除成功') })
         yield put(creators.reload())
       }
     })

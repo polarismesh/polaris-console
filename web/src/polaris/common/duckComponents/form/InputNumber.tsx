@@ -1,9 +1,6 @@
 import * as React from 'react'
 import { FieldAPI } from '../../ducks/Form'
-import {
-  InputNumber as TeaInputNumber,
-  InputNumberProps
-} from 'tea-component'
+import { InputNumber as TeaInputNumber, InputNumberProps } from 'tea-component'
 
 interface Props extends Omit<InputNumberProps, 'value' | 'onChange'> {
   field: FieldAPI<number>
@@ -14,7 +11,7 @@ function InputNumber<T>(props: Props) {
 
   return (
     <TeaInputNumber
-      value={value === null ? '' as any : value}
+      value={value === null ? ('' as any) : value}
       onChange={value => {
         field.setValue(+value || 0)
         field.setTouched()

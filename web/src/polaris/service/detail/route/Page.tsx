@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React, { useRef } from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import ServicePageDuck from './PageDuck'
@@ -39,6 +40,8 @@ insertCSS(
 )
 
 export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { creators, selector, ducks } = duck
   const handlers = React.useMemo(
@@ -79,12 +82,12 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
     <>
       <Table.ActionPanel>
         <Form layout='inline'>
-          <FormItem label={'编辑格式'}>
+          <FormItem label={t('编辑格式')}>
             <Segment options={EDIT_TYPE_OPTION} value={editType} onChange={handlers.setEditType}></Segment>
           </FormItem>
         </Form>
         <Form layout='inline'>
-          <FormItem label={'规则类型'}>
+          <FormItem label={t('规则类型')}>
             <Segment options={RULE_TYPE_OPTIONS} value={ruleType} onChange={handlers.setRuleType}></Segment>
           </FormItem>
         </Form>
@@ -95,10 +98,10 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 type={'primary'}
                 onClick={() => handlers.create()}
                 disabled={isReadOnly(namespace) || !editable || drawerStatus.visible}
-                tooltip={!editable ? '无写权限' : '新建一条规则'}
+                tooltip={!editable ? t('无写权限') : t('新建一条规则')}
                 style={{ marginTop: '20px' }}
               >
-                新建
+                <Trans>新建</Trans>
               </Button>
               <Button
                 type={'primary'}
@@ -106,20 +109,20 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 disabled={isReadOnly(namespace) || drawerStatus.visible || !edited || !editable}
                 tooltip={
                   isReadOnly(namespace)
-                    ? '该命名空间为只读的'
+                    ? t('该命名空间为只读的')
                     : !edited
-                    ? '未更改'
+                    ? t('未更改')
                     : !editable
-                    ? '无写权限'
-                    : '向服务器端提交变更'
+                    ? t('无写权限')
+                    : t('向服务器端提交变更')
                 }
                 style={{ marginTop: '20px' }}
               >
-                提交
+                <Trans>提交</Trans>
               </Button>
               {edited && (
                 <Button onClick={() => handlers.reset()} style={{ marginTop: '20px' }}>
-                  取消
+                  <Trans>取消</Trans>
                 </Button>
               )}
             </>
@@ -132,8 +135,8 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
           <Card.Header>
             <H3 style={{ padding: '10px', color: 'black' }}>
               {ruleType === RuleType.Inbound
-                ? '当以下服务调用本服务时，遵守下列路由规则'
-                : '当本服务调用以下服务时，遵守以下路由规则'}
+                ? t('当以下服务调用本服务时，遵守下列路由规则')
+                : t('当本服务调用以下服务时，遵守以下路由规则')}
             </H3>
           </Card.Header>
           <GridPageGrid
@@ -151,37 +154,41 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                   return (
                     <>
                       <Form style={{ marginBottom: '20px' }}>
-                        <FormItem label={'如果请求标签匹配，按权重和优先级路由到以下实例分组'}></FormItem>
+                        <FormItem label={t('如果请求标签匹配，按权重和优先级路由到以下实例分组')}></FormItem>
                       </Form>
                       {record.destinations.map((destination, index) => {
                         return (
                           <Row key={index}>
                             <Col span={2} style={{ paddingTop: '0' }}>
-                              <Text style={{ lineHeight: '30px' }} theme={'label'}>{`实例分组${index + 1}`}</Text>
+                              <Text style={{ lineHeight: '30px' }} theme={'label'}>
+                                {t('实例分组{{attr0}}', {
+                                  attr0: index + 1,
+                                })}
+                              </Text>
                             </Col>
                             <Col span={22} style={{ paddingTop: '0' }}>
                               <Form layout='inline'>
-                                <FormItem label='命名空间'>
+                                <FormItem label={t('命名空间')}>
                                   <FormText>{destination.namespace}</FormText>
                                 </FormItem>
-                                <FormItem label='服务'>
+                                <FormItem label={t('服务')}>
                                   <FormText>{destination.service}</FormText>
                                 </FormItem>
-                                <FormItem label='实例标签'>
+                                <FormItem label={t('实例标签')}>
                                   <FormText>
                                     {Object.keys(destination.metadata)
                                       .map(key => `${key}:${destination.metadata[key].value}`)
                                       .join(' ; ')}
                                   </FormText>
                                 </FormItem>
-                                <FormItem label='权重'>
+                                <FormItem label={t('权重')}>
                                   <FormText>{destination.weight}</FormText>
                                 </FormItem>
-                                <FormItem label='优先级'>
+                                <FormItem label={t('优先级')}>
                                   <FormText>{destination.priority}</FormText>
                                 </FormItem>
-                                <FormItem label='是否隔离'>
-                                  <FormText>{destination.isolate ? '隔离' : '不隔离'}</FormText>
+                                <FormItem label={t('是否隔离')}>
+                                  <FormText>{destination.isolate ? t('隔离') : t('不隔离')}</FormText>
                                 </FormItem>
                               </Form>
                             </Col>
@@ -228,13 +235,13 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               onClick={createDuck ? () => handlers.drawerSubmit() : undefined}
               style={{ margin: '0 10px' }}
             >
-              确定
+              <Trans>确定</Trans>
             </Button>
             <Button
               onClick={createDuck ? () => handlers.setDrawerStatus({ visible: false }) : undefined}
               style={{ margin: '0 10px' }}
             >
-              取消
+              <Trans>取消</Trans>
             </Button>
           </>
         }

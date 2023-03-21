@@ -15,15 +15,11 @@ export default abstract class SearchableSelect extends Base {
   get defaultLocalParam() {
     return ''
   }
-  getParam(
-    base: this['Param'],
-    local: this['LocalParam'],
-    paging: BaseSearchParam
-  ): this['Param'] & SearchParam {
+  getParam(base: this['Param'], local: this['LocalParam'], paging: BaseSearchParam): this['Param'] & SearchParam {
     return {
       ...base,
       ...paging,
-      keyword: local
+      keyword: local,
     }
   }
 }

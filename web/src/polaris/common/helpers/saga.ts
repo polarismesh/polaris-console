@@ -8,18 +8,14 @@ import * as deepEqual from 'fast-deep-equal'
 
 function named<T extends Function>(name: string, fn: T) {
   Object.defineProperty(fn, 'name', {
-    value: name
+    value: name,
   })
   return fn
 }
 
-function watch<T>(
-  types: Pattern,
-  selector: (globalState: any) => T,
-  ignoreOnce = false
-) {
+function watch<T>(types: Pattern, selector: (globalState: any) => T, ignoreOnce = false) {
   let lastData: T
-  return call(function* () {
+  return call(function*() {
     while (1) {
       // 可指定跳过首次
       if (ignoreOnce) {
@@ -42,33 +38,28 @@ export function watchLatest<T>(
   types: Pattern,
   selector: (globalState: any) => T,
   saga: (data: T) => IterableIterator<any>,
-  runFirst = false
+  runFirst = false,
 ) {
   saga = tryCatch(saga)
   const watcher = watch(types, selector, runFirst)
   return fork(
-    named(
-      runFirst
-        ? `runAndWatchLatest(${saga.name})`
-        : `watchLatest(${saga.name})`,
-      function* () {
-        let lastTask
-        while (true) {
-          const data: T = yield watcher
-          if (lastTask) {
-            yield cancel(lastTask) // cancel is no-op if the task has already terminated
-          }
-          lastTask = yield fork(saga, data)
+    named(runFirst ? `runAndWatchLatest(${saga.name})` : `watchLatest(${saga.name})`, function*() {
+      let lastTask
+      while (true) {
+        const data: T = yield watcher
+        if (lastTask) {
+          yield cancel(lastTask) // cancel is no-op if the task has already terminated
         }
+        lastTask = yield fork(saga, data)
       }
-    )
+    }),
   )
 }
 
 export function runAndWatchLatest<T>(
   types: Pattern,
   selector: (globalState: any) => T,
-  saga: (data: T) => IterableIterator<any>
+  saga: (data: T) => IterableIterator<any>,
 ) {
   return watchLatest(types, selector, saga, true)
 }
@@ -80,8 +71,6 @@ export function runAndWatchLatest<T>(
  * ```
  * @param promise
  */
-export function* resolvePromise<T>(
-  promise: Promise<T>
-): Generator<any, T, any> {
+export function* resolvePromise<T>(promise: Promise<T>): Generator<any, T, any> {
   return yield promise
 }

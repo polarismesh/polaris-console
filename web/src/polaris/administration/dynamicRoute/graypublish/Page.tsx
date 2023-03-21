@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { Layout, Card, Tabs, TabPanel, Text } from 'tea-component'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
@@ -42,7 +43,7 @@ function TabContentComp(props: RouteTabContentInfo) {
                 target='_blank'
                 rel='noreferrer'
               >
-                操作指引
+                <Trans>操作指引</Trans>
               </a>
             ))}
           </>
@@ -62,7 +63,7 @@ function TabContentComp(props: RouteTabContentInfo) {
                       target='_blank'
                       rel='noreferrer'
                     >
-                      操作指引
+                      <Trans>操作指引</Trans>
                     </a>
                   ))}
                 </TabPanel>
@@ -76,11 +77,13 @@ function TabContentComp(props: RouteTabContentInfo) {
 }
 
 export default function TestEnvRoutePage() {
+  const { t } = useTranslation()
+
   return (
     <Layout>
       <Body>
         <Content>
-          <Content.Header title='灰度发布' />
+          <Content.Header title={t('灰度发布')} />
           <Content.Body>
             <Tabs tabs={tabs} ceiling>
               {tabs.map(tab => {

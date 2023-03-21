@@ -7,8 +7,11 @@ import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import { ConfigFileTemplate } from '../../../model'
+import { useTranslation } from 'react-i18next'
 
 export default function GetFileTemplate(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { selectors } = duck
   const visible = selectors.visible(store)
@@ -16,13 +19,22 @@ export default function GetFileTemplate(props: DuckCmpProps<Duck>) {
     return <noscript />
   }
   return (
-    <Dialog duck={duck} store={store} dispatch={dispatch} size={'l'} title={'应用模板'} defaultSubmitText={'应用'}>
+    <Dialog
+      duck={duck}
+      store={store}
+      dispatch={dispatch}
+      size={'l'}
+      title={t('应用模板')}
+      defaultSubmitText={t('应用')}
+    >
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
   )
 }
 
 const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -38,10 +50,10 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
       <Form>
         <FormField
           field={currentTemplateId}
-          label={'模板'}
+          label={t('模板')}
           required
-          tips={'提供常用的配置文件模板，以方便进行快速配置'}
-          message={currentTemplate?.format !== options?.file?.format && '当前选择的模板与配置文件格式不符'}
+          tips={t('提供常用的配置文件模板，以方便进行快速配置')}
+          message={currentTemplate?.format !== options?.file?.format && t('当前选择的模板与配置文件格式不符')}
         >
           <Select
             searchable
@@ -55,13 +67,13 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             size='m'
           ></Select>
         </FormField>
-        <FormItem label={'模板格式'}>
+        <FormItem label={t('模板格式')}>
           <FormText>{currentTemplate?.format}</FormText>
         </FormItem>
-        <FormItem label={'模板描述'}>
+        <FormItem label={t('模板描述')}>
           <FormText>{currentTemplate?.comment}</FormText>
         </FormItem>
-        <FormItem label={'模板预览'}>
+        <FormItem label={t('模板预览')}>
           <section style={{ border: '1px solid #cfd5de', width: '100%' }}>
             <MonacoEditor
               language={currentTemplate?.format}

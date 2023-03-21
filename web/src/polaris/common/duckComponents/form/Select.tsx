@@ -2,6 +2,7 @@
 import * as React from 'react'
 import { FieldAPI } from '../../ducks/Form'
 import { Select as TeaSelect, SelectProps, SelectOptionWithGroup } from 'tea-component'
+import { useTranslation } from 'react-i18next'
 
 export type Item = SelectOptionWithGroup
 type Props = SelectProps & {
@@ -13,7 +14,9 @@ type Props = SelectProps & {
   onChange?: (value: string | number) => void
 }
 function Select(props: Props) {
-  const { field, list, type = 'native', placeholder = '请选择', beforeChange, ...rest } = props
+  const { t } = useTranslation()
+
+  const { field, list, type = 'native', placeholder = t('请选择'), beforeChange, ...rest } = props
 
   const isNumber = typeof field.getValue() === 'number'
 

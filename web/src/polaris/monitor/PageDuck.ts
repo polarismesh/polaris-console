@@ -1,7 +1,8 @@
+import i18n from '@src/polaris/common/util/i18n'
 import Page from '@src/polaris/common/ducks/Page'
 import { ComposedId } from '../service/detail/types'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
-import { MonitorLabelKey, MetricNameMap, LabelKeyMap, MetricName } from './types'
+import { MonitorLabelKey, MetricNameMap, MetricName, getLabelKeyMap } from './types'
 import { takeLatest, runAndTakeLatest } from 'redux-saga-catch'
 
 import CreateDuck from './operations/CreateDuck'
@@ -48,7 +49,7 @@ export default class MonitorDuck extends Page {
     return 'monitor'
   }
   get titleName() {
-    return '监控'
+    return i18n.t('监控')
   }
   get initialFetch() {
     return false
@@ -57,7 +58,7 @@ export default class MonitorDuck extends Page {
     return Object.keys(MetricNameMap)
   }
   get monitorLabels() {
-    return Object.keys(LabelKeyMap)
+    return Object.keys(getLabelKeyMap())
   }
   get params() {
     const { types } = this
@@ -106,7 +107,9 @@ export default class MonitorDuck extends Page {
       metricQuerySets: reduceFromPayload(types.SET_METRIC_QUERY_SETS, [] as MetricQuerySet[]),
       filterConfig: reduceFromPayload(types.SET_FILTER_CONFIG, {
         filterTime: {
-          start: moment().subtract(1, 'h').unix(),
+          start: moment()
+            .subtract(1, 'h')
+            .unix(),
           end: moment().unix(),
         },
         metricNames: metricNames,
@@ -174,19 +177,19 @@ export default class MonitorDuck extends Page {
     } = selector(yield select())
     const labelList =
       Object.keys(filterLabels)
-        .filter((labelKey) => filterLabels[labelKey].length !== 0)
-        .map((labelKey) => filterLabels[labelKey]) || []
+        .filter(labelKey => filterLabels[labelKey].length !== 0)
+        .map(labelKey => filterLabels[labelKey]) || []
     let queryNumber = metricNames.length
-    labelList.forEach((labels) => {
+    labelList.forEach(labels => {
       queryNumber *= labels.length
     })
     let confirmResult = false
     if (queryNumber >= 50) {
       yield Modal.confirm({
-        message: '本次筛选配置将会请求大量数据',
-        description: '请确认是否请求',
-        okText: '确认',
-        cancelText: '取消',
+        message: i18n.t('本次筛选配置将会请求大量数据'),
+        description: i18n.t('请确认是否请求'),
+        okText: i18n.t('确认'),
+        cancelText: i18n.t('取消'),
         onOk: () => {
           confirmResult = true
         },
@@ -210,21 +213,21 @@ export default class MonitorDuck extends Page {
       }
       return fetcher
     }
-    yield runAndTakeLatest(types.READY, function* () {
+    yield runAndTakeLatest(types.READY, function*() {
       yield* duck.loadAllLabelSelect()
       yield put(creators.search())
     })
-    yield takeLatest(types.SET_URL_FILTER_CONFIG, function* (action) {
+    yield takeLatest(types.SET_URL_FILTER_CONFIG, function*(action) {
       const configString = action.payload
       if (!configString) return
       const filterConfig = JSON.parse(decodeURIComponent(configString))
       yield put({ type: types.SET_FILTER_CONFIG, payload: filterConfig })
     })
-    yield takeLatest(types.ADD_GRAPH, function* () {
+    yield takeLatest(types.ADD_GRAPH, function*() {
       const metricQuerySets = selectors.metricQuerySets(yield select())
       const res = yield* resolvePromise(
-        new Promise((resolve) => {
-          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
+        new Promise(resolve => {
+          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
               resolve(yield* duck.execute({}, { isModify: false }))
             } catch (e) {
@@ -236,8 +239,8 @@ export default class MonitorDuck extends Page {
       if (!res) return
       const { step } = selector(yield select())
       const { monitorFilters, metricName, start, end } = res
-      const queryFilterString = monitorFilters.map((item) => `${item.labelKey}="${item.labelValue}"`).join(',')
-      const querySumString = monitorFilters.map((item) => `${item.labelKey}`).join(',')
+      const queryFilterString = monitorFilters.map(item => `${item.labelKey}="${item.labelValue}"`).join(',')
+      const querySumString = monitorFilters.map(item => `${item.labelKey}`).join(',')
       const query = `sum(${metricName}{${queryFilterString}}) by(${querySumString})`
       const fetcherId = Math.floor(Math.random() * 1000).toString()
       const fetcher = yield* getFetcher(`${encodeURIComponent(query)}-${fetcherId}`)
@@ -256,20 +259,20 @@ export default class MonitorDuck extends Page {
         payload: [...metricQuerySets],
       })
     })
-    yield takeLatest(types.FETCH_LABELS, function* (action) {
+    yield takeLatest(types.FETCH_LABELS, function*(action) {
       const labelKey = action.payload
       const fetcher = ducks.dynamicLabelFetcher.getDuck(labelKey)
       const {
         filterConfig: { filterTime, filterLabels, metricNames },
       } = selector(yield select())
       const labelConstraint = []
-      Object.keys(filterLabels).forEach((key) => {
+      Object.keys(filterLabels).forEach(key => {
         if (labelKey === key) return
         if (filterLabels[key]?.length > 0) {
           labelConstraint.push(`${key}=~"${filterLabels[key].join('|')}"`)
         }
       })
-      const match = metricNames.map((metricName) => `${metricName}{${labelConstraint.join(',')}}`)
+      const match = metricNames.map(metricName => `${metricName}{${labelConstraint.join(',')}}`)
       yield fetcher.fetch({
         start: filterTime.start,
         end: filterTime.end,
@@ -277,12 +280,12 @@ export default class MonitorDuck extends Page {
         match,
       })
     })
-    yield takeLatest(types.MODIFY_GRAPH, function* (action) {
+    yield takeLatest(types.MODIFY_GRAPH, function*(action) {
       const querySet = action.payload
       const metricQuerySets = selectors.metricQuerySets(yield select())
       const res = yield* resolvePromise(
-        new Promise((resolve) => {
-          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
+        new Promise(resolve => {
+          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
               resolve(
                 yield* duck.execute(
@@ -302,12 +305,12 @@ export default class MonitorDuck extends Page {
       if (!res) return
       const { step } = selector(yield select())
       const { monitorFilters, metricName, start, end } = res
-      const queryFilterString = monitorFilters.map((item) => `${item.labelKey}="${item.labelValue}"`).join(',')
-      const querySumString = monitorFilters.map((item) => `${item.labelKey}`).join(',')
+      const queryFilterString = monitorFilters.map(item => `${item.labelKey}="${item.labelValue}"`).join(',')
+      const querySumString = monitorFilters.map(item => `${item.labelKey}`).join(',')
       const query = `sum(${metricName}{${queryFilterString}}) by(${querySumString}`
       const fetcher = yield* getFetcher(`${encodeURIComponent(query)}-${querySet.fetcherId}`)
       yield fetcher.fetch({ query, start, end, step })
-      const prevQuerySetIndex = metricQuerySets.findIndex((item) => item.fetcherId === querySet.fetcherId)
+      const prevQuerySetIndex = metricQuerySets.findIndex(item => item.fetcherId === querySet.fetcherId)
       metricQuerySets.splice(prevQuerySetIndex, 1, {
         metricName,
         monitorFilters,
@@ -322,17 +325,17 @@ export default class MonitorDuck extends Page {
         payload: [...metricQuerySets],
       })
     })
-    yield takeLatest(types.REMOVE_GRAPH, function* (action) {
+    yield takeLatest(types.REMOVE_GRAPH, function*(action) {
       const removeIndex = action.payload
       const metricQuerySets = selectors.metricQuerySets(yield select())
       metricQuerySets.splice(removeIndex, 1)
       yield put(creators.setMetricQuerySets([...metricQuerySets]))
     })
-    yield takeLatest(types.CHANGE_FILTER_CONFIG, function* (action) {
+    yield takeLatest(types.CHANGE_FILTER_CONFIG, function*(action) {
       const { filterConfig } = action.payload
       yield put({ type: types.SET_FILTER_CONFIG, payload: filterConfig })
     })
-    yield takeLatest(types.SEARCH, function* () {
+    yield takeLatest(types.SEARCH, function*() {
       const {
         filterConfig: { filterLabels, filterTime, metricNames },
       } = selector(yield select())
@@ -342,13 +345,13 @@ export default class MonitorDuck extends Page {
       const continueSearch = yield duck.searchPreCheck()
       if (!continueSearch) return
       //求所有筛选条件以及指标的笛卡尔积
-      metricNames.forEach((metricName) => {
+      metricNames.forEach(metricName => {
         const labelList = Object.keys(filterLabels)
-        const filteredLabelList = labelList.filter((labelKey) => filterLabels[labelKey].length !== 0) || []
+        const filteredLabelList = labelList.filter(labelKey => filterLabels[labelKey].length !== 0) || []
 
         const monitorFilterList = combineVector(
-          filteredLabelList.map((labelKey) =>
-            filterLabels[labelKey].map((labelValue) => ({
+          filteredLabelList.map(labelKey =>
+            filterLabels[labelKey].map(labelValue => ({
               labelKey,
               labelValue,
             })),
@@ -371,9 +374,9 @@ export default class MonitorDuck extends Page {
         if (monitorFilterList.length === 0) {
           metricQuerySets.push(querySet)
         } else {
-          monitorFilterList.forEach((monitorFilters) => {
-            const queryFilterString = monitorFilters.map((item) => `${item.labelKey}="${item.labelValue}"`).join(',')
-            const querySumString = monitorFilters.map((item) => `${item.labelKey}`).join(',')
+          monitorFilterList.forEach(monitorFilters => {
+            const queryFilterString = monitorFilters.map(item => `${item.labelKey}="${item.labelValue}"`).join(',')
+            const querySumString = monitorFilters.map(item => `${item.labelKey}`).join(',')
             let query = `sum(${metricName}{${queryFilterString}}) by(${querySumString})`
             //平均时延
             if (metricName === MetricName.UpstreamRqTimeout) {
@@ -395,16 +398,16 @@ export default class MonitorDuck extends Page {
       }
       yield put(creators.setMetricQuerySets(metricQuerySets))
     })
-    yield takeLatest(types.SAVE_CONFIG, function* () {
+    yield takeLatest(types.SAVE_CONFIG, function*() {
       const filterConfig = selectors.filterConfig(yield select())
       window.localStorage.setItem(`${duck.type}MonitorConfigLocalStorageKey`, JSON.stringify(filterConfig))
-      notification.success({ description: '已保存' })
+      notification.success({ description: i18n.t('已保存') })
       yield put({
         type: types.SET_FILTER_CONFIG,
         payload: filterConfig,
       })
     })
-    yield takeLatest(types.GET_MONITOR_CONFIG, function* () {
+    yield takeLatest(types.GET_MONITOR_CONFIG, function*() {
       const savedConfigString = window.localStorage.getItem(`${duck.type}MonitorConfigLocalStorageKey`)
       yield put({
         type: types.SET_FILTER_CONFIG,
@@ -422,7 +425,7 @@ export class CircuitBreakerMonitorDuck extends MonitorDuck {
     return '/#/flow-monitor'
   }
   get titleName() {
-    return '熔断监控'
+    return i18n.t('熔断监控')
   }
   get type() {
     return 'circuit-breaker'
@@ -431,8 +434,8 @@ export class CircuitBreakerMonitorDuck extends MonitorDuck {
     return [MetricName.CircuitbreakerOpen, MetricName.CircuitbreakerHalfopen]
   }
   get monitorLabels() {
-    return Object.keys(LabelKeyMap).filter(
-      (labelKey) =>
+    return Object.keys(getLabelKeyMap).filter(
+      labelKey =>
         labelKey !== MonitorLabelKey.CalleeLabels &&
         labelKey !== MonitorLabelKey.RetCode &&
         labelKey !== MonitorLabelKey.CallerLabels,
@@ -444,7 +447,7 @@ export class RouteMonitorDuck extends MonitorDuck {
     return '/#/flow-monitor'
   }
   get titleName() {
-    return '路由监控'
+    return i18n.t('路由监控')
   }
   get type() {
     return 'route'
@@ -458,7 +461,7 @@ export class RouteMonitorDuck extends MonitorDuck {
     ]
   }
   get monitorLabels() {
-    return Object.keys(LabelKeyMap).filter((labelKey) => labelKey !== MonitorLabelKey.CalleeLabels)
+    return Object.keys(getLabelKeyMap()).filter(labelKey => labelKey !== MonitorLabelKey.CalleeLabels)
   }
 }
 export class RatelimitMonitorDuck extends MonitorDuck {
@@ -466,7 +469,7 @@ export class RatelimitMonitorDuck extends MonitorDuck {
     return '/#/flow-monitor'
   }
   get titleName() {
-    return '限流监控'
+    return i18n.t('限流监控')
   }
   get type() {
     return 'ratelimit'
@@ -484,7 +487,7 @@ export class BusinessMonitorDuck extends MonitorDuck {
     return '/#/alert'
   }
   get titleName() {
-    return '业务监控'
+    return i18n.t('业务监控')
   }
   get type() {
     return 'business'

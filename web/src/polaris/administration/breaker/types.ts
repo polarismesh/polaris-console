@@ -1,3 +1,5 @@
+import i18n from '@src/polaris/common/util/i18n'
+
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
 
 export interface CircuitBreakerRule {
@@ -65,8 +67,8 @@ export enum ErrorConditionType {
   DELAY = 'DELAY',
 }
 export const ErrorConditionMap = {
-  [ErrorConditionType.DELAY]: '时延',
-  [ErrorConditionType.RET_CODE]: '返回码',
+  [ErrorConditionType.DELAY]: i18n.t('时延'),
+  [ErrorConditionType.RET_CODE]: i18n.t('返回码'),
 }
 export const ErrorConditionOptions = Object.entries(ErrorConditionMap).map(([key, value]) => ({
   text: value,
@@ -77,8 +79,8 @@ export enum TriggerType {
   CONSECUTIVE_ERROR = 'CONSECUTIVE_ERROR',
 }
 export const TriggerTypeMap = {
-  [TriggerType.CONSECUTIVE_ERROR]: { text: '连续错误数', unit: '个' },
-  [TriggerType.ERROR_RATE]: { text: '错误率', unit: '%' },
+  [TriggerType.CONSECUTIVE_ERROR]: { text: i18n.t('连续错误数'), unit: i18n.t('个') },
+  [TriggerType.ERROR_RATE]: { text: i18n.t('错误率'), unit: '%' },
 }
 export const TriggerTypeOptions = Object.entries(TriggerTypeMap).map(([key, value]) => ({
   text: value.text,
@@ -91,10 +93,10 @@ export enum BreakLevelType {
   Service = 'SERVICE',
 }
 export const BreakLevelMap = {
-  [BreakLevelType.Instance]: '实例',
-  [BreakLevelType.Group]: '实例分组',
-  [BreakLevelType.Method]: '接口',
-  [BreakLevelType.Service]: '服务',
+  [BreakLevelType.Instance]: i18n.t('实例'),
+  [BreakLevelType.Group]: i18n.t('实例分组'),
+  [BreakLevelType.Method]: i18n.t('接口'),
+  [BreakLevelType.Service]: i18n.t('服务'),
 }
 export const BreakLevelSearchParamMap = {
   [BreakLevelType.Instance]: 4,
@@ -128,7 +130,7 @@ export const checkRuleType = level =>
     ? BreakerType.Interface
     : BreakerType.FaultDetect
 export const FaultDetectTabs = [
-  { id: BreakerType.Service, label: '服务级熔断' },
-  { id: BreakerType.Interface, label: '节点级熔断' },
-  { id: BreakerType.FaultDetect, label: '主动探测' },
+  { id: BreakerType.Service, label: i18n.t('服务级熔断') },
+  { id: BreakerType.Interface, label: i18n.t('节点级熔断') },
+  { id: BreakerType.FaultDetect, label: i18n.t('主动探测') },
 ]

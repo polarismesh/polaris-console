@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import GridPageDuck, { Filter as BaseFilter } from '../../../common/ducks/GridPage'
 import { takeLatest } from 'redux-saga-catch'
@@ -127,7 +128,7 @@ export default class FaultDetectDuck extends GridPageDuck {
   }
   *loadInfo() {
     const namespaceList = yield describeNamespaces()
-    const options = namespaceList.map((item) => ({
+    const options = namespaceList.map(item => ({
       ...item,
       text: item.name,
       value: item.name,
@@ -143,22 +144,22 @@ export default class FaultDetectDuck extends GridPageDuck {
     const { types, selector, creators } = this
     yield* super.saga()
     yield* this.loadInfo()
-    yield takeLatest(types.CHANGE_TAGS, function* (action) {
+    yield takeLatest(types.CHANGE_TAGS, function*(action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
-      const validTags = tags.map((item) => {
+      const validTags = tags.map(item => {
         if (item.attr) return item
         else return { ...item, attr: DefaultBreakerTag }
       })
       yield put({ type: types.SET_TAGS, payload: validTags })
-      validTags.forEach((tag) => {
+      validTags.forEach(tag => {
         const key = tag?.attr?.key || TagSearchType.Name
         if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
         else customFilters[key] = tag.values[0].key || tag.values[0].value
       })
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
-    yield takeLatest(types.SET_EXPANDED_KEY, function* (action) {
+    yield takeLatest(types.SET_EXPANDED_KEY, function*(action) {
       const { ruleInfoMap } = selector(yield select())
       const expandedKeys = action.payload
       const obj = { ...ruleInfoMap }
@@ -170,11 +171,11 @@ export default class FaultDetectDuck extends GridPageDuck {
         }
       }
     })
-    yield takeLatest(types.REMOVE, function* (action) {
+    yield takeLatest(types.REMOVE, function*(action) {
       const rule = action.payload
       const confirm = yield Modal.confirm({
-        message: `确认删除规则 ${rule.name} 吗？`,
-        description: '删除后，无法恢复',
+        message: i18n.t('确认删除规则 {{attr0}} 吗？'),
+        description: i18n.t('删除后，无法恢复'),
       })
       if (confirm) {
         yield deleteFaultDetect([{ id: rule.id }])

@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { select, put, call } from 'redux-saga/effects'
 import { takeLatest } from 'redux-saga-catch'
 import { createToPayload } from 'saga-duck'
@@ -117,12 +118,12 @@ export class CreateFormDuck extends Form {
         window.localStorage.setItem(LoginRoleKey, loginResponse.role)
         window.localStorage.setItem(LoginUserIdKey, loginResponse.user_id)
         window.localStorage.setItem(LoginUserOwnerIdKey, loginResponse.owner_id)
-        window.location.hash = "/service"
+        window.location.hash = '/service'
       } else {
         throw new Error()
       }
     } catch (e) {
-      yield put(creators.markInvalid('password', '网络异常或用户名，密码错误'))
+      yield put(creators.markInvalid('password', i18n.t('网络异常或用户名，密码错误')))
       throw e
     }
   }
@@ -133,12 +134,12 @@ export class CreateFormDuck extends Form {
 const validator = CreateFormDuck.combineValidators<Fvalues>({
   userName(v) {
     if (!v) {
-      return '请输入用户名'
+      return i18n.t('请输入用户名')
     }
   },
   password(v) {
     if (!v) {
-      return '请输入密码'
+      return i18n.t('请输入密码')
     }
   },
 })

@@ -1,3 +1,5 @@
+import i18n from '@src/polaris/common/util/i18n'
+
 export interface InstanceLocation {
   region: string
   zone: string
@@ -41,17 +43,17 @@ export enum HEALTH_CHECK_METHOD {
 
 export const HEALTH_CHECK_METHOD_MAP = {
   [HEALTH_CHECK_METHOD.HEARTBEAT]: {
-    text: '心跳上报',
+    text: i18n.t('心跳上报'),
   },
 }
 
 export const HEALTH_STATUS_MAP = {
   [HEALTH_STATUS.HEALTH]: {
-    text: '健康',
+    text: i18n.t('健康'),
     theme: 'success',
   },
   [HEALTH_STATUS.ABNORMAL]: {
-    text: '异常',
+    text: i18n.t('异常'),
     theme: 'danger',
   },
 }
@@ -76,11 +78,11 @@ export const HEALTH_CHECK_METHOD_OPTIONS = [
 
 export const ISOLATE_STATUS_MAP = {
   [ISOLATE_STATUS.ISOLATE]: {
-    text: '隔离',
+    text: i18n.t('隔离'),
     theme: 'danger',
   },
   [ISOLATE_STATUS.UNISOLATED]: {
-    text: '不隔离',
+    text: i18n.t('不隔离'),
     theme: '',
   },
 }

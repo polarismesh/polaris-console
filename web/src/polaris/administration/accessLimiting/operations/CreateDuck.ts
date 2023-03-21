@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
 import Form from '@src/polaris/common/ducks/Form'
@@ -41,43 +42,43 @@ export interface Values extends CreateLimitRulesBaseParams {
 const validator = Form.combineValidators<Values>({
   name(v) {
     if (!v) {
-      return '请填写限流规则名称'
+      return i18n.t('请填写限流规则名称')
     }
   },
   namespace(v) {
     if (!v) {
-      return '请选择命名空间'
+      return i18n.t('请选择命名空间')
     }
   },
   service(v) {
     if (!v) {
-      return '请选择服务名'
+      return i18n.t('请选择服务名')
     }
   },
   arguments: [
     {
       type(v) {
         if (!v) {
-          return '请选择类型'
+          return i18n.t('请选择类型')
         }
       },
       value(v, data) {
         if (!v && data.type === LimitArgumentsType.CALLER_SERVICE) {
-          return '请选择服务名'
+          return i18n.t('请选择服务名')
         }
         if (!v && data.type === LimitArgumentsType.CALLER_IP) {
-          return '请输入IP'
+          return i18n.t('请输入IP')
         }
         if (!v && data.type !== LimitArgumentsType.CALLER_IP) {
-          return '请输入value值'
+          return i18n.t('请输入value值')
         }
       },
       key(v, data) {
         if (!v && data.type === LimitArgumentsType.CALLER_SERVICE) {
-          return '请选择命名空间'
+          return i18n.t('请选择命名空间')
         }
         if (!v) {
-          return '请输入key值'
+          return i18n.t('请输入key值')
         }
       },
     },

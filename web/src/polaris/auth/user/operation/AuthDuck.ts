@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import { put, select } from 'redux-saga/effects'
 import { describeGovernanceStrategies, AuthStrategy, modifyGovernanceStrategy } from '../../model'
 import { AuthSubjectType } from '../../policy/Page'
@@ -47,8 +48,8 @@ export default class AuthDuck extends FormDialog {
       selection.map(item => item.id),
     )
     if (addArray.length <= 0 && removeArray.length <= 0) {
-      notification.warning({ description: '未做改动' })
-      throw '未做改动'
+      notification.warning({ description: i18n.t('未做改动') })
+      throw i18n.t('未做改动')
     }
     const principleName = authSubjectType === AuthSubjectType.USER ? 'users' : 'groups'
     const res = yield* resolvePromise(

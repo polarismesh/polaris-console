@@ -1,3 +1,4 @@
+import i18n from '@src/polaris/common/util/i18n'
 import Base from '@src/polaris/common/ducks/Page'
 import CreateDuck from './operation/CreateDuck'
 import { select, put } from 'redux-saga/effects'
@@ -290,17 +291,17 @@ export default class PageDuck extends Base {
     yield takeLatest(types.DELETE, function*(action) {
       const { namespace, group } = selectors.composedId(yield select())
       const confirm = yield Modal.confirm({
-        message: '确认删除配置文件？',
-        description: '删除后，无法恢复。',
+        message: i18n.t('确认删除配置文件？'),
+        description: i18n.t('删除后，无法恢复。'),
       })
       if (confirm) {
         const deleteId = action.payload
         const result = yield deleteConfigFiles({ namespace, group, name: deleteId })
         if (result) {
-          notification.success({ description: '删除成功' })
+          notification.success({ description: i18n.t('删除成功') })
           yield put({ type: types.FETCH_DATA })
         } else {
-          notification.error({ description: '删除失败' })
+          notification.error({ description: i18n.t('删除失败') })
         }
       }
     })
@@ -356,8 +357,8 @@ export default class PageDuck extends Base {
       const nextNode = fileMap[action.payload]
       if (editing && currentNode.name !== nextNode.name) {
         const confirm = yield Modal.confirm({
-          message: '确认切换展示节点？',
-          description: '编辑未发布，现在切换将丢失已编辑内容',
+          message: i18n.t('确认切换展示节点？'),
+          description: i18n.t('编辑未发布，现在切换将丢失已编辑内容'),
         })
         if (!confirm) return
       }
@@ -386,7 +387,7 @@ export default class PageDuck extends Base {
       if (lastRelease) {
         const confirm = yield Modal.confirm({
           size: 'xl',
-          caption: '内容对比',
+          caption: i18n.t('内容对比'),
           description: <FileDiff original={lastRelease.content} now={content} format={format} />,
         } as any)
         if (!confirm) {
@@ -395,11 +396,11 @@ export default class PageDuck extends Base {
       }
       const result = yield releaseConfigFile({ namespace, group, fileName: name, name })
       if (result) {
-        notification.success({ description: '发布成功' })
+        notification.success({ description: i18n.t('发布成功') })
         yield put({ type: types.FETCH_DATA })
         yield put({ type: types.SET_EDITING, payload: false })
       } else {
-        notification.error({ description: '发布失败' })
+        notification.error({ description: i18n.t('发布失败') })
       }
     })
     yield takeLatest(types.SAVE_CURRENT_NODE, function*() {
@@ -416,11 +417,11 @@ export default class PageDuck extends Base {
         name: currentNode.name,
       })
       if (result) {
-        notification.success({ description: '保存成功' })
+        notification.success({ description: i18n.t('保存成功') })
         yield put({ type: types.FETCH_DATA })
         yield put({ type: types.SET_EDITING, payload: false })
       } else {
-        notification.error({ description: '保存失败' })
+        notification.error({ description: i18n.t('保存失败') })
       }
     })
   }

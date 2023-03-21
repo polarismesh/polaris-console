@@ -13,6 +13,10 @@ import LoginPage from '@src/polaris/auth/login/Page'
 import LoginPageDuck from '@src/polaris/auth/login/PageDuck'
 import { connectWithDuck } from './polaris/common/helpers'
 
+import { initI18n } from './polaris/common/util/i18n'
+
+initI18n()
+
 const Login = connectWithDuck(LoginPage, LoginPageDuck as any)
 export default function render() {
   ReactDOM.unmountComponentAtNode(document.querySelector('#polaris-console'))

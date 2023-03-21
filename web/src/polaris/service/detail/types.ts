@@ -1,3 +1,5 @@
+import i18n from '@src/polaris/common/util/i18n'
+
 export enum TAB {
   Info = 'info',
   Instance = 'instance',
@@ -6,11 +8,11 @@ export enum TAB {
   CircuitBreaker = 'circuitBreaker',
 }
 export const TAB_LABLES = {
-  [TAB.Info]: '服务信息',
-  [TAB.Instance]: '服务实例',
-  [TAB.Route]: '路由规则',
-  [TAB.AccessLimit]: '限流规则',
-  [TAB.CircuitBreaker]: '熔断规则',
+  [TAB.Info]: i18n.t('服务信息'),
+  [TAB.Instance]: i18n.t('服务实例'),
+  [TAB.Route]: i18n.t('路由规则'),
+  [TAB.AccessLimit]: i18n.t('限流规则'),
+  [TAB.CircuitBreaker]: i18n.t('熔断规则'),
 }
 
 export interface ComposedId {

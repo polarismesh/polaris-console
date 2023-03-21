@@ -5,11 +5,7 @@
  * 2. 加载更多
  */
 
-import {
-  ComposableDuck as Base,
-  createToPayload,
-  reduceFromPayload
-} from 'saga-duck'
+import { ComposableDuck as Base, createToPayload, reduceFromPayload } from 'saga-duck'
 import { takeLatest, runAndTakeLatest } from 'redux-saga-catch'
 import { delay } from 'redux-saga'
 import { select, take, put } from 'redux-saga/effects'
@@ -41,11 +37,7 @@ export default abstract class AbstractSearchableSelect extends Base {
    * @param localParam 本地搜索参数
    * @param pagingParam 分页参数
    */
-  abstract getParam(
-    baseParam: this['Param'],
-    localParam: this['LocalParam'],
-    pagingParam: SearchParam
-  )
+  abstract getParam(baseParam: this['Param'], localParam: this['LocalParam'], pagingParam: SearchParam)
   get GetDataParam(): ReturnType<this['getParam']> {
     return null
   }
@@ -74,9 +66,7 @@ export default abstract class AbstractSearchableSelect extends Base {
   get autoSearchBuffer() {
     return 300
   }
-  abstract getData(
-    param: this['GetDataParam']
-  ): Promise<ListResult<this['Item']>>
+  abstract getData(param: this['GetDataParam']): Promise<ListResult<this['Item']>>
   get quickTypes() {
     enum Types {
       SET_LIST,
@@ -96,11 +86,11 @@ export default abstract class AbstractSearchableSelect extends Base {
       SEARCH_DONE,
       SET_TOTAL_COUNT,
       MORE,
-      NOMORE
+      NOMORE,
     }
     return {
       ...super.quickTypes,
-      ...Types
+      ...Types,
     }
   }
   get reducers() {
@@ -110,10 +100,7 @@ export default abstract class AbstractSearchableSelect extends Base {
       /** 当前列表对应的基本搜索条件 */
       param: reduceFromPayload<this['Param']>(types.LOAD_START, null),
       /** 搜索框中的用户输入条件 */
-      pendingKeyword: (
-        state = this.defaultLocalParam,
-        action
-      ): this['LocalParam'] => {
+      pendingKeyword: (state = this.defaultLocalParam, action): this['LocalParam'] => {
         switch (action.type) {
           case types.SET_PENDING_SEARCH_PARAMS:
           case types.INPUT_KEYWORD:
@@ -194,7 +181,7 @@ export default abstract class AbstractSearchableSelect extends Base {
           default:
             return state
         }
-      }
+      },
     }
   }
   get creators() {
@@ -205,9 +192,7 @@ export default abstract class AbstractSearchableSelect extends Base {
       load: createToPayload<Param>(types.LOAD),
       // 历史兼容
       inputKeyword: createToPayload<this['LocalParam']>(types.INPUT_KEYWORD),
-      setPendingSearchParams: createToPayload<this['LocalParam']>(
-        types.SET_PENDING_SEARCH_PARAMS
-      ),
+      setPendingSearchParams: createToPayload<this['LocalParam']>(types.SET_PENDING_SEARCH_PARAMS),
       search: createToPayload<this['LocalParam']>(types.SEARCH),
       reload() {
         return { type: types.RELOAD }
@@ -217,7 +202,7 @@ export default abstract class AbstractSearchableSelect extends Base {
       },
       more() {
         return { type: types.MORE }
-      }
+      },
     }
   }
   get quickDucks() {
@@ -233,7 +218,7 @@ export default abstract class AbstractSearchableSelect extends Base {
     }
     return {
       ...super.quickDucks,
-      fetcher: MyFetcher as this['Fetcher']
+      fetcher: MyFetcher as this['Fetcher'],
     }
   }
   *saga() {
@@ -247,25 +232,22 @@ export default abstract class AbstractSearchableSelect extends Base {
   *sagaAutoSearch() {
     const { types, autoSearchBuffer } = this
     // 是否自动启用搜索
-    yield takeLatest(
-      [types.SET_PENDING_SEARCH_PARAMS, types.SEARCH],
-      function* ({ type, payload }) {
-        // 如果有触发SEARCH，中止自动触发
-        if (type === types.SEARCH) {
-          return
-        }
-        yield delay(autoSearchBuffer)
-        yield put({
-          type: types.SEARCH,
-          payload
-        })
+    yield takeLatest([types.SET_PENDING_SEARCH_PARAMS, types.SEARCH], function*({ type, payload }) {
+      // 如果有触发SEARCH，中止自动触发
+      if (type === types.SEARCH) {
+        return
       }
-    )
+      yield delay(autoSearchBuffer)
+      yield put({
+        type: types.SEARCH,
+        payload,
+      })
+    })
   }
   *sagaWatchLoad() {
     const duck = this
     const { types } = this
-    yield takeLatest(types.LOAD, function* (action) {
+    yield takeLatest(types.LOAD, function*(action) {
       yield* duck.load(action.payload)
     })
   }
@@ -279,7 +261,7 @@ export default abstract class AbstractSearchableSelect extends Base {
   *load(param: this['Param']) {
     const duck = this
     const { types } = this
-    yield runAndTakeLatest(types.RELOAD, function* () {
+    yield runAndTakeLatest(types.RELOAD, function*() {
       yield* duck.sagaLoadAndWatchSearch(param)
     })
   }
@@ -291,11 +273,11 @@ export default abstract class AbstractSearchableSelect extends Base {
     // 更新参数
     yield put({
       type: types.LOAD_START,
-      payload: param
+      payload: param,
     })
     const baseParam = selector(yield select()).param
     // 默认以初始条件搜索，同时新搜索会重置当前数据
-    yield runAndTakeLatest(this.searchTypes, function* () {
+    yield runAndTakeLatest(this.searchTypes, function*() {
       yield* duck.search(baseParam)
     })
   }
@@ -316,24 +298,20 @@ export default abstract class AbstractSearchableSelect extends Base {
       types,
       selector,
       ducks: { fetcher },
-      pageSize
+      pageSize,
     } = this
 
     const { pendingKeyword: pendingLocalParam } = selector(yield select())
     let list: Item[] = []
     let totalCount = 0
     do {
-      try{
+      try {
         // 加载下一页内容
         const searchParam: SearchParam = {
           offset: list.length,
-          limit: pageSize
+          limit: pageSize,
         }
-        const fetcherParam = duck.getParam(
-          baseParam,
-          pendingLocalParam,
-          searchParam
-        )
+        const fetcherParam = duck.getParam(baseParam, pendingLocalParam, searchParam)
         const data: Data = yield* fetcher.fetch(fetcherParam)
         totalCount = data.totalCount
         // 合并列表
@@ -341,26 +319,26 @@ export default abstract class AbstractSearchableSelect extends Base {
         // 更新结果
         yield put({
           type: types.SEARCH_DONE,
-          payload: pendingLocalParam
+          payload: pendingLocalParam,
         })
         yield put({
           type: types.SET_LIST,
-          payload: list
+          payload: list,
         })
         if (totalCount !== selector(yield select()).totalCount) {
           yield put({
             type: types.SET_TOTAL_COUNT,
-            payload: totalCount
+            payload: totalCount,
           })
         }
         // 如果已经加载完了，退出循环
         if (list.length === totalCount) {
           yield put({
-            type: types.NOMORE
+            type: types.NOMORE,
           })
           break
         }
-      }catch(e){
+      } catch (e) {
         // 出错了Fetcher那会展示出来，不处理，不中止MORE重试
       }
       // 等待下一次加载更多的指令

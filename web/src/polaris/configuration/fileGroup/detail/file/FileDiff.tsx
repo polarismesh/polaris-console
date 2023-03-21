@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React, { useEffect } from 'react'
 import { MonacoEditor, Row, Col, Icon } from 'tea-component'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
@@ -96,8 +97,12 @@ export default function FileDiff(props: Props) {
   return (
     <section className='monaco-section-file-diff'>
       <Row style={{ margin: '10px 0px' }}>
-        <Col>历史发布</Col>
-        <Col>当前发布</Col>
+        <Col>
+          <Trans>历史发布</Trans>
+        </Col>
+        <Col>
+          <Trans>当前发布</Trans>
+        </Col>
 
         <Col style={{ position: 'relative' }}>
           <Icon

@@ -1,3 +1,4 @@
+import { Trans } from 'react-i18next'
 import * as React from 'react'
 import AccessLimitingDuck from './PageDuck'
 import { Text, Copy } from 'tea-component'
@@ -7,6 +8,7 @@ import { Dispatch } from 'redux'
 import { CustomRoute } from './model'
 import { SwitchStatusAction } from '../../accessLimiting/types'
 import { Link } from 'react-router-dom'
+import i18n from '@src/polaris/common/util/i18n'
 
 export default (
   { creators, selector }: AccessLimitingDuck,
@@ -16,7 +18,7 @@ export default (
   return [
     {
       key: 'idName',
-      header: 'ID/规则名',
+      header: i18n.t('ID/规则名'),
       width: 280,
       render: x => (
         <>
@@ -33,43 +35,64 @@ export default (
     },
     {
       key: 'enable',
-      header: '状态',
-      render: x => (x.enable ? <Text theme='success'>已启用</Text> : <Text theme='danger'>未启用</Text>),
+      header: i18n.t('状态'),
+      render: x =>
+        x.enable ? (
+          <Text theme='success'>
+            <Trans>已启用</Trans>
+          </Text>
+        ) : (
+          <Text theme='danger'>
+            <Trans>未启用</Trans>
+          </Text>
+        ),
     },
     {
       key: 'description',
-      header: '描述',
+      header: i18n.t('描述'),
       render: x => x.description || '-',
     },
     {
       key: 'source',
-      header: '主调服务',
+      header: i18n.t('主调服务'),
       render: x => {
         const { namespace, service } = x?.routing_config?.rules?.[0]?.sources?.[0] || {}
         return (
           <>
-            <Text parent={'div'}>命名空间：{namespace || '-'}</Text>
-            <Text parent={'div'}>服务：{service || '-'}</Text>
+            <Text parent={'div'}>
+              <Trans>命名空间：</Trans>
+              {namespace || '-'}
+            </Text>
+            <Text parent={'div'}>
+              <Trans>服务：</Trans>
+              {service || '-'}
+            </Text>
           </>
         )
       },
     },
     {
       key: 'destination',
-      header: '被调服务',
+      header: i18n.t('被调服务'),
       render: x => {
         const { namespace, service } = x?.routing_config?.rules?.[0]?.destinations?.[0] || {}
         return (
           <>
-            <Text parent={'div'}>命名空间：{namespace || '-'}</Text>
-            <Text parent={'div'}>服务：{service || '-'}</Text>
+            <Text parent={'div'}>
+              <Trans>命名空间：</Trans>
+              {namespace || '-'}
+            </Text>
+            <Text parent={'div'}>
+              <Trans>服务：</Trans>
+              {service || '-'}
+            </Text>
           </>
         )
       },
     },
     {
       key: 'ctimeMtime',
-      header: '创建时间/修改时间',
+      header: i18n.t('创建时间/修改时间'),
       render: x => (
         <>
           <Text>
@@ -82,7 +105,7 @@ export default (
     },
     {
       key: 'etime',
-      header: '启用时间',
+      header: i18n.t('启用时间'),
       render: x => (
         <>
           <Text>{x.etime || '-'}</Text>
@@ -91,7 +114,7 @@ export default (
     },
     {
       key: 'action',
-      header: '操作',
+      header: i18n.t('操作'),
       render: x => {
         const actions: {
           id: string
@@ -100,7 +123,7 @@ export default (
         }[] = [
           {
             id: 'switchStatus',
-            text: x.enable ? '禁用' : '启用',
+            text: x.enable ? i18n.t('禁用') : i18n.t('启用'),
             fn: dispatch => {
               const swtichStatusAction = x.enable ? SwitchStatusAction.disable : SwitchStatusAction.start
               dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
@@ -108,14 +131,14 @@ export default (
           },
           {
             id: 'modify',
-            text: '编辑',
+            text: i18n.t('编辑'),
             fn: dispatch => {
               dispatch(creators.modify(x))
             },
           },
           {
             id: 'remove',
-            text: '删除',
+            text: i18n.t('删除'),
             fn: dispatch => {
               dispatch(creators.delete(x))
             },

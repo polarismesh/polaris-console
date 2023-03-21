@@ -1,3 +1,5 @@
+import i18n from '@src/polaris/common/util/i18n'
+
 //主被调规则的目的地和源类型相反
 export interface InboundItem {
   destinations: Destination[]
@@ -49,10 +51,10 @@ export enum MATCH_TYPE {
 
 export const MATCH_TYPE_MAP = {
   [MATCH_TYPE.EXACT]: {
-    text: '精确',
+    text: i18n.t('精确'),
   },
   [MATCH_TYPE.REGEX]: {
-    text: '正则',
+    text: i18n.t('正则'),
   },
 }
 
@@ -68,10 +70,10 @@ export enum RuleType {
 
 export const RULE_TYPE_STATUS_MAP = {
   [RuleType.Inbound]: {
-    text: '被调规则',
+    text: i18n.t('被调规则'),
   },
   [RuleType.Outbound]: {
-    text: '主调规则',
+    text: i18n.t('主调规则'),
   },
 }
 
@@ -93,7 +95,7 @@ export enum EditType {
 
 export const EDIT_TYPE_MAP = {
   [EditType.Table]: {
-    text: '图表编辑',
+    text: i18n.t('图表编辑'),
   },
   // [EditType.Json]: {
   //   text: "JSON编辑",

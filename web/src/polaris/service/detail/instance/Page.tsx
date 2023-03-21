@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import ServicePageDuck, { EmptyCustomFilter } from './PageDuck'
@@ -25,6 +26,7 @@ import { HEALTH_STATUS, HEALTH_STATUS_MAP, ISOLATE_STATUS_MAP, ISOLATE_STATUS, H
 import { isReadOnly, showAllLabels } from '../../utils'
 import MetadataSelectPanel from '@src/polaris/common/components/MetadataSelectPanel'
 import { replaceTags } from '@src/polaris/configuration/utils'
+import i18n from '@src/polaris/common/util/i18n'
 
 insertCSS(
   'service-detail-instance',
@@ -57,10 +59,10 @@ insertCSS(
 
 export const HealthStatusOptions = [
   {
-    text: '全部',
+    text: i18n.t('全部'),
     value: '__all__',
     key: '__all__',
-    name: '全部',
+    name: i18n.t('全部'),
   },
   {
     text: HEALTH_STATUS_MAP[HEALTH_STATUS.HEALTH].text,
@@ -78,9 +80,9 @@ export const HealthStatusOptions = [
 
 export const IsolateStatusOptions = [
   {
-    text: '全部',
+    text: i18n.t('全部'),
     value: '__all__',
-    name: '全部',
+    name: i18n.t('全部'),
     key: '__all__',
   },
   {
@@ -105,43 +107,45 @@ export const IsolateTagKey = 'isolate'
 export const DefaultHostTagAttribute = {
   type: 'input',
   key: HostTagKey,
-  name: '实例IP',
+  name: i18n.t('实例IP'),
 }
 function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store } = props
   const { customFilters } = duck.selector(store)
   return [
     {
       type: 'input',
       key: HostTagKey,
-      name: '实例IP',
+      name: t('实例IP'),
     },
     {
       type: 'input',
       key: 'protocol',
-      name: '协议',
+      name: t('协议'),
     },
     {
       type: 'input',
       key: 'version',
-      name: '版本',
+      name: t('版本'),
     },
     {
       type: 'single',
       key: HealthyTagKey,
-      name: '健康状态',
+      name: t('健康状态'),
       values: HealthStatusOptions,
     },
     {
       type: 'single',
       key: IsolateTagKey,
-      name: '隔离状态',
+      name: t('隔离状态'),
       values: IsolateStatusOptions,
     },
     {
       type: 'render',
       key: MetadataTagKey,
-      name: '标签',
+      name: t('标签'),
       render: ({ onSelect }) => {
         return (
           <MetadataSelectPanel
@@ -156,6 +160,8 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
   ]
 }
 export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { creators, selector } = duck
   const handlers = React.useMemo(
@@ -196,16 +202,16 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 type={'primary'}
                 onClick={handlers.create}
                 disabled={isReadOnly(namespace) || !editable}
-                tooltip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '编辑'}
+                tooltip={isReadOnly(namespace) ? t('该命名空间为只读的') : !editable ? t('无写权限') : t('编辑')}
               >
-                新建
+                <Trans>新建</Trans>
               </Button>
               <Button
                 onClick={() => handlers.remove(selection)}
                 disabled={selection.length === 0 || !editable}
-                tooltip={selection?.length === 0 ? '请选择实例' : !editable ? '无写权限' : ''}
+                tooltip={selection?.length === 0 ? t('请选择实例') : !editable ? t('无写权限') : ''}
               >
-                删除
+                <Trans>删除</Trans>
               </Button>
               <Dropdown
                 clickClose={false}
@@ -213,9 +219,9 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 button={
                   <Button
                     disabled={selection?.length === 0 || !editable}
-                    tooltip={selection?.length === 0 ? '请选择实例' : !editable ? '无写权限' : ''}
+                    tooltip={selection?.length === 0 ? t('请选择实例') : !editable ? t('无写权限') : ''}
                   >
-                    其他操作
+                    <Trans>其他操作</Trans>
                   </Button>
                 }
                 appearance='pure'
@@ -223,8 +229,11 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 {close => (
                   <List type='option'>
                     {selection?.length === 0 ? (
-                      <List.Item disabled={selection?.length === 0} tooltip={selection?.length === 0 && '请选择实例'}>
-                        复制IP
+                      <List.Item
+                        disabled={selection?.length === 0}
+                        tooltip={selection?.length === 0 && t('请选择实例')}
+                      >
+                        <Trans>复制IP</Trans>
                       </List.Item>
                     ) : (
                       <Copy
@@ -240,9 +249,9 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                             close()
                           }}
                           disabled={selection?.length === 0}
-                          tooltip={selection?.length === 0 && '请选择实例'}
+                          tooltip={selection?.length === 0 && t('请选择实例')}
                         >
-                          复制IP
+                          <Trans>复制IP</Trans>
                         </List.Item>
                       </Copy>
                     )}
@@ -252,9 +261,9 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                         close()
                       }}
                       disabled={selection?.length === 0}
-                      tooltip={selection?.length === 0 && '请选择实例'}
+                      tooltip={selection?.length === 0 && t('请选择实例')}
                     >
-                      修改权重
+                      <Trans>修改权重</Trans>
                     </List.Item>
                     <List.Item
                       onClick={() => {
@@ -262,9 +271,9 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                         close()
                       }}
                       disabled={selection?.length === 0}
-                      tooltip={selection?.length === 0 && '请选择实例'}
+                      tooltip={selection?.length === 0 && t('请选择实例')}
                     >
-                      修改健康状态
+                      <Trans>修改健康状态</Trans>
                     </List.Item>
                     <List.Item
                       onClick={() => {
@@ -272,9 +281,9 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                         close()
                       }}
                       disabled={selection?.length === 0}
-                      tooltip={selection?.length === 0 && '请选择实例'}
+                      tooltip={selection?.length === 0 && t('请选择实例')}
                     >
-                      修改隔离状态
+                      <Trans>修改隔离状态</Trans>
                     </List.Item>
                   </List>
                 )}
@@ -292,7 +301,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 }}
                 value={tags}
                 onChange={value => handlers.changeTags(value)}
-                tips={'请选择条件进行过滤'}
+                tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
               <Button type={'icon'} icon={'refresh'} onClick={handlers.reload}></Button>
@@ -321,7 +330,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 const replacedTags = replaceTags(HealthyTagKey, value, tags, HealthStatusOptions, {
                   type: 'single',
                   key: 'healthy',
-                  name: '健康状态',
+                  name: t('健康状态'),
                   values: HealthStatusOptions,
                 })
                 handlers.changeTags(replacedTags)
@@ -338,7 +347,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 const replacedTags = replaceTags(IsolateTagKey, value, tags, IsolateStatusOptions, {
                   type: 'single',
                   key: 'isolate',
-                  name: '隔离状态',
+                  name: t('隔离状态'),
                   values: IsolateStatusOptions,
                 })
                 handlers.changeTags(replacedTags)
@@ -357,24 +366,26 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 return (
                   <>
                     <Form>
-                      <FormItem label='实例ID'>
+                      <FormItem label={t('实例ID')}>
                         <FormText>
                           <Text tooltip={record.id}>{record.id}</Text>
                         </FormText>
                       </FormItem>
-                      <FormItem label='健康检查'>
-                        <FormText>{record.healthCheck?.type ? '开启' : '关闭'}</FormText>
+                      <FormItem label={t('健康检查')}>
+                        <FormText>{record.healthCheck?.type ? t('开启') : t('关闭')}</FormText>
                       </FormItem>
                       {record.healthCheck?.type && (
-                        <FormItem label='健康检查方式'>
+                        <FormItem label={t('健康检查方式')}>
                           <FormText>
-                            检查方式：
+                            <Trans>检查方式：</Trans>
                             {HEALTH_CHECK_METHOD_MAP[record.healthCheck?.type].text}; TTL：
-                            {`${record.healthCheck?.heartbeat?.ttl}秒`}
+                            {t('{{attr0}}秒', {
+                              attr0: record.healthCheck?.heartbeat?.ttl,
+                            })}
                           </FormText>
                         </FormItem>
                       )}
-                      <FormItem label='实例标签'>
+                      <FormItem label={t('实例标签')}>
                         <FormText>
                           {labelList
                             .slice(0, 6)
@@ -383,7 +394,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                           {labelList.length > 5 && '...'}
                           {labelList.length > 5 && (
                             <Button onClick={() => showAllLabels(record.metadata)} style={{ padding: '0px 5px' }}>
-                              展示全部
+                              <Trans>展示全部</Trans>
                             </Button>
                           )}
                         </FormText>

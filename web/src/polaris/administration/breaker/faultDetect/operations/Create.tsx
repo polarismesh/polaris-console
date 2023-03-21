@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
@@ -37,6 +38,7 @@ const removeArrayFieldValue = (field, index) => {
   field.setValue([...newValue])
 }
 export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) {
+  const { t } = useTranslation()
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -101,22 +103,22 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       store={store}
       duck={duck}
       dispatch={dispatch}
-      title={composedId?.id ? '编辑主动探测规则' : '新建主动探测规则'}
+      title={composedId?.id ? t('编辑主动探测规则') : t('新建主动探测规则')}
       backRoute={backRoute}
     >
       <Card>
         <Card.Body>
           <Form>
-            <FormField label='规则名称' field={name} message='最长64个字符' required>
+            <FormField label={t('规则名称')} field={name} message={t('最长64个字符')} required>
               <Input field={name} maxLength={64} size='l' />
             </FormField>
-            <FormField label='描述' field={description}>
+            <FormField label={t('描述')} field={description}>
               <Input field={description} maxLength={64} size='l' multiple />
             </FormField>
-            <FormField field={destinationNamespace} label='命名空间' required>
+            <FormField field={destinationNamespace} label={t('命名空间')} required>
               <TeaSelect
                 value={destinationNamespace.getValue()}
-                options={[{ text: '全部命名空间', value: '*' }, ...(data?.namespaceList || [])]}
+                options={[{ text: t('全部命名空间'), value: '*' }, ...(data?.namespaceList || [])]}
                 onChange={value => {
                   if (value === '*') {
                     destinationNamespace.setValue('*')
@@ -130,19 +132,21 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 type={'simulate'}
                 appearance={'button'}
                 matchButtonWidth
-                placeholder='请选择命名空间'
+                placeholder={t('请选择命名空间')}
                 size='m'
               />
             </FormField>
-            <FormField field={destinationService} label='服务名称' required>
+            <FormField field={destinationService} label={t('服务名称')} required>
               <AutoComplete
                 options={[
                   ...new Set([
-                    { text: '全部服务', value: '*' },
+                    { text: t('全部服务'), value: '*' },
                     ...(destinationService.getValue()
                       ? [
                           {
-                            text: `(输入值)${destinationService.getValue()}`,
+                            text: t('(输入值){{attr0}}', {
+                              attr0: destinationService.getValue(),
+                            }),
                             value: destinationService.getValue(),
                           },
                         ]
@@ -152,7 +156,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                     }) || []),
                   ]),
                 ]}
-                tips='没有匹配的服务名称'
+                tips={t('没有匹配的服务名称')}
                 onChange={value => {
                   destinationService.setValue(value)
                 }}
@@ -160,7 +164,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 {ref => (
                   <TeaInput
                     ref={ref}
-                    value={destinationService.getValue() === '*' ? '全部服务' : destinationService.getValue()}
+                    value={destinationService.getValue() === '*' ? t('全部服务') : destinationService.getValue()}
                     onChange={value => {
                       destinationService.setValue(value)
                     }}
@@ -169,8 +173,12 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 )}
               </AutoComplete>
             </FormField>
-            <FormField label='接口名称' field={methodValue} align='middle'>
-              <Input field={methodValue} placeholder='请输入接口名称' style={{ width: '200px', borderRight: '0px' }} />
+            <FormField label={t('接口名称')} field={methodValue} align='middle'>
+              <Input
+                field={methodValue}
+                placeholder={t('请输入接口名称')}
+                style={{ width: '200px', borderRight: '0px' }}
+              />
               <TeaSelect
                 options={LimitMethodTypeOptions}
                 value={methodType.getValue()}
@@ -180,7 +188,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 matchButtonWidth
               />
             </FormField>
-            <FormField showStatusIcon={false} label='周期' field={interval} suffix={'秒'}>
+            <FormField showStatusIcon={false} label={t('周期')} field={interval} suffix={t('秒')}>
               <InputNumber
                 value={interval.getValue()}
                 onChange={v => {
@@ -190,7 +198,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 hideButton
               />
             </FormField>
-            <FormField showStatusIcon={false} label='超时时间' field={timeout}>
+            <FormField showStatusIcon={false} label={t('超时时间')} field={timeout}>
               <InputNumber
                 value={timeout.getValue()}
                 onChange={v => {
@@ -201,7 +209,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 min={0}
               />
             </FormField>
-            <FormField showStatusIcon={false} label='端口' field={port}>
+            <FormField showStatusIcon={false} label={t('端口')} field={port}>
               <InputNumber
                 value={port.getValue()}
                 onChange={v => {
@@ -216,8 +224,8 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
 
             <FormField
               showStatusIcon={false}
-              label='协议'
-              tips={'服务实例下需要存在所选择用于探测的协议，否则无法探测无法生效'}
+              label={t('协议')}
+              tips={t('服务实例下需要存在所选择用于探测的协议，否则无法探测无法生效')}
               field={protocol}
             >
               <Segment
@@ -228,7 +236,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             </FormField>
             {protocol.getValue() === FaultDetectProtocol.HTTP && (
               <>
-                <FormField label='方法' field={method} align='middle'>
+                <FormField label={t('方法')} field={method} align='middle'>
                   <TeaSelect
                     options={FaultDetectHttpMethodOptions}
                     value={method.getValue()}
@@ -239,15 +247,20 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   />
                 </FormField>
                 <FormField field={url} label={'Url'}>
-                  <Input field={url} placeholder='请输入url 以/开头' />
+                  <Input field={url} placeholder={t('请输入url 以/开头')} />
                 </FormField>
                 <FormItem label={'Headers'}>
                   {[...headers.asArray()].map((item, index) => {
                     const { key, value } = item.getFields(['key', 'value'])
                     return (
                       <Text parent={'div'} key={index}>
-                        <Input field={key} size={'m'} placeholder={'header键'}></Input>
-                        <Input field={value} size={'m'} placeholder={'header值'} style={{ marginLeft: '20px' }}></Input>
+                        <Input field={key} size={'m'} placeholder={t('header键')}></Input>
+                        <Input
+                          field={value}
+                          size={'m'}
+                          placeholder={t('header值')}
+                          style={{ marginLeft: '20px' }}
+                        ></Input>
                         {headers.getValue().length > 1 && (
                           <Button
                             type='icon'
@@ -304,7 +317,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   {[...tcpReceive.asArray()].map((item, index) => {
                     return (
                       <Text parent={'div'} key={index}>
-                        <Input field={item} size={'m'} placeholder={'header键'}></Input>
+                        <Input field={item} size={'m'} placeholder={t('header键')}></Input>
                         <Button
                           type='icon'
                           icon='close'
@@ -329,13 +342,12 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                   {[...udpReceive.asArray()].map((item, index) => {
                     return (
                       <Text parent={'div'} key={index}>
-                        <Input field={item} size={'m'} placeholder={'header键'}></Input>
+                        <Input field={item} size={'m'} placeholder={t('header键')}></Input>
                         <Button
                           type='icon'
                           icon='close'
                           onClick={() => removeArrayFieldValue(udpReceive, index)}
                         ></Button>
-
                         <Button type={'icon'} icon={'plus'} onClick={() => addArrayFieldValue(udpReceive, '')}></Button>
                       </Text>
                     )
@@ -349,7 +361,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
           </Form>
           <Form.Action>
             <Button type='primary' onClick={() => dispatch(creators.submit())}>
-              提交
+              <Trans>提交</Trans>
             </Button>
             <Button
               onClick={() => {
@@ -362,7 +374,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 }
               }}
             >
-              取消
+              <Trans>取消</Trans>
             </Button>
           </Form.Action>
         </Card.Body>

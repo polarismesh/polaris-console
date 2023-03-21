@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import React, { useRef } from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import CreateRouteDuck from './CreateDuck'
@@ -10,6 +11,7 @@ import Select from '@src/polaris/common/duckComponents/form/Select'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import i18n from '@src/polaris/common/util/i18n'
 
 export enum EditType {
   Manual = 'Manual',
@@ -17,11 +19,11 @@ export enum EditType {
 }
 const EditTypeOptions = [
   {
-    text: '手动配置',
+    text: i18n.t('手动配置'),
     value: EditType.Manual,
   },
   {
-    text: 'JSON配置',
+    text: i18n.t('JSON配置'),
     value: EditType.Json,
   },
 ]
@@ -51,14 +53,14 @@ const getMetadataForm = field => {
   return [...field.asArray()].map((metadataField, index) => {
     const { key, value, type } = metadataField.getFields(['key', 'value', 'type'])
     return (
-      <Form layout={'inline'}>
-        <FormField showStatusIcon={false} field={key} label={'标签键'}>
+      <Form layout={'inline'} key={key}>
+        <FormField showStatusIcon={false} field={key} label={i18n.t('标签键')}>
           <Input field={key} />
         </FormField>
-        <FormField showStatusIcon={false} field={value} label={'标签值'}>
+        <FormField showStatusIcon={false} field={value} label={i18n.t('标签值')}>
           <Input field={value} />
         </FormField>
-        <FormField field={type} label={'匹配方式'}>
+        <FormField field={type} label={i18n.t('匹配方式')}>
           <Select size='s' options={MATCH_TYPE_OPTIONS} field={type} />
         </FormField>
         {field.getValue()?.length > 1 && (
@@ -71,6 +73,8 @@ const getMetadataForm = field => {
 }
 
 const renderInboundRule = props => {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const {
     selector,
@@ -113,15 +117,17 @@ const renderInboundRule = props => {
   return (
     <>
       <FormItem
-        label={<H4 style={{ margin: '10px 0' }}>{isInbound ? '当以下服务调用本服务时' : '当本服务调用以下服务时'}</H4>}
+        label={
+          <H4 style={{ margin: '10px 0' }}>{isInbound ? t('当以下服务调用本服务时') : t('当本服务调用以下服务时')}</H4>
+        }
       ></FormItem>
       <Form>
         <Form style={{ width: '850px' }}>
           <Form layout={'inline'}>
-            <FormField showStatusIcon={false} field={ruleNamespace} label={'命名空间'}>
+            <FormField showStatusIcon={false} field={ruleNamespace} label={t('命名空间')}>
               <Input field={ruleNamespace} />
             </FormField>
-            <FormField showStatusIcon={false} field={ruleService} label={'服务'}>
+            <FormField showStatusIcon={false} field={ruleService} label={t('服务')}>
               <Input field={ruleService} />
             </FormField>
           </Form>
@@ -131,15 +137,26 @@ const renderInboundRule = props => {
         const { metadata } = field.getFields(['namespace', 'service', 'metadata'])
         return (
           <>
-            <FormItem label={<H3 style={{ margin: '10px 0' }}>对带有以下标签的请求</H3>}></FormItem>
+            <FormItem
+              label={
+                <H3 style={{ margin: '10px 0' }}>
+                  <Trans>对带有以下标签的请求</Trans>
+                </H3>
+              }
+            ></FormItem>
             <Form style={{ width: '100%' }}>
               <Form style={{ width: '850px' }}>{getMetadataForm(metadata)}</Form>
             </Form>
           </>
         )
       })}
-      <FormItem label={<H3 style={{ margin: '10px 0' }}>按权重和优先级路由到以下实例分组</H3>}></FormItem>
-
+      <FormItem
+        label={
+          <H3 style={{ margin: '10px 0' }}>
+            <Trans>按权重和优先级路由到以下实例分组</Trans>
+          </H3>
+        }
+      ></FormItem>
       {[...destinations.asArray()].map((field, index) => {
         const { namespace, service, metadata, priority, weight, isolate } = field.getFields([
           'namespace',
@@ -155,7 +172,12 @@ const renderInboundRule = props => {
             <Form style={{ width: '100%', marginBottom: '20px' }}>
               <Form style={{ width: '850px' }}>
                 <Justify
-                  left={<H4 style={{ margin: '10px' }}>实例分组{index + 1}</H4>}
+                  left={
+                    <H4 style={{ margin: '10px' }}>
+                      <Trans>实例分组</Trans>
+                      {index + 1}
+                    </H4>
+                  }
                   right={
                     destinations.getValue().length > 1 && (
                       <Button
@@ -163,20 +185,20 @@ const renderInboundRule = props => {
                         type='link'
                         style={{ margin: '10px' }}
                       >
-                        删除
+                        <Trans>删除</Trans>
                       </Button>
                     )
                   }
                 ></Justify>
                 {getMetadataForm(metadata)}
                 <Form layout={'inline'}>
-                  <FormField field={weight} label={'权重'}>
+                  <FormField field={weight} label={t('权重')}>
                     <InputNumber hideButton field={weight} />
                   </FormField>
-                  <FormField field={priority} label={'优先级'}>
+                  <FormField field={priority} label={t('优先级')}>
                     <InputNumber hideButton field={priority} />
                   </FormField>
-                  <FormField field={isolate} label={'是否隔离'}>
+                  <FormField field={isolate} label={t('是否隔离')}>
                     <Switch field={isolate} />
                   </FormField>
                 </Form>
@@ -186,13 +208,15 @@ const renderInboundRule = props => {
         )
       })}
       <Button type={'link'} onClick={() => addDestination(destinations, service, namespace)}>
-        添加
+        <Trans>添加</Trans>
       </Button>
     </>
   )
 }
 
 export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const {
     selector,
@@ -223,25 +247,25 @@ export default purify(function CreateRoute(props: DuckCmpProps<CreateRouteDuck>)
     <>
       <Form>
         {/* <FormItem label={"编辑方式"}>
-          <Segment
-            options={EditTypeOptions}
-            value={editType.getValue()}
-            onChange={(value) => editType.setValue(value as any)}
-          ></Segment>
-        </FormItem> */}
+        <Segment
+          options={EditTypeOptions}
+          value={editType.getValue()}
+          onChange={(value) => editType.setValue(value as any)}
+        ></Segment>
+      </FormItem> */}
         {/* {!isEdit && (
-          <FormItem label={"规则类型"}>
-            <Segment
-              options={RULE_TYPE_OPTIONS}
-              value={ruleType.getValue()}
-              onChange={(value) => ruleType.setValue(value as any)}
-            ></Segment>
-          </FormItem>
-        )} */}
+        <FormItem label={"规则类型"}>
+          <Segment
+            options={RULE_TYPE_OPTIONS}
+            value={ruleType.getValue()}
+            onChange={(value) => ruleType.setValue(value as any)}
+          ></Segment>
+        </FormItem>
+      )} */}
         {editType.getValue() === EditType.Json && (
           <FormItem
             message={<Text theme={'danger'}>{currentJsonValue.getTouched() && currentJsonValue.getError()}</Text>}
-            label={'JSON编辑'}
+            label={t('JSON编辑')}
           >
             <section style={{ border: '1px solid #ebebeb', width: '1000px' }}>
               <MonacoEditor

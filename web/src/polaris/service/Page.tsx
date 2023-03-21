@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import BasicLayout from '../common/components/BaseLayout'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
@@ -13,6 +14,7 @@ import { enableNearbyString } from './operation/CreateDuck'
 import { isReadOnly, showAllLabels } from './utils'
 import MetadataSelectPanel from '../common/components/MetadataSelectPanel'
 import { replaceTags } from '../configuration/utils'
+import i18n from '../common/util/i18n'
 
 insertCSS(
   'service',
@@ -29,7 +31,7 @@ insertCSS(
 export const DefaultServiceTagAttribute = {
   type: 'input',
   key: 'serviceName',
-  name: '服务名',
+  name: i18n.t('服务名'),
 }
 export const NamespaceTagKey = 'namespace'
 export const ServiceNameTagKey = 'serviceName'
@@ -42,33 +44,33 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
     {
       type: 'single',
       key: NamespaceTagKey,
-      name: '命名空间',
+      name: i18n.t('命名空间'),
       values: namespaceList,
     },
     {
       type: 'input',
       key: ServiceNameTagKey,
-      name: '服务名',
+      name: i18n.t('服务名'),
     },
     {
       type: 'input',
       key: 'department',
-      name: '部门',
+      name: i18n.t('部门'),
     },
     {
       type: 'input',
       key: 'business',
-      name: '业务',
+      name: i18n.t('业务'),
     },
     {
       type: 'input',
       key: 'instanceIp',
-      name: '实例IP',
+      name: i18n.t('实例IP'),
     },
     {
       type: 'render',
       key: MetadataTagKey,
-      name: '标签',
+      name: i18n.t('标签'),
       render: ({ onSelect }) => {
         return (
           <MetadataSelectPanel
@@ -83,6 +85,8 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
   ]
 }
 export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { creators, selector } = duck
   const handlers = React.useMemo(
@@ -110,19 +114,19 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
     grid: { list },
   } = selector(store)
   return (
-    <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
+    <BasicLayout title={t('服务列表')} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
         <Justify
           left={
             <>
               <Button type={'primary'} onClick={handlers.create}>
-                新建
+                <Trans>新建</Trans>
               </Button>
               <Button
                 onClick={() => handlers.remove(selection.map(id => list.find(service => id === service.id)))}
                 disabled={selection.length === 0}
               >
-                删除
+                <Trans>删除</Trans>
               </Button>
             </>
           }
@@ -137,7 +141,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                 }}
                 value={tags}
                 onChange={value => handlers.changeTags(value)}
-                tips={'请选择条件进行过滤'}
+                tips={t('请选择条件进行过滤')}
                 hideHelp={true}
               />
               <Button type={'icon'} icon={'refresh'} onClick={handlers.reload}></Button>
@@ -167,7 +171,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                 const labelList = Object.keys(record.metadata || {})
                 return (
                   <Form>
-                    <FormItem label='服务标签'>
+                    <FormItem label={t('服务标签')}>
                       <FormText>
                         {labelList
                           .slice(0, 5)
@@ -176,16 +180,16 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                         {labelList.length > 5 && '...'}
                         {labelList.length > 5 && (
                           <Button onClick={() => showAllLabels(record.metadata)} type='link'>
-                            展示全部
+                            <Trans>展示全部</Trans>
                           </Button>
                         )}
                       </FormText>
                     </FormItem>
-                    <FormItem label='描述'>
+                    <FormItem label={t('描述')}>
                       <FormText>{record.comment || '-'}</FormText>
                     </FormItem>
-                    <FormItem label='就近访问'>
-                      <FormText>{record.metadata?.[enableNearbyString] ? '开启' : '关闭'}</FormText>
+                    <FormItem label={t('就近访问')}>
+                      <FormText>{record.metadata?.[enableNearbyString] ? t('开启') : t('关闭')}</FormText>
                     </FormItem>
                   </Form>
                 )
@@ -200,13 +204,13 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                 const replacedTags = replaceTags(NamespaceTagKey, value, tags, namespaceList, {
                   type: 'single',
                   key: NamespaceTagKey,
-                  name: '命名空间',
+                  name: t('命名空间'),
                   values: namespaceList,
                 })
                 handlers.changeTags(replacedTags)
               },
               all: {
-                text: '全部',
+                text: t('全部'),
                 value: '',
               },
               // 选项列表

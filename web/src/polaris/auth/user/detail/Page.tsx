@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next'
 import * as React from 'react'
 import { purify, DuckCmpProps } from 'saga-duck'
 import { Card, Form, Text, FormItem, Table, Button, FormText, Tabs, TabPanel } from 'tea-component'
@@ -12,6 +13,8 @@ import { isOwner, getUin, getOwnerUin } from '@src/polaris/common/util/common'
 import UseableResource from '../../common/UseableResource'
 
 export default purify(function(props: DuckCmpProps<Duck>) {
+  const { t } = useTranslation()
+
   const { duck, store, dispatch } = props
   const { selectors, selector, creators, ducks } = duck
   const composedId = selectors.composedId(store)
@@ -26,13 +29,15 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       store={store}
       duck={duck}
       dispatch={dispatch}
-      title={`用户详情（${composedId?.id}）`}
+      title={t('用户详情（{{attr0}}）', {
+        attr0: composedId?.id,
+      })}
       backRoute={'/user'}
     >
       {/* 内容区域一般使用 Card 组件显示内容 */}
       <Card>
         <Card.Body
-          title={'用户信息'}
+          title={t('用户信息')}
           operation={
             <>
               <Button
@@ -41,7 +46,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   dispatch(creators.modify())
                 }}
               >
-                编辑
+                <Trans>编辑</Trans>
               </Button>
               <Button
                 type={'link'}
@@ -49,19 +54,19 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   dispatch(creators.modifyPassword())
                 }}
               >
-                修改密码
+                <Trans>修改密码</Trans>
               </Button>
             </>
           }
         >
           <Form>
-            <FormItem label={'账号名'}>
+            <FormItem label={t('账号名')}>
               <FormText>{data?.name}</FormText>
             </FormItem>
-            <FormItem label={'账号ID'}>
+            <FormItem label={t('账号ID')}>
               <FormText>{composedId?.id}</FormText>
             </FormItem>
-            <FormItem label={'备注'}>
+            <FormItem label={t('备注')}>
               <FormText>
                 {comment || '-'}{' '}
                 <Button
@@ -73,10 +78,10 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 ></Button>
               </FormText>
             </FormItem>
-            <FormItem label={'手机号'}>
+            <FormItem label={t('手机号')}>
               <FormText>{mobile || '-'} </FormText>
             </FormItem>
-            <FormItem label={'邮箱'}>
+            <FormItem label={t('邮箱')}>
               <FormText>{email || '-'} </FormText>
             </FormItem>
             <FormItem label={'Token'}>
@@ -112,26 +117,26 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                     },
                     {
                       key: 'token_enable',
-                      header: '状态',
+                      header: t('状态'),
                       render: x =>
                         x.token_enable ? (
-                          <Text theme={'success'}>{'生效中'}</Text>
+                          <Text theme={'success'}>{t('生效中')}</Text>
                         ) : (
-                          <Text theme={'danger'}>{'已失效'}</Text>
+                          <Text theme={'danger'}>{t('已失效')}</Text>
                         ),
                     },
                     {
                       key: 'operation',
-                      header: '操作',
+                      header: t('操作'),
                       render: x => (
                         <>
                           {getOwnerUin().toString() !== x.id && isOwner() && (
                             <Button type='link' onClick={() => dispatch(creators.toggleToken())}>
-                              {token_enable ? '禁用' : '启用'}
+                              {token_enable ? t('禁用') : t('启用')}
                             </Button>
                           )}
                           <Button type='link' onClick={() => dispatch(creators.resetToken())}>
-                            {'重置'}
+                            {t('重置')}
                           </Button>
                         </>
                       ),
@@ -139,7 +144,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   ]}
                 ></Table>
               ) : (
-                <FormText>{'仅主账号可查看Token'}</FormText>
+                <FormText>{t('仅主账号可查看Token')}</FormText>
               )}
             </FormItem>
           </Form>

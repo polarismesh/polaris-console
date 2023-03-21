@@ -1,3 +1,5 @@
+import i18n from '@src/polaris/common/util/i18n'
+
 export enum FileStatus {
   Success = 'success',
   Fail = 'failure',
@@ -5,15 +7,15 @@ export enum FileStatus {
 }
 export const FileStatusMap = {
   [FileStatus.Success]: {
-    text: '发布成功',
+    text: i18n.t('发布成功'),
     theme: 'success',
   },
   [FileStatus.Fail]: {
-    text: '发布失败',
+    text: i18n.t('发布失败'),
     theme: 'danger',
   },
   [FileStatus.Edited]: {
-    text: '编辑待发布',
+    text: i18n.t('编辑待发布'),
     theme: 'warning',
   },
 }
