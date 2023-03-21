@@ -55,3 +55,8 @@ export const FaultDetectHttpMethodOptions = Object.keys(FaultDetectHttpMethod).m
   text: item,
   value: item,
 }))
+export const BlockHttpBodyMethod = [
+  FaultDetectHttpMethod.GET,
+  FaultDetectHttpMethod.DELETE,
+  FaultDetectHttpMethod.HEAD,
+] as string[]

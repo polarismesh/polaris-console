@@ -21,7 +21,12 @@ import { TAB } from '@src/polaris/service/detail/types'
 import CreateDuck from './CreateDuck'
 
 import { LimitMethodType, LimitMethodTypeOptions } from '@src/polaris/administration/accessLimiting/types'
-import { FaultDetectHttpMethodOptions, FaultDetectProtocol, FaultDetectProtocolOptions } from '../types'
+import {
+  BlockHttpBodyMethod,
+  FaultDetectHttpMethodOptions,
+  FaultDetectProtocol,
+  FaultDetectProtocolOptions,
+} from '../types'
 import { BreakerType } from '../../types'
 
 const addArrayFieldValue = (field, defaultValue) => {
@@ -289,16 +294,18 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                     ></Button>
                   )}
                 </FormItem>
-                <FormField field={body} label={'Body'}>
-                  <TeaInput.TextArea
-                    value={body.getValue()}
-                    onChange={v => {
-                      body.setValue(v)
-                    }}
-                    size={'m'}
-                    rows={4}
-                  />
-                </FormField>
+                {!BlockHttpBodyMethod.includes(method.getValue()) && (
+                  <FormField field={body} label={'Body'}>
+                    <TeaInput.TextArea
+                      value={body.getValue()}
+                      onChange={v => {
+                        body.setValue(v)
+                      }}
+                      size={'m'}
+                      rows={4}
+                    />
+                  </FormField>
+                )}
               </>
             )}
             {protocol.getValue() === FaultDetectProtocol.TCP && (
