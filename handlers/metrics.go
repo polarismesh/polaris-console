@@ -637,6 +637,9 @@ func DescribeServiceInstancesMetric(polarisServer *bootstrap.PolarisServer, conf
 			ctx.JSON(int(resp.Code), resp)
 			return
 		}
+		start := ctx.Query("start")
+		end := ctx.Query("end")
+		step := ctx.Query("step")
 
 		filter := map[string]string{}
 		queryMap := ctx.Request.URL.Query()
@@ -659,6 +662,36 @@ func DescribeServiceInstancesMetric(polarisServer *bootstrap.PolarisServer, conf
 			return nil
 		})
 
+		errg.Go(func() error {
+			resp, err := describeServiceInstanceRequestTimeout(conf, service, namespace, start, end, step)
+			if err != nil {
+				return err
+			}
+			promResult.Store("timeout", resp)
+			return nil
+		})
+
+		errg.Go(func() error {
+			resp, err := describeServiceInstanceRequestTotal(conf, service, namespace, start, end, step)
+			if err != nil {
+				return err
+			}
+			promResult.Store("total", resp)
+			return nil
+		})
+
+		discoverResp, _ := promResult.Load("instances")
+		timeoutVal, _ := promResult.Load("timeout")
+		totalVal, _ := promResult.Load("total")
+		resp, err := handleDescribeServiceInstancesMetric(discoverResp.(*model.DiscoverResponse), timeoutVal.(map[string]float64), totalVal.(map[string]*model.InstanceMetric))
+		if err != nil {
+			resp := model.NewResponse(int32(api.ExecuteException))
+			resp.Info = err.Error()
+			ctx.JSON(model.CalcCode(resp.Code), resp)
+			return
+		}
+		ctx.JSON(model.CalcCode(resp.Code), resp)
+		return
 	}
 }
 
@@ -704,12 +737,13 @@ func handleDescribeServiceInstancesMetric(discoverResp *model.DiscoverResponse, 
 	return &resp, nil
 }
 
-func describeServiceInstanceRequestTimeout(conf *bootstrap.Config, start, end, step string) (map[string]float64, error) {
+func describeServiceInstanceRequestTimeout(conf *bootstrap.Config, service, namespace,
+	start, end, step string) (map[string]float64, error) {
 	params := map[string]string{
 		"start": start,
 		"end":   end,
 		"step":  step,
-		"query": "avg(upstream_rq_timeout{}) by (callee_service, callee_namespace, callee_instance)",
+		"query": fmt.Sprintf(`"avg(upstream_rq_timeout{callee_service="%s", callee_namespace="%s"}) by (callee_instance)`, service, namespace),
 	}
 
 	queryParams := &url.Values{}
@@ -752,12 +786,13 @@ func describeServiceInstanceRequestTimeout(conf *bootstrap.Config, start, end, s
 	return instanceTimeout, nil
 }
 
-func describeServiceInstanceRequestTotal(conf *bootstrap.Config, start, end, step string) (map[string]*model.InstanceMetric, error) {
+func describeServiceInstanceRequestTotal(conf *bootstrap.Config, service, namespace,
+	start, end, step string) (map[string]*model.InstanceMetric, error) {
 	params := map[string]string{
 		"start": start,
 		"end":   end,
 		"step":  step,
-		"query": "sum(upstream_rq_total{}) by (callee_service, callee_namespace, callee_instance, call_result)",
+		"query": fmt.Sprintf(`sum(upstream_rq_total{callee_service="%s", callee_namespace="%s"}) by (callee_instance, call_result)`, service, namespace),
 	}
 
 	queryParams := &url.Values{}
@@ -806,6 +841,217 @@ func describeServiceInstanceRequestTotal(conf *bootstrap.Config, start, end, ste
 	}
 
 	return instanceTotal, nil
+}
+
+// DescribeServiceCallerMetric 查询服务调用者级别监控指标列表视图
+func DescribeServiceCallerMetric(polarisServer *bootstrap.PolarisServer, conf *bootstrap.Config) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		namespace := ctx.Query("callee_namespace")
+		service := ctx.Query("callee_service")
+		if len(namespace) == 0 || len(service) == 0 {
+			resp := model.NewResponse(int32(api.BadRequest))
+			resp.Info = "callee_namespace or callee_service is empty"
+			ctx.JSON(int(resp.Code), resp)
+			return
+		}
+		start := ctx.Query("start")
+		end := ctx.Query("end")
+		step := ctx.Query("step")
+
+		filter := map[string]string{}
+		queryMap := ctx.Request.URL.Query()
+		for i := range queryMap {
+			if len(queryMap[i]) > 0 {
+				filter[i] = queryMap[i][0]
+			}
+		}
+
+		promResult := &sync.Map{}
+		errg := &errgroup.Group{}
+
+		errg.Go(func() error {
+			resp, err := describeServiceCallerMetricRequestTimeout(conf, service, namespace, start, end, step)
+			if err != nil {
+				return err
+			}
+			promResult.Store("timeout", resp)
+			return nil
+		})
+
+		errg.Go(func() error {
+			resp, err := describeServiceCallerMetricRequestTotal(conf, service, namespace, start, end, step)
+			if err != nil {
+				return err
+			}
+			promResult.Store("total", resp)
+			return nil
+		})
+
+		timeoutVal, _ := promResult.Load("timeout")
+		totalVal, _ := promResult.Load("total")
+		resp, err := handleDescribeServiceCallerMetric(timeoutVal.(map[string]map[string]map[string]float64), totalVal.(map[string]map[string]map[string]*model.CallerMetric))
+		if err != nil {
+			resp := model.NewResponse(int32(api.ExecuteException))
+			resp.Info = err.Error()
+			ctx.JSON(model.CalcCode(resp.Code), resp)
+			return
+		}
+		ctx.JSON(model.CalcCode(resp.Code), resp)
+		return
+	}
+}
+
+func handleDescribeServiceCallerMetric(timeoutVal map[string]map[string]map[string]float64, totalVal map[string]map[string]map[string]*model.CallerMetric) (*model.Response, error) {
+
+	ret := make([]*model.CallerMetric, 0, len(totalVal))
+
+	for ns := range totalVal {
+		for svc := range totalVal[ns] {
+			for callerIp := range totalVal[ns][svc] {
+				callerMetric := totalVal[ns][svc][callerIp]
+				if _, ok := timeoutVal[ns]; !ok {
+					continue
+				}
+				if _, ok := timeoutVal[ns][svc]; !ok {
+					continue
+				}
+				if _, ok := timeoutVal[ns][svc][callerIp]; !ok {
+					continue
+				}
+				callerMetric.AvgTimeout = timeoutVal[ns][svc][callerIp]
+				ret = append(ret, callerMetric)
+			}
+		}
+	}
+
+	resp := model.NewResponse(int32(api.ExecuteSuccess))
+	resp.Data = ret
+	return &resp, nil
+}
+
+func describeServiceCallerMetricRequestTotal(conf *bootstrap.Config, service, namespace, start, end, step string) (map[string]map[string]map[string]*model.CallerMetric, error) {
+	params := map[string]string{
+		"start": start,
+		"end":   end,
+		"step":  step,
+		"query": fmt.Sprintf(`sum(upstream_rq_total{callee_service="%s", callee_namespace="%s"}) by (caller_namespace, caller_service, caller_ip, call_result)`, service, namespace),
+	}
+
+	queryParams := &url.Values{}
+	for k, v := range params {
+		queryParams.Add(k, v)
+	}
+
+	promqlUrl := fmt.Sprintf("http://%s/api/v1/query_range?%s", conf.MonitorServer.Address, queryParams.Encode())
+	resp, err := sendToPrometheus(promqlUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	callerTotal := map[string]map[string]map[string]*model.CallerMetric{}
+	for i := range resp.PrometheusData.Result {
+		result := resp.PrometheusData.Result[i]
+		callResult := result.Metric["call_result"]
+		callerIp := result.Metric["caller_ip"]
+		callerService := result.Metric["caller_service"]
+		callerNamespace := result.Metric["caller_namespace"]
+
+		if _, ok := callerTotal[callerNamespace]; !ok {
+			callerTotal[callerNamespace] = make(map[string]map[string]*model.CallerMetric)
+		}
+		if _, ok := callerTotal[callerNamespace][callerService]; !ok {
+			callerTotal[callerNamespace][callerService] = make(map[string]*model.CallerMetric)
+		}
+		if _, ok := callerTotal[callerNamespace][callerService][callerIp]; !ok {
+			callerTotal[callerNamespace][callerService][callerIp] = &model.CallerMetric{
+				Host: callerIp,
+			}
+		}
+
+		caller := callerTotal[callerNamespace][callerService][callerIp]
+
+		var total int64
+		for i := range result.Values {
+			metricVal := fmt.Sprintf("%s", result.Values[i][1])
+			if metricVal == "NaN" {
+				continue
+			}
+			v, _ := strconv.ParseInt(metricVal, 10, 64)
+			total += v
+		}
+
+		switch callResult {
+		case string(RetFail):
+			caller.FailedRequest += total
+		case string(RetFlowControl):
+			caller.LimitedRequest += total
+		case string(RetReject):
+			caller.CircuitbreakerRequest += total
+		}
+
+		caller.TotalRequest += total
+		caller.CalSuccessRate()
+	}
+
+	return callerTotal, nil
+}
+
+func describeServiceCallerMetricRequestTimeout(conf *bootstrap.Config, service, namespace,
+	start, end, step string) (map[string]map[string]map[string]float64, error) {
+
+	params := map[string]string{
+		"start": start,
+		"end":   end,
+		"step":  step,
+		"query": fmt.Sprintf(`"avg(upstream_rq_timeout{callee_service="%s", callee_namespace="%s"}) by (caller_namespace, caller_service, caller_ip)`, service, namespace),
+	}
+
+	queryParams := &url.Values{}
+	for k, v := range params {
+		queryParams.Add(k, v)
+	}
+
+	promqlUrl := fmt.Sprintf("http://%s/api/v1/query_range?%s", conf.MonitorServer.Address, queryParams.Encode())
+	resp, err := sendToPrometheus(promqlUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	callerTimeout := map[string]map[string]map[string]float64{}
+	for i := range resp.PrometheusData.Result {
+		result := resp.PrometheusData.Result[i]
+		callerIp := result.Metric["caller_ip"]
+		callerService := result.Metric["caller_service"]
+		callerNamespace := result.Metric["caller_namespace"]
+
+		if _, ok := callerTimeout[callerNamespace]; !ok {
+			callerTimeout[callerNamespace] = make(map[string]map[string]float64)
+		}
+		if _, ok := callerTimeout[callerNamespace][callerService]; !ok {
+			callerTimeout[callerNamespace][callerService] = make(map[string]float64)
+		}
+		if _, ok := callerTimeout[callerNamespace][callerService][callerIp]; !ok {
+			callerTimeout[callerNamespace][callerService][callerIp] = 0
+		}
+
+		var (
+			totalTimeout = float64(0)
+			total        = 0
+		)
+		for i := range result.Values {
+			metricVal := fmt.Sprintf("%s", result.Values[i][1])
+			if metricVal == "NaN" {
+				continue
+			}
+			total++
+			v, _ := strconv.ParseFloat(metricVal, 64)
+			totalTimeout += v
+		}
+
+		callerTimeout[callerNamespace][callerService][callerIp] = totalTimeout / float64(total)
+	}
+
+	return callerTimeout, nil
 }
 
 func sendDiscoverRequest(polarisServer *bootstrap.PolarisServer, namespace,

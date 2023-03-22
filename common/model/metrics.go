@@ -80,27 +80,35 @@ const (
 )
 
 type InstanceMetric struct {
-	ID                    string            `json:"id"`
-	Host                  string            `json:"host"`
-	Port                  uint32            `json:"port"`
-	Status                InstanceStatus    `json:"status"`
-	Isolate               bool              `json:"isolate"`
-	SuccessRate           float64           `json:"success_rate"`
-	TotalRequest          int64             `json:"total_request"`
-	FailedRequest         int64             `json:"failed_request"`
-	LimitedRequest        int64             `json:"limited_request"`
-	CircuitbreakerRequest int64             `json:"circuitbreaker_request"`
-	AvgTimeout            float64           `json:"avg_timeout"`
-	ExtendInfo            map[string]string `json:"extend_info"`
-}
-
-func (i *InstanceMetric) PutExtendInfo(key, val string) {
-	if len(i.ExtendInfo) == 0 {
-		i.ExtendInfo = map[string]string{}
-	}
-	i.ExtendInfo[key] = val
+	ID                    string         `json:"id"`
+	Host                  string         `json:"host"`
+	Port                  uint32         `json:"port"`
+	Status                InstanceStatus `json:"status"`
+	Isolate               bool           `json:"isolate"`
+	SuccessRate           float64        `json:"success_rate"`
+	TotalRequest          int64          `json:"total_request"`
+	FailedRequest         int64          `json:"failed_request"`
+	LimitedRequest        int64          `json:"limited_request"`
+	CircuitbreakerRequest int64          `json:"circuitbreaker_request"`
+	AvgTimeout            float64        `json:"avg_timeout"`
 }
 
 func (i *InstanceMetric) CalSuccessRate() {
+	i.SuccessRate = (float64(i.TotalRequest) - float64(i.FailedRequest) - float64(i.CircuitbreakerRequest) - float64(i.LimitedRequest)) / float64(i.TotalRequest)
+}
+
+type CallerMetric struct {
+	Host                  string  `json:"host"`
+	Namespace             string  `json:"namespace"`
+	Service               string  `json:"service"`
+	SuccessRate           float64 `json:"success_rate"`
+	TotalRequest          int64   `json:"total_request"`
+	FailedRequest         int64   `json:"failed_request"`
+	LimitedRequest        int64   `json:"limited_request"`
+	CircuitbreakerRequest int64   `json:"circuitbreaker_request"`
+	AvgTimeout            float64 `json:"avg_timeout"`
+}
+
+func (i *CallerMetric) CalSuccessRate() {
 	i.SuccessRate = (float64(i.TotalRequest) - float64(i.FailedRequest) - float64(i.CircuitbreakerRequest) - float64(i.LimitedRequest)) / float64(i.TotalRequest)
 }
