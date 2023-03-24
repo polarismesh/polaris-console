@@ -13,7 +13,7 @@ export class DynamicMonitorFetcherDuck extends DynamicDuck {
     return MetricCardFetcher
   }
 }
-export interface QuerySet {
+export interface MetricConfig {
   name: string
   query: string
   boardFunction?: Function
@@ -26,10 +26,10 @@ export interface QuerySet {
 export class MetricCardFetcher extends Fetcher {
   Data: {
     line: Array<DataPoint>
-    board: Array<{ name: string; value: number; unit: string }>
+    board?: Array<{ name: string; value: number; unit: string }>
   }
   Param: {
-    query: QuerySet[]
+    query: MetricConfig[]
     start: number
     end: number
     step: number
@@ -53,7 +53,7 @@ export class MetricCardFetcher extends Fetcher {
     for (const res of results) {
       if (res.length === 0) convertedData = convertedData.concat([])
       const formattedArray = []
-      const currentQuery = param.query[resIndex] as QuerySet
+      const currentQuery = param.query[resIndex] as MetricConfig
       const reduceValue = res[0]?.values.reduce((prev, curr, currentIndex, currentArray) => {
         const [time, value] = curr
         if (value === 'NaN') {
