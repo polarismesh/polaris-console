@@ -117,9 +117,11 @@ const FaultDetectCreate = connectWithDuck(FaultDetectCreatePage, FaultDetectCrea
 import RegistryMonitorPage from '@src/polaris/monitor/registryMonitor/Page'
 import RegistryMonitorPageDuck from '@src/polaris/monitor/registryMonitor/PageDuck'
 const RegistryMonitor = connectWithDuck(RegistryMonitorPage, RegistryMonitorPageDuck)
-
 import { cacheCheckFeature, FeatureDisplayType } from './polaris/common/util/checkFeature'
 import insertCSS from './polaris/common/helpers/insertCSS'
+import ServiceMonitorPage from '@src/polaris/monitor/serviceMonitor/Page'
+import ServiceMonitorPageDuck from '@src/polaris/monitor/serviceMonitor/PageDuck'
+const ServiceMonitor = connectWithDuck(ServiceMonitorPage, ServiceMonitorPageDuck)
 
 insertCSS(
   `menu`,
@@ -134,6 +136,7 @@ insertCSS(
   }
 `,
 )
+
 
 export default function root() {
   const history = useHistory()
@@ -301,6 +304,7 @@ export default function root() {
               <Route exact path='/circuitBreaker' component={CircuitBreaker} />
               <Route exact path='/faultDetect-create' component={FaultDetectCreate} />
               <Route exact path='/registry-monitor' component={RegistryMonitor} />
+              <Route exact path='/service-monitor' component={ServiceMonitor} />
             </Switch>
           </Content>
         </Body>

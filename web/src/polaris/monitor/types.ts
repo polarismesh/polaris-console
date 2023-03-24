@@ -90,7 +90,7 @@ export enum MonitorLabelKey {
   CallerIp = 'caller_ip', //主调IP
 }
 
-export const MetricNameOptions = Object.keys(MetricNameMap).map((key) => ({
+export const MetricNameOptions = Object.keys(MetricNameMap).map(key => ({
   text: MetricNameMap[key].text,
   value: key,
 }))
@@ -131,10 +131,60 @@ export const LabelKeyMap = {
   },
 }
 
-export const LabelKeyOptions = Object.keys(LabelKeyMap).map((key) => ({
+export const LabelKeyOptions = Object.keys(LabelKeyMap).map(key => ({
   text: LabelKeyMap[key].text,
   value: key,
 }))
 
 export const OptionSumKey = '__SUM__'
 export const OptionAllKey = '__ALL__'
+
+export enum LineColor {
+  Blue = '#006EFF',
+  Green = '#0ABF5B',
+  Red = '#E54545',
+  Yellow = '#FF7200',
+  Gray = '#6E829D',
+}
+
+export const DefaultLineColors = Object.values(LineColor)
+
+export const LatestValueReduceFunction = (prev, curr, index, array) => {
+  const [, value] = curr
+  if (index === array?.length - 1) return Math.floor(Number(value))
+}
+
+export const SumUpReduceFunction = (prev, curr, index, array) => {
+  const [, value] = curr
+  if (index === array.length - 1) return Math.floor(prev + Number(value))
+  return prev + Number(value)
+}
+
+export const AvgReduceFunction = (prev, curr, index, array) => {
+  const [, value, oldVal] = curr
+  let numVal = Number(value)
+  if (oldVal === 'NaN') {
+    numVal = 0
+  }
+  if (index === array.length - 1)
+    return (prev / array.filter(item => item.value !== '0' || item.value !== 'NaN').length).toFixed(2)
+  return prev + numVal
+}
+
+export const MaxReduceFunction = (prev, curr, index, array) => {
+  const ppre = prev ? prev : Number.MIN_VALUE
+  const [, value] = curr
+  if (!value) {
+    return ppre
+  }
+  return Math.max(ppre, Number(value)).toFixed(2)
+}
+
+export const MinReduceFunction = (prev, curr, index, array) => {
+  const ppre = prev ? prev : Number.MAX_VALUE
+  const [, value] = curr
+  if (!value) {
+    return ppre
+  }
+  return Math.min(ppre, Number(value)).toFixed(2)
+}
