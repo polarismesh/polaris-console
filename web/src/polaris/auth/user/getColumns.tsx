@@ -4,6 +4,7 @@ import Duck, { UserItem } from './PageDuck'
 import { Text, Button, Dropdown, List, ListItem } from 'tea-component'
 import { Column } from '@src/polaris/common/ducks/GridPage'
 import { isOwner, getUin, getOwnerUin } from '@src/polaris/common/util/common'
+import { Link } from 'react-router-dom'
 
 export default ({ duck: { creators }, dispatch }: DuckCmpProps<Duck>): Column<UserItem>[] => {
   return [
@@ -13,12 +14,12 @@ export default ({ duck: { creators }, dispatch }: DuckCmpProps<Duck>): Column<Us
       render: x => {
         const canRead = isOwner() || getUin().toString() === x.id
         return canRead ? (
-          <a style={{ display: 'block' }} data-event={'nav'} href={`/#/user-detail?id=${x.id}`}>
+          <Link style={{ display: 'block' }} data-event={'nav'} to={`/user-detail?id=${x.id}`}>
             <Text>
               {x.name}
               {getUin().toString() === x.id && '（当前登录）'}
             </Text>
-          </a>
+          </Link>
         ) : (
           <Text>
             {x.name} {getUin().toString() === x.id && '（当前登录）'}

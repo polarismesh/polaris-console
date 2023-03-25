@@ -6,6 +6,7 @@ import { Text, Button, Dropdown, List, ListItem } from 'tea-component'
 import { UserGroup } from '../model'
 import { Column } from '@src/polaris/common/ducks/GridPage'
 import { isOwner } from '@src/polaris/common/util/common'
+import { Link } from 'react-router-dom'
 
 export default ({ duck: { creators, selector }, store, dispatch }: DuckCmpProps<Duck>): Column<UserGroup>[] => {
   const { composedId } = selector(store)
@@ -15,9 +16,9 @@ export default ({ duck: { creators, selector }, store, dispatch }: DuckCmpProps<
       key: 'name',
       header: '用户组名称',
       render: x => (
-        <a style={{ display: 'block' }} data-event={'nav'} href={`/#/usergroup-detail?id=${x.id}`}>
+        <Link style={{ display: 'block' }} data-event={'nav'} to={`/usergroup-detail?id=${x.id}`}>
           <Text>{x.name}</Text>
-        </a>
+        </Link>
       ),
       required: true,
     },

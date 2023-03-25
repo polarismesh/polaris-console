@@ -2,11 +2,12 @@ import { CardBodyProps, CardProps, Card, LoadingTip, Row, Col, MetricsBoard, Tex
 import React from 'react'
 import { useDuck } from 'saga-duck'
 import { BasicArea } from 'tea-chart'
-import { MetricCardFetcher, QuerySet } from './MetricCardFetcher'
-import { compressNumber, DefaultLineColors, roundToN } from './types'
+import { MetricCardFetcher, MetricConfig } from './MetricCardFetcher'
+import { compressNumber, roundToN } from './types'
+import { DefaultLineColors } from '../types'
 
 interface Props {
-  query: QuerySet[]
+  query: MetricConfig[]
   start: number
   end: number
   step: number
