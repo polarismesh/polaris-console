@@ -825,6 +825,9 @@ func describeServiceInstanceRequestTotal(conf *bootstrap.Config, service, namesp
 	if len(calleeMethod) != 0 {
 		params["query"] = fmt.Sprintf(`sum(upstream_rq_total{callee_service="%s", callee_namespace="%s", callee_method="%s"}) by (callee_instance)`, service, namespace, calleeMethod)
 	}
+	if len(calleeMethod) != 0 {
+		params["query"] = fmt.Sprintf(`sum(upstream_rq_total{callee_service="%s", callee_namespace="%s", callee_method="%s"}) by (callee_instance)`, service, namespace, calleeMethod)
+	}
 
 	queryParams := &url.Values{}
 	for k, v := range params {
