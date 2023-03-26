@@ -26,8 +26,9 @@ export interface Instance {
 }
 
 export enum HEALTH_STATUS {
-  HEALTH = 'true',
-  ABNORMAL = 'false',
+  HEALTH = 'health',
+  ABNORMAL = 'unhealth',
+  OFFLINE = 'offline',
 }
 
 export enum ISOLATE_STATUS {
@@ -52,6 +53,10 @@ export const HEALTH_STATUS_MAP = {
   },
   [HEALTH_STATUS.ABNORMAL]: {
     text: '异常',
+    theme: 'danger',
+  },
+  [HEALTH_STATUS.OFFLINE]: {
+    text: '下线',
     theme: 'danger',
   },
 }

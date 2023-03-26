@@ -30,8 +30,8 @@ import (
 // AdminRouter 路由请求
 func AdminRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	// 后端server路由组
-	v1 := webSvr.Group("/")
-	v1.GET("/server/nodes", handlers.DescribeServerNodes(&config.PolarisServer, config))
+	v1 := webSvr.Group("/admin/v1")
+	v1.GET("/apidocs.json", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
 	v1.GET("/functions", handlers.DescribeFunctuionList())
 	v1.GET("/console/ability", func(ctx *gin.Context) {
 		futures := strings.Split(config.Futures, ",")

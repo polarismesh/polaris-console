@@ -208,6 +208,7 @@ func parseJWTThenSetToken(c *gin.Context, conf *bootstrap.Config) (string, strin
 		return []byte(conf.WebServer.JWT.SecretKey), nil
 	})
 	if _, ok := err.(*jwt.ValidationError); ok {
+		log.Error("parse jwt with claims fail", zap.Error(err))
 		return "", "", err
 	}
 	claims, ok := token.Claims.(*jwtClaims)

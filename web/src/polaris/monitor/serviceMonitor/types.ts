@@ -43,16 +43,16 @@ export const getQueryMap = {
       {
         name: '成功请求数',
         query: conditions.length
-          ? `sum(upstream_rq_total{call_result="success",${conditionString}}) or on() vector(0)`
-          : 'sum(upstream_rq_total{call_result="success"}) or on() vector(0)',
+          ? `sum(upstream_rq_total{callee_result="success",${conditionString}}) or on() vector(0)`
+          : 'sum(upstream_rq_total{callee_result="success"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
       {
         name: '失败请求数',
         query: conditions.length
-          ? `sum(upstream_rq_total{call_result!~"success",${conditionString}}) or on() vector(0)`
-          : 'sum(upstream_rq_total{call_result!~"success"}) or on() vector(0)',
+          ? `sum(upstream_rq_total{callee_result!~"success",${conditionString}}) or on() vector(0)`
+          : 'sum(upstream_rq_total{callee_result!~"success"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },

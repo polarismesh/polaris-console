@@ -1,6 +1,6 @@
 module github.com/polarismesh/polaris-console
 
-go 1.17
+go 1.19
 
 require (
 	github.com/gin-gonic/gin v1.4.0

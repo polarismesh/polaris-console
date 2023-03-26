@@ -74,7 +74,7 @@ export interface MetricInterface {
 
 export async function getMetricsInterface() {
   const res = await getApiRequest<MetricInterface[]>({
-    action: '/metrics/server/interfaces',
+    action: 'metrics/v1/server/interfaces',
     data: {},
   })
 
@@ -83,7 +83,7 @@ export async function getMetricsInterface() {
 
 export async function getNamespaceNodes() {
   const res = await getApiRequest<{ data: string[] }>({
-    action: 'server/nodes',
+    action: 'metrics/v1/server/nodes',
     data: {},
   })
 
