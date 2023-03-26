@@ -218,7 +218,7 @@ export default function Overview(props: Props) {
                     records={sortedInstanceList || []}
                     columns={[
                       {
-                        key: 'id',
+                        key: 'host',
                         header: '实例IP',
                       },
                       {
