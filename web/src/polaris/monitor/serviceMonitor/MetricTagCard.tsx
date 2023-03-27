@@ -40,21 +40,25 @@ export default function(props: Props) {
     <Card {...cardProps}>
       <Card.Body {...cardBodyProps}>
         <div style={{ marginTop: '20px' }}>{loading && <LoadingTip style={{ margin: '245px auto' }} />}</div>
-        <Row>
-          {data.map(item => {
-            return (
-              <Col key={item.code} xxl={4} xl={6} lg={8} md={8} sm={8} xs={8}>
-                <section className={'retcode-tag'}>
-                  <Row showSplitLine>
-                    <Col>{item.code}</Col>
-                    <Col>{compressNumber(item.value)}</Col>
-                    <Col>{item.percent}%</Col>
-                  </Row>
-                </section>
-              </Col>
-            )
-          })}
-        </Row>
+        {data.length ? (
+          <Row>
+            {data.map(item => {
+              return (
+                <Col key={item.code} xxl={6} xl={8} lg={12} md={12} sm={12} xs={12}>
+                  <section className={'retcode-tag'}>
+                    <Row showSplitLine>
+                      <Col>{item.code}</Col>
+                      <Col>{compressNumber(item.value)}</Col>
+                      <Col>{item.percent}%</Col>
+                    </Row>
+                  </section>
+                </Col>
+              )
+            })}
+          </Row>
+        ) : (
+          '暂无数据'
+        )}
       </Card.Body>
     </Card>
   )

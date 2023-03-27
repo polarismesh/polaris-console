@@ -26,7 +26,6 @@ export default function(props: Props) {
   if (!data) return <LoadingTip />
   const { line, board } = data
   const colorArray = query.filter(item => item.color).map(item => item.color)
-
   return (
     <Card {...cardProps}>
       <Card.Body {...cardBodyProps} style={{ height: '500px' }}>

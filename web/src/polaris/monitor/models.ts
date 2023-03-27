@@ -1,6 +1,5 @@
 import { APIRequestOption, getApiRequest } from '@src/polaris/common/util/apiRequest'
 import axios from 'axios'
-import { type } from 'os'
 
 interface PromethusResponse<T> {
   data: T
@@ -211,6 +210,34 @@ export interface MetricCaller {
   host: string // 命名空间
   service: string // 服务名称
   namespace: string // 命名空间
+  success_rate: string // 成功率
+  total_request: string // 总请求数
+  failed_request: string // 失败请求数
+  limited_request: string // 限流请求数
+  circuitbreaker_request: string // 熔断请求数
+  avg_timeout: string // 平均时延
+}
+
+export async function getDiscoverMetrics(params: GetMetricServiceParams) {
+  const res = await getApiRequest<MetricService[]>({
+    action: '/v1/Discover',
+    data: params,
+  })
+
+  return res
+}
+export interface GetMetricServiceParams {
+  name?: string
+  namespace: string
+  start: number
+  end: number
+  step: number
+}
+export interface MetricService {
+  name: string // 接口名称
+  namespace: string // 接口描述
+  healthy_instance_count: string // 健康实例数
+  total_instance_count: string // 中实例数
   success_rate: string // 成功率
   total_request: string // 总请求数
   failed_request: string // 失败请求数

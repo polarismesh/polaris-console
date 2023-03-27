@@ -21,7 +21,6 @@ export default function(props: Props) {
     if (!query) return
     dispatch(duck.creators.fetch({ query, start, end, step }))
   }, [queryString, start, end, step])
-  console.log(queryString)
   const { loading, data, filter } = duck.selector(store)
   if (!data) return <LoadingTip />
   const { pie } = data
@@ -35,7 +34,16 @@ export default function(props: Props) {
             <BasicPie
               circle
               height={250}
-              legend={{ align: 'right' }}
+              legend={{
+                align: 'right',
+                custom: legendData => {
+                  const sortedLegendData = pie.map(item => {
+                    const target = legendData.find(legend => item.type === legend.key)
+                    return target
+                  })
+                  legendData = sortedLegendData
+                },
+              }}
               dataSource={pie}
               position='value'
               color='type'

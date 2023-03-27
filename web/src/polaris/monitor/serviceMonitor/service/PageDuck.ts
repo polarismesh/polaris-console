@@ -5,10 +5,10 @@ import { SortBy } from 'tea-component/lib/table/addons'
 import {
   CategoryAllInterface,
   CategoryInterface,
+  getDiscoverMetrics,
   getMetricCaller,
   getMetricInstance,
   getMetricInterface,
-  getMetricService,
   MetricCaller,
   MetricInstance,
   MetricService,
@@ -58,7 +58,7 @@ export default class ServiceDuck extends DetailPage {
       serviceList: reduceFromPayload(types.SET_SERVICE_LIST, [] as MetricService[]),
       interfaceInfo: reduceFromPayload(types.SET_INTERFACE_INFO, {
         category_interfaces: [] as CategoryInterface[],
-        category_service: {} as CategoryAllInterface,
+        category_service: null as CategoryAllInterface,
       }),
       instanceList: reduceFromPayload(types.SET_INSTANCE_LIST, [] as MetricInstance[]),
       sort: reduceFromPayload<SortBy[]>(types.SET_SORT, [] as SortBy[]),
@@ -91,8 +91,9 @@ export default class ServiceDuck extends DetailPage {
     yield* super.saga()
     yield takeLatest(types.LOAD, function*() {
       const { composedId, service } = selector(yield select())
-      const { data: serviceList } = yield getMetricService({ ...composedId })
+      const { data: serviceList } = yield getDiscoverMetrics({ ...composedId })
       yield put({ type: types.SET_SERVICE_LIST, payload: serviceList })
+      if (serviceList.length === 0) return
       const serviceExisted = serviceList.find(item => item.name === service)
       if (!service || !serviceExisted) {
         yield put({ type: types.SET_SERVICE, payload: serviceList?.[0]?.name })

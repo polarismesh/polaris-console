@@ -62,6 +62,7 @@ export default function Overview(props: Props) {
         return order === 'desc' ? Number(a[sortby]) - Number(b[sortby]) : Number(b[sortby]) - Number(a[sortby])
       })
     : processedCallerList
+
   return (
     <>
       <section style={{ borderBottom: '1px solid #d0d5dd', padding: '40px 0px', marginBottom: '20px' }}>
@@ -93,7 +94,11 @@ export default function Overview(props: Props) {
         <Col span={8}>
           <SearchBox></SearchBox>
           <section style={{ border: '1px solid #d0d5dd' }}>
-            <List type={'option'} split={'divide'} style={{ maxHeight: '1700px', overflow: 'scroll' }}>
+            <List
+              type={'option'}
+              split={'divide'}
+              style={{ maxHeight: '1700px', minHeight: '1000px', overflow: 'scroll' }}
+            >
               <ListItem>
                 <Justify
                   left={
@@ -108,18 +113,22 @@ export default function Overview(props: Props) {
                   }
                 ></Justify>
               </ListItem>
-              {category_service && (
-                <ListItem
-                  key={category_service?.interface_name}
-                  onClick={() => {
-                    dispatch(creators.setInterface(''))
-                  }}
-                  selected={interfaceName === ''}
-                >
+
+              <ListItem
+                key={category_service?.interface_name}
+                onClick={() => {
+                  dispatch(creators.setInterface(''))
+                }}
+                selected={interfaceName === ''}
+              >
+                {!category_service && <>{service ? <LoadingTip /> : '暂无数据'}</>}
+                {category_service && (
                   <Justify
                     left={
                       <>
-                        <Text reset>所有接口</Text>
+                        <Text reset overflow style={{ width: '200px' }}>
+                          所有接口
+                        </Text>
                       </>
                     }
                     right={
@@ -133,9 +142,12 @@ export default function Overview(props: Props) {
                       </>
                     }
                   ></Justify>
-                </ListItem>
-              )}
+                )}
+              </ListItem>
               {category_interfaces.map(item => {
+                const rateString = `${compressNumber(item.success_request) ?? '-'}/${compressNumber(
+                  item.flow_control_request,
+                ) ?? '-'}/${compressNumber(item.abnormal_request) ?? '-'}/${roundToN(item.avg_timeout, 2)}ms`
                 return (
                   <ListItem
                     key={item.interface_name}
@@ -143,19 +155,25 @@ export default function Overview(props: Props) {
                       dispatch(creators.setInterface(item.interface_name))
                     }}
                     selected={interfaceName === item.interface_name}
+                    tooltip={
+                      <>
+                        <Text parent={'p'}>{item.interface_name}</Text>
+                        <Text parent={'p'}>{rateString}</Text>
+                      </>
+                    }
                   >
                     <Justify
                       left={
                         <>
-                          <Text reset>{item.interface_name}</Text>
+                          <Text reset overflow style={{ width: '150px' }}>
+                            {item.interface_name}
+                          </Text>
                         </>
                       }
                       right={
                         <>
-                          <Text reset>
-                            {compressNumber(item.success_request) ?? '-'}/
-                            {compressNumber(item.flow_control_request) ?? '-'}/
-                            {compressNumber(item.abnormal_request) ?? '-'}/{roundToN(item.avg_timeout, 2)}ms
+                          <Text reset overflow style={{ width: '150px' }}>
+                            {rateString}
                           </Text>
                         </>
                       }
@@ -174,7 +192,7 @@ export default function Overview(props: Props) {
                 query={getQueryMap[MetricName.Request]({
                   calleeNamespace: namespace,
                   calleeService: service,
-                  calleeInterface: interfaceName,
+                  calleeMethod: interfaceName,
                 })}
                 cardProps={{ bordered: true }}
                 cardBodyProps={{ title: '服务请求数' }}
@@ -185,7 +203,7 @@ export default function Overview(props: Props) {
                   ...basicQueryParam,
                   calleeNamespace: namespace,
                   calleeService: service,
-                  calleeInterface: interfaceName,
+                  calleeMethod: interfaceName,
                 })}
                 cardProps={{ bordered: true }}
                 cardBodyProps={{ title: '服务请求时延' }}
@@ -195,7 +213,7 @@ export default function Overview(props: Props) {
                 query={getTableQueryMap[MetricName.RetCodeDistribute]({
                   calleeNamespace: namespace,
                   calleeService: service,
-                  calleeInterface: interfaceName,
+                  calleeMethod: interfaceName,
                 })}
                 cardProps={{ bordered: true }}
                 cardBodyProps={{ title: '返回码统计' }}
@@ -389,7 +407,7 @@ export default function Overview(props: Props) {
               </Card>
             </>
           ) : (
-            <LoadingTip />
+            <>{serviceList?.length ? <LoadingTip /> : '暂无数据'}</>
           )}
         </Col>
       </Row>
