@@ -165,9 +165,12 @@ export default class RegistryDetailDuck extends DetailPageDuck {
         return
       }
       const subDuck = ducks[tab]
-      yield put(subDuck.creators.load({ ...composedId }))
       if (tab === TAB.Service && !namespace) {
-        yield put({ type: types.SET_NAMESPACE, payload: data?.[0]?.value })
+        const defaultNamespace = data?.[0]?.value
+        yield put({ type: types.SET_NAMESPACE, payload: defaultNamespace })
+        yield put(subDuck.creators.load({ ...composedId, namespace: defaultNamespace }))
+      } else {
+        yield put(subDuck.creators.load({ ...composedId }))
       }
     })
   }

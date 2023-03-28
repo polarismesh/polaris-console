@@ -22,6 +22,8 @@ export interface MetricConfig {
   noLine?: boolean
   minStep?: number
   color?: string
+  multiValue?: boolean
+  multiMetricName?: string
 }
 export class MetricCardFetcher extends Fetcher {
   Data: {
@@ -50,30 +52,35 @@ export class MetricCardFetcher extends Fetcher {
     let convertedData = []
     const boardData = []
     let resIndex = 0
-    for (const res of results) {
-      if (res.length === 0) convertedData = convertedData.concat([])
+    for (let resArray of results) {
+      if (resArray.length === 0) convertedData = convertedData.concat([])
       const formattedArray = []
       const currentQuery = param.query[resIndex] as MetricConfig
-      const reduceValue = res[0]?.values.reduce((prev, curr, currentIndex, currentArray) => {
-        const [time, value] = curr
-        if (value === 'NaN') {
-          return
-        }
-        const timeString = moment(time * 1000).format('YYYY-MM-DD HH:mm:ss')
-        const numVal = Number(value)
-        const formattedValue = currentQuery.dataFormatter ? currentQuery.dataFormatter(numVal) : Number(numVal)
-        formattedArray.push({
-          time: timeString,
-          value: formattedValue,
-          metric: currentQuery?.name,
-        })
-        return currentQuery?.boardFunction?.(prev, curr, currentIndex, currentArray)
-      }, 0)
-      if (currentQuery.boardFunction) {
-        boardData.push({ ...currentQuery, value: reduceValue })
-      } else if (currentQuery.asyncBoardFunction) {
-        boardData.push({ ...currentQuery, value: currentQuery?.asyncBoardFunction({ ...currentQuery, ...param }) })
+      if (!currentQuery.multiValue) {
+        resArray = [resArray[0]]
       }
+      resArray.forEach(res => {
+        const reduceValue = res?.values.reduce((prev, curr, currentIndex, currentArray) => {
+          const [time, value] = curr
+          if (value === 'NaN') {
+            return
+          }
+          const timeString = moment(time * 1000).format('YYYY-MM-DD HH:mm:ss')
+          const numVal = Number(value)
+          const formattedValue = currentQuery.dataFormatter ? currentQuery.dataFormatter(numVal) : Number(numVal)
+          formattedArray.push({
+            time: timeString,
+            value: formattedValue,
+            metric: currentQuery?.multiValue ? res.metric[currentQuery.multiMetricName] : currentQuery?.name,
+          })
+          return currentQuery?.boardFunction?.(prev, curr, currentIndex, currentArray)
+        }, 0)
+        if (currentQuery.boardFunction) {
+          boardData.push({ ...currentQuery, value: reduceValue })
+        } else if (currentQuery.asyncBoardFunction) {
+          boardData.push({ ...currentQuery, value: currentQuery?.asyncBoardFunction({ ...currentQuery, ...param }) })
+        }
+      })
       if (!currentQuery.noLine) convertedData = convertedData.concat(formattedArray)
       resIndex += 1
     }

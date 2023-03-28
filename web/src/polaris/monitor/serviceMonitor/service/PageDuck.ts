@@ -1,11 +1,13 @@
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
+import { Instance } from '@src/polaris/service/detail/instance/types'
 import { put, select, takeLatest } from 'redux-saga/effects'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
 import { SortBy } from 'tea-component/lib/table/addons'
 import {
   CategoryAllInterface,
   CategoryInterface,
-  getDiscoverMetrics,
+  getAllInstance,
+  getAllService,
   getMetricCaller,
   getMetricInstance,
   getMetricInterface,
@@ -14,6 +16,10 @@ import {
   MetricService,
 } from '../../models'
 import { ComposedId } from '../PageDuck'
+
+interface InstanceItem extends Instance {
+  ip: string
+}
 
 export default class ServiceDuck extends DetailPage {
   get baseUrl() {
@@ -44,6 +50,7 @@ export default class ServiceDuck extends DetailPage {
       SET_INSTANCE_LIST,
       SET_INTERFACE_INFO,
       SET_CALLER_LIST,
+      SET_METRIC_INSTANCE_LIST,
     }
     return {
       ...super.quickTypes,
@@ -60,12 +67,13 @@ export default class ServiceDuck extends DetailPage {
         category_interfaces: [] as CategoryInterface[],
         category_service: null as CategoryAllInterface,
       }),
-      instanceList: reduceFromPayload(types.SET_INSTANCE_LIST, [] as MetricInstance[]),
+      instanceList: reduceFromPayload(types.SET_INSTANCE_LIST, [] as InstanceItem[]),
       sort: reduceFromPayload<SortBy[]>(types.SET_SORT, [] as SortBy[]),
       service: reduceFromPayload<string>(types.SET_SERVICE, ''),
       interfaceName: reduceFromPayload<string>(types.SET_INTERFACE, ''),
       instance: reduceFromPayload<string>(types.SET_INSTANCE, ''),
       callerList: reduceFromPayload<MetricCaller[]>(types.SET_CALLER_LIST, [] as MetricCaller[]),
+      metricInstanceList: reduceFromPayload<MetricInstance[]>(types.SET_METRIC_INSTANCE_LIST, [] as MetricInstance[]),
     }
   }
   get creators() {
@@ -91,7 +99,7 @@ export default class ServiceDuck extends DetailPage {
     yield* super.saga()
     yield takeLatest(types.LOAD, function*() {
       const { composedId, service } = selector(yield select())
-      const { data: serviceList } = yield getDiscoverMetrics({ ...composedId })
+      const { services: serviceList } = yield getAllService({ namespace: composedId.namespace })
       yield put({ type: types.SET_SERVICE_LIST, payload: serviceList })
       if (serviceList.length === 0) return
       const serviceExisted = serviceList.find(item => item.name === service)
@@ -100,18 +108,20 @@ export default class ServiceDuck extends DetailPage {
       }
     })
     yield takeLatest(types.SET_SERVICE, function*() {
-      const { composedId, service, instance } = selector(yield select())
+      const { composedId, service } = selector(yield select())
 
-      const { data: interfaceInfo } = yield getMetricInterface({ ...composedId, service })
-      yield put({ type: types.SET_INTERFACE_INFO, payload: interfaceInfo })
-      yield put(creators.setInterface(''))
+      const { data: instanceList } = yield getAllInstance({ ...composedId, service })
+      yield put({
+        type: types.SET_INSTANCE_LIST,
+        payload: instanceList.map(item => ({ ...item, ip: `${item.host}:${item.port}` })),
+      })
+      yield put({ type: types.SET_INSTANCE, payload: '' })
 
-      const { data: instanceList } = yield getMetricInstance({ ...composedId, service })
-      const instanceExisted = instanceList.find(item => item.id === instance)
-      yield put({ type: types.SET_INSTANCE_LIST, payload: instanceList })
-      if (!instance || !instanceExisted) {
-        yield put({ type: types.SET_INSTANCE, payload: instanceList?.[0]?.id })
-      }
+      const { data: metricInstanceList } = yield getMetricInstance({
+        ...composedId,
+        service: service,
+      })
+      yield put({ type: types.SET_METRIC_INSTANCE_LIST, payload: metricInstanceList })
     })
     yield takeLatest(types.SET_INTERFACE, function*() {
       const {
@@ -129,14 +139,16 @@ export default class ServiceDuck extends DetailPage {
       })
       yield put({ type: types.SET_CALLER_LIST, payload: callerList })
     })
-    // yield takeLatest(types.SET_INSTANCE, function*() {
-    //   const { composedId, service, instance, interfaceName } = selector(yield select())
-    //   const { data: instanceList } = yield getMetricInterface({ ...composedId, service })
-    //   const instanceExisted = instanceList.find(item => item.id === instance)
-    //   if (!instance || !instanceExisted) {
-    //     yield put({ type: types.SET_INSTANCE, payload: instanceList?.[0]?.id })
-    //   }
-    // })
+    yield takeLatest(types.SET_INSTANCE, function*() {
+      const { composedId, service, instance } = selector(yield select())
+      const { data: interfaceInfo } = yield getMetricInterface({
+        ...composedId,
+        service,
+        callee_instance: instance ? instance : undefined,
+      })
+      yield put({ type: types.SET_INTERFACE_INFO, payload: interfaceInfo })
+      yield put(creators.setInterface(''))
+    })
   }
   async getData() {
     return {}

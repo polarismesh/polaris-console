@@ -2,7 +2,7 @@ import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import ServiceDetailDuck from './PageDuck'
 import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
-import { Button, Card, Form, FormItem, Select, Tab, TabPanel, Tabs } from 'tea-component'
+import { Button, Card, FormItem, Select, Tab, TabPanel, Tabs } from 'tea-component'
 import Overview from './overview/Page'
 import moment from 'moment'
 import TimeSelect from '@src/polaris/common/components/TimeSelect'
@@ -119,7 +119,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
     ),
   }
   return (
-    <DetailPage store={store} duck={duck} dispatch={dispatch} title={'注册配置监控'}>
+    <DetailPage showBackButton={false} store={store} duck={duck} dispatch={dispatch} title={'服务调用监控'}>
       <Card>
         <Card.Body>
           <Tabs tabs={tabs} activeId={tab} onActive={handlers.switch}>

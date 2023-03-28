@@ -21,11 +21,12 @@ export const DefaultLineColors = Object.values(LineColor)
 
 export const getQueryMap = {
   [MetricName.Request]: (queryParam = {} as any) => {
-    const { calleeNamespace, calleeService, calleeMethod } = queryParam
+    const { calleeNamespace, calleeService, calleeMethod, calleeInstance } = queryParam
     const conditionSets = {
       CalleeNamespace: calleeNamespace ? `callee_namespace="${calleeNamespace}"` : '',
       CalleeService: calleeService ? `callee_service="${calleeService}"` : '',
       CalleeMethod: calleeMethod ? `callee_method="${calleeMethod}"` : '',
+      CalleeInstance: calleeInstance ? `callee_instance="${calleeInstance}"` : '',
     }
     const conditions = Object.entries(conditionSets)
       .filter(([, value]) => !!value)
@@ -49,21 +50,30 @@ export const getQueryMap = {
         minStep: 60,
       },
       {
-        name: '失败请求数',
+        name: '限流请求数',
         query: conditions.length
-          ? `sum(upstream_rq_total{callee_result!~"success",${conditionString}}) or on() vector(0)`
-          : 'sum(upstream_rq_total{callee_result!~"success"}) or on() vector(0)',
+          ? `sum(upstream_rq_total{call_result="flow_control",${conditionString}}) or on() vector(0)`
+          : 'sum(upstream_rq_total{call_result="flow_control"}) or on() vector(0)',
+        boardFunction: SumUpReduceFunction,
+        minStep: 60,
+      },
+      {
+        name: '熔断请求数',
+        query: conditions.length
+          ? `sum(upstream_rq_total{call_result="reject",${conditionString}}) or on() vector(0)`
+          : 'sum(upstream_rq_total{call_result="reject"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
     ]
   },
   [MetricName.Timeout]: queryParam => {
-    const { calleeNamespace, calleeService, calleeMethod, start, end, step } = queryParam
+    const { calleeNamespace, calleeService, calleeMethod, calleeInstance, start, end } = queryParam
     const conditionSets = {
       CalleeNamespace: calleeNamespace ? `callee_namespace="${calleeNamespace}"` : '',
       CalleeService: calleeService ? `callee_service="${calleeService}"` : '',
       CalleeMethod: calleeMethod ? `callee_method="${calleeMethod}"` : '',
+      CalleeInstance: calleeInstance ? `callee_instance="${calleeInstance}"` : '',
     }
     const conditions = Object.entries(conditionSets)
       .filter(([, value]) => !!value)
@@ -147,6 +157,31 @@ export const getQueryMap = {
         unit: 'ms',
         minStep: 60,
         color: LineColor.Gray,
+      },
+    ]
+  },
+  [MetricName.RetCode]: queryParam => {
+    const { calleeNamespace, calleeService, calleeInstance, callerIp, callerNamespace, callerService } = queryParam
+    const conditionSets = {
+      CalleeNamespace: calleeNamespace ? `callee_namespace="${calleeNamespace}"` : '',
+      CalleeService: calleeService ? `callee_service="${calleeService}"` : '',
+      CalleeInstance: calleeInstance ? `callee_instance="${calleeInstance}"` : '',
+      CallerIp: callerIp ? `caller_ip="${callerIp}"` : '',
+      CallerNamespace: callerNamespace ? `caller_namespace="${callerNamespace}"` : '',
+      CallerService: callerService ? `caller_service="${callerService}"` : '',
+    }
+    const conditions = Object.entries(conditionSets)
+      .filter(([, value]) => !!value)
+      .map(([, value]) => value)
+    const conditionString = conditions.join(',')
+
+    return [
+      {
+        name: '错误码统计',
+        query: `sum by (callee_result_code) (upstream_rq_total{${conditionString}})`,
+        minStep: 60,
+        multiMetricName: 'callee_result_code',
+        multiValue: true,
       },
     ]
   },
@@ -269,11 +304,12 @@ export const getPieQueryMap = {
 }
 export const getTableQueryMap = {
   [MetricName.RetCodeDistribute]: (queryParam = {} as any) => {
-    const { calleeNamespace, calleeService, calleeMethod } = queryParam
+    const { calleeNamespace, calleeService, calleeMethod, calleeInstance } = queryParam
     const conditionSets = {
       CalleeNamespace: calleeNamespace ? `callee_namespace="${calleeNamespace}"` : '',
       CalleeService: calleeService ? `callee_service="${calleeService}"` : '',
       CalleeMethod: calleeMethod ? `callee_method="${calleeMethod}"` : '',
+      CalleeInstance: calleeInstance ? `callee_instance="${calleeInstance}"` : '',
     }
     const conditions = Object.entries(conditionSets)
       .filter(([, value]) => !!value)

@@ -14,6 +14,7 @@ interface Props {
   cardProps?: CardProps
   cardBodyProps?: CardBodyProps
 }
+export type MetricCardProps = Props
 export default function(props: Props) {
   const { query, start, end, step, cardProps = {}, cardBodyProps = {} } = props
   const { dispatch, duck, store } = useDuck(MetricCardFetcher)
@@ -28,7 +29,7 @@ export default function(props: Props) {
   const colorArray = query.filter(item => item.color).map(item => item.color)
   return (
     <Card {...cardProps}>
-      <Card.Body {...cardBodyProps} style={{ height: '500px' }}>
+      <Card.Body style={{ height: '500px' }} {...cardBodyProps}>
         {board.length > 0 && (
           <Row showSplitLine>
             {board.map(item => {

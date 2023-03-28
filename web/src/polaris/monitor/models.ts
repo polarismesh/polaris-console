@@ -127,6 +127,7 @@ export async function getMetricInterface(params: GetMetricInterfaceParams) {
   return res
 }
 export interface GetMetricInterfaceParams {
+  callee_instance: string
   service: string
   namespace: string
   start: number
@@ -218,30 +219,32 @@ export interface MetricCaller {
   avg_timeout: string // 平均时延
 }
 
-export async function getDiscoverMetrics(params: GetMetricServiceParams) {
-  const res = await getApiRequest<MetricService[]>({
-    action: '/v1/Discover',
+export async function getAllService(params: GetAllServiceParams) {
+  const res = await getApiRequest<SimpleService[]>({
+    action: '/naming/v1/services/all',
     data: params,
   })
 
   return res
 }
-export interface GetMetricServiceParams {
+export interface GetAllServiceParams {
   name?: string
   namespace: string
-  start: number
-  end: number
-  step: number
 }
-export interface MetricService {
+export interface SimpleService {
   name: string // 接口名称
   namespace: string // 接口描述
-  healthy_instance_count: string // 健康实例数
-  total_instance_count: string // 中实例数
-  success_rate: string // 成功率
-  total_request: string // 总请求数
-  failed_request: string // 失败请求数
-  limited_request: string // 限流请求数
-  circuitbreaker_request: string // 熔断请求数
-  avg_timeout: string // 平均时延
+}
+
+export async function getAllInstance(params: GetAllInstanceParams) {
+  const res = await getApiRequest<SimpleService[]>({
+    action: '/metrics/v1/services/instances/list',
+    data: params,
+  })
+
+  return res
+}
+export interface GetAllInstanceParams {
+  service: string
+  namespace: string
 }

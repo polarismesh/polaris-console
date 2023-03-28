@@ -9,13 +9,14 @@ import {
   List,
   ListItem,
   LoadingTip,
+  Popover,
   Row,
   SearchBox,
   Select,
   Table,
   Text,
 } from 'tea-component'
-import MetricCard from '../../registryMonitor/MetricCard'
+import MetricCard, { MetricCardProps } from '../../registryMonitor/MetricCard'
 import MetricTagCard from '../MetricTagCard'
 import { compressNumber, getQueryMap, getTableQueryMap, MetricName, roundToN } from '../types'
 import BaseInfoDuck from './PageDuck'
@@ -23,6 +24,33 @@ import { autotip, pageable, sortable } from 'tea-component/lib/table/addons'
 import { FilterType } from '../Page'
 import { HEALTH_STATUS_MAP } from '@src/polaris/service/detail/instance/types'
 import { Link } from 'react-router-dom'
+import insertCSS from '@src/polaris/common/helpers/insertCSS'
+
+insertCSS(
+  `service-interface`,
+  `
+  .monitor-interface-list li.is-selected{
+    background-color: transparent !important;
+  }
+  .monitor-interface-list li.is-selected span{
+    color: #006eff !important;
+  }
+  .monitor-interface-list li:last-child{
+    border-bottom: 1px solid #e7eaef
+  }
+`,
+)
+
+const MetricCardPopover = (props: MetricCardProps & { children: React.ReactNode }) => (
+  <Popover
+    trigger={'click'}
+    overlay={<MetricCard {...props} cardBodyProps={{ style: { height: '360px' } }} />}
+    overlayStyle={{ width: '1000px' }}
+    placement={'top-end'}
+  >
+    {props.children}
+  </Popover>
+)
 
 interface Props extends DuckCmpProps<BaseInfoDuck> {
   filterMap: Record<string, React.ReactNode>
@@ -40,20 +68,22 @@ export default function Overview(props: Props) {
     interfaceInfo,
     sort,
     callerList,
+    instance,
+    metricInstanceList,
   } = selector(store)
   const basicQueryParam = { start, end, step }
   const { category_interfaces, category_service } = interfaceInfo
   const [instanceKeyword, setInstanceKeyword] = React.useState('')
   const [callerKeyword, setCallerKeyword] = React.useState('')
   const [callerSort, setCallerSort] = React.useState([])
-  const processedInstanceList = instanceList.filter(item => item.id.indexOf(instanceKeyword) > -1)
-  const sortedInstanceList = sort.length
-    ? processedInstanceList.sort((a, b) => {
+  const processedMetricInstanceList = metricInstanceList.filter(item => item.id.indexOf(instanceKeyword) > -1)
+  const sortedMetricInstanceList = sort.length
+    ? processedMetricInstanceList.sort((a, b) => {
         const sortby = sort?.[0].by
         const order = sort?.[0].order
         return order === 'desc' ? Number(a[sortby]) - Number(b[sortby]) : Number(b[sortby]) - Number(a[sortby])
       })
-    : processedInstanceList
+    : processedMetricInstanceList
   const processedCallerList = callerList.filter(item => item.host.indexOf(callerKeyword) > -1)
   const sortedCallerList = callerSort.length
     ? processedCallerList.sort((a, b) => {
@@ -62,7 +92,7 @@ export default function Overview(props: Props) {
         return order === 'desc' ? Number(a[sortby]) - Number(b[sortby]) : Number(b[sortby]) - Number(a[sortby])
       })
     : processedCallerList
-
+  const currentInstance = instanceList.find(item => item.id === instance)
   return (
     <>
       <section style={{ borderBottom: '1px solid #d0d5dd', padding: '40px 0px', marginBottom: '20px' }}>
@@ -77,29 +107,33 @@ export default function Overview(props: Props) {
               onChange={v => dispatch(creators.setService(v))}
             ></Select>
           </FormItem>
-          {/* <FormItem label={'服务实例'}>
+          <FormItem label={'服务实例'}>
             <Select
               searchable
               appearance='button'
-              options={instanceList.map(item => ({ ...item, text: item.id, value: item.id }))}
+              options={[
+                { text: '全部实例', value: '' },
+                ...instanceList.map((item: any) => ({ ...item, text: item.ip, value: item.id })),
+              ]}
               value={instance}
               onChange={v => dispatch(creators.setInstance(v))}
             ></Select>
-          </FormItem> */}
+          </FormItem>
           {filterMap[FilterType.TimeRange]}
           {filterMap[FilterType.Step]}
         </Form>
       </section>
-      <Row showSplitLine>
+      <Row>
         <Col span={8}>
           <SearchBox></SearchBox>
           <section style={{ border: '1px solid #d0d5dd' }}>
             <List
               type={'option'}
               split={'divide'}
-              style={{ maxHeight: '1700px', minHeight: '1000px', overflow: 'scroll' }}
+              style={{ maxHeight: '1700px', minHeight: '700px', overflow: 'scroll' }}
+              className={'monitor-interface-list'}
             >
-              <ListItem>
+              <ListItem disabled style={{ cursor: 'default' }}>
                 <Justify
                   left={
                     <>
@@ -193,6 +227,7 @@ export default function Overview(props: Props) {
                   calleeNamespace: namespace,
                   calleeService: service,
                   calleeMethod: interfaceName,
+                  calleeInstance: currentInstance?.ip,
                 })}
                 cardProps={{ bordered: true }}
                 cardBodyProps={{ title: '服务请求数' }}
@@ -204,6 +239,7 @@ export default function Overview(props: Props) {
                   calleeNamespace: namespace,
                   calleeService: service,
                   calleeMethod: interfaceName,
+                  calleeInstance: currentInstance?.ip,
                 })}
                 cardProps={{ bordered: true }}
                 cardBodyProps={{ title: '服务请求时延' }}
@@ -214,103 +250,117 @@ export default function Overview(props: Props) {
                   calleeNamespace: namespace,
                   calleeService: service,
                   calleeMethod: interfaceName,
+                  calleeInstance: currentInstance?.ip,
                 })}
                 cardProps={{ bordered: true }}
                 cardBodyProps={{ title: '返回码统计' }}
               ></MetricTagCard>
-              <Card bordered style={{ marginTop: '20px' }}>
-                <Card.Body
-                  title={'服务实例监控'}
-                  operation={
-                    <SearchBox
-                      value={instanceKeyword}
-                      onSearch={v => {
-                        setInstanceKeyword(v)
-                      }}
-                      placeholder={'请输入实例IP'}
-                    ></SearchBox>
-                  }
-                >
-                  <Table
-                    bordered
-                    records={sortedInstanceList || []}
-                    columns={[
-                      {
-                        key: 'host',
-                        header: '实例IP',
-                      },
-                      {
-                        key: 'port',
-                        header: '端口',
-                      },
-                      {
-                        key: 'healthy',
-                        header: '健康状态',
-                        render: x => (
-                          <Text theme={HEALTH_STATUS_MAP[x.status]?.theme}>{HEALTH_STATUS_MAP[x.status]?.text}</Text>
-                        ),
-                      },
-                      {
-                        key: 'total_request',
-                        header: '总请求数',
-                      },
-                      {
-                        key: 'success_rate',
-                        header: '成功率',
-                        render: x => {
-                          return `${roundToN(Number(x.success_rate) * 100, 2)}%`
+              {!instance && (
+                <Card bordered style={{ marginTop: '20px' }}>
+                  <Card.Body
+                    title={'服务实例监控'}
+                    operation={
+                      <SearchBox
+                        value={instanceKeyword}
+                        onSearch={v => {
+                          setInstanceKeyword(v)
+                        }}
+                        placeholder={'请输入实例IP'}
+                      ></SearchBox>
+                    }
+                  >
+                    <Table
+                      bordered
+                      records={sortedMetricInstanceList || []}
+                      columns={[
+                        {
+                          key: 'host',
+                          header: '实例IP',
                         },
-                      },
-                      {
-                        key: 'failed_request',
-                        header: '失败请求数',
-                        render: x => {
-                          return x.failed_request
+                        {
+                          key: 'port',
+                          header: '端口',
                         },
-                      },
-                      {
-                        key: 'limited-request',
-                        header: '限流请求数',
-                        render: x => {
-                          return x.limited_request
+                        {
+                          key: 'healthy',
+                          header: '健康状态',
+                          render: x => (
+                            <Text theme={HEALTH_STATUS_MAP[x.status]?.theme}>{HEALTH_STATUS_MAP[x.status]?.text}</Text>
+                          ),
                         },
-                      },
-                      {
-                        key: 'circuitbreaker_request',
-                        header: '熔断请求数',
-                        render: x => {
-                          return x.circuitbreaker_request
+                        {
+                          key: 'total_request',
+                          header: '总请求数',
                         },
-                      },
-                      {
-                        key: 'avg_timeout',
-                        header: '平均时延',
-                        render: x => {
-                          return `${roundToN(x.avg_timeout, 2)}ms`
+                        {
+                          key: 'success_rate',
+                          header: '成功率',
+                          render: x => {
+                            return `${roundToN(Number(x.success_rate) * 100, 2)}%`
+                          },
                         },
-                      },
-                    ]}
-                    addons={[
-                      autotip({ emptyText: '暂无数据' }),
-                      sortable({
-                        columns: [
-                          'success_rate',
-                          'total_request',
-                          'failed_request',
-                          'circuitbreaker_request',
-                          'limited_request',
-                          'avg_timeout',
-                        ],
-                        value: sort,
-                        onChange: value => dispatch(creators.setSort(value.length ? value : [])),
-                      }),
-                      pageable({
-                        pageSize: 5,
-                      }),
-                    ]}
-                  ></Table>
-                </Card.Body>
-              </Card>
+                        {
+                          key: 'failed_request',
+                          header: '失败请求数',
+                          render: x => {
+                            return (
+                              <MetricCardPopover
+                                {...basicQueryParam}
+                                query={getQueryMap[MetricName.RetCode]({
+                                  calleeNamespace: namespace,
+                                  calleeService: service,
+                                  calleeInstance: currentInstance?.ip,
+                                })}
+                              >
+                                {x.failed_request}
+                              </MetricCardPopover>
+                            )
+                          },
+                        },
+                        {
+                          key: 'limited-request',
+                          header: '限流请求数',
+                          render: x => {
+                            return x.limited_request
+                          },
+                        },
+                        {
+                          key: 'circuitbreaker_request',
+                          header: '熔断请求数',
+                          render: x => {
+                            return x.circuitbreaker_request
+                          },
+                        },
+                        {
+                          key: 'avg_timeout',
+                          header: '平均时延',
+                          render: x => {
+                            return `${roundToN(x.avg_timeout, 2)}ms`
+                          },
+                        },
+                      ]}
+                      addons={[
+                        autotip({ emptyText: '暂无数据' }),
+                        sortable({
+                          columns: [
+                            'success_rate',
+                            'total_request',
+                            'failed_request',
+                            'circuitbreaker_request',
+                            'limited_request',
+                            'avg_timeout',
+                          ],
+                          value: sort,
+                          onChange: value => dispatch(creators.setSort(value.length ? value : [])),
+                        }),
+                        pageable({
+                          pageSize: 5,
+                        }),
+                      ]}
+                    ></Table>
+                  </Card.Body>
+                </Card>
+              )}
               <Card bordered style={{ marginTop: '20px' }}>
                 <Card.Body
                   title={'调用者监控'}
@@ -359,7 +409,20 @@ export default function Overview(props: Props) {
                         key: 'failed_request',
                         header: '失败请求数',
                         render: x => {
-                          return x.failed_request
+                          return (
+                            <MetricCardPopover
+                              {...basicQueryParam}
+                              query={getQueryMap[MetricName.RetCode]({
+                                calleeNamespace: namespace,
+                                calleeService: service,
+                                callerIp: x.host,
+                                callerService: x.service,
+                                callerNamespace: x.namespace,
+                              })}
+                            >
+                              {x.failed_request}
+                            </MetricCardPopover>
+                          )
                         },
                       },
                       {
