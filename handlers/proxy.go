@@ -74,6 +74,8 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 				log.Error("[Proxy][Login] modify login request fail", zap.Error(err))
 				return
 			}
+			req.Header["Content-Length"] = []string{fmt.Sprint(len(body))}
+			req.ContentLength = int64(len(body))
 			req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 		}
 		modifyResp := func(resp *http.Response) error {
