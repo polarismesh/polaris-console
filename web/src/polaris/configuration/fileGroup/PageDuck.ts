@@ -13,6 +13,8 @@ import { NamespaceItem } from '@src/polaris/service/PageDuck'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
+import Export from './operation/Export'
+import ExportDuck from './operation/ExportDuck'
 
 export interface ConfigFileGroupItem extends ConfigFileGroup {
   id: string
@@ -46,6 +48,9 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       CHANGE_TAGS,
       SET_NAMESPACE_LIST,
       SET_NAMESPACE,
+
+      EXPORT_CONFIG,
+      IMPORT_CONFIG,
     }
     return {
       ...super.quickTypes,
@@ -87,6 +92,8 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       edit: createToPayload<ConfigFileGroupItem>(types.EDIT),
       remove: createToPayload<ConfigFileGroupItem>(types.REMOVE),
       create: createToPayload<void>(types.CREATE),
+      exportConfig: createToPayload<void>(types.EXPORT_CONFIG),
+      importConfig: createToPayload(types.IMPORT_CONFIG),
       load: (composedId, data) => ({
         type: types.LOAD,
         payload: { composedId, data },
@@ -142,6 +149,22 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
               resolve(yield* duck.execute({}, { isModify: false }))
             } finally {
               resolve(false)
+            }
+          })
+        }),
+      )
+      if (res) {
+        yield put(creators.reload())
+      }
+    })
+    yield takeLatest(types.EXPORT_CONFIG, function*() {
+      const res = yield* resolvePromise(
+        new Promise(resovle => {
+          showDialog(Export, ExportDuck, function*(duck: ExportDuck) {
+            try {
+              resovle(yield* duck.execute({}, {}))
+            } finally {
+              resovle(false)
             }
           })
         }),
