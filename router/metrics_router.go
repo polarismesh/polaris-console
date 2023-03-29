@@ -34,4 +34,5 @@ func MetricsRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	v1.GET("/services/interfaces", handlers.DescribeServiceInterfacesMetric(&config.PolarisServer, config))
 	v1.GET("/services/instances", handlers.DescribeServiceInstancesMetric(&config.PolarisServer, config))
 	v1.GET("/callers", handlers.DescribeServiceCallerMetric(&config.PolarisServer, config))
+	v1.GET("/services/instances/list", handlers.DescribeServiceInstances(config))
 }

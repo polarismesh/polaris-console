@@ -49,6 +49,7 @@ type Service struct {
 	Namespace            string            `json:"namespace,omitempty"`
 	Metadata             map[string]string `json:"metadata,omitempty"`
 	Ports                string            `json:"ports,omitempty"`
+	Token                string            `protobuf:"bytes,12,opt,name=token,proto3" json:"token,omitempty"`
 	TotalInstanceCount   uint32            `json:"total_instance_count,omitempty"`
 	HealthyInstanceCount uint32            `json:"healthy_instance_count,omitempty"`
 }

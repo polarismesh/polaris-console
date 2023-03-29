@@ -89,7 +89,7 @@ func (b *BatchWriteResponse) Collect(response *Response) {
 }
 
 func CalcCode(code int32) int {
-	return int(code / 1000)
+	return int(uint32(int(code / 1000)))
 }
 
 type ServerNodes struct {
