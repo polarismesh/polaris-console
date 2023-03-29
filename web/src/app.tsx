@@ -140,7 +140,7 @@ insertCSS(
 
 export default function root() {
   const history = useHistory()
-  const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1] || 'service')
+  const [selected, setSelected] = React.useState(history.location.pathname.replace('/', '') || 'service')
   const getMenuItemProps = id => ({
     selected: selected === id,
     onClick: () => {
