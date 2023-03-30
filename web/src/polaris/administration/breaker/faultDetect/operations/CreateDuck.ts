@@ -126,9 +126,9 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
         delete cloneValues['@type']
         delete cloneValues.ctime
         delete cloneValues.mtime
-        result = yield modifyFaultDetect([values])
+        result = yield modifyFaultDetect([cloneValues])
       } else {
-        result = yield createFaultDetect([values])
+        result = yield createFaultDetect([cloneValues])
       }
 
       yield call(delay, 5)

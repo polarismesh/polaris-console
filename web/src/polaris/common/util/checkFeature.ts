@@ -17,8 +17,12 @@ export interface Feature {
 }
 /** 检查策略是否已开启 */
 export async function checkFeature() {
-  const result = await getApiRequest<CheckFeatureResult>({ action: '/functions', data: {} })
-  return result.data
+  try {
+    const result = await getApiRequest<CheckFeatureResult>({ action: '/functions', data: {} })
+    return result.data
+  } catch (e) {
+    return []
+  }
 }
 
 export const cacheCheckFeature = once(checkFeature, ttl(30 * 60 * 1000))
@@ -28,6 +32,7 @@ export const checkFeatureKey = (feature: Feature[], key: string) => {
 }
 export async function checkFeatureValid(featureKey) {
   const feature = await cacheCheckFeature()
+  if (feature.length === 0) return true
   return feature.find(item => item.name === featureKey)?.display === FeatureDisplayType.visible
 }
 export function useCheckFeatureValid(features: string[] = []) {
