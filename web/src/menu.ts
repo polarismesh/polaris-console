@@ -83,14 +83,6 @@ export const MenuConfig: MenuItemConfig = {
           featureKey: 'ratelimiter',
           subMenus: null,
         },
-
-        {
-          id: 'flow-monitor',
-          title: '流量监控',
-          icon: 'static/img/circuit-monitor.svg',
-          featureKey: 'metricsBase',
-          subMenus: null,
-        },
       ],
     },
     {
