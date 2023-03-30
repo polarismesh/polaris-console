@@ -1,10 +1,12 @@
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import {
+  Button,
   Card,
   Col,
   Form,
   FormItem,
+  Icon,
   Justify,
   List,
   ListItem,
@@ -40,7 +42,16 @@ insertCSS(
   }
 `,
 )
-
+const getColumnSort = (name, sort) => {
+  if (sort?.by === name) {
+    if (sort?.order === 'asc') {
+      return []
+    } else {
+      return [{ by: name, order: 'asc' }]
+    }
+  }
+  return [{ by: name, order: 'desc' }]
+}
 const MetricCardPopover = (props: MetricCardProps & { children: React.ReactNode }) => (
   <Popover
     trigger={'click'}
@@ -72,7 +83,9 @@ export default function Overview(props: Props) {
     metricInstanceList,
   } = selector(store)
   const basicQueryParam = { start, end, step }
-  const { category_interfaces, category_service } = interfaceInfo
+  const { category_service } = interfaceInfo
+  const [interfaceKeyword, setInterfaceKeyword] = React.useState('')
+  const [interfaceSort, setInterfaceSort] = React.useState([])
   const [instanceKeyword, setInstanceKeyword] = React.useState('')
   const [callerKeyword, setCallerKeyword] = React.useState('')
   const [callerSort, setCallerSort] = React.useState([])
@@ -93,6 +106,17 @@ export default function Overview(props: Props) {
       })
     : processedCallerList
   const currentInstance = instanceList.find(item => item.id === instance)
+  const processedInterfaceList = interfaceInfo?.category_interfaces?.filter(
+    item => item.interface_name.indexOf(interfaceKeyword) > -1,
+  )
+  const sortedInterfaceList =
+    processedInterfaceList?.length && interfaceSort?.length
+      ? processedInterfaceList.sort((a, b) => {
+          const sortby = interfaceSort?.[0].by
+          const order = interfaceSort?.[0].order
+          return order === 'desc' ? Number(a[sortby]) - Number(b[sortby]) : Number(b[sortby]) - Number(a[sortby])
+        })
+      : processedInterfaceList
   return (
     <>
       <section style={{ borderBottom: '1px solid #d0d5dd', padding: '40px 0px', marginBottom: '20px' }}>
@@ -125,12 +149,16 @@ export default function Overview(props: Props) {
       </section>
       <Row>
         <Col span={8}>
-          <SearchBox></SearchBox>
+          <SearchBox
+            value={interfaceKeyword}
+            onChange={v => setInterfaceKeyword(v)}
+            placeholder={'请输入接口名称搜索'}
+          ></SearchBox>
           <section style={{ border: '1px solid #d0d5dd' }}>
             <List
               type={'option'}
               split={'divide'}
-              style={{ maxHeight: '1700px', minHeight: '700px', overflow: 'scroll' }}
+              style={{ maxHeight: '1700px', minHeight: '700px', overflowY: 'scroll' }}
               className={'monitor-interface-list'}
             >
               <ListItem disabled style={{ cursor: 'default' }}>
@@ -142,7 +170,58 @@ export default function Overview(props: Props) {
                   }
                   right={
                     <>
-                      <Text reset>成功请求数/流控请求数/异常请求数/平均时延</Text>
+                      <Text reset>
+                        <Button
+                          type={'link'}
+                          onClick={() => {
+                            setInterfaceSort(getColumnSort('success_request', interfaceSort?.[0]))
+                          }}
+                          style={{ margin: '0px' }}
+                        >
+                          <Text theme={interfaceSort?.[0]?.by === 'success_request' ? 'label' : 'strong'}>
+                            成功请求数
+                          </Text>
+                        </Button>
+                        /
+                        <Button
+                          type={'link'}
+                          onClick={() => {
+                            setInterfaceSort(getColumnSort('flow_control_request', interfaceSort?.[0]))
+                          }}
+                          style={{ margin: '0px' }}
+                        >
+                          <Text theme={interfaceSort?.[0]?.by === 'flow_control_request' ? 'label' : 'strong'}>
+                            流控请求数
+                          </Text>
+                        </Button>
+                        /
+                        <Button
+                          type={'link'}
+                          onClick={() => {
+                            setInterfaceSort(getColumnSort('abnormal_request', interfaceSort?.[0]))
+                          }}
+                          style={{ margin: '0px' }}
+                        >
+                          <Text theme={interfaceSort?.[0]?.by === 'abnormal_request' ? 'label' : 'strong'}>
+                            异常请求数
+                          </Text>
+                        </Button>
+                        /
+                        <Button
+                          type={'link'}
+                          onClick={() => {
+                            setInterfaceSort(getColumnSort('avg_timeout', interfaceSort?.[0]))
+                          }}
+                          style={{ margin: '0px' }}
+                        >
+                          <Text theme={interfaceSort?.[0]?.by === 'avg_timeout' ? 'label' : 'strong'}>平均时延</Text>
+                        </Button>
+                        <Icon
+                          type={
+                            !interfaceSort?.[0] ? 'sort' : interfaceSort?.[0]?.order === 'desc' ? 'sortdown' : 'sortup'
+                          }
+                        ></Icon>
+                      </Text>
                     </>
                   }
                 ></Justify>
@@ -178,7 +257,7 @@ export default function Overview(props: Props) {
                   ></Justify>
                 )}
               </ListItem>
-              {category_interfaces.map(item => {
+              {sortedInterfaceList.map(item => {
                 const rateString = `${compressNumber(item.success_request) ?? '-'}/${compressNumber(
                   item.flow_control_request,
                 ) ?? '-'}/${compressNumber(item.abnormal_request) ?? '-'}/${roundToN(item.avg_timeout, 2)}ms`
