@@ -868,7 +868,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                                 onClick={() => {
                                                   ruleDestinations.asArray().remove(index)
                                                 }}
-                                                disabled={ruleDestinations.getValue()?.length === 1}
                                               />
                                             )
                                           },
