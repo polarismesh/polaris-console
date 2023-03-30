@@ -3,6 +3,7 @@ export interface MenuItemConfig {
   title: string
   icon: string
   subMenus: MenuItemConfig[]
+  featureKey?: string
 }
 
 export const MenuConfig: MenuItemConfig = {
@@ -15,6 +16,7 @@ export const MenuConfig: MenuItemConfig = {
       title: '命名空间',
       icon: 'static/img/namespace.svg',
       subMenus: null,
+      featureKey: 'namespace',
     },
     {
       id: 'serviceManage',
@@ -26,6 +28,7 @@ export const MenuConfig: MenuItemConfig = {
           title: '服务列表',
           icon: 'static/img/service.svg',
           subMenus: null,
+          featureKey: 'service',
         },
         {
           id: 'alias',
@@ -44,6 +47,7 @@ export const MenuConfig: MenuItemConfig = {
           id: 'dynamic-route',
           title: '动态路由',
           icon: 'static/img/dynamic-route.svg',
+          featureKey: 'router',
           subMenus: [
             {
               id: 'custom-route',
@@ -69,12 +73,22 @@ export const MenuConfig: MenuItemConfig = {
           id: 'circuitBreaker',
           title: '熔断降级',
           icon: 'static/img/dynamic-route.svg',
+          featureKey: 'circuitbreaker',
           subMenus: null,
         },
         {
           id: 'accesslimit',
           title: '访问限流',
           icon: 'static/img/dynamic-route.svg',
+          featureKey: 'ratelimiter',
+          subMenus: null,
+        },
+
+        {
+          id: 'flow-monitor',
+          title: '流量监控',
+          icon: 'static/img/circuit-monitor.svg',
+          featureKey: 'metricsBase',
           subMenus: null,
         },
       ],
@@ -83,6 +97,7 @@ export const MenuConfig: MenuItemConfig = {
       id: 'configuration',
       title: '配置中心',
       icon: null,
+      featureKey: 'config',
       subMenus: [
         {
           id: 'filegroup',
@@ -113,6 +128,7 @@ export const MenuConfig: MenuItemConfig = {
           id: 'flow-monitor',
           title: '流量监控',
           icon: 'static/img/circuit-monitor.svg',
+          featureKey: 'metricsServer',
           subMenus: null,
         },
       ],

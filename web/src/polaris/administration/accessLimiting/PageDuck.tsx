@@ -12,6 +12,7 @@ import { describeServices } from '@src/polaris/service/model'
 import { RuleStatus, SwitchStatusAction } from './types'
 import LimitRuleCreatePageDuck from './operations/CreateDuck'
 import { ComposedId } from '@src/polaris/service/detail/types'
+import { checkFeatureValid } from '@src/polaris/common/util/checkFeature'
 
 interface Filter {
   namespace: string
@@ -246,7 +247,8 @@ export default class AccessLimitingDuck extends GridPageDuck {
       offset: (page - 1) * count,
       limit: count,
     }
-
+    const available = await checkFeatureValid('circuitbreaker')
+    if (!available) return { totalCount: 0, list: [] }
     if (namespace) {
       params.namespace = namespace
     }

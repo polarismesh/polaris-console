@@ -5,7 +5,6 @@ import { Form, Select, Text, Icon, Bubble, Button, FormItem } from 'tea-componen
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
-import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import ResourcePrincipalAuth from '@src/polaris/auth/user/operation/ResourcePrincipalAuth'
 import { TagTable } from '@src/polaris/common/components/TagTable'
 
@@ -32,12 +31,11 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   } = duck
 
   const formApi = form.getAPI(store, dispatch)
-  const { namespace, name, comment, metadata, enableNearby, department, business } = formApi.getFields([
+  const { namespace, name, comment, metadata, department, business } = formApi.getFields([
     'namespace',
     'name',
     'comment',
     'metadata',
-    'enableNearby',
     'ports',
     'business',
     'department',
@@ -74,9 +72,6 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         </FormField>
         <FormField field={business} label={'业务'}>
           <Input field={business} size={'l'} />
-        </FormField>
-        <FormField field={enableNearby} label={'开启就近访问'}>
-          <Switch field={enableNearby} />
         </FormField>
         <FormItem
           label={

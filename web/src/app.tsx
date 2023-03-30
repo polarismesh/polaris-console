@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { Layout, NavMenu, Menu, List } from 'tea-component'
+import { Layout, NavMenu, Menu, List, notification } from 'tea-component'
 import { Switch, Route, useHistory } from 'react-router-dom'
 const { Header, Body, Sider, Content } = Layout
 import { MenuConfig, MenuItemConfig } from './menu'
@@ -58,7 +58,7 @@ import PolicyCreatePage from '@src/polaris/auth/policy/operation/Create'
 import PolicyCreatePageDuck from '@src/polaris/auth/policy/operation/CreateDuck'
 const PolicyCreate = connectWithDuck(PolicyCreatePage, PolicyCreatePageDuck as any)
 
-import { userLogout, getUin, getLoginName } from './polaris/common/util/common'
+import { userLogout, getUin, getLoginName, handleInfo } from './polaris/common/util/common'
 import router from './polaris/common/util/router'
 
 import ServiceAliasPage from '@src/polaris/serviceAlias/Page'
@@ -118,6 +118,23 @@ import RegistryMonitorPage from '@src/polaris/monitor/registryMonitor/Page'
 import RegistryMonitorPageDuck from '@src/polaris/monitor/registryMonitor/PageDuck'
 const RegistryMonitor = connectWithDuck(RegistryMonitorPage, RegistryMonitorPageDuck)
 
+import { cacheCheckFeature, FeatureDisplayType } from './polaris/common/util/checkFeature'
+import insertCSS from './polaris/common/helpers/insertCSS'
+
+insertCSS(
+  `menu`,
+  `
+  .block-menu-item .tea-menu__item{
+    cursor: not-allowed !important;
+    background-color: #979797 !important;
+  }
+  .block-menu-item .tea-menu__item::hover{
+    cursor: not-allowed !important;
+    background-color: #979797 !important;
+  }
+`,
+)
+
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.match(/^\/(\w+)/)?.[1] || 'service')
@@ -129,14 +146,19 @@ export default function root() {
     },
   })
   const [authOpen, setAuthOpen] = React.useState(null)
+  const [feature, setFeature] = React.useState([])
   const fetchAuth = useCallback(async () => {
     const authOpen = await cacheCheckAuth({})
     setAuthOpen(authOpen)
   }, [])
+  const fetchFeature = useCallback(async () => {
+    const feature = await cacheCheckFeature()
+    setFeature(feature)
+  }, [])
   React.useEffect(() => {
     fetchAuth()
-  }, [fetchAuth])
-
+    fetchFeature()
+  }, [fetchAuth && fetchFeature])
   function recursiveRenderMenuItem(menuItem: MenuItemConfig) {
     if (!menuItem) {
       return <noscript />
@@ -145,7 +167,24 @@ export default function root() {
     if (menuItem.id === 'policy' && !authOpen) {
       return <noscript />
     }
-
+    const currentFeature = feature?.find(item => item.name === menuItem.featureKey)
+    if (menuItem.featureKey && currentFeature) {
+      if (currentFeature.display === FeatureDisplayType.hidden) {
+        return <noscript />
+      }
+      if (currentFeature.display === FeatureDisplayType.block) {
+        return (
+          <Menu.Item
+            title={menuItem.title}
+            icon={menuItem.icon}
+            className={'block-menu-item'}
+            onClick={() => {
+              notification.warning({ description: handleInfo(currentFeature.tip) || '暂不支持此功能' })
+            }}
+          ></Menu.Item>
+        )
+      }
+    }
     return menuItem.subMenus ? (
       <Menu.SubMenu title={menuItem.title} icon={menuItem.icon} key={menuItem.id}>
         {menuItem.subMenus.map(o => recursiveRenderMenuItem(o))}
@@ -225,7 +264,7 @@ export default function root() {
                     </Menu.Group>
                   )
                 } else {
-                  return <Menu.Item title={o.title} icon={o.icon} {...getMenuItemProps(o.id)} key={o.id}></Menu.Item>
+                  return recursiveRenderMenuItem(o)
                 }
               })}
             </Menu>

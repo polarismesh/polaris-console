@@ -3,7 +3,7 @@ import router from '@src/polaris/common/util/router'
 import { takeLatest } from 'redux-saga-catch'
 import { put, select } from 'redux-saga/effects'
 import GridPageDuck, { Filter as BaseFilter, Operation, OperationType } from '@src/polaris/common/ducks/GridPage'
-import { TagValue, Modal } from 'tea-component'
+import { TagValue, Modal, notification } from 'tea-component'
 import {
   CustomRoute,
   deleteCustomRoute,
@@ -16,6 +16,11 @@ import { ComposedId } from '@src/polaris/service/detail/types'
 import { RuleStatus, SwitchStatusAction } from '../../accessLimiting/types'
 import { SortBy } from 'tea-component/lib/table/addons'
 import { TagSearchType } from './Page'
+import { describeServices, modifyServices } from '@src/polaris/service/model'
+import { Service } from '@src/polaris/service/types'
+import { resolvePromise } from 'saga-duck/build/helper'
+import { enableNearbyString } from '@src/polaris/service/operation/CreateDuck'
+import { checkFeatureValid } from '@src/polaris/common/util/checkFeature'
 
 interface Filter {
   namespace: string
@@ -56,6 +61,8 @@ export default class CustomRouteDuck extends GridPageDuck {
       SET_IN_DETAIL,
       CHANGE_TAGS,
       SET_TAGS,
+      SET_SERVICEDATA,
+      CHANGE_NEARBY,
     }
     return {
       ...super.quickTypes,
@@ -99,6 +106,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       sort: reduceFromPayload<SortBy[]>(types.SET_SORT, []),
       inDetail: reduceFromPayload<boolean>(types.SET_IN_DETAIL, false),
       validTags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
+      serviceData: reduceFromPayload<Service>(types.SET_SERVICEDATA, null),
     }
   }
 
@@ -125,6 +133,7 @@ export default class CustomRouteDuck extends GridPageDuck {
       }),
       setSort: createToPayload<SortBy[]>(types.SET_SORT),
       changeTags: createToPayload<TagValue[]>(types.CHANGE_TAGS),
+      changeNearby: createToPayload<void>(types.CHANGE_NEARBY),
     }
   }
 
@@ -211,16 +220,59 @@ export default class CustomRouteDuck extends GridPageDuck {
       },
     ]
   }
-
+  *loadService(name, namespace) {
+    const result = yield describeServices({
+      namespace,
+      name,
+      offset: 0,
+      limit: 10,
+    })
+    yield put({ type: this.types.SET_SERVICEDATA, payload: result?.list?.[0] })
+  }
   *saga() {
-    const { types, creators } = this
+    const { types, creators, selector } = this
+    const duck = this
     yield* super.saga()
     yield takeLatest(types.LOAD, function*(action) {
       const data = action.payload
       if (data) {
         yield put(creators.changeNamespace(data.namespace))
         yield put(creators.changeService(data.name))
+        yield* duck.loadService(data.name, data.namespace)
         yield put({ type: types.SET_IN_DETAIL, payload: true })
+      }
+    })
+    yield takeLatest(types.CHANGE_NEARBY, function*() {
+      const { serviceData, loadData } = selector(yield select())
+      let metadata
+      const isOpen = serviceData.metadata?.[enableNearbyString]
+      if (isOpen) {
+        metadata = { ...serviceData.metadata, [enableNearbyString]: undefined }
+      } else {
+        metadata = { ...serviceData.metadata, [enableNearbyString]: 'true' }
+      }
+      const confirm = yield Modal.confirm({ message: `确认${isOpen ? '关闭' : '开启'}就近访问？` })
+      if (!confirm) return
+      const res = yield* resolvePromise(
+        modifyServices([
+          {
+            metadata: metadata,
+            owners: 'polaris',
+            name: serviceData.name,
+            namespace: serviceData.namespace,
+            comment: serviceData.comment,
+            ports: serviceData.ports,
+            business: serviceData.business,
+            cmdb_mod1: '',
+            cmdb_mod2: '',
+            cmdb_mod3: '',
+            department: serviceData.department,
+          },
+        ]),
+      )
+      if (res) {
+        notification.success({ description: '修改成功' })
+        yield* duck.loadService(loadData.name, loadData.namespace)
       }
     })
     yield takeLatest(types.CHANGE_TAGS, function*(action) {
@@ -247,6 +299,8 @@ export default class CustomRouteDuck extends GridPageDuck {
       offset: (page - 1) * count,
       limit: count,
     }
+    const available = await checkFeatureValid('circuitbreaker')
+    if (!available) return { totalCount: 0, list: [] }
     if (validTags.length) {
       validTags.forEach(tag => {
         if (tag.attr.key === 'name') {
