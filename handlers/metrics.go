@@ -162,7 +162,7 @@ func DescribeServicesMetric(polarisServer *bootstrap.PolarisServer, conf *bootst
 		})
 
 		errg.Go(func() error {
-			resp, err := describeServiceMetricsRequestTimeout(conf, ctx.Query("start"), ctx.Query("end"), ctx.Query("step"))
+			resp, err := describeServiceMetricsRequestTimeout(conf, namespace, ctx.Query("start"), ctx.Query("end"), ctx.Query("step"))
 			if err != nil {
 				return err
 			}
@@ -171,7 +171,7 @@ func DescribeServicesMetric(polarisServer *bootstrap.PolarisServer, conf *bootst
 		})
 
 		errg.Go(func() error {
-			resp, err := describeServiceMetricsRequestTotal(conf, ctx.Query("start"), ctx.Query("end"), ctx.Query("step"))
+			resp, err := describeServiceMetricsRequestTotal(conf, namespace, ctx.Query("start"), ctx.Query("end"), ctx.Query("step"))
 			if err != nil {
 				return err
 			}
@@ -251,12 +251,15 @@ func handleDescribeServicesMetric(discoverResp *model.BatchQueryResponse, timeou
 }
 
 // describeServiceMetricsRequestTotal 查询时间段内 upstream_rq_total 的不同类比请求统计
-func describeServiceMetricsRequestTotal(conf *bootstrap.Config, start, end, step string) (map[string]map[string]*model.ServiceMetric, error) {
+func describeServiceMetricsRequestTotal(conf *bootstrap.Config, namespace, start, end, step string) (map[string]map[string]*model.ServiceMetric, error) {
 	params := map[string]string{
 		"start": start,
 		"end":   end,
 		"step":  step,
 		"query": "sum(upstream_rq_total{}) by (callee_service, callee_namespace, callee_result)",
+	}
+	if len(namespace) != 0 {
+		params["query"] = fmt.Sprintf(`sum(upstream_rq_total{callee_namespace="%s"}) by (callee_service, callee_namespace, callee_result)`, namespace)
 	}
 
 	queryParams := &url.Values{}
@@ -318,12 +321,15 @@ func describeServiceMetricsRequestTotal(conf *bootstrap.Config, start, end, step
 
 // describeServiceMetricsRequestTimeout 查询时间段内 upstream_rq_timeout 的平均时延
 // return map[string]map[string]float64{}
-func describeServiceMetricsRequestTimeout(conf *bootstrap.Config, start, end, step string) (map[string]map[string]float64, error) {
+func describeServiceMetricsRequestTimeout(conf *bootstrap.Config, namespace, start, end, step string) (map[string]map[string]float64, error) {
 	params := map[string]string{
 		"start": start,
 		"end":   end,
 		"step":  step,
 		"query": "avg(upstream_rq_timeout{}) by (callee_service, callee_namespace)",
+	}
+	if len(namespace) != 0 {
+		params["query"] = fmt.Sprintf(`avg(upstream_rq_timeout{callee_namespace="%s"}) by (callee_service, callee_namespace, callee_result)`, namespace)
 	}
 
 	queryParams := &url.Values{}
