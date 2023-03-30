@@ -42,6 +42,7 @@ import {
   RoutingValueTextMap,
 } from '../types'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import { autotip } from 'tea-component/lib/table/addons'
 insertCSS(
   'create-rule-form',
   `.card-module-h6-title-style {
@@ -669,212 +670,210 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   来源服务的请求满足以下匹配条件
                                 </Text>
                                 <section style={{ marginBottom: '10px' }}>
-                                  {argumentsField?.getValue()?.length > 0 && (
-                                    <Table
-                                      hideHeader
-                                      verticalTop
-                                      bordered
-                                      bottomTip={
-                                        <div>
-                                          <Icon type='plus' />
-                                          <Button
-                                            className='form-item-space'
-                                            type='link'
-                                            onClick={() => argumentsField.asArray().push(getEmptyLabel())}
-                                          >
-                                            添加
-                                          </Button>
-                                        </div>
-                                      }
-                                      records={[...argumentsField.asArray()]}
-                                      columns={[
-                                        {
-                                          key: 'type',
-                                          header: '类型',
-                                          width: 200,
-                                          render: item => {
-                                            const { type, key } = item.getFields(['type', 'key'])
-                                            const validate = type.getTouched() && type.getError()
-                                            const option = RoutingArgumentsTypeOptions.find(
-                                              item => item.value === type.getValue(),
-                                            )
-                                            return (
-                                              <Bubble content={option?.text}>
-                                                <FormControl
-                                                  status={validate ? 'error' : null}
-                                                  message={validate ? type.getError() : ''}
-                                                  showStatusIcon={false}
-                                                  style={{ display: 'inline', padding: 0 }}
-                                                >
-                                                  <Select
-                                                    options={RoutingArgumentsTypeOptions}
-                                                    value={type.getValue()}
-                                                    onChange={value => {
-                                                      type.setValue(RoutingArgumentsType[value])
-                                                      key.setValue('')
-                                                    }}
-                                                    type={'simulate'}
-                                                    appearance={'button'}
-                                                    size={'full'}
-                                                  ></Select>
-                                                </FormControl>
-                                              </Bubble>
-                                            )
-                                          },
+                                  <Table
+                                    hideHeader
+                                    verticalTop
+                                    bordered
+                                    bottomTip={
+                                      <div>
+                                        <Icon type='plus' />
+                                        <Button
+                                          className='form-item-space'
+                                          type='link'
+                                          onClick={() => argumentsField.asArray().push(getEmptyLabel())}
+                                        >
+                                          添加
+                                        </Button>
+                                      </div>
+                                    }
+                                    records={[...argumentsField.asArray()]}
+                                    columns={[
+                                      {
+                                        key: 'type',
+                                        header: '类型',
+                                        width: 200,
+                                        render: item => {
+                                          const { type, key } = item.getFields(['type', 'key'])
+                                          const validate = type.getTouched() && type.getError()
+                                          const option = RoutingArgumentsTypeOptions.find(
+                                            item => item.value === type.getValue(),
+                                          )
+                                          return (
+                                            <Bubble content={option?.text}>
+                                              <FormControl
+                                                status={validate ? 'error' : null}
+                                                message={validate ? type.getError() : ''}
+                                                showStatusIcon={false}
+                                                style={{ display: 'inline', padding: 0 }}
+                                              >
+                                                <Select
+                                                  options={RoutingArgumentsTypeOptions}
+                                                  value={type.getValue()}
+                                                  onChange={value => {
+                                                    type.setValue(RoutingArgumentsType[value])
+                                                    key.setValue('')
+                                                  }}
+                                                  type={'simulate'}
+                                                  appearance={'button'}
+                                                  size={'full'}
+                                                ></Select>
+                                              </FormControl>
+                                            </Bubble>
+                                          )
                                         },
-                                        {
-                                          key: 'key',
-                                          header: 'key',
-                                          render: item => {
-                                            return getArgumentsKeyComp(item, 'source', filterSourceLabelList)
-                                          },
+                                      },
+                                      {
+                                        key: 'key',
+                                        header: 'key',
+                                        render: item => {
+                                          return getArgumentsKeyComp(item, 'source', filterSourceLabelList)
                                         },
-                                        {
-                                          key: 'value_type',
-                                          header: 'value_type',
-                                          width: 120,
-                                          render: item => {
-                                            const { value_type } = item.getFields(['value_type'])
-                                            return (
-                                              <Select
-                                                options={RouteLabelMatchTypeOptions}
-                                                value={value_type.getValue()}
-                                                onChange={value => value_type.setValue(value)}
-                                                type={'simulate'}
-                                                appearance={'button'}
-                                                matchButtonWidth
-                                                size={'full'}
-                                              />
-                                            )
-                                          },
+                                      },
+                                      {
+                                        key: 'value_type',
+                                        header: 'value_type',
+                                        width: 120,
+                                        render: item => {
+                                          const { value_type } = item.getFields(['value_type'])
+                                          return (
+                                            <Select
+                                              options={RouteLabelMatchTypeOptions}
+                                              value={value_type.getValue()}
+                                              onChange={value => value_type.setValue(value)}
+                                              type={'simulate'}
+                                              appearance={'button'}
+                                              matchButtonWidth
+                                              size={'full'}
+                                            />
+                                          )
                                         },
-                                        {
-                                          key: 'value',
-                                          header: 'value',
-                                          render: item => {
-                                            return getArgumentsValueComp(item, 'source')
-                                          },
+                                      },
+                                      {
+                                        key: 'value',
+                                        header: 'value',
+                                        render: item => {
+                                          return getArgumentsValueComp(item, 'source')
                                         },
-                                        {
-                                          key: 'close',
-                                          header: '',
-                                          width: 50,
-                                          render(item, rowKey, recordIndex) {
-                                            const index = Number(recordIndex)
-                                            return (
-                                              <Button
-                                                type='icon'
-                                                icon='close'
-                                                onClick={() => {
-                                                  argumentsField.asArray().remove(index)
-                                                }}
-                                              />
-                                            )
-                                          },
+                                      },
+                                      {
+                                        key: 'close',
+                                        header: '',
+                                        width: 50,
+                                        render(item, rowKey, recordIndex) {
+                                          const index = Number(recordIndex)
+                                          return (
+                                            <Button
+                                              type='icon'
+                                              icon='close'
+                                              onClick={() => {
+                                                argumentsField.asArray().remove(index)
+                                              }}
+                                            />
+                                          )
                                         },
-                                      ]}
-                                    ></Table>
-                                  )}
+                                      },
+                                    ]}
+                                    addons={[autotip({ emptyText: '无匹配条件' })]}
+                                  ></Table>
                                 </section>
                                 <Text parent={'div'} theme={'strong'} style={{ marginBottom: '10px', fontWeight: 700 }}>
                                   将转发至目标服务的一下实例分组
                                 </Text>
                                 <section style={{ marginBottom: '10px' }}>
-                                  {ruleDestinations?.getValue()?.length > 0 && (
-                                    <Table
-                                      verticalTop
-                                      bordered
-                                      records={[...ruleDestinations.asArray()]}
-                                      columns={[
-                                        {
-                                          key: 'labels',
-                                          header: '实例标签',
-                                          render: (item, _, recordIndex) => {
-                                            const { labels } = item.getFields(['labels'])
-                                            const validate = labels.getTouched() && labels.getError()
-                                            const labelFieldArray = [...labels.asArray()]
-                                            return (
-                                              <FormControl
-                                                status={validate ? 'error' : null}
-                                                message={validate ? labels.getError() : ''}
-                                                showStatusIcon={false}
-                                                style={{ display: 'inline', padding: 0 }}
-                                              >
-                                                {labelFieldArray
-                                                  .slice(0, 3)
-                                                  .map((labelField, index) =>
+                                  <Table
+                                    verticalTop
+                                    bordered
+                                    records={[...ruleDestinations.asArray()]}
+                                    columns={[
+                                      {
+                                        key: 'labels',
+                                        header: '实例标签',
+                                        render: (item, _, recordIndex) => {
+                                          const { labels } = item.getFields(['labels'])
+                                          const validate = labels.getTouched() && labels.getError()
+                                          const labelFieldArray = [...labels.asArray()]
+                                          return (
+                                            <FormControl
+                                              status={validate ? 'error' : null}
+                                              message={validate ? labels.getError() : ''}
+                                              showStatusIcon={false}
+                                              style={{ display: 'inline', padding: 0 }}
+                                            >
+                                              {labelFieldArray
+                                                .slice(0, 3)
+                                                .map((labelField, index) =>
+                                                  getLabelTag(labelField.getValue(), index, labels),
+                                                )}
+                                              {labels.getValue()?.length > 3 && (
+                                                <Bubble
+                                                  content={labelFieldArray.map((labelField, index) =>
                                                     getLabelTag(labelField.getValue(), index, labels),
                                                   )}
-                                                {labels.getValue()?.length > 3 && (
-                                                  <Bubble
-                                                    content={labelFieldArray.map((labelField, index) =>
-                                                      getLabelTag(labelField.getValue(), index, labels),
-                                                    )}
-                                                    trigger={'click'}
-                                                  >
-                                                    <Button type={'icon'} icon={'more'}></Button>
-                                                  </Bubble>
-                                                )}
-                                                <Tag style={{ padding: 0 }}>
-                                                  <RouteLabelSelectPanel
-                                                    labelsField={labels}
-                                                    id={`${index}-${recordIndex}`}
-                                                  />
-                                                </Tag>
-                                              </FormControl>
-                                            )
-                                          },
+                                                  trigger={'click'}
+                                                >
+                                                  <Button type={'icon'} icon={'more'}></Button>
+                                                </Bubble>
+                                              )}
+                                              <Tag style={{ padding: 0 }}>
+                                                <RouteLabelSelectPanel
+                                                  labelsField={labels}
+                                                  id={`${index}-${recordIndex}`}
+                                                />
+                                              </Tag>
+                                            </FormControl>
+                                          )
                                         },
-                                        {
-                                          key: 'weight',
-                                          header: (
-                                            <>
-                                              权重
-                                              <Bubble content={'相对权重，数值范围：0-65535'}>
-                                                <Icon type={'info'}></Icon>
-                                              </Bubble>
-                                            </>
-                                          ),
-                                          width: 150,
-                                          render: item => {
-                                            const { weight } = item.getFields(['weight'])
-                                            return <InputNumber field={weight} hideButton></InputNumber>
-                                          },
+                                      },
+                                      {
+                                        key: 'weight',
+                                        header: (
+                                          <>
+                                            权重
+                                            <Bubble content={'相对权重，数值范围：0-65535'}>
+                                              <Icon type={'info'}></Icon>
+                                            </Bubble>
+                                          </>
+                                        ),
+                                        width: 150,
+                                        render: item => {
+                                          const { weight } = item.getFields(['weight'])
+                                          return <InputNumber field={weight} hideButton></InputNumber>
                                         },
-                                        {
-                                          key: 'isolate',
-                                          header: '是否隔离',
-                                          width: 100,
-                                          render: item => {
-                                            const { isolate } = item.getFields(['isolate'])
-                                            return (
-                                              <Checkbox
-                                                value={isolate.getValue()}
-                                                onChange={v => isolate.setValue(v)}
-                                              ></Checkbox>
-                                            )
-                                          },
+                                      },
+                                      {
+                                        key: 'isolate',
+                                        header: '是否隔离',
+                                        width: 100,
+                                        render: item => {
+                                          const { isolate } = item.getFields(['isolate'])
+                                          return (
+                                            <Checkbox
+                                              value={isolate.getValue()}
+                                              onChange={v => isolate.setValue(v)}
+                                            ></Checkbox>
+                                          )
                                         },
-                                        {
-                                          key: 'close',
-                                          header: '',
-                                          width: 50,
-                                          render(item, rowKey, recordIndex) {
-                                            const index = Number(recordIndex)
-                                            return (
-                                              <Button
-                                                type='icon'
-                                                icon='close'
-                                                onClick={() => {
-                                                  ruleDestinations.asArray().remove(index)
-                                                }}
-                                              />
-                                            )
-                                          },
+                                      },
+                                      {
+                                        key: 'close',
+                                        header: '',
+                                        width: 50,
+                                        render(item, rowKey, recordIndex) {
+                                          const index = Number(recordIndex)
+                                          return (
+                                            <Button
+                                              type='icon'
+                                              icon='close'
+                                              onClick={() => {
+                                                ruleDestinations.asArray().remove(index)
+                                              }}
+                                            />
+                                          )
                                         },
-                                      ]}
-                                    ></Table>
-                                  )}
+                                      },
+                                    ]}
+                                    addons={[autotip({ emptyText: '无匹配条件' })]}
+                                  ></Table>
                                   <div style={{ marginTop: '8px' }}>
                                     <Icon type='plus' />
                                     <Button
