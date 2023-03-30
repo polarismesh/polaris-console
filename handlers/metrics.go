@@ -304,10 +304,12 @@ func describeServiceMetricsRequestTotal(conf *bootstrap.Config, start, end, step
 			svc.FailedRequest += total
 		case string(RetFlowControl):
 			svc.LimitedRequest += total
+			svc.FailedRequest += total
 		case string(RetReject):
 			svc.CircuitbreakerRequest += total
+			svc.FailedRequest += total
 		}
-		svc.TotalRequest = int64(total)
+		svc.TotalRequest += int64(total)
 		svc.CalSuccessRate()
 	}
 
@@ -359,7 +361,11 @@ func describeServiceMetricsRequestTimeout(conf *bootstrap.Config, start, end, st
 			totalTimeout += v
 		}
 
-		serviceTimeout[namespace][service] = totalTimeout / float64(total)
+		if total == 0 {
+			serviceTimeout[namespace][service] = 0
+		} else {
+			serviceTimeout[namespace][service] = totalTimeout / float64(total)
+		}
 	}
 
 	return serviceTimeout, nil
@@ -558,7 +564,9 @@ func describeServiceInterfaceMetricsRequestTotal(conf *bootstrap.Config, namespa
 		case string(RetReject), string(RetFlowControl):
 			allInter.FlowControlRequest += total
 			inter.FlowControlRequest += total
+			inter.AbnormalRequest += total
 		}
+
 	}
 
 	return interfacesTimeout, nil
@@ -796,7 +804,11 @@ func describeServiceInstanceRequestTimeout(conf *bootstrap.Config, service, name
 			totalTimeout += v
 		}
 
-		instanceTimeout[instanceKey] = totalTimeout / float64(total)
+		if total == 0 {
+			instanceTimeout[instanceKey] = 0
+		} else {
+			instanceTimeout[instanceKey] = totalTimeout / float64(total)
+		}
 	}
 
 	return instanceTimeout, nil
@@ -851,8 +863,10 @@ func describeServiceInstanceRequestTotal(conf *bootstrap.Config, service, namesp
 			ins.FailedRequest += total
 		case string(RetFlowControl):
 			ins.LimitedRequest += total
+			ins.FailedRequest += total
 		case string(RetReject):
 			ins.CircuitbreakerRequest += total
+			ins.FailedRequest += total
 		}
 
 		ins.TotalRequest += total
@@ -1017,8 +1031,10 @@ func describeServiceCallerMetricRequestTotal(conf *bootstrap.Config, service, na
 			caller.FailedRequest += total
 		case string(RetFlowControl):
 			caller.LimitedRequest += total
+			caller.FailedRequest += total
 		case string(RetReject):
 			caller.CircuitbreakerRequest += total
+			caller.FailedRequest += total
 		}
 
 		caller.TotalRequest += total
@@ -1089,7 +1105,11 @@ func describeServiceCallerMetricRequestTimeout(conf *bootstrap.Config, service, 
 			totalTimeout += v
 		}
 
-		callerTimeout[callerNamespace][callerService][callerIp] = totalTimeout / float64(total)
+		if total == 0 {
+			callerTimeout[callerNamespace][callerService][callerIp] = 0
+		} else {
+			callerTimeout[callerNamespace][callerService][callerIp] = totalTimeout / float64(total)
+		}
 	}
 
 	return callerTimeout, nil

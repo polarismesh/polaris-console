@@ -46,7 +46,9 @@ type ServiceMetric struct {
 }
 
 func (i *ServiceMetric) CalSuccessRate() {
-	i.SuccessRate = (float64(i.TotalRequest) - float64(i.FailedRequest) - float64(i.CircuitbreakerRequest) - float64(i.LimitedRequest)) / float64(i.TotalRequest)
+	if i.TotalRequest != 0 {
+		i.SuccessRate = (float64(i.TotalRequest) - float64(i.FailedRequest)) / float64(i.TotalRequest)
+	}
 }
 
 type InterfaceMetrics struct {
@@ -94,7 +96,9 @@ type InstanceMetric struct {
 }
 
 func (i *InstanceMetric) CalSuccessRate() {
-	i.SuccessRate = (float64(i.TotalRequest) - float64(i.FailedRequest) - float64(i.CircuitbreakerRequest) - float64(i.LimitedRequest)) / float64(i.TotalRequest)
+	if i.TotalRequest != 0 {
+		i.SuccessRate = (float64(i.TotalRequest) - float64(i.FailedRequest)) / float64(i.TotalRequest)
+	}
 }
 
 type CallerMetric struct {
@@ -110,5 +114,7 @@ type CallerMetric struct {
 }
 
 func (i *CallerMetric) CalSuccessRate() {
-	i.SuccessRate = (float64(i.TotalRequest) - float64(i.FailedRequest) - float64(i.CircuitbreakerRequest) - float64(i.LimitedRequest)) / float64(i.TotalRequest)
+	if i.TotalRequest != 0 {
+		i.SuccessRate = (float64(i.TotalRequest) - float64(i.FailedRequest)) / float64(i.TotalRequest)
+	}
 }

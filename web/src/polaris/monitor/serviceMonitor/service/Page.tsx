@@ -137,7 +137,7 @@ export default function Overview(props: Props) {
               appearance='button'
               options={[
                 { text: '全部实例', value: '' },
-                ...instanceList.map((item: any) => ({ ...item, text: item.ip, value: item.id })),
+                ...instanceList.map((item: any) => ({ ...item, text: item.ip, value: item.ip })),
               ]}
               value={instance}
               onChange={v => dispatch(creators.setInstance(v))}
