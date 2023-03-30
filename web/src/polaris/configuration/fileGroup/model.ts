@@ -232,3 +232,21 @@ export async function describeConfigFileTemplates(params: DescribeConfigFileTemp
   })
   return res
 }
+
+export interface ExportConfigFilesParams {
+  namespace: string
+  groups: string[]
+  names?: string[]
+}
+
+export async function exportConfigFile(params: ExportConfigFilesParams) {
+  const res = await apiRequest<Blob>({
+    action: 'config/v1/configfiles/export',
+    data: params,
+    opts: {
+      responseType: 'blob',
+    },
+  })
+
+  return res
+}

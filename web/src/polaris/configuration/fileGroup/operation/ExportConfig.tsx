@@ -2,10 +2,10 @@ import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 
 import React, { useState } from 'react'
-import { DuckCmpProps, purify } from 'saga-duck'
+import { DuckCmpProps, memorize, purify } from 'saga-duck'
 import { Form, Select, Segment, Table } from 'tea-component'
 import { selectable } from 'tea-component/lib/table/addons'
-import ExportDuck from './ExportDuck'
+import ExportConfigDuck from './ExportConfigDuck'
 
 const segmentOptions = [
   {
@@ -18,17 +18,21 @@ const segmentOptions = [
   },
 ]
 
-const ExportForm = purify(function ExportForm(props: DuckCmpProps<ExportDuck>) {
+const getHandlers = memorize(({ creators }: ExportConfigDuck, dispatch) => ({
+  changeNamespace: v => dispatch(creators.changeNamespace(v)),
+}))
+const ExportConfigForm = purify(function ExportConfigForm(props: DuckCmpProps<ExportConfigDuck>) {
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
     selectors,
   } = duck
   const formApi = form.getAPI(store, dispatch)
+  const handlers = getHandlers(props)
+
   const { namespace, groups, exportType } = formApi.getFields(['namespace', 'groups', 'exportType'])
 
   const options = selectors.options(store)
-  console.log(options)
 
   const exportTypeValue = exportType.getValue()
   return (
@@ -36,9 +40,10 @@ const ExportForm = purify(function ExportForm(props: DuckCmpProps<ExportDuck>) {
       <Form>
         <FormField field={namespace} label='命名空间' required>
           <Select
+            searchable
             value={namespace.getValue()}
             options={options?.namespaceList ?? []}
-            onChange={value => namespace.setValue(value)}
+            onChange={value => handlers.changeNamespace(value)}
             type={'simulate'}
             appearance={'button'}
             size='l'
@@ -53,25 +58,7 @@ const ExportForm = purify(function ExportForm(props: DuckCmpProps<ExportDuck>) {
   )
 })
 
-// {
-//   "id": "280",
-//   "name": "polaris-config-example",
-//   "namespace": "default",
-//   "comment": "",
-//   "createTime": "2023-03-27 00:00:07",
-//   "createBy": "polaris",
-//   "modifyTime": "2023-03-27 00:00:07",
-//   "modifyBy": "polaris",
-//   "fileCount": "2",
-//   "user_ids": [],
-//   "group_ids": [],
-//   "remove_user_ids": [],
-//   "remove_group_ids": [],
-//   "editable": true,
-//   "owner": "polaris"
-// }
-
-const ConfigFileGroupTable = purify(function ConfigFileGroupTable(props: DuckCmpProps<ExportDuck>) {
+const ConfigFileGroupTable = purify(function ConfigFileGroupTable(props: DuckCmpProps<ExportConfigDuck>) {
   const { duck, store, dispatch } = props
   const {
     ducks: { form },
@@ -82,14 +69,11 @@ const ConfigFileGroupTable = purify(function ConfigFileGroupTable(props: DuckCmp
   const { groups } = formApi.getFields(['groups'])
   const options = selectors.options(store)
 
-  // 当前选中的消息
-  const [selectedKeys, setSelectedKeys] = useState([])
   const addons = [
     selectable({
-      value: selectedKeys,
-      onChange: (value, context) => {
-        console.log(value, context)
-        setSelectedKeys(value)
+      value: groups.asArray().getValue(),
+      onChange: (value: string[]) => {
+        groups.setValue(value)
       },
     }),
   ]
@@ -98,7 +82,7 @@ const ConfigFileGroupTable = purify(function ConfigFileGroupTable(props: DuckCmp
     <Table
       bordered
       style={{ marginTop: '16px' }}
-      recordKey='id'
+      recordKey='name'
       records={options?.configFileGroupList || []}
       columns={[
         {
@@ -119,18 +103,17 @@ const ConfigFileGroupTable = purify(function ConfigFileGroupTable(props: DuckCmp
   )
 })
 
-export default function Export(props: DuckCmpProps<ExportDuck>) {
+export default function ExportConfig(props: DuckCmpProps<ExportConfigDuck>) {
   const { duck, store, dispatch } = props
   const { selectors } = duck
   const visible = selectors.visible(store)
   if (!visible) {
     return <noscript />
   }
-  const data = selectors.data(store)
 
   return (
     <Dialog duck={duck} store={store} dispatch={dispatch} size='l' title='导出'>
-      <ExportForm duck={duck} store={store} dispatch={dispatch} />
+      <ExportConfigForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
   )
 }
