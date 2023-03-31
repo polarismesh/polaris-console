@@ -111,7 +111,7 @@ export default class ServiceDuck extends DetailPage {
       }
     })
     yield takeLatest(types.SET_SERVICE, function*() {
-      const { composedId, service } = selector(yield select())
+      const { composedId, service, interfaceName } = selector(yield select())
 
       const { data: instanceList } = yield getAllInstance({ ...composedId, service })
       yield put({
@@ -122,6 +122,7 @@ export default class ServiceDuck extends DetailPage {
 
       const { data: metricInstanceList } = yield getMetricInstance({
         ...composedId,
+        callee_method: interfaceName,
         service: service,
       })
       yield put({ type: types.SET_METRIC_INSTANCE_LIST, payload: metricInstanceList })
@@ -165,6 +166,7 @@ export default class ServiceDuck extends DetailPage {
       const { data: metricInstanceList } = yield getMetricInstance({
         ...composedId,
         service: service,
+        callee_method: interfaceName,
       })
       yield put({ type: types.SET_METRIC_INSTANCE_LIST, payload: metricInstanceList })
 

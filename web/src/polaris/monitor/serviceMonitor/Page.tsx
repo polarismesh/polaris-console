@@ -15,7 +15,7 @@ export enum TAB {
 }
 export const TAB_LABLES = {
   [TAB.Overview]: '概览',
-  [TAB.Service]: '服务和配置统计',
+  [TAB.Service]: '服务监控',
 }
 const tabs: Array<Tab> = [TAB.Overview, TAB.Service].map(id => ({
   id,
