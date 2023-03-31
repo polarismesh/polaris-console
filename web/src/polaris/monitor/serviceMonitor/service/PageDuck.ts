@@ -103,6 +103,9 @@ export default class ServiceDuck extends DetailPage {
       yield put({ type: types.SET_SERVICE_LIST, payload: serviceList })
       if (serviceList.length === 0) return
       const serviceExisted = serviceList.find(item => item.name === service)
+      if (serviceExisted) {
+        yield put(creators.reload())
+      }
       if (!service || !serviceExisted) {
         yield put({ type: types.SET_SERVICE, payload: serviceList?.[0]?.name })
       }
@@ -148,6 +151,32 @@ export default class ServiceDuck extends DetailPage {
       })
       yield put({ type: types.SET_INTERFACE_INFO, payload: interfaceInfo })
       yield put(creators.setInterface(''))
+    })
+    yield takeLatest(types.RELOAD, function*() {
+      const { composedId, service, interfaceName, instance } = selector(yield select())
+      const { step, start, end, namespace } = composedId
+      const { data: interfaceInfo } = yield getMetricInterface({
+        ...composedId,
+        service,
+        callee_instance: instance ? instance : undefined,
+      })
+      yield put({ type: types.SET_INTERFACE_INFO, payload: interfaceInfo })
+      yield put(creators.setInterface(''))
+      const { data: metricInstanceList } = yield getMetricInstance({
+        ...composedId,
+        service: service,
+      })
+      yield put({ type: types.SET_METRIC_INSTANCE_LIST, payload: metricInstanceList })
+
+      const { data: callerList } = yield getMetricCaller({
+        step,
+        start,
+        end,
+        callee_namespace: namespace,
+        callee_service: service,
+        callee_method: interfaceName,
+      })
+      yield put({ type: types.SET_CALLER_LIST, payload: callerList })
     })
   }
   async getData() {

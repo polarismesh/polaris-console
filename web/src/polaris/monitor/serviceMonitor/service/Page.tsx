@@ -56,7 +56,7 @@ const MetricCardPopover = (props: MetricCardProps & { children: React.ReactNode 
   <Popover
     trigger={'click'}
     overlay={<MetricCard {...props} cardBodyProps={{ style: { height: '360px' } }} />}
-    overlayStyle={{ width: '1000px' }}
+    overlayStyle={{ width: '1000px', height: '360px' }}
     placement={'top-end'}
   >
     {props.children}
@@ -391,7 +391,7 @@ export default function Overview(props: Props) {
                                   calleeInstance: currentInstance?.ip,
                                 })}
                               >
-                                {x.failed_request}
+                                <Button type={'link'}> {x.failed_request}</Button>
                               </MetricCardPopover>
                             )
                           },
@@ -499,7 +499,7 @@ export default function Overview(props: Props) {
                                 callerNamespace: x.namespace,
                               })}
                             >
-                              {x.failed_request}
+                              <Button type={'link'}> {x.failed_request}</Button>
                             </MetricCardPopover>
                           )
                         },

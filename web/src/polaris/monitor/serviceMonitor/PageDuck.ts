@@ -125,6 +125,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
       }),
       tab: (state: State) => state.tab,
       needAllNamespace: (state: State) => state.tab !== TAB.Service,
+      loading: () => false, //避免重新绘制页面，关闭全局loading提示
     }
   }
   async getData() {
