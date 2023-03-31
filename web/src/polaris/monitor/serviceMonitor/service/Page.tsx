@@ -497,6 +497,7 @@ export default function Overview(props: Props) {
                                 callerIp: x.host,
                                 callerService: x.service,
                                 callerNamespace: x.namespace,
+                                calleeResult: "fail|flow_control|reject"
                               })}
                             >
                               <Button type={'link'}> {x.failed_request}</Button>

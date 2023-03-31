@@ -161,7 +161,7 @@ export const getQueryMap = {
     ]
   },
   [MetricName.RetCode]: queryParam => {
-    const { calleeNamespace, calleeService, calleeInstance, callerIp, callerNamespace, callerService } = queryParam
+    const { calleeNamespace, calleeService, calleeInstance, callerIp, callerNamespace, callerService, calleeResult } = queryParam
     const conditionSets = {
       CalleeNamespace: calleeNamespace ? `callee_namespace="${calleeNamespace}"` : '',
       CalleeService: calleeService ? `callee_service="${calleeService}"` : '',
@@ -169,6 +169,7 @@ export const getQueryMap = {
       CallerIp: callerIp ? `caller_ip="${callerIp}"` : '',
       CallerNamespace: callerNamespace ? `caller_namespace="${callerNamespace}"` : '',
       CallerService: callerService ? `caller_service="${callerService}"` : '',
+      CalleeResult: calleeResult ? `callee_result=~"${calleeResult}"` : '',
     }
     const conditions = Object.entries(conditionSets)
       .filter(([, value]) => !!value)
