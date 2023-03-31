@@ -18,7 +18,7 @@ export interface Feature {
 /** 检查策略是否已开启 */
 export async function checkFeature() {
   try {
-    const result = await getApiRequest<CheckFeatureResult>({ action: '/functions', data: {} })
+    const result = await getApiRequest<CheckFeatureResult>({ action: '/admin/v1/functions', data: {} })
     return result.data
   } catch (e) {
     return []

@@ -167,6 +167,7 @@ export async function getMetricInstance(params: GetMetricInstanceParams) {
 export interface GetMetricInstanceParams {
   service: string
   namespace: string
+  callee_method: string
   start: number
   end: number
   step: number
