@@ -138,7 +138,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
     </section>
   )
   return (
-    <DetailPage store={store} duck={duck} dispatch={dispatch} title={'注册配置监控'}>
+    <DetailPage showBackButton={false} store={store} duck={duck} dispatch={dispatch} title={'注册配置监控'}>
       <Card>
         <Card.Body>
           <Tabs tabs={tabs} activeId={tab} onActive={handlers.switch}>

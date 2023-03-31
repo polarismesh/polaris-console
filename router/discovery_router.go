@@ -71,6 +71,8 @@ func DiscoveryV1Router(r *gin.Engine, config *bootstrap.Config) {
 	v1.GET("/:resource/labels", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 修改熔断高阶名
 	v1.GET("/:resource/rules", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 查看服务绑定的熔断规则
+	v1.GET("/:resource/all", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	// 修改资源
 	v1.PUT("/:resource", handlers.ReverseProxyForServer(&config.PolarisServer, config))

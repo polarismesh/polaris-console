@@ -28,6 +28,9 @@ export interface Instance {
 export enum HEALTH_STATUS {
   HEALTH = 'true',
   ABNORMAL = 'false',
+  METRIC_HEALTH = 'health',
+  METRIC_ABNORMAL = 'unhealth',
+  METRIC_OFFLINE = 'offline',
 }
 
 export enum ISOLATE_STATUS {
@@ -52,6 +55,18 @@ export const HEALTH_STATUS_MAP = {
   },
   [HEALTH_STATUS.ABNORMAL]: {
     text: '异常',
+    theme: 'danger',
+  },
+  [HEALTH_STATUS.METRIC_HEALTH]: {
+    text: '健康',
+    theme: 'success',
+  },
+  [HEALTH_STATUS.METRIC_ABNORMAL]: {
+    text: '异常',
+    theme: 'danger',
+  },
+  [HEALTH_STATUS.METRIC_OFFLINE]: {
+    text: '下线',
     theme: 'danger',
   },
 }
@@ -81,7 +96,7 @@ export const ISOLATE_STATUS_MAP = {
   },
   [ISOLATE_STATUS.UNISOLATED]: {
     text: '不隔离',
-    theme: '',
+    theme: 'text',
   },
 }
 

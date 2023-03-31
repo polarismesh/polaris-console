@@ -60,6 +60,14 @@ func NewBatchWriteResponse(code int32) *BatchWriteResponse {
 	}
 }
 
+type BatchQueryResponse struct {
+	Code     uint32     `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
+	Info     string     `protobuf:"bytes,2,opt,name=info,proto3" json:"info,omitempty"`
+	Amount   uint32     `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	Size     uint32     `protobuf:"bytes,4,opt,name=size,proto3" json:"size,omitempty"`
+	Services []*Service `protobuf:"bytes,6,rep,name=services,proto3" json:"services,omitempty"`
+}
+
 type BatchWriteResponse struct {
 	Code      int32       `json:"code"`
 	Info      string      `json:"info"`
@@ -81,7 +89,7 @@ func (b *BatchWriteResponse) Collect(response *Response) {
 }
 
 func CalcCode(code int32) int {
-	return int(code / 1000)
+	return int(uint32(int(code / 1000)))
 }
 
 type ServerNodes struct {

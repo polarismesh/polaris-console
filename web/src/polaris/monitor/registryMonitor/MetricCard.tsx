@@ -2,17 +2,19 @@ import { CardBodyProps, CardProps, Card, LoadingTip, Row, Col, MetricsBoard, Tex
 import React from 'react'
 import { useDuck } from 'saga-duck'
 import { BasicArea } from 'tea-chart'
-import { MetricCardFetcher, QuerySet } from './MetricCardFetcher'
-import { compressNumber, DefaultLineColors, roundToN } from './types'
+import { MetricCardFetcher, MetricConfig } from './MetricCardFetcher'
+import { compressNumber, roundToN } from './types'
+import { DefaultLineColors } from '../types'
 
 interface Props {
-  query: QuerySet[]
+  query: MetricConfig[]
   start: number
   end: number
   step: number
   cardProps?: CardProps
   cardBodyProps?: CardBodyProps
 }
+export type MetricCardProps = Props
 export default function(props: Props) {
   const { query, start, end, step, cardProps = {}, cardBodyProps = {} } = props
   const { dispatch, duck, store } = useDuck(MetricCardFetcher)
@@ -25,10 +27,9 @@ export default function(props: Props) {
   if (!data) return <LoadingTip />
   const { line, board } = data
   const colorArray = query.filter(item => item.color).map(item => item.color)
-
   return (
     <Card {...cardProps}>
-      <Card.Body {...cardBodyProps} style={{ height: '500px' }}>
+      <Card.Body style={{ height: '500px' }} {...cardBodyProps}>
         {board.length > 0 && (
           <Row showSplitLine>
             {board.map(item => {
