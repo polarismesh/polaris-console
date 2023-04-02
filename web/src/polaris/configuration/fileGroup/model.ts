@@ -1,5 +1,6 @@
 import { ConfigFileGroup, KeyValuePair, ConfigFile, ConfigFileRelease } from './types'
 import { getApiRequest, apiRequest, putApiRequest, deleteApiRequest } from '@src/polaris/common/util/apiRequest'
+import { object2FormData } from '@src/polaris/common/helpers/form'
 
 export interface DescribeConfigFileGroupsParams {
   offset: number
@@ -245,6 +246,59 @@ export async function exportConfigFile(params: ExportConfigFilesParams) {
     data: params,
     opts: {
       responseType: 'blob',
+    },
+  })
+
+  return res
+}
+
+export type TConflictHandling = 'skip' | 'overwrite'
+
+export interface ImportConfigFilesParams {
+  namespace: string
+  group?: string
+  conflict_handling: string
+  config: File
+}
+
+export interface IFileTag {
+  key: string
+  value: string
+}
+
+export interface IImportConfigFileResultItem {
+  id: string
+  name: string
+  namespace: string
+  group: string
+  content: string
+  format: string
+  comment: string
+  status: string
+  tags: IFileTag[]
+  createTime: string
+  createBy: string
+  modifyTime: string
+  modifyBy: string
+  releaseTime: string
+  releaseBy: string
+  encrypt: string
+}
+
+export interface IImportConfigFilesResult {
+  createConfigFiles: IImportConfigFileResultItem[]
+  skipConfigFiles: IImportConfigFileResultItem[]
+  overwriteConfigFiles: IImportConfigFileResultItem[]
+}
+
+export async function importConfigFile(params: ImportConfigFilesParams) {
+  const res = await apiRequest<IImportConfigFilesResult>({
+    action: 'config/v1/configfiles/import',
+    data: object2FormData(params),
+    opts: {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     },
   })
 

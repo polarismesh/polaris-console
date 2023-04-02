@@ -3,20 +3,20 @@ import Form from '@src/polaris/common/ducks/Form'
 import { put, select } from 'redux-saga/effects'
 import { takeLatest } from 'redux-saga-catch'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
-import { save } from '@src/polaris/common/components/zip'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
-import { isReadOnlyNamespace } from '@src/polaris/service/utils'
-import { describeConfigFileGroups, exportConfigFile } from '../model'
+import { describeConfigFileGroups, importConfigFile } from '../model'
 import { createToPayload } from 'saga-duck'
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IExportConfigOption {}
+export interface IImportOption {
+  namespaceList: string[]
+  showImportResult: boolean
+}
 
-export default class ExportConfigDuck extends FormDialog {
-  Options: IExportConfigOption
+export default class ImportDuck extends FormDialog {
+  Options: IImportOption
 
   get Form() {
-    return ExportConfigForm
+    return ImportForm
   }
 
   get quickDucks() {
@@ -24,9 +24,10 @@ export default class ExportConfigDuck extends FormDialog {
       ...super.quickDucks,
     }
   }
+
   get quickTypes() {
     enum Types {
-      CHANGE_NAMESPACE,
+      IMPORT_CONFIG_FILES,
     }
     return {
       ...super.quickTypes,
@@ -36,10 +37,9 @@ export default class ExportConfigDuck extends FormDialog {
 
   get creators() {
     const { types } = this
-
     return {
       ...super.creators,
-      changeNamespace: createToPayload(types.CHANGE_NAMESPACE),
+      importConfig: createToPayload(types.IMPORT_CONFIG_FILES),
     }
   }
 
@@ -50,48 +50,36 @@ export default class ExportConfigDuck extends FormDialog {
   *saga() {
     const { types } = this
     const {
-      selectors,
       ducks: { form },
+      selectors,
+      creators,
     } = this
     yield* super.saga()
 
-    yield takeLatest(types.CHANGE_NAMESPACE, function*(action) {
-      const namespace = action.payload
-
-      yield put(form.creators.setValue('namespace', namespace))
-      const { list: configFileGroupList } = yield getAllList(describeConfigFileGroups, {
-        listKey: 'list',
-        totalKey: 'totalCount',
-      })({ namespace })
+    yield takeLatest(types.IMPORT_CONFIG_FILES, function*() {
+      const data = form.selectors.values(yield select())
 
       const options = selectors.options(yield select())
-      yield put({
-        type: types.SET_OPTIONS,
-        payload: {
-          ...options,
-          configFileGroupList,
-        },
-      })
+
+      const importResult = yield importConfigFile(data)
+      // 如果没有结果返回，就说明请求失败了
+      if (importResult) {
+        yield put({
+          type: types.SET_OPTIONS,
+          payload: {
+            ...options,
+            showImportResult: true,
+            importResult,
+          },
+        })
+      } else {
+        yield put(creators.hide())
+      }
     })
   }
+  *onSubmit() {}
 
-  *onSubmit() {
-    const {
-      selectors,
-      ducks: { form },
-    } = this
-
-    const options = selectors.options(yield select())
-    const data = form.selectors.values(yield select())
-    if (data.exportType === '*') {
-      data.groups = options.configFileGroupList.map(c => c.name)
-    }
-    const zipBlob = yield exportConfigFile({
-      namespace: data.namespace,
-      groups: data.groups,
-    })
-    save('config.zip', zipBlob)
-  }
+  *beforeSubmit() {}
 
   *onShow() {
     yield* super.onShow()
@@ -101,50 +89,59 @@ export default class ExportConfigDuck extends FormDialog {
     } = this
     const options = selectors.options(yield select())
     const data = selectors.data(yield select())
-
-    form.selectors.values(yield select())
     const { list: namespaceList } = yield getAllList(describeComplicatedNamespaces, {
       listKey: 'namespaces',
       totalKey: 'amount',
+    })({})
+    const { list: configFileGroupList } = yield getAllList(describeConfigFileGroups, {
+      listKey: 'list',
+      totalKey: 'totalCount',
     })({})
 
     yield put({
       type: this.types.SET_OPTIONS,
       payload: {
         ...options,
-        configFileGroupList: [],
+        configFileGroupList,
+        showImportResult: false,
+        importResult: {},
         namespaceList: namespaceList.map(item => {
-          const disabled = isReadOnlyNamespace(item)
+          // const disabled = isReadOnlyNamespace(item)
           return {
             ...item,
             text: item.name,
             value: item.name,
-            disabled,
-            tooltip: disabled && '该命名空间为只读命名空间',
+            // disabled,
+            // tooltip: disabled && '该命名空间为只读命名空间',
           }
         }),
       },
     })
+
     yield put(form.creators.setMeta(options))
     yield put(form.creators.setValues({ ...data }))
   }
 }
 
+export type TConflictHandling = 'skip' | 'overwrite'
+
 export interface Values {
   namespace: string
-  groups: string[]
-  exportType: string
+  config: File
+  group?: string
+  conflict_handling: TConflictHandling
 }
 
-class ExportConfigForm extends Form {
+class ImportForm extends Form {
   Values: Values
   Meta: any
 
-  get defaultValue(): this['Values'] {
+  get defaultValue() {
     return {
       namespace: '',
-      groups: [],
-      exportType: '*',
+      config: null,
+      group: '',
+      conflict_handling: 'skip' as TConflictHandling,
     }
   }
 
@@ -153,7 +150,7 @@ class ExportConfigForm extends Form {
   }
 }
 
-const validator = ExportConfigForm.combineValidators<Values, any>({
+const validator = ImportForm.combineValidators<Values, any>({
   namespace(v) {
     if (!v) return '请填写分组名'
   },

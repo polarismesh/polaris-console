@@ -16,7 +16,7 @@ import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import ExportConfig from './operation/ExportConfig'
 import ExportConfigDuck from './operation/ExportConfigDuck'
 import ImportConfig from './operation/ImportConfig'
-import ImportConfigDuck from './operation/ImportConfigDuckk'
+import ImportConfigDuck from './operation/ImportConfigDuck'
 
 export interface ConfigFileGroupItem extends ConfigFileGroup {
   id: string
