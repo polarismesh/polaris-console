@@ -137,7 +137,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
     return result.list.map(item => ({ ...item, text: item.name, value: item.name }))
   }
   *saga() {
-    const { types, selector } = this
+    const { types, selector, ducks, creators } = this
     yield* super.saga()
     yield* this.watchTabs()
     yield takeLatest([types.SET_START, types.SET_END], function*() {
@@ -152,6 +152,12 @@ export default class RegistryDetailDuck extends DetailPageDuck {
       if (gap > 60 * 60 * 24 * 7) {
         yield put({ type: types.SET_STEP, payload: 3600 })
       }
+    })
+    yield takeLatest(ducks.overview.types.GOTO_SERVICE_DETAIL, function*(action: any) {
+      const { service, namespace } = action.payload
+      yield put(creators.setNamespace(namespace))
+      yield put(creators.switch(TAB.Service))
+      yield put(ducks.service.creators.setService(service))
     })
   }
   *watchTabs() {

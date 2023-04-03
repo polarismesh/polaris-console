@@ -111,10 +111,11 @@ export default class TimeSelect extends Component<TimeSelectProps, any> {
   }
 
   handleInitData(from, to) {
+    const { pickerIndex } = this.state
     const { defaultIndex } = this.props
     if (from && to) {
       // 如果初始化时传递了from，to，则直接设置dateValue
-      this.setPickerIndex(null)
+      this.setPickerIndex(pickerIndex ?? defaultIndex)
       this.setDateValue([moment(from), moment(to)])
       return
     }

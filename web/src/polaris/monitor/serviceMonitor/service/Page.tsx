@@ -239,14 +239,18 @@ export default function Overview(props: Props) {
                   <Justify
                     left={
                       <>
-                        <Text reset overflow style={{ width: '200px' }}>
+                        <Text
+                          reset
+                          overflow
+                          style={{ width: '200px', fontWeight: interfaceName === '' ? '700' : 'inherit' }}
+                        >
                           所有接口
                         </Text>
                       </>
                     }
                     right={
                       <>
-                        <Text reset>
+                        <Text reset style={{ fontWeight: interfaceName === '' ? '700' : 'inherit' }}>
                           {compressNumber(category_service.success_request) ?? '-'}/
                           {compressNumber(category_service.flow_control_request) ?? '-'}/
                           {compressNumber(category_service.abnormal_request) ?? '-'}/
@@ -278,14 +282,28 @@ export default function Overview(props: Props) {
                     <Justify
                       left={
                         <>
-                          <Text reset overflow style={{ width: '150px' }}>
+                          <Text
+                            reset
+                            overflow
+                            style={{
+                              width: '150px',
+                              fontWeight: interfaceName === item.interface_name ? '700' : 'inherit',
+                            }}
+                          >
                             {item.interface_name}
                           </Text>
                         </>
                       }
                       right={
                         <>
-                          <Text reset overflow style={{ width: '150px' }}>
+                          <Text
+                            reset
+                            overflow
+                            style={{
+                              width: '150px',
+                              fontWeight: interfaceName === item.interface_name ? '700' : 'inherit',
+                            }}
+                          >
                             {rateString}
                           </Text>
                         </>
@@ -497,7 +515,7 @@ export default function Overview(props: Props) {
                                 callerIp: x.host,
                                 callerService: x.service,
                                 callerNamespace: x.namespace,
-                                calleeResult: "fail|flow_control|reject"
+                                calleeResult: 'fail|flow_control|reject',
                               })}
                             >
                               <Button type={'link'}> {x.failed_request}</Button>

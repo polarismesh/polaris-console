@@ -98,9 +98,10 @@ export default class ServiceDuck extends DetailPage {
     const { types, selector, creators } = this
     yield* super.saga()
     yield takeLatest(types.LOAD, function*() {
-      const { composedId, service } = selector(yield select())
+      const { composedId } = selector(yield select())
       const { services: serviceList } = yield getAllService({ namespace: composedId.namespace })
       yield put({ type: types.SET_SERVICE_LIST, payload: serviceList })
+      const { service } = selector(yield select())
       if (serviceList.length === 0) return
       const serviceExisted = serviceList.find(item => item.name === service)
       if (serviceExisted) {
@@ -112,20 +113,27 @@ export default class ServiceDuck extends DetailPage {
     })
     yield takeLatest(types.SET_SERVICE, function*() {
       const { composedId, service, interfaceName } = selector(yield select())
+      try {
+        const { data: instanceList } = yield getAllInstance({ ...composedId, service })
+        yield put({
+          type: types.SET_INSTANCE_LIST,
+          payload: instanceList.map(item => ({ ...item, ip: `${item.host}:${item.port}` })),
+        })
+        yield put({ type: types.SET_INSTANCE, payload: '' })
 
-      const { data: instanceList } = yield getAllInstance({ ...composedId, service })
-      yield put({
-        type: types.SET_INSTANCE_LIST,
-        payload: instanceList.map(item => ({ ...item, ip: `${item.host}:${item.port}` })),
-      })
-      yield put({ type: types.SET_INSTANCE, payload: '' })
-
-      const { data: metricInstanceList } = yield getMetricInstance({
-        ...composedId,
-        callee_method: interfaceName,
-        service: service,
-      })
-      yield put({ type: types.SET_METRIC_INSTANCE_LIST, payload: metricInstanceList })
+        const { data: metricInstanceList } = yield getMetricInstance({
+          ...composedId,
+          callee_method: interfaceName,
+          service: service,
+        })
+        yield put({ type: types.SET_METRIC_INSTANCE_LIST, payload: metricInstanceList })
+      } catch (e) {
+        yield put({
+          type: types.SET_INSTANCE_LIST,
+          payload: [],
+        })
+        yield put({ type: types.SET_METRIC_INSTANCE_LIST, payload: [] })
+      }
     })
     yield takeLatest(types.SET_INTERFACE, function*() {
       const {

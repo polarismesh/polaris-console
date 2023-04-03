@@ -28,6 +28,7 @@ export default class OverviewDuck extends DetailPage {
       LOAD,
       SET_SERVICE_LIST,
       SET_SORT,
+      GOTO_SERVICE_DETAIL,
     }
     return {
       ...super.quickTypes,
@@ -49,6 +50,7 @@ export default class OverviewDuck extends DetailPage {
       ...super.creators,
       load: createToPayload<ComposedId>(types.LOAD),
       setSort: createToPayload<SortBy[]>(types.SET_SORT),
+      gotoServiceDetail: createToPayload(types.GOTO_SERVICE_DETAIL),
     }
   }
   get rawSelectors() {

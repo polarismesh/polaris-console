@@ -38,7 +38,7 @@ export default function(props: Props) {
   if (!data) return <LoadingTip />
   return (
     <Card {...cardProps}>
-      <Card.Body {...cardBodyProps}>
+      <Card.Body {...cardBodyProps} subtitle={'(返回码|次数|占比)'}>
         <div style={{ marginTop: '20px' }}>{loading && <LoadingTip style={{ margin: '245px auto' }} />}</div>
         {data.length ? (
           <Row>

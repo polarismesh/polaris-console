@@ -1,12 +1,11 @@
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
-import { Card, Col, Form, Row, SearchBox, Table } from 'tea-component'
+import { Button, Card, Col, Form, Row, SearchBox, Table } from 'tea-component'
 import MetricCard from '../../registryMonitor/MetricCard'
 import MetricPieCard from '../MetricPieCard'
 import MetricTagCard from '../MetricTagCard'
 import { getPieQueryMap, getQueryMap, getTableQueryMap, MetricName, roundToN } from '../types'
 import BaseInfoDuck from './PageDuck'
-import { Link } from 'react-router-dom'
 import { autotip, pageable, sortable } from 'tea-component/lib/table/addons'
 import { FilterType } from '../Page'
 
@@ -92,7 +91,7 @@ export default function Overview(props: Props) {
       </Card>
       <Card bordered style={{ marginTop: '20px' }}>
         <Card.Body
-          title={'服务请求分布'}
+          title={'服务列表'}
           operation={
             <SearchBox
               value={serviceKeyword}
@@ -111,7 +110,16 @@ export default function Overview(props: Props) {
                 key: 'name',
                 header: '服务名称',
                 render: x => {
-                  return <Link>{x.name}</Link>
+                  return (
+                    <Button
+                      type={'link'}
+                      onClick={() => {
+                        dispatch(creators.gotoServiceDetail({ service: x.name, namespace: x.namespace }))
+                      }}
+                    >
+                      {x.name}
+                    </Button>
+                  )
                 },
               },
               {

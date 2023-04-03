@@ -88,6 +88,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
     [FilterType.TimeRange]: (
       <FormItem label={'时间范围'} key={'时间范围'} align={'middle'}>
         <TimeSelect
+          defaultIndex={0}
           tabs={TimePickerTab()}
           style={{ display: 'inline-block' }}
           changeDate={({ from, to }) => {
