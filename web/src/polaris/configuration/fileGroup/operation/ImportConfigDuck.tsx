@@ -6,6 +6,7 @@ import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
 import { describeConfigFileGroups, importConfigFile } from '../model'
 import { createToPayload } from 'saga-duck'
+import { isReadOnlyNamespace } from '@src/polaris/service/utils'
 
 export interface IImportOption {
   namespaceList: string[]
@@ -106,13 +107,13 @@ export default class ImportDuck extends FormDialog {
         showImportResult: false,
         importResult: {},
         namespaceList: namespaceList.map(item => {
-          // const disabled = isReadOnlyNamespace(item)
+          const disabled = isReadOnlyNamespace(item)
           return {
             ...item,
             text: item.name,
             value: item.name,
-            // disabled,
-            // tooltip: disabled && '该命名空间为只读命名空间',
+            disabled,
+            tooltip: disabled && '该命名空间为只读命名空间',
           }
         }),
       },

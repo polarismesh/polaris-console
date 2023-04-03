@@ -5,7 +5,6 @@ import { takeLatest } from 'redux-saga-catch'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { save } from '@src/polaris/common/components/zip'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
-import { isReadOnlyNamespace } from '@src/polaris/service/utils'
 import { describeConfigFileGroups, exportConfigFile } from '../model'
 import { createToPayload } from 'saga-duck'
 
@@ -114,13 +113,10 @@ export default class ExportConfigDuck extends FormDialog {
         ...options,
         configFileGroupList: [],
         namespaceList: namespaceList.map(item => {
-          const disabled = isReadOnlyNamespace(item)
           return {
             ...item,
             text: item.name,
             value: item.name,
-            disabled,
-            tooltip: disabled && '该命名空间为只读命名空间',
           }
         }),
       },
