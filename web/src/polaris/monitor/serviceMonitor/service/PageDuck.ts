@@ -141,6 +141,15 @@ export default class ServiceDuck extends DetailPage {
         service,
         interfaceName,
       } = selector(yield select())
+      const { data: metricInstanceList } = yield getMetricInstance({
+        step,
+        start,
+        end,
+        namespace,
+        callee_method: interfaceName,
+        service: service,
+      })
+      yield put({ type: types.SET_METRIC_INSTANCE_LIST, payload: metricInstanceList })
       const { data: callerList } = yield getMetricCaller({
         step,
         start,
