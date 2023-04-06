@@ -13,6 +13,10 @@ import { NamespaceItem } from '@src/polaris/service/PageDuck'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
+import ExportConfig from './operation/ExportConfig'
+import ExportConfigDuck from './operation/ExportConfigDuck'
+import ImportConfig from './operation/ImportConfig'
+import ImportConfigDuck from './operation/ImportConfigDuck'
 
 export interface ConfigFileGroupItem extends ConfigFileGroup {
   id: string
@@ -46,6 +50,9 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       CHANGE_TAGS,
       SET_NAMESPACE_LIST,
       SET_NAMESPACE,
+
+      EXPORT_CONFIG,
+      IMPORT_CONFIG,
     }
     return {
       ...super.quickTypes,
@@ -87,6 +94,8 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       edit: createToPayload<ConfigFileGroupItem>(types.EDIT),
       remove: createToPayload<ConfigFileGroupItem>(types.REMOVE),
       create: createToPayload<void>(types.CREATE),
+      exportConfig: createToPayload<void>(types.EXPORT_CONFIG),
+      importConfig: createToPayload(types.IMPORT_CONFIG),
       load: (composedId, data) => ({
         type: types.LOAD,
         payload: { composedId, data },
@@ -140,6 +149,38 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
           showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
               resolve(yield* duck.execute({}, { isModify: false }))
+            } finally {
+              resolve(false)
+            }
+          })
+        }),
+      )
+      if (res) {
+        yield put(creators.reload())
+      }
+    })
+    yield takeLatest(types.EXPORT_CONFIG, function*() {
+      const res = yield* resolvePromise(
+        new Promise(resovle => {
+          showDialog(ExportConfig, ExportConfigDuck, function*(duck: ExportConfigDuck) {
+            try {
+              resovle(yield* duck.execute())
+            } finally {
+              resovle(false)
+            }
+          })
+        }),
+      )
+      if (res) {
+        yield put(creators.reload())
+      }
+    })
+    yield takeLatest(types.IMPORT_CONFIG, function*() {
+      const res = yield* resolvePromise(
+        new Promise(resolve => {
+          showDialog(ImportConfig, ImportConfigDuck, function*(duck: ImportConfigDuck) {
+            try {
+              resolve(yield* duck.execute())
             } finally {
               resolve(false)
             }
