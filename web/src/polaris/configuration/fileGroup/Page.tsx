@@ -46,6 +46,8 @@ const getHandlers = memorize(({ creators }: ConfigFileGroupDuck, dispatch) => ({
   create: () => dispatch(creators.create()),
   select: v => dispatch(creators.select(v)),
   remove: v => dispatch(creators.remove(v)),
+  exportConfig: v => dispatch(creators.exportConfig(v)),
+  importConfig: v => dispatch(creators.importConfig(v)),
   changeTags: v => dispatch(creators.changeTags(v)),
   setNamespace: v => dispatch(creators.setNamespace(v)),
 }))
@@ -66,6 +68,9 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
               <Button type={'primary'} onClick={handlers.create}>
                 {'新建'}
               </Button>
+              <Button onClick={handlers.importConfig}>导入</Button>
+
+              <Button onClick={handlers.exportConfig}>导出</Button>
               {/* <Button type={'primary'} onClick={() => handlers.remove(selection)} disabled={selection?.length === 0}>
                 {'删除'}
               </Button> */}
