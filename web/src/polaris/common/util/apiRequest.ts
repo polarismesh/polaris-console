@@ -38,7 +38,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
         headers: {
           'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
-          ...(opts.headers ?? {}),
+          ...(opts?.headers ?? {}),
         },
       })
       .catch(function (error) {
