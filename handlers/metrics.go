@@ -1084,12 +1084,10 @@ func describeServiceCallerMetricRequestTotal(conf *bootstrap.Config, service, na
 
 func describeServiceCallerMetricRequestTimeout(conf *bootstrap.Config, service, namespace, calleeMethod, calleeInstance,
 	start, end, step string) (map[string]map[string]map[string]float64, error) {
-
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
 		step = "60"
 	}
-
 	params := map[string]string{
 		"start": start,
 		"end":   end,
