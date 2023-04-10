@@ -252,6 +252,10 @@ func handleDescribeServicesMetric(discoverResp *model.BatchQueryResponse, timeou
 
 // describeServiceMetricsRequestTotal 查询时间段内 upstream_rq_total 的不同类比请求统计
 func describeServiceMetricsRequestTotal(conf *bootstrap.Config, namespace, start, end, step string) (map[string]map[string]*model.ServiceMetric, error) {
+	stepVal, _ := strconv.ParseInt(step, 10, 64)
+	if stepVal < 60 {
+		step = "60"
+	}
 	params := map[string]string{
 		"start": start,
 		"end":   end,
@@ -322,6 +326,10 @@ func describeServiceMetricsRequestTotal(conf *bootstrap.Config, namespace, start
 // describeServiceMetricsRequestTimeout 查询时间段内 upstream_rq_timeout 的平均时延
 // return map[string]map[string]float64{}
 func describeServiceMetricsRequestTimeout(conf *bootstrap.Config, namespace, start, end, step string) (map[string]map[string]float64, error) {
+	stepVal, _ := strconv.ParseInt(step, 10, 64)
+	if stepVal < 60 {
+		step = "60"
+	}
 	params := map[string]string{
 		"start": start,
 		"end":   end,
@@ -479,6 +487,10 @@ func handleDescribeServiceInterfacesMetric(timeoutResp map[string]float64,
 }
 
 func describeServiceInterfaceList(conf *bootstrap.Config, start, end, step string) (map[string]struct{}, error) {
+	stepVal, _ := strconv.ParseInt(step, 10, 64)
+	if stepVal < 60 {
+		step = "60"
+	}
 	params := map[string]string{
 		"query": "group(upstream_rq_total) by (callee_method)",
 		"start": start,
@@ -509,6 +521,10 @@ func describeServiceInterfaceList(conf *bootstrap.Config, start, end, step strin
 
 // describeServiceInterfaceMetricsRequestTotal 查询时间段内接口级别的 upstream_rq_total 的不同类比请求统计
 func describeServiceInterfaceMetricsRequestTotal(conf *bootstrap.Config, namespace, service, calleeInstance, start, end, step string) (map[string]*model.InterfaceMetric, error) {
+	stepVal, _ := strconv.ParseInt(step, 10, 64)
+	if stepVal < 60 {
+		step = "60"
+	}
 	params := map[string]string{
 		"start": start,
 		"end":   end,
@@ -581,6 +597,10 @@ func describeServiceInterfaceMetricsRequestTotal(conf *bootstrap.Config, namespa
 // describeServiceInterfaceMetricsRequestTimeout 查询时间段内接口级别 upstream_rq_timeout 的平均时延
 // return map[string]float64{}
 func describeServiceInterfaceMetricsRequestTimeout(conf *bootstrap.Config, namespace, service, calleeInstance, start, end, step string) (map[string]float64, error) {
+	stepVal, _ := strconv.ParseInt(step, 10, 64)
+	if stepVal < 60 {
+		step = "60"
+	}
 	params := map[string]string{
 		"start": start,
 		"end":   end,
@@ -766,6 +786,10 @@ func handleDescribeServiceInstancesMetric(discoverResp *model.DiscoverResponse, 
 
 func describeServiceInstanceRequestTimeout(conf *bootstrap.Config, service, namespace, calleeMethod,
 	start, end, step string) (map[string]float64, error) {
+	stepVal, _ := strconv.ParseInt(step, 10, 64)
+	if stepVal < 60 {
+		step = "60"
+	}
 	params := map[string]string{
 		"start": start,
 		"end":   end,
@@ -822,6 +846,10 @@ func describeServiceInstanceRequestTimeout(conf *bootstrap.Config, service, name
 
 func describeServiceInstanceRequestTotal(conf *bootstrap.Config, service, namespace, calleeMethod,
 	start, end, step string) (map[string]*model.InstanceMetric, error) {
+	stepVal, _ := strconv.ParseInt(step, 10, 64)
+	if stepVal < 60 {
+		step = "60"
+	}
 	params := map[string]string{
 		"start": start,
 		"end":   end,
@@ -971,6 +999,10 @@ func handleDescribeServiceCallerMetric(timeoutVal map[string]map[string]map[stri
 
 func describeServiceCallerMetricRequestTotal(conf *bootstrap.Config, service, namespace, calleeMethod,
 	calleeInstance, start, end, step string) (map[string]map[string]map[string]*model.CallerMetric, error) {
+	stepVal, _ := strconv.ParseInt(step, 10, 64)
+	if stepVal < 60 {
+		step = "60"
+	}
 	params := map[string]string{
 		"start": start,
 		"end":   end,
@@ -1052,7 +1084,10 @@ func describeServiceCallerMetricRequestTotal(conf *bootstrap.Config, service, na
 
 func describeServiceCallerMetricRequestTimeout(conf *bootstrap.Config, service, namespace, calleeMethod, calleeInstance,
 	start, end, step string) (map[string]map[string]map[string]float64, error) {
-
+	stepVal, _ := strconv.ParseInt(step, 10, 64)
+	if stepVal < 60 {
+		step = "60"
+	}
 	params := map[string]string{
 		"start": start,
 		"end":   end,
