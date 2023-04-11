@@ -52,16 +52,16 @@ export const getQueryMap = {
       {
         name: '限流请求数',
         query: conditions.length
-          ? `sum(upstream_rq_total{call_result="flow_control",${conditionString}}) or on() vector(0)`
-          : 'sum(upstream_rq_total{call_result="flow_control"}) or on() vector(0)',
+          ? `sum(upstream_rq_total{callee_result="flow_control",${conditionString}}) or on() vector(0)`
+          : 'sum(upstream_rq_total{callee_result="flow_control"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
       {
         name: '熔断请求数',
         query: conditions.length
-          ? `sum(upstream_rq_total{call_result="reject",${conditionString}}) or on() vector(0)`
-          : 'sum(upstream_rq_total{call_result="reject"}) or on() vector(0)',
+          ? `sum(upstream_rq_total{callee_result="reject",${conditionString}}) or on() vector(0)`
+          : 'sum(upstream_rq_total{callee_result="reject"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
         minStep: 60,
       },
