@@ -111,14 +111,15 @@ function ImportResultGroup(props: IImportResultGroupProps) {
             {expand ? '收起' : '查看'}
           </Button>
         </p>
-        <p>
-          {expand &&
-            configFiles.map(file => (
+        {expand && (
+          <p>
+            {configFiles.map(file => (
               <span style={{ marginRight: '32px' }} key={file.id}>
                 {file.name}
               </span>
             ))}
-        </p>
+          </p>
+        )}
       </div>
     </div>
   )
@@ -215,7 +216,15 @@ export default function ImportConfig(props: DuckCmpProps<ImportConfigDuck>) {
     [options?.showImportResult],
   )
   return (
-    <Dialog duck={duck} store={store} dispatch={dispatch} size='l' title='导入' onSubmit={handleSubmit}>
+    <Dialog
+      duck={duck}
+      store={store}
+      dispatch={dispatch}
+      size='l'
+      title='导入'
+      onSubmit={handleSubmit}
+      defaultSubmitText={options?.showImportResult ? '确认' : '提交'}
+    >
       {options?.showImportResult ? (
         <ImportResult duck={duck} store={store} dispatch={dispatch} />
       ) : (
