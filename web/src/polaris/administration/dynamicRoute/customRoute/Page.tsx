@@ -70,7 +70,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
   const inService = !!loadData
   const [showType, setShowType] = React.useState('router')
   const [routerFeature] = useCheckFeatureValid(['router'])
-  const isRouterEnable = routerFeature?.display === FeatureDisplayType.visible
+  const isRouterEnable = routerFeature ? routerFeature?.display === FeatureDisplayType.visible : true
   const customRouteComponent = (
     <>
       <Table.ActionPanel>
