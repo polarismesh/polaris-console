@@ -21,6 +21,7 @@ import {
   Tag,
   PopConfirm,
   InputNumber as TeaInputNumber,
+  SelectOptionWithGroup,
 } from 'tea-component'
 import FormDuck from '@src/polaris/common/ducks/Form'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
@@ -158,9 +159,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             if (value !== keyField.getValue()) {
               valueField.setValue('')
             }
-            if (value_type.getValue() === RoutingValueType.PARAMETER) {
-              valueField.setValue(value)
-            }
+            // if (value_type.getValue() === RoutingValueType.PARAMETER) {
+            //   valueField.setValue(value)
+            // }
             keyField.setValue(value)
           }}
         >
@@ -169,9 +170,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               ref={ref}
               value={keyField.getValue()}
               onChange={value => {
-                if (value_type.getValue() === RoutingValueType.PARAMETER) {
-                  valueField.setValue(value)
-                }
+                // if (value_type.getValue() === RoutingValueType.PARAMETER) {
+                //   valueField.setValue(value)
+                // }
                 keyField.setValue(value)
               }}
               placeholder={'请输入标签键'}
@@ -208,19 +209,40 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     )
   }
 
-  function getArgumentsValueComp(recordField: FieldAPI<RouteSourceArgument | RouteDestinationArgument>, type: string) {
+  function getArgumentsValueComp(
+    recordField: FieldAPI<RouteSourceArgument | RouteDestinationArgument>,
+    argumentsField: FieldAPI<RouteSourceArgument[]>,
+    type: string,
+  ) {
     const { value: valueField, key: keyField, type: labelType, value_type } = recordField.getFields([
       'value',
       'key',
       'type',
       'value_type',
     ])
+    const isVariableType = value_type.getValue() === RoutingValueType.PARAMETER
     const valueValidate = valueField.getTouched() && valueField.getError()
     const labelList = type === 'source' ? sourceLabelList : destinationLabelList
     const valueOptions = labelList.find(item => item.value === keyField.getValue())?.valueOptions || []
-    const options = [
-      ...(valueField.getValue() ? [{ text: `(输入值)${valueField.getValue()}`, value: valueField.getValue() }] : []),
-      ...valueOptions.filter(item => (valueField.getValue() ? item.text.indexOf(valueField.getValue()) > -1 : true)),
+    const variableOptions =
+      argumentsField?.getValue().map(f => ({
+        text: `@{${f.key}}`,
+        value: `@{${f.key}}`,
+      })) ?? []
+
+    const options: SelectOptionWithGroup[] = [
+      ...(valueField.getValue() && !isVariableType
+        ? [
+            {
+              text: `(输入值)${valueField.getValue()}`,
+              value: valueField.getValue(),
+            },
+          ]
+        : []),
+      ...(isVariableType ? variableOptions : []),
+      ...(isVariableType
+        ? []
+        : valueOptions.filter(item => (valueField.getValue() ? item.text.indexOf(valueField.getValue()) > -1 : true))),
     ]
     let valueComponent
     if (value_type.getValue() === RouteLabelMatchType.RANGE || labelType.getValue() === RouteLabelMatchType.RANGE) {
@@ -267,7 +289,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               }}
               placeholder={'请输入标签值'}
               size={'full'}
-              disabled={value_type.getValue() === RoutingValueType.PARAMETER}
             />
           )}
         </AutoComplete>
@@ -292,9 +313,11 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
   }
   function RouteLabelSelectPanel({
     labelsField,
+    argumentsField,
     id,
   }: {
     labelsField: FieldAPI<RouteDestinationArgument[]>
+    argumentsField: FieldAPI<RouteSourceArgument[]>
     id: string
   }) {
     const tempLabelForm = useDuck(FormDuck)
@@ -334,9 +357,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 options={RoutingValueTypeOptions}
                 value={value_type.getValue()}
                 onChange={value => {
-                  if (value === RoutingValueType.PARAMETER) {
-                    valueField.setValue(keyField.getValue())
-                  }
+                  // if (value === RoutingValueType.PARAMETER) {
+                  //   valueField.setValue(keyField.getValue())
+                  // }
                   value_type.setValue(value)
                 }}
                 type={'simulate'}
@@ -345,7 +368,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 size={'s'}
               />
             </Col>
-            <Col span={8}>{getArgumentsValueComp(labelField, 'destination')}</Col>
+            <Col span={8}>{getArgumentsValueComp(labelField, argumentsField, 'destination')}</Col>
           </Row>
         }
         placement={'right'}
@@ -752,7 +775,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                         key: 'value',
                                         header: 'value',
                                         render: item => {
-                                          return getArgumentsValueComp(item, 'source')
+                                          return getArgumentsValueComp(item, argumentsField, 'source')
                                         },
                                       },
                                       {
@@ -817,6 +840,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                               <Tag style={{ padding: 0 }}>
                                                 <RouteLabelSelectPanel
                                                   labelsField={labels}
+                                                  argumentsField={argumentsField}
                                                   id={`${index}-${recordIndex}`}
                                                 />
                                               </Tag>
