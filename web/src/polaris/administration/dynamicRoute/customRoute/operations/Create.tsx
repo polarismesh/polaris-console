@@ -95,12 +95,14 @@ const getEmptyArgument = () => ({
   key: '',
   value: '',
   value_type: RouteLabelMatchType.EXACT,
+  value_value_type: RoutingValueType.TEXT,
 })
 const getEmptyLabel = () => ({
   type: RoutingValueType.TEXT,
   key: '',
   value: '',
   value_type: RouteLabelMatchType.EXACT,
+  value_value_type: RoutingValueType.TEXT,
 })
 const getEmptyDestination = () => ({
   labels: [],
@@ -220,15 +222,24 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       'type',
       'value_type',
     ])
+    const { value_value_type } = (recordField as FieldAPI<RouteSourceArgument>).getFields(['value_value_type'])
+    const isSourceVariable = type === 'source' && value_value_type.getValue() === RoutingValueType.PARAMETER
+    if (isSourceVariable) {
+      return <span />
+    }
+
     const isVariableType = value_type.getValue() === RoutingValueType.PARAMETER
     const valueValidate = valueField.getTouched() && valueField.getError()
     const labelList = type === 'source' ? sourceLabelList : destinationLabelList
     const valueOptions = labelList.find(item => item.value === keyField.getValue())?.valueOptions || []
     const variableOptions =
-      argumentsField?.getValue().map(f => ({
-        text: `@{${f.key}}`,
-        value: `@{${f.key}}`,
-      })) ?? []
+      argumentsField
+        ?.getValue()
+        .filter(f => f.value_value_type === RoutingValueType.PARAMETER)
+        .map(f => ({
+          text: `\$${f.type}.${f.key}`,
+          value: `\$${f.type}.${f.key}`,
+        })) ?? []
 
     const options: SelectOptionWithGroup[] = [
       ...(valueField.getValue() && !isVariableType
@@ -767,6 +778,28 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                               appearance={'button'}
                                               matchButtonWidth
                                               size={'full'}
+                                            />
+                                          )
+                                        },
+                                      },
+                                      {
+                                        key: 'value_value_type',
+                                        header: 'value_value_type',
+                                        width: 80,
+                                        render(item) {
+                                          const { value_value_type } = item.getFields(['value_value_type'])
+
+                                          return (
+                                            <Select
+                                              options={RoutingValueTypeOptions}
+                                              value={value_value_type.getValue()}
+                                              onChange={value => {
+                                                value_value_type.setValue(value)
+                                              }}
+                                              type={'simulate'}
+                                              appearance={'button'}
+                                              matchButtonWidth
+                                              size={'s'}
                                             />
                                           )
                                         },

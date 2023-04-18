@@ -16,7 +16,7 @@ import {
   describeCustomRoute,
   modifyCustomRoute,
 } from '../model'
-import { RouteLabelMatchType, RoutingArgumentsType } from '../types'
+import { RouteLabelMatchType, RoutingArgumentsType, RoutingValueType } from '../types'
 import { describeInstanceLabels } from '@src/polaris/service/detail/instance/model'
 
 interface ComposedId {
@@ -161,7 +161,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
             value: {
               type: item.value_type,
               value: item.value,
-              value_type: 'TEXT',
+              value_type: item.value_value_type,
             },
           })),
         }))
@@ -241,6 +241,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
                   type: item.type,
                   key: item.key,
                   value_type: item.value.type,
+                  value_value_type: item.value.value_type,
                   value: item.value.value,
                 })),
               })),
@@ -338,6 +339,7 @@ export interface RouteRuleSourceField {
 }
 export interface RouteSourceArgument {
   value_type: string
+  value_value_type: string
   key: string
   type: string
   value: string
@@ -460,6 +462,7 @@ export class RouteCreateDuck extends Form {
                   key: '',
                   value: '',
                   value_type: RouteLabelMatchType.EXACT,
+                  value_value_type: RoutingValueType.TEXT,
                 },
               ],
             },
