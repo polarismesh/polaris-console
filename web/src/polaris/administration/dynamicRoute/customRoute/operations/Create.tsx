@@ -41,6 +41,7 @@ import {
   RoutingValueType,
   RoutingValueTypeOptions,
   RoutingValueTextMap,
+  RoutingArgumentsTypeLabelMap,
 } from '../types'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { autotip } from 'tea-component/lib/table/addons'
@@ -237,8 +238,8 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
         ?.getValue()
         .filter(f => f.value_value_type === RoutingValueType.PARAMETER)
         .map(f => ({
-          text: `\$${f.type}.${f.key}`,
-          value: `\$${f.type}.${f.key}`,
+          text: `${RoutingArgumentsTypeLabelMap[f.type]}${f.key}`,
+          value: `${RoutingArgumentsTypeLabelMap[f.type]}${f.key}`,
         })) ?? []
 
     const options: SelectOptionWithGroup[] = [

@@ -50,6 +50,16 @@ export enum RoutingArgumentsType {
   CALLER_IP = 'CALLER_IP',
 }
 
+export const RoutingArgumentsTypeLabelMap = {
+  [RoutingArgumentsType.PATH]: '$path.',
+  [RoutingArgumentsType.METHOD]: '$method.',
+  [RoutingArgumentsType.HEADER]: '$header.',
+  [RoutingArgumentsType.QUERY]: '$query.',
+  [RoutingArgumentsType.CALLER_IP]: '$caller_ip.',
+  [RoutingArgumentsType.COOKIE]: '$cookie.',
+  [RoutingArgumentsType.CUSTOM]: '',
+}
+
 export enum RoutingValueType {
   TEXT = 'TEXT',
   PARAMETER = 'PARAMETER',
