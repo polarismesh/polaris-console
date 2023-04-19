@@ -50,6 +50,16 @@ export enum RoutingArgumentsType {
   CALLER_IP = 'CALLER_IP',
 }
 
+export const RoutingArgumentsTypeLabelMap = {
+  [RoutingArgumentsType.PATH]: '$path.',
+  [RoutingArgumentsType.METHOD]: '$method.',
+  [RoutingArgumentsType.HEADER]: '$header.',
+  [RoutingArgumentsType.QUERY]: '$query.',
+  [RoutingArgumentsType.CALLER_IP]: '$caller_ip.',
+  [RoutingArgumentsType.COOKIE]: '$cookie.',
+  [RoutingArgumentsType.CUSTOM]: '',
+}
+
 export enum RoutingValueType {
   TEXT = 'TEXT',
   PARAMETER = 'PARAMETER',
@@ -63,10 +73,10 @@ export const RoutingValueTypeOptions = [
     text: '值',
     value: RoutingValueType.TEXT,
   },
-  // {
-  //   text: '变量',
-  //   value: RoutingValueType.PARAMETER,
-  // },
+  {
+    text: '变量',
+    value: RoutingValueType.PARAMETER,
+  },
 ]
 export const RoutingArgumentsTypeOptions = [
   {
