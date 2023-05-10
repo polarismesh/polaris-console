@@ -773,9 +773,6 @@ func handleDescribeServiceInstancesMetric(discoverResp *model.DiscoverResponse, 
 				insMetric.Status = model.InstanceStatusUnHealthy
 			}
 		} else {
-			insMetric.ID = acutalIns.Id
-			insMetric.Host = acutalIns.Host
-			insMetric.Port = acutalIns.Port
 			insMetric.Status = model.InstanceStatusOffline
 			// insMetric.PutExtendInfo("offline_time", commontime.Time2String(time.Now()))
 		}
