@@ -27,6 +27,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 
 	"golang.org/x/sync/errgroup"
@@ -772,6 +773,9 @@ func handleDescribeServiceInstancesMetric(discoverResp *model.DiscoverResponse, 
 				insMetric.Status = model.InstanceStatusUnHealthy
 			}
 		} else {
+			insMetric.ID = acutalIns.Id
+			insMetric.Host = acutalIns.Host
+			insMetric.Port = acutalIns.Port
 			insMetric.Status = model.InstanceStatusOffline
 			// insMetric.PutExtendInfo("offline_time", commontime.Time2String(time.Now()))
 		}
@@ -878,7 +882,22 @@ func describeServiceInstanceRequestTotal(conf *bootstrap.Config, service, namesp
 		instanceKey := result.Metric["callee_instance"]
 
 		if _, ok := instanceTotal[instanceKey]; !ok {
-			instanceTotal[instanceKey] = &model.InstanceMetric{}
+			endpoint := strings.Split(instanceKey, ":")
+			host := ""
+			port := uint32(0)
+			if len(endpoint) == 1 {
+				host = instanceKey
+				port = 0
+			}
+			if len(endpoint) == 2 {
+				host = endpoint[0]
+				val, _ := strconv.ParseUint(endpoint[1], 10, 32)
+				port = uint32(val)
+			}
+			instanceTotal[instanceKey] = &model.InstanceMetric{
+				Host: host,
+				Port: port,
+			}
 		}
 		ins := instanceTotal[instanceKey]
 
