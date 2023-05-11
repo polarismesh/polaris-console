@@ -177,16 +177,16 @@ export interface GetMetricInstanceResult {
 }
 export interface MetricInstance {
   id: string
-  host: string // 命名空间
-  port: string // 服务名称
-  status: string // 状态
-  isolate: string // 中实例数
-  success_rate: string // 成功率
-  total_request: string // 总请求数
-  failed_request: string // 失败请求数
-  limited_request: string // 限流请求数
-  circuitbreaker_request: string // 熔断请求数
-  avg_timeout: string // 平均时延
+  host: string
+  port: string
+  status: string
+  isolate: string
+  success_rate: string
+  total_request: string
+  failed_request: string
+  limited_request: string
+  circuitbreaker_request: string
+  avg_timeout: string
 }
 
 export async function getMetricCaller(params: GetMetricCallerParams) {

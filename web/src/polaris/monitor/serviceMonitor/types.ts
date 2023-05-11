@@ -161,7 +161,15 @@ export const getQueryMap = {
     ]
   },
   [MetricName.RetCode]: queryParam => {
-    const { calleeNamespace, calleeService, calleeInstance, callerIp, callerNamespace, callerService, calleeResult } = queryParam
+    const {
+      calleeNamespace,
+      calleeService,
+      calleeInstance,
+      callerIp,
+      callerNamespace,
+      callerService,
+      calleeResult,
+    } = queryParam
     const conditionSets = {
       CalleeNamespace: calleeNamespace ? `callee_namespace="${calleeNamespace}"` : '',
       CalleeService: calleeService ? `callee_service="${calleeService}"` : '',
@@ -353,5 +361,5 @@ export const compressNumber = n => {
   if (n >= 1e12) return roundToN(+(n / 1e12), 2) + 'T'
 }
 export function roundToN(value, n) {
-  return Math.round(value * Math.pow(10, n)) / Math.pow(10, n)
+  return Math.floor(value * Math.pow(10, n)) / Math.pow(10, n)
 }
