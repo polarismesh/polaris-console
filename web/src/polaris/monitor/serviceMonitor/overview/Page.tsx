@@ -1,6 +1,6 @@
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
-import { Button, Card, Col, Form, Row, SearchBox, Table } from 'tea-component'
+import { Button, Card, Col, Form, Row, SearchBox, Table, Text } from 'tea-component'
 import MetricCard from '../../registryMonitor/MetricCard'
 import MetricPieCard from '../MetricPieCard'
 import MetricTagCard from '../MetricTagCard'
@@ -94,7 +94,6 @@ export default function Overview(props: Props) {
           title={'服务列表'}
           operation={
             <SearchBox
-              value={serviceKeyword}
               onSearch={v => {
                 setServiceKeyword(v)
               }}
@@ -117,7 +116,7 @@ export default function Overview(props: Props) {
                         dispatch(creators.gotoServiceDetail({ service: x.name, namespace: x.namespace }))
                       }}
                     >
-                      {x.name}
+                      <Text overflow>{x.name}</Text>
                     </Button>
                   )
                 },
