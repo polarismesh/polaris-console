@@ -22,7 +22,7 @@ import MetricCard, { MetricCardProps } from '../../registryMonitor/MetricCard'
 import MetricTagCard from '../MetricTagCard'
 import { compressNumber, getQueryMap, getTableQueryMap, MetricName, roundToN } from '../types'
 import BaseInfoDuck from './PageDuck'
-import { autotip, pageable, sortable } from 'tea-component/lib/table/addons'
+import { autotip, pageable, scrollable, sortable } from 'tea-component/lib/table/addons'
 import { FilterType } from '../Page'
 import { HEALTH_STATUS_MAP } from '@src/polaris/service/detail/instance/types'
 import { Link } from 'react-router-dom'
@@ -358,7 +358,6 @@ export default function Overview(props: Props) {
                     title={'服务实例监控'}
                     operation={
                       <SearchBox
-                        value={instanceKeyword}
                         onSearch={v => {
                           setInstanceKeyword(v)
                         }}
@@ -450,9 +449,8 @@ export default function Overview(props: Props) {
                           value: sort,
                           onChange: value => dispatch(creators.setSort(value.length ? value : [])),
                         }),
-                        pageable({
-                          pageSize: 5,
-                        }),
+                        pageable({ pageSizeOptions: [5, 10, 20, 50, 100, 300] }),
+                        scrollable({ maxHeight: '500px' }),
                       ]}
                     ></Table>
                   </Card.Body>
@@ -464,7 +462,6 @@ export default function Overview(props: Props) {
                   subtitle={`以下节点调用了${service}服务`}
                   operation={
                     <SearchBox
-                      value={callerKeyword}
                       onSearch={v => {
                         setCallerKeyword(v)
                       }}
@@ -559,9 +556,8 @@ export default function Overview(props: Props) {
                         value: callerSort,
                         onChange: value => setCallerSort(value.length ? value : []),
                       }),
-                      pageable({
-                        pageSize: 5,
-                      }),
+                      pageable({ pageSizeOptions: [5, 10, 20, 50, 100, 300] }),
+                      scrollable({ maxHeight: '500px' }),
                     ]}
                   ></Table>
                 </Card.Body>
