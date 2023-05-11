@@ -89,7 +89,7 @@ export default function Overview(props: Props) {
   const [instanceKeyword, setInstanceKeyword] = React.useState('')
   const [callerKeyword, setCallerKeyword] = React.useState('')
   const [callerSort, setCallerSort] = React.useState([])
-  const processedMetricInstanceList = metricInstanceList.filter(item => item.id.indexOf(instanceKeyword) > -1)
+  const processedMetricInstanceList = metricInstanceList.filter(item => item.host.indexOf(instanceKeyword) > -1)
   const sortedMetricInstanceList = sort.length
     ? processedMetricInstanceList.sort((a, b) => {
         const sortby = sort?.[0].by
