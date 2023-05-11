@@ -116,6 +116,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
     }),
     [],
   )
+  const inService = !!loadData?.name
   const breakerPanel = (
     <>
       <Table.ActionPanel>
@@ -153,7 +154,7 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
           }
         />
       </Table.ActionPanel>
-      <Card>
+      <Card bordered={inService}>
         <GridPageGrid
           duck={duck}
           dispatch={dispatch}
@@ -299,21 +300,35 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
       </Card>
     </>
   )
+  const module = (
+    <Tabs
+      tabs={FaultDetectTabs}
+      onActive={v => handlers.setType(v.id)}
+      activeId={type}
+      ceiling={inService ? false : true}
+    >
+      <TabPanel id={BreakerType.Service}>{breakerPanel}</TabPanel>
+      <TabPanel id={BreakerType.Interface}>{breakerPanel}</TabPanel>
+      <TabPanel id={BreakerType.FaultDetect}>
+        <FaultDetectPage duck={ducks.faultDetect} store={store} dispatch={dispatch}></FaultDetectPage>
+      </TabPanel>
+    </Tabs>
+  )
   return (
     <BasicLayout
       title={'熔断降级'}
       store={store}
       selectors={duck.selectors}
       header={<></>}
-      type={loadData?.name ? 'fregment' : 'page'}
+      type={inService ? 'fregment' : 'page'}
     >
-      <Tabs tabs={FaultDetectTabs} onActive={v => handlers.setType(v.id)} activeId={type} ceiling>
-        <TabPanel id={BreakerType.Service}>{breakerPanel}</TabPanel>
-        <TabPanel id={BreakerType.Interface}>{breakerPanel}</TabPanel>
-        <TabPanel id={BreakerType.FaultDetect}>
-          <FaultDetectPage duck={ducks.faultDetect} store={store} dispatch={dispatch}></FaultDetectPage>
-        </TabPanel>
-      </Tabs>
+      {inService ? (
+        <Card bordered>
+          <Card.Body>{module}</Card.Body>
+        </Card>
+      ) : (
+        module
+      )}
     </BasicLayout>
   )
 })

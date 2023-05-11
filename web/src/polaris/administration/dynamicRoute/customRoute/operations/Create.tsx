@@ -384,7 +384,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
   }
 
   const backRoute = composedId?.namespace
-    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`
+    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=router`
     : `/custom-route`
 
   React.useEffect(() => {
@@ -416,6 +416,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
             </FormField>
             <FormField label='描述' field={description}>
               <Input field={description} maxLength={64} size='l' multiple />
+            </FormField>
+            <FormField label='优先级' field={priority} tips={'优先级数字设置越小，匹配顺序越靠前'} required>
+              <InputNumber min={0} max={10} field={priority} />
             </FormField>
             <Form.Item label='匹配条件' className='compact-form-control'>
               <Form style={{ position: 'relative', minWidth: '1200px', paddingBottom: '25px' }}>
@@ -456,7 +459,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                         主调请求按照匹配规则匹配成功后，将按照当前规则进行目标服务路由
                       </Text>
                     </div>
-                    <Card bordered>
+                    <Card bordered style={{ maxWidth: '500px', margin: 'auto' }}>
                       <Card.Body>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                           <FormField field={sourceNamespace} label='命名空间' required>
@@ -480,7 +483,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               appearance={'button'}
                               matchButtonWidth
                               placeholder='请选择命名空间'
-                              size='m'
+                              size='full'
                             />
                           </FormField>
                           <FormField field={sourceService} label='服务名称' required>
@@ -508,6 +511,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   onChange={value => {
                                     sourceService.setValue(value)
                                   }}
+                                  style={{ width: '100%' }}
                                 />
                               )}
                             </AutoComplete>
@@ -525,7 +529,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                         请求会按照规则路由到目标服务分组
                       </Text>
                     </div>
-                    <Card bordered>
+                    <Card bordered style={{ maxWidth: '500px', margin: 'auto' }}>
                       <Card.Body>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                           <FormField field={destinationNamespace} label='命名空间' required>
@@ -549,7 +553,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               appearance={'button'}
                               matchButtonWidth
                               placeholder='请选择命名空间'
-                              size='m'
+                              size='full'
                             />
                           </FormField>
                           <FormField field={destinationService} label='服务名称' required>
@@ -585,6 +589,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                     destinationService.setValue(value)
                                   }}
                                   disabled={destinationNamespace.getValue() === '*'}
+                                  style={{ width: '100%' }}
                                 />
                               )}
                             </AutoComplete>
@@ -914,9 +919,6 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 </Button>
               </div>
             </FormItem>
-            <FormField label='优先级' field={priority} tips={'优先级数字设置越小，匹配顺序越靠前'} required>
-              <InputNumber min={0} max={10} field={priority} />
-            </FormField>
           </Form>
           <Form.Action>
             <Button type='primary' onClick={() => dispatch(creators.submit())}>

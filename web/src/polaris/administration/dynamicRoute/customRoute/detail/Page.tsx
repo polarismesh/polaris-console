@@ -48,7 +48,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
   const { ruleDetail } = selector(store)
   const { name, description, source, destination, priority, rules } = ruleDetail as Values
   const backRoute = composedId?.namespace
-    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=route`
+    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=router`
     : `/custom-route`
   const data = selectors.data(store)
 
@@ -96,7 +96,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                           主调请求按照匹配规则匹配成功后，将按照当前规则进行目标服务路由
                         </Text>
                       </div>
-                      <Card bordered>
+                      <Card bordered style={{ maxWidth: '500px', margin: 'auto' }}>
                         <Card.Body>
                           <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                             <FormItem label={'命名空间'}>
@@ -118,7 +118,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                           请求会按照规则路由到目标服务分组
                         </Text>
                       </div>
-                      <Card bordered>
+                      <Card bordered style={{ maxWidth: '500px', margin: 'auto' }}>
                         <Card.Body>
                           <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                             <FormItem label={'命名空间'}>
@@ -156,6 +156,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                 {
                                   key: 'type',
                                   header: '类型',
+                                  width: 200,
                                   render: item => {
                                     const { type } = item
 
@@ -239,6 +240,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                 {
                                   key: 'weight',
                                   header: '权重',
+                                  width: 100,
                                   render: item => {
                                     const { weight } = item
                                     return weight
@@ -247,6 +249,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                 {
                                   key: 'isolate',
                                   header: '是否隔离',
+                                  width: 100,
                                   render: item => {
                                     const { isolate } = item
                                     return isolate ? '是' : '否'

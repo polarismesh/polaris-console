@@ -137,7 +137,6 @@ insertCSS(
 `,
 )
 
-
 export default function root() {
   const history = useHistory()
   const [selected, setSelected] = React.useState(history.location.pathname.replace('/', '') || 'service')
@@ -189,7 +188,7 @@ export default function root() {
       }
     }
     return menuItem.subMenus ? (
-      <Menu.SubMenu title={menuItem.title} icon={menuItem.icon} key={menuItem.id}>
+      <Menu.SubMenu title={menuItem.title} icon={menuItem.icon} key={menuItem.id} defaultOpened>
         {menuItem.subMenus.map(o => recursiveRenderMenuItem(o))}
       </Menu.SubMenu>
     ) : (

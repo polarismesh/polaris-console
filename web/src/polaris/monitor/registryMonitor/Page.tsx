@@ -95,7 +95,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
     },
   ]
   const filterSlot = (
-    <section style={{ borderBottom: '1px solid #d0d5dd', padding: '40px 0px', marginBottom: '20px' }}>
+    <section style={{ padding: '20px 0px', marginBottom: '20px' }}>
       <Form layout={'inline'} style={{ display: 'inline-block' }}>
         <FormItem label={'命名空间'}>
           <Select

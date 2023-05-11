@@ -10,6 +10,7 @@ import { StatusOptions } from '../../accessLimiting/types'
 import getColumns from './getColumns'
 import { enableNearbyString } from '@src/polaris/service/operation/CreateDuck'
 import { FeatureDisplayType, useCheckFeatureValid } from '@src/polaris/common/util/checkFeature'
+import router from '@src/polaris/common/util/router'
 
 export enum TagSearchType {
   RuleName = 'name',

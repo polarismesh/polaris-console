@@ -1,9 +1,0 @@
-/*
-  比如【新增配置文件】弹窗时可以添加标签，如果标签数量过多会导致弹窗超过屏幕高度。
-  所以限制弹框的最大高度，超过则弹框内部滚动
-  @see https://github.com/polarismesh/polaris-console/pull/88
-*/
-.tea-dialog__inner {
-  max-height: 850px;
-  overflow-y: scroll;
-}
