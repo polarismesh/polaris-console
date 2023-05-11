@@ -14,6 +14,7 @@ import {
   FormText,
   Copy,
   TagSearchBox,
+  notification,
 } from 'tea-component'
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
@@ -234,6 +235,12 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                             return `${item?.host}`
                           })
                           .join('\n')}
+                        onCopy={(text, context) => {
+                          if (context.result) notification.success({ description: '复制成功' })
+                          else {
+                            notification.error({ description: '复制失败' })
+                          }
+                        }}
                       >
                         <List.Item
                           onClick={() => {

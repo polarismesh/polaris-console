@@ -57,11 +57,12 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
   const { loadData, expandedKeys, ruleInfoMap } = selector(store)
   const handlers = React.useMemo(
     () => ({
-      changeTags: (tags) => dispatch(creators.changeTags(tags)),
-      setExpandedKeys: (v) => dispatch(creators.setExpandedKeys(v)),
+      changeTags: tags => dispatch(creators.changeTags(tags)),
+      setExpandedKeys: v => dispatch(creators.setExpandedKeys(v)),
     }),
     [],
   )
+  const inService = !!loadData?.name
 
   return (
     <>
@@ -90,7 +91,7 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
                   verticalAlign: 'middle',
                   width: '400px',
                 }}
-                onChange={(value) => handlers.changeTags(value)}
+                onChange={value => handlers.changeTags(value)}
                 tips={'请选择条件进行过滤'}
                 hideHelp={true}
               />
@@ -98,7 +99,7 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
           }
         />
       </Table.ActionPanel>
-      <Card>
+      <Card bordered={inService}>
         <GridPageGrid
           duck={duck}
           dispatch={dispatch}
@@ -109,8 +110,8 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
               // 已经展开的产品
               expandedKeys,
               // 发生展开行为时，回调更新展开键值
-              onExpandedKeysChange: (keys) => handlers.setExpandedKeys(keys),
-              render: (record) => {
+              onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
+              render: record => {
                 const ruleDetail = ruleInfoMap[record.id] as FaultDetectRule
                 return ruleDetail ? (
                   <Form>
@@ -136,7 +137,7 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
                         </FormItem>
                         <FormItem label={'Header'}>
                           <FormText>
-                            {ruleDetail.httpConfig.headers.map((item) => {
+                            {ruleDetail.httpConfig.headers.map(item => {
                               return (
                                 <Text parent={'p'} key={item.key}>
                                   {item.key}:{item.value}

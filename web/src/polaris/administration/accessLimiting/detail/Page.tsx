@@ -52,7 +52,7 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
   } = ruleDetail as Values
 
   const backRoute = composedId?.namespace
-    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`
+    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=ratelimiter`
     : `/accesslimit`
 
   return (
@@ -74,7 +74,7 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
             </FormItem>
 
             <Form.Item label='限流规则详情'>
-              <Card>
+              <Card bordered>
                 <Card.Body
                   title='目标服务'
                   subtitle='您可以对目标服务的指定接口设置限流规则。当该接口被调用时，符合匹配规则的请求，则会触发限流规则'
@@ -157,7 +157,7 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
                 </Card.Body>
               </Card>
 
-              <Card>
+              <Card bordered>
                 <Card.Body title='限流规则'>
                   <div>
                     <H6 className='card-module-h6-title-style'>限流条件</H6>

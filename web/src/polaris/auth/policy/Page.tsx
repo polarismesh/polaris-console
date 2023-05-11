@@ -67,8 +67,11 @@ export const AuthResourceTabs = Object.keys(AUTH_RESOURCE_TYPE_MAP).map(id => ({
 insertCSS(
   'authItem',
   `.app-tse-list>.auth-item{
-  padding: 15px 10px 15px 10px;
-}
+    padding: 15px 10px 15px 10px;
+  }
+  .auth-item {
+    padding: 10px 10px !important;
+  }
 `,
 )
 
@@ -137,9 +140,6 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
           theme={isActive ? 'primary' : 'text'}
           style={{ width: 'calc(100% - 32px)', display: 'inline-block' }}
         >
-          <Text overflow style={{ maxWidth: 'calc(100% - 32px)' }}>
-            {formatPolicyName(item.name)}
-          </Text>
           {item.default_strategy && (
             <Bubble content={principalType === AuthSubjectType.USER ? '用户' : '用户组'}>
               {principalType === AuthSubjectType.USER ? (
@@ -155,6 +155,9 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
               )}
             </Bubble>
           )}
+          <Text overflow style={{ maxWidth: 'calc(100% - 32px)' }}>
+            {formatPolicyName(item.name)}
+          </Text>
         </Text>
         <Dropdown button={<Button type='icon' icon='more' />} appearance='pure'>
           <List type='option'>
@@ -187,7 +190,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
       </Table.ActionPanel>
       <Row>
         <Col span={6}>
-          <section style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%', maxHeight: '1000px' }}>
+          <div style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%', maxHeight: '1000px' }}>
             <SearchBox
               value={searchword}
               onSearch={handlers.search}
@@ -207,8 +210,6 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                 默认策略（{defaultList.length}）
               </ListItem>
               {defaultList.filter(() => collapseDefault).map(renderListItem)}
-            </List>
-            <List type={'option'} style={{ maxHeight: '50%' }}>
               <ListItem
                 key={'collapse-button'}
                 onClick={() => {
@@ -222,7 +223,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
               </ListItem>
               {customList.filter(() => collapseCustom).map(renderListItem)}
             </List>
-          </section>
+          </div>
         </Col>
         <Col span={18}>
           <Card bordered style={{ height: '100%', maxHeight: '1000px' }}>
@@ -357,7 +358,9 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
     contentElement
   ) : (
     <BasicLayout title={'策略'} store={store} selectors={duck.selectors} header={<></>}>
-      {contentElement}
+      <Card>
+        <Card.Body>{contentElement}</Card.Body>
+      </Card>
     </BasicLayout>
   )
 }

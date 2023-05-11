@@ -154,13 +154,19 @@ export default purify(function(props: DuckCmpProps<Duck>) {
               onActive={tab => setShowAuthTabType(tab.id as TAB)}
             >
               <TabPanel id={TAB.USERGROUP}>
-                <UserGroup duck={ducks.userGroup} store={store} dispatch={dispatch} />
+                <section style={{ marginTop: '10px' }}>
+                  <UserGroup duck={ducks.userGroup} store={store} dispatch={dispatch} />
+                </section>
               </TabPanel>
               <TabPanel id={TAB.USEABLE_RESOURCE}>
-                <UseableResource resources={resourceData} />
+                <section style={{ marginTop: '10px' }}>
+                  <UseableResource resources={resourceData} />
+                </section>
               </TabPanel>
               <TabPanel id={TAB.POLICY}>
-                <Policy duck={ducks.policy} store={store} dispatch={dispatch} />
+                <section style={{ marginTop: '10px' }}>
+                  <Policy duck={ducks.policy} store={store} dispatch={dispatch} />
+                </section>
               </TabPanel>
             </Tabs>
           </Card.Body>

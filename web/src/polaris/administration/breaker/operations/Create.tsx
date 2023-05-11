@@ -97,7 +97,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
   const { enable: fallbackConfigEnable, response: fallbackResponse } = fallbackConfig.getFields(['enable', 'response'])
   const { body, code, headers } = fallbackResponse.getFields(['body', 'code', 'headers'])
   const backRoute = composedId?.namespace
-    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}`
+    ? `/service-detail?name=${composedId?.service}&namespace=${composedId?.namespace}&tab=circuitbreaker`
     : `/circuitBreaker?type=${type}`
 
   React.useEffect(() => {

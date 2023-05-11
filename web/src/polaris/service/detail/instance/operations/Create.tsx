@@ -1,19 +1,15 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
-import { Form, Select, Text, Icon, Bubble, FormItem, FormText, Table, Button, FormControl } from 'tea-component'
+import { Form, Select, Text, Icon, Bubble, FormItem, FormText } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
-import {
-  HEALTH_STATUS_OPTIONS,
-  HEALTH_CHECK_METHOD_OPTIONS,
-  BATCH_EDIT_TYPE,
-} from "../types";
-import { TagTable } from "@src/polaris/common/components/TagTable";
+import { HEALTH_CHECK_METHOD_OPTIONS, BATCH_EDIT_TYPE } from '../types'
+import { TagTable } from '@src/polaris/common/components/TagTable'
 
 insertCSS(
   'service-detail-edit-instance',
@@ -46,9 +42,16 @@ export default function Create(props: DuckCmpProps<Duck>) {
     return <noscript />
   }
   const data = selectors.data(store)
+  const { batchEditType } = selectors.options(store)
 
   return (
-    <Dialog duck={duck} store={store} dispatch={dispatch} size='l' title={data.host ? '编辑服务实例' : '新建服务实例'}>
+    <Dialog
+      duck={duck}
+      store={store}
+      dispatch={dispatch}
+      size={batchEditType ? 'm' : 'l'}
+      title={data.host ? '编辑服务实例' : '新建服务实例'}
+    >
       <CreateForm duck={duck} store={store} dispatch={dispatch} />
     </Dialog>
   )

@@ -19,7 +19,6 @@ export default function Service(props: Props) {
     data,
   } = selector(store)
   const [activeIds, setActiveIds] = React.useState(['all'])
-
   const basicQueryParam = { start, end, step }
   const configGroupMap = selectors.configGroupMap(store)
   const serviceMap = selectors.serviceMap(store)
@@ -38,7 +37,7 @@ export default function Service(props: Props) {
   return (
     <>
       {filterSlot}
-      <section style={{ borderBottom: '1px solid #d0d5dd', padding: '40px 0px', marginBottom: '20px' }}>
+      <section style={{ borderBottom: '1px solid #d0d5dd', padding: '20px 0px', marginBottom: '20px' }}>
         <Form layout={'inline'} style={{ width: '100%', display: 'inline-block' }}>
           <FormItem
             label={'服务'}
@@ -66,7 +65,7 @@ export default function Service(props: Props) {
                 value={selectedService}
                 onChange={v => {
                   dispatch(creators.selectService(v))
-                  setSelectAllConfigGroup(false)
+                  setSelectAllService(false)
                 }}
                 size={'m'}
                 placeholder={'全部汇总服务'}
@@ -98,13 +97,14 @@ export default function Service(props: Props) {
               <SelectMultiple
                 searchable
                 appearance='button'
-                options={[{ text: '全部配置分组汇总', value: SelectAllString }, ...(data?.configGroupList || [])]}
+                options={[...(data?.configGroupList || [])]}
                 value={selectedConfigGroup}
                 onChange={v => {
                   dispatch(creators.selectConfigGroup(v))
                   setSelectAllConfigGroup(false)
                 }}
                 size={'m'}
+                placeholder={'全部汇总配置分组'}
                 className={'black-placeholder-text'}
               ></SelectMultiple>
             ) : (
@@ -166,7 +166,10 @@ export default function Service(props: Props) {
               >
                 <MetricCard
                   {...basicQueryParam}
-                  query={getQueryMap[MetricName.Instance]({ namespace, service })}
+                  query={getQueryMap[MetricName.Instance]({
+                    namespace: curService?.namespace,
+                    service: curService?.name,
+                  })}
                   cardProps={{ bordered: true }}
                   cardBodyProps={{ title: '实例数' }}
                 ></MetricCard>
@@ -189,7 +192,10 @@ export default function Service(props: Props) {
               >
                 <MetricCard
                   {...basicQueryParam}
-                  query={getQueryMap[MetricName.ConfigFile]({ namespace, configGroup })}
+                  query={getQueryMap[MetricName.ConfigFile]({
+                    namespace: curConfigGroup.namespace,
+                    configGroup: curConfigGroup?.name,
+                  })}
                   cardProps={{ bordered: true }}
                   cardBodyProps={{ title: '配置文件数' }}
                 ></MetricCard>

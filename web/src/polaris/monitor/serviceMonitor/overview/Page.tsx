@@ -32,7 +32,7 @@ export default function Overview(props: Props) {
     : processedServiceList
   return (
     <>
-      <section style={{ borderBottom: '1px solid #d0d5dd', padding: '40px 0px', marginBottom: '20px' }}>
+      <section style={{ padding: '20px 0px', marginBottom: '20px' }}>
         <Form layout={'inline'} style={{ display: 'inline-block' }}>
           {filterMap[FilterType.Namespace]}
           {filterMap[FilterType.TimeRange]}
