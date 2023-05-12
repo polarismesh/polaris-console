@@ -115,8 +115,11 @@ export default function Overview(props: Props) {
                       onClick={() => {
                         dispatch(creators.gotoServiceDetail({ service: x.name, namespace: x.namespace }))
                       }}
+                      style={{ width: '100%', textAlign: 'left' }}
                     >
-                      <Text overflow>{x.name}</Text>
+                      <Text overflow tooltip={x.name}>
+                        {x.name}
+                      </Text>
                     </Button>
                   )
                 },
