@@ -37,6 +37,7 @@ export default function(props: Props) {
               return (
                 <Col key={item.name}>
                   <MetricsBoard
+                    className={'monitor-metric-board'}
                     title={<Text theme={'label'}>{item.name}</Text>}
                     value={notValidNumber ? '-' : compressNumber(item.value)}
                     unit={item.unit}
