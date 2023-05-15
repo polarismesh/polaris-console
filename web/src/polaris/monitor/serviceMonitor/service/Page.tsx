@@ -482,7 +482,7 @@ export default function Overview(props: Props) {
                         header: '调用者服务名',
                         render: x => {
                           return x.service ? (
-                            <Link to={`/service?name=${x.service}&namespace=${x.namespace}`}>{}</Link>
+                            <Link to={`/service?name=${x.service}&namespace=${x.namespace}`}>{x.service}</Link>
                           ) : (
                             '-'
                           )
