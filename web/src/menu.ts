@@ -122,13 +122,6 @@ export const MenuConfig: MenuItemConfig = {
           icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
-        {
-          id: 'flow-monitor',
-          title: '流量监控',
-          icon: 'static/img/circuit-monitor.svg',
-          featureKey: 'metricsServer',
-          subMenus: null,
-        },
       ],
     },
     {

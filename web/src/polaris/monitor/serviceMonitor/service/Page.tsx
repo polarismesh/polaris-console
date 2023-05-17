@@ -405,7 +405,8 @@ export default function Overview(props: Props) {
                                 query={getQueryMap[MetricName.RetCode]({
                                   calleeNamespace: namespace,
                                   calleeService: service,
-                                  calleeInstance: currentInstance?.ip,
+                                  calleeInstance: `${x.host}:${x.port}`,
+                                  calleeResult: 'fail|flow_control|reject',
                                 })}
                               >
                                 <Button type={'link'}> {x.failed_request}</Button>
