@@ -25,6 +25,8 @@ export interface ConfigFile {
   modifyBy: string
   releaseTime: string
   releaseBy: string
+  isEncrypted: boolean
+  encryptAlgo: string
 }
 export interface KeyValuePair {
   key: string

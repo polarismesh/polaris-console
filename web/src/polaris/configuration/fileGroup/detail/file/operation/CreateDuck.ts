@@ -10,6 +10,7 @@ import {
   describeConfigFileGroups,
   createConfigFile,
   modifyConfigFile,
+  describeConfigFileEncryptAlgorithms,
 } from '@src/polaris/configuration/fileGroup/model'
 import { reduceFromPayload } from 'saga-duck'
 import { notification } from 'tea-component'
@@ -29,6 +30,7 @@ export default class CreateDuck extends FormDialog {
     enum Types {
       SET_NAMESPACE_LIST,
       SET_CONFIGGROUP_LIST,
+      SET_ENCRYPT_ALOG_LIST,
     }
     return {
       ...super.quickTypes,
@@ -53,7 +55,7 @@ export default class CreateDuck extends FormDialog {
       selectors,
     } = this
 
-    const { name, comment, namespace, group, format, tags } = form.selectors.values(yield select())
+    const { name, comment, namespace, group, format, tags, isEncrypted, encryptAlgo } = form.selectors.values(yield select())
     const options = selectors.options(yield select())
     const data = selectors.data(yield select())
     const parsedName = name
@@ -70,6 +72,8 @@ export default class CreateDuck extends FormDialog {
         group,
         format,
         tags,
+        isEncrypted,
+        encryptAlgo,
       })
       if (configFile?.name) {
         notification.success({ description: '编辑成功' })
@@ -87,6 +91,8 @@ export default class CreateDuck extends FormDialog {
         format,
         tags,
         content: '',
+        isEncrypted: isEncrypted,
+        encryptAlgo: encryptAlgo,
       })
       if (configFile?.name) {
         notification.success({ description: '创建成功' })
@@ -125,10 +131,12 @@ export default class CreateDuck extends FormDialog {
           values: { namespace },
         },
       } = selector(yield select())
+      const { algorithms } = yield describeConfigFileEncryptAlgorithms()
       const { list } = yield getAllList(describeConfigFileGroups, {})({ namespace })
       yield put({
         type: types.SET_OPTIONS, payload: {
-          ...options, configFileGroupList: list.map(item => {
+          ...options,
+          configFileGroupList: list.map(item => {
             const disabled = isReadOnlyConfigGroup(item)
             return {
               ...item,
@@ -137,7 +145,13 @@ export default class CreateDuck extends FormDialog {
               disabled,
               tooltip: disabled && '该配置分组为只读配置分组',
             }
-          })
+          }),
+          encryptAlgorithms: algorithms.forEach((item, i) => ({
+            text: item,
+            value: item,
+            key: item,
+            name: item,
+          })),
         }
       })
     })
@@ -155,6 +169,7 @@ export default class CreateDuck extends FormDialog {
       listKey: 'namespaces',
       totalKey: 'amount',
     })({})
+    const { algorithms } = yield describeConfigFileEncryptAlgorithms()
     const { list: configFileGroupList } = yield getAllList(
       describeConfigFileGroups,
       {},
@@ -173,6 +188,12 @@ export default class CreateDuck extends FormDialog {
             tooltip: disabled && '该命名空间为只读命名空间',
           }
         }),
+        encryptAlgorithms: algorithms.forEach((item, i) => ({
+          text: item,
+          value: item,
+          key: item,
+          name: item,
+        })),
         configFileGroupList: configFileGroupList.map(item => {
           const disabled = isReadOnlyConfigGroup(item)
           return {
@@ -202,6 +223,8 @@ export interface Values {
   group: string
   format: string
   tags?: Array<KeyValuePair>
+  isEncrypted: boolean
+  encryptAlgo: string
 }
 class CreateForm extends Form {
   Values: Values

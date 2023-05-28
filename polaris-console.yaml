@@ -20,6 +20,5 @@ webServer:
   mainUser: "polaris"
 polarisServer:
   address: "127.0.0.1:8090"
-  polarisToken: "nu/0WRA4EqSR1FagrjRj0fZwPXuGlMpX+zCuWu4uMqy8xr1vRjisSbA25aAC3mtU8MeeRsKhQiDAynUR09I="
 monitorServer:
   address: "127.0.0.1:9090"
