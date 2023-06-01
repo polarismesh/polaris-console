@@ -81,7 +81,7 @@ export interface CreateConfigFileParams {
   comment: string
   tags: Array<KeyValuePair>
   createBy?: string
-  isEncrypted: boolean
+  encrypted: boolean
   encryptAlgo: string
 }
 export interface CreateConfigFileResult {
@@ -153,7 +153,7 @@ export interface ModifyConfigFileParams {
   tags?: Array<KeyValuePair>
   format?: string
   modifyBy?: string
-  isEncrypted: boolean
+  encrypted: boolean
   encryptAlgo: string
 }
 export interface ModifyConfigFileResult {

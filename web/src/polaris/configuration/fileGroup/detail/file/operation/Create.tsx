@@ -45,14 +45,14 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   } = duck
 
   const formApi = form.getAPI(store, dispatch)
-  const { namespace, comment, name, group, format, tags, isEncrypted, encryptAlgo } = formApi.getFields([
+  const { namespace, comment, name, group, format, tags, encrypted, encryptAlgo } = formApi.getFields([
     'namespace',
     'name',
     'comment',
     'group',
     'format',
     'tags',
-    'isEncrypted',
+    'encrypted',
     'encryptAlgo',
   ])
   const options = selectors.options(store)
@@ -123,11 +123,11 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         <FormItem label={'配置标签'}>
           <TagTable tags={tags} />
         </FormItem>
-        <FormField field={isEncrypted} label={'配置加密'}>
-          <Switch defaultValue={isEncrypted.getValue()} onChange={(value, context) => {
-            isEncrypted.setValue(value)
-          }}>{isEncrypted?.getValue() ? '开启，请选择配置文件加密算法 ' : '未开启'}</Switch>
-          {isEncrypted?.getValue() && (
+        <FormField field={encrypted} label={'配置加密'}>
+          <Switch defaultValue={encrypted.getValue()} onChange={(value, context) => {
+            encrypted.setValue(value)
+          }}>{encrypted?.getValue() ? '开启，请选择配置文件加密算法 ' : '未开启'}</Switch>
+          {encrypted?.getValue() && (
             <>
               <Select
                 value={encryptAlgo.getValue()}

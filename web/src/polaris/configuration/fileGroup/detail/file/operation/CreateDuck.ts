@@ -55,7 +55,7 @@ export default class CreateDuck extends FormDialog {
       selectors,
     } = this
 
-    const { name, comment, namespace, group, format, tags, isEncrypted, encryptAlgo } = form.selectors.values(yield select())
+    const { name, comment, namespace, group, format, tags, encrypted, encryptAlgo } = form.selectors.values(yield select())
     const options = selectors.options(yield select())
     const data = selectors.data(yield select())
     const parsedName = name
@@ -72,7 +72,7 @@ export default class CreateDuck extends FormDialog {
         group,
         format,
         tags,
-        isEncrypted,
+        encrypted,
         encryptAlgo,
       })
       if (configFile?.name) {
@@ -91,7 +91,7 @@ export default class CreateDuck extends FormDialog {
         format,
         tags,
         content: '',
-        isEncrypted: isEncrypted,
+        encrypted: encrypted,
         encryptAlgo: encryptAlgo,
       })
       if (configFile?.name) {
@@ -146,7 +146,7 @@ export default class CreateDuck extends FormDialog {
               tooltip: disabled && '该配置分组为只读配置分组',
             }
           }),
-          encryptAlgorithms: algorithms.forEach((item, i) => ({
+          encryptAlgorithms: algorithms.map((item) => ({
             text: item,
             value: item,
             key: item,
@@ -188,7 +188,7 @@ export default class CreateDuck extends FormDialog {
             tooltip: disabled && '该命名空间为只读命名空间',
           }
         }),
-        encryptAlgorithms: algorithms.forEach((item, i) => ({
+        encryptAlgorithms: algorithms.map((item) => ({
           text: item,
           value: item,
           key: item,
@@ -223,7 +223,7 @@ export interface Values {
   group: string
   format: string
   tags?: Array<KeyValuePair>
-  isEncrypted: boolean
+  encrypted: boolean
   encryptAlgo: string
 }
 class CreateForm extends Form {
