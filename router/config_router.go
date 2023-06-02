@@ -50,4 +50,6 @@ func ConfigRouter(r *gin.Engine, config *bootstrap.Config) {
 	// 配置导入导出
 	configV1.POST("configfiles/export", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	configV1.POST("configfiles/import", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 配置加密算法
+	configV1.GET("configfiles/encryptalgorithm", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 }

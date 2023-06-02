@@ -7,7 +7,7 @@ import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { isOwner } from '@src/polaris/common/util/common'
 export const passwordRuleText = '请输入6至17位的密码'
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks, selector } = duck
   const { options } = selector(store)
@@ -47,12 +47,6 @@ export default purify(function(props: DuckCmpProps<Duck>) {
             </>
           ) : (
             <>
-              <FormField field={mobile} label={'手机号'}>
-                <Input field={mobile} size={'m'} />
-              </FormField>
-              <FormField field={email} label={'邮箱'}>
-                <Input field={email} size={'m'} />
-              </FormField>
             </>
           )
         ) : (
@@ -65,12 +59,6 @@ export default purify(function(props: DuckCmpProps<Duck>) {
             </FormField>
             <FormField field={confirmPassword} label={'确认密码'} required>
               <Input field={confirmPassword} size={'m'} type={'password'} />
-            </FormField>
-            <FormField field={mobile} label={'手机号'}>
-              <Input field={mobile} size={'m'} />
-            </FormField>
-            <FormField field={email} label={'邮箱'}>
-              <Input field={email} size={'m'} />
             </FormField>
             <FormField field={comment} label={'备注'}>
               <Input field={comment} size={'m'} />

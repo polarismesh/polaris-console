@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useState } from 'react'
 import { memorize, DuckCmpProps } from 'saga-duck'
 import Duck from './PageDuck'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
@@ -274,6 +275,13 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 </Bubble>
                               </FormText>
                             </FormItem>
+                            <FormItem label='加密状态'>
+                              <FormText>
+                                <Text theme={currentNode.encrypted ? 'warning' : 'text'}>
+                                  {currentNode.encrypted ? '已开启加密' : '未加密'}
+                                </Text>
+                              </FormText>
+                            </FormItem>
                           </Col>
                           <Col span={12}>
                             <FormItem label='最后修改人'>
@@ -397,12 +405,13 @@ export default function Page(props: DuckCmpProps<Duck>) {
   )
 }
 
-function getFileNameContext(fileName, status, props) {
+function getFileNameContext(fileName, status, file, props) {
   const splitArray = fileName.split('/')
   return (
     <div>
       <span className='configuration-tree-node-content'>{splitArray[splitArray.length - 1]}</span>
       {FileStatus.Edited === status && <Badge theme='warning'>待发布</Badge>}
+      {file.isEncrypt && <Badge theme='warning'>已加密</Badge>}
     </div>
   )
 }
@@ -428,7 +437,7 @@ function renderTree(props, folder, path: string, currPath: string) {
       {Object.keys(node)?.map(childPath => {
         if (childPath === '__isDir__') return <noscript />
         const obj = node[childPath]
-        const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status, props)
+        const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status, obj, props)
         const nextPath = `${currPath}${currPath ? '/' : ''}${childPath}`
         const folderIcon = expandedIds.indexOf(obj.name) > -1 ? 'folderopen' : 'folderclose'
         return (

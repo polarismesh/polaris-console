@@ -31,6 +31,10 @@ export const EmptyCustomFilter = {
   group: '',
   fileName: '',
 }
+export interface EncryptAlgorithm {
+  text: string
+  value: string
+}
 export default class ConfigFileGroupDuck extends GridPageDuck {
   Filter: Filter & CustomFilters
   Item: ConfigFileGroupItem
@@ -143,10 +147,10 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
     const duck = this
     yield* super.saga()
     yield* duck.loadNamespaceList()
-    yield takeLatest(types.CREATE, function*() {
+    yield takeLatest(types.CREATE, function* () {
       const res = yield* resolvePromise(
         new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute({}, { isModify: false }))
             } finally {
@@ -159,10 +163,10 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.EXPORT_CONFIG, function*() {
+    yield takeLatest(types.EXPORT_CONFIG, function* () {
       const res = yield* resolvePromise(
         new Promise(resovle => {
-          showDialog(ExportConfig, ExportConfigDuck, function*(duck: ExportConfigDuck) {
+          showDialog(ExportConfig, ExportConfigDuck, function* (duck: ExportConfigDuck) {
             try {
               resovle(yield* duck.execute())
             } finally {
@@ -175,10 +179,10 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.IMPORT_CONFIG, function*() {
+    yield takeLatest(types.IMPORT_CONFIG, function* () {
       const res = yield* resolvePromise(
         new Promise(resolve => {
-          showDialog(ImportConfig, ImportConfigDuck, function*(duck: ImportConfigDuck) {
+          showDialog(ImportConfig, ImportConfigDuck, function* (duck: ImportConfigDuck) {
             try {
               resolve(yield* duck.execute())
             } finally {
@@ -191,12 +195,12 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.EDIT, function*(action) {
+    yield takeLatest(types.EDIT, function* (action) {
       const data = action.payload
 
       const res = yield* resolvePromise(
         new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute(data, { isModify: true }))
             } finally {
@@ -209,14 +213,14 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
       const { list } = action.payload
       const { selection } = selector(yield select())
       const validSelection = selection.filter(id => !!list.find(item => item.id === id))
       yield put(creators.select(validSelection))
       yield* duck.loadNamespaceList()
     })
-    yield takeLatest(types.REMOVE, function*(action) {
+    yield takeLatest(types.REMOVE, function* (action) {
       const { name, namespace } = action.payload
 
       const confirm = yield Modal.confirm({
@@ -230,7 +234,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.CHANGE_TAGS, function*(action) {
+    yield takeLatest(types.CHANGE_TAGS, function* (action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
       const validTags = tags.map(item => {

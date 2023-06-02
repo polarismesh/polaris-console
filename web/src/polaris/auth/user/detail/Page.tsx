@@ -11,7 +11,7 @@ import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { isOwner, getUin, getOwnerUin } from '@src/polaris/common/util/common'
 import UseableResource from '../../common/UseableResource'
 
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { selectors, selector, creators, ducks } = duck
   const composedId = selectors.composedId(store)
@@ -35,14 +35,6 @@ export default purify(function(props: DuckCmpProps<Duck>) {
           title={'用户信息'}
           operation={
             <>
-              <Button
-                type={'link'}
-                onClick={() => {
-                  dispatch(creators.modify())
-                }}
-              >
-                编辑
-              </Button>
               <Button
                 type={'link'}
                 onClick={() => {
@@ -72,12 +64,6 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                   }}
                 ></Button>
               </FormText>
-            </FormItem>
-            <FormItem label={'手机号'}>
-              <FormText>{mobile || '-'} </FormText>
-            </FormItem>
-            <FormItem label={'邮箱'}>
-              <FormText>{email || '-'} </FormText>
             </FormItem>
             <FormItem label={'Token'}>
               {isOwner() || getUin().toString() === composedId.id ? (

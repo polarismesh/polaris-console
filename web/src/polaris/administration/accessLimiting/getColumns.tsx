@@ -25,6 +25,11 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
     ),
   },
   {
+    key: 'type',
+    header: '限流类型',
+    render: x => (x.type === 'GLOBAL' ? <Text>分布式限流</Text> : <Text>单机限流</Text>),
+  },
+  {
     key: 'disable',
     header: '状态',
     render: x => (x.disable ? <Text theme='success'>已启用</Text> : <Text theme='danger'>未启用</Text>),

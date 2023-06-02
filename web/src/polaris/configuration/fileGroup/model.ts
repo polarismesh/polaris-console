@@ -81,6 +81,8 @@ export interface CreateConfigFileParams {
   comment: string
   tags: Array<KeyValuePair>
   createBy?: string
+  encrypted: boolean
+  encryptAlgo: string
 }
 export interface CreateConfigFileResult {
   configFile: ConfigFile
@@ -151,6 +153,8 @@ export interface ModifyConfigFileParams {
   tags?: Array<KeyValuePair>
   format?: string
   modifyBy?: string
+  encrypted: boolean
+  encryptAlgo: string
 }
 export interface ModifyConfigFileResult {
   configFile: ConfigFile
@@ -302,5 +306,17 @@ export async function importConfigFile(params: ImportConfigFilesParams) {
     },
   })
 
+  return res
+}
+
+
+export interface ConfigFileEncryptAlgorithm {
+  algorithms: string[]
+}
+
+export async function describeConfigFileEncryptAlgorithms() {
+  const res = await getApiRequest<ConfigFileEncryptAlgorithm>({
+    action: 'config/v1/configfiles/encryptalgorithm',
+  })
   return res
 }
