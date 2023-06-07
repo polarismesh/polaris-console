@@ -63,7 +63,7 @@ import router from './polaris/common/util/router'
 
 import ServiceAliasPage from '@src/polaris/serviceAlias/Page'
 import ServiceAliasPageDuck from '@src/polaris/serviceAlias/PageDuck'
-import { cacheCheckAuth } from './polaris/auth/model'
+import { cacheCheckAuth, describeAuthStatus } from './polaris/auth/model'
 const ServiceAlias = connectWithDuck(ServiceAliasPage, ServiceAliasPageDuck)
 
 import TestEnvRoutePage from '@src/polaris/administration/dynamicRoute/testEnvRoute/Page'
@@ -147,28 +147,23 @@ export default function root() {
       history.push(`/${id}`)
     },
   })
-  const [authOpen, setAuthOpen] = React.useState(null)
+
   const [feature, setFeature] = React.useState([])
-  const fetchAuth = useCallback(async () => {
-    const authOpen = await cacheCheckAuth({})
-    setAuthOpen(authOpen)
-  }, [])
   const fetchFeature = useCallback(async () => {
     const feature = await cacheCheckFeature()
     setFeature(feature)
   }, [])
   React.useEffect(() => {
-    fetchAuth()
     fetchFeature()
-  }, [fetchAuth && fetchFeature])
+  }, [fetchFeature])
   function recursiveRenderMenuItem(menuItem: MenuItemConfig) {
     if (!menuItem) {
       return <noscript />
     }
 
-    if (menuItem.id === 'policy' && !authOpen) {
-      return <noscript />
-    }
+    // if (menuItem.id === 'policy' && !authOpen) {
+    //   return <noscript />
+    // }
     const currentFeature = feature?.find(item => item.name === menuItem.featureKey)
     if (menuItem.featureKey && currentFeature) {
       if (currentFeature.display === FeatureDisplayType.hidden) {

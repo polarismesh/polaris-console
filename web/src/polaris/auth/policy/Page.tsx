@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useCallback } from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
 import Duck from './PageDuck'
 
@@ -20,13 +21,14 @@ import {
   FormItem,
   FormText,
   Bubble,
+  Alert,
 } from 'tea-component'
 import { autotip, scrollable } from 'tea-component/lib/table/addons'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { getOwnerUin, isOwner } from '@src/polaris/common/util/common'
 import router from '@src/polaris/common/util/router'
 import BasicLayout from '@src/polaris/common/components/BaseLayout'
-import { AuthStrategy } from '../model'
+import { AuthStrategy, describeAuthStatus } from '../model'
 import UseableResource from '../common/UseableResource'
 
 export enum AuthSubjectType {
@@ -104,6 +106,32 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
   const [showAuthResourceType, setShowAuthResourceType] = React.useState(AuthResourceType.NAMESPACE)
   const [collapseDefault, setCollapseDefault] = React.useState(true)
   const [collapseCustom, setCollapseCustom] = React.useState(true)
+
+  const [authClientOpen, setAuthClientOpen] = React.useState(true)
+  const [authConsoleOpen, setAuthConsoleOpen] = React.useState(true)
+  const fetchAuth = useCallback(async () => {
+    const { clientOpen, consoleOpen } = await describeAuthStatus({})
+    setAuthClientOpen(clientOpen === "true")
+    setAuthConsoleOpen(consoleOpen === "true")
+  }, [])
+  React.useEffect(() => {
+    fetchAuth()
+  }, [fetchAuth])
+
+  let tempAuthStatus = ""
+  if (authClientOpen && authConsoleOpen) {
+    tempAuthStatus = "鉴权策略针对控制台接口以及客户端接口均生效"
+  }
+  if (authClientOpen && !authConsoleOpen) {
+    tempAuthStatus = "鉴权策略仅针对客户端接口生效"
+  }
+  if (!authClientOpen && authConsoleOpen) {
+    tempAuthStatus = "鉴权策略仅针对控制台接口生效"
+  }
+  if (!authClientOpen && !authConsoleOpen) {
+    tempAuthStatus = "鉴权策略不生效"
+  }
+  const authStatusMsg = tempAuthStatus
 
   const handlers = getHandlers(props)
   const isInDetailpage = !!composedId?.principalId
@@ -319,7 +347,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                           style={{ marginBottom: '20px' }}
                         >
                           {currentAuthItem.resources[showAuthResourceType].length === 1 &&
-                          currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
+                            currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
                             <section style={{ margin: '20px 10px' }}>
                               {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
                             </section>
@@ -353,13 +381,22 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
       </Row>
     </>
   )
-
+  const [alertVisible, setAlertVisible] = React.useState(true);
   return isInDetailpage ? (
     contentElement
   ) : (
     <BasicLayout title={'策略'} store={store} selectors={duck.selectors} header={<></>}>
       <Card>
-        <Card.Body>{contentElement}</Card.Body>
+        <Card.Body>
+            <Alert visible={alertVisible}
+              onClose={() => setAlertVisible(false)}
+              extra={
+                <Button type="link" onClick={() => setAlertVisible(false)}>
+                  关闭
+                </Button>
+              }>{authStatusMsg}</Alert>
+          {contentElement}
+        </Card.Body>
       </Card>
     </BasicLayout>
   )
