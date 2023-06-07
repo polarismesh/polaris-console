@@ -614,7 +614,7 @@ export type CheckAuthParams = {}
 export interface CheckAuthResult {
   /** 执行结果 */
   optionSwitch: {
-    options: { auth: string }
+    options: { auth: string, clientOpen: string, consoleOpen: string }
   }
 }
 
@@ -627,6 +627,12 @@ export async function checkAuth(params: CheckAuthParams) {
   const result = await getApiRequest<CheckAuthResult>({ action: 'core/v1/auth/status', data: params })
   return result.optionSwitch.options.auth === 'true'
 }
+
+export async function describeAuthStatus(params: CheckAuthParams) {
+  const result = await getApiRequest<CheckAuthResult>({ action: 'core/v1/auth/status', data: params })
+  return result.optionSwitch.options
+}
+
 
 export const cacheCheckAuth = once(checkAuth, ttl(30 * 60 * 1000))
 

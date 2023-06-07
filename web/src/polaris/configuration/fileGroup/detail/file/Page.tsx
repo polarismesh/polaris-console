@@ -278,7 +278,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <FormItem label='加密状态'>
                               <FormText>
                                 <Text theme={currentNode.encrypted ? 'warning' : 'text'}>
-                                  {currentNode.encrypted ? '已开启加密' : '未加密'}
+                                  {currentNode.encrypted ? `已开启加密, 加密算法为: ${currentNode.encryptAlgo}` : '未加密'}
                                 </Text>
                               </FormText>
                             </FormItem>
