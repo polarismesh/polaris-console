@@ -125,6 +125,10 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         </FormItem>
         <FormField field={encrypted} label={'配置加密'}>
           <Switch defaultValue={encrypted.getValue()} onChange={(value, context) => {
+            if (!value) {
+              // 配置鉴权关闭的话，设置加密算法为空
+              encryptAlgo.setValue("")
+            }
             encrypted.setValue(value)
           }}>{encrypted?.getValue() ? '开启，请选择配置文件加密算法 ' : '未开启'}</Switch>
           {encrypted?.getValue() && (
