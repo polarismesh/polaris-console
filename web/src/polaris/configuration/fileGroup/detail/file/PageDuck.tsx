@@ -393,7 +393,7 @@ export default class PageDuck extends Base {
           return
         }
       }
-      const result = yield releaseConfigFile({ namespace, group, fileName: name, name })
+      const result = yield releaseConfigFile({ namespace, group, fileName: name })
       if (result) {
         notification.success({ description: '发布成功' })
         yield put({ type: types.FETCH_DATA })
