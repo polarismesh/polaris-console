@@ -181,7 +181,7 @@ export async function deleteConfigFiles(params: DeleteConfigFileParams) {
   return res
 }
 export interface ReleaseConfigFileParams {
-  name: string
+  name?: string
   namespace: string
   group: string
   fileName: string
