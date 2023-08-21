@@ -10,6 +10,8 @@ interface Props {
   original: string
   now: string
   format: string
+  originTitle?: React.ReactNode
+  nowTitle?: React.ReactNode
 }
 
 insertCSS(
@@ -25,7 +27,7 @@ insertCSS(
 )
 
 export default function FileDiff(props: Props) {
-  const { original, now, format } = props
+  const { original, now, format, originTitle = '历史发布', nowTitle = '当前发布' } = props
   const editorRef = React.useRef<{ editor: any }>(null)
   const [isFullScreen, setFullScreen] = React.useState(false)
   const [hasRecordSize, setHasRecordSize] = React.useState(false)
@@ -96,8 +98,10 @@ export default function FileDiff(props: Props) {
   return (
     <section className='monaco-section-file-diff'>
       <Row style={{ margin: '10px 0px' }}>
-        <Col>历史发布</Col>
-        <Col>当前发布</Col>
+        <Col span={12} style={{ paddingLeft: '0px' }}>
+          {originTitle}
+        </Col>
+        <Col span={12}>{nowTitle}</Col>
 
         <Col style={{ position: 'relative' }}>
           <Icon
