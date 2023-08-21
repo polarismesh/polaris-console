@@ -177,10 +177,10 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
     yield takeLatest(types.SHOW_DIFF, function*(action) {
-      const { namespace, group, name, content, format, id } = action.payload
+      const { namespace, group, content, format, id, fileName } = action.payload
       const { list: previousRelease } = yield describeConfigFileReleaseHistories({
         namespace,
-        name,
+        name: fileName,
         group,
         offset: 0,
         limit: 1,
