@@ -95,8 +95,8 @@ export const getQueryMap = {
       {
         name: '最大值',
         query: conditions.length
-          ? `max(upstream_rq_timeout{${conditionString}}) or on() vector(0)`
-          : 'max(upstream_rq_timeout) or on() vector(0)',
+          ? `max(upstream_rq_max_timeout{${conditionString}}) or on() vector(0)`
+          : 'max(upstream_rq_max_timeout) or on() vector(0)',
         boardFunction: MaxReduceFunction,
         unit: 'ms',
         minStep: 60,

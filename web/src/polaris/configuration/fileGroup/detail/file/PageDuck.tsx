@@ -366,18 +366,18 @@ export default class PageDuck extends Base {
     })
     yield takeLatest(types.SHOW_RELEASE_HISTORY, function*(action) {
       const { showHistoryMap } = selector(yield select())
-      const { name, namespace, group } = action.payload
-      if (showHistoryMap[name]) {
-        yield put({ type: types.SET_HISTORY_MAP, payload: { ...showHistoryMap, [name]: false } })
+      const { fileName, namespace, group } = action.payload
+      if (showHistoryMap[fileName]) {
+        yield put({ type: types.SET_HISTORY_MAP, payload: { ...showHistoryMap, [fileName]: false } })
       } else {
-        yield put({ type: types.SET_HISTORY_MAP, payload: { ...showHistoryMap, [name]: true } })
+        yield put({ type: types.SET_HISTORY_MAP, payload: { ...showHistoryMap, [fileName]: true } })
       }
-      let releaseHistoryDuck = ducks.configFileDynamicDuck.getDuck(name)
+      let releaseHistoryDuck = ducks.configFileDynamicDuck.getDuck(fileName)
       if (!releaseHistoryDuck) {
-        yield put(ducks.configFileDynamicDuck.creators.createDuck(name))
-        releaseHistoryDuck = ducks.configFileDynamicDuck.getDuck(name)
+        yield put(ducks.configFileDynamicDuck.creators.createDuck(fileName))
+        releaseHistoryDuck = ducks.configFileDynamicDuck.getDuck(fileName)
       }
-      yield put(releaseHistoryDuck.creators.fetch({ name, namespace, group }))
+      yield put(releaseHistoryDuck.creators.fetch({ name: fileName, namespace, group }))
     })
     yield takeLatest(types.RELEASE_CURRENT_NODE, function*() {
       const currentNode = selectors.currentNode(yield select())
@@ -393,7 +393,7 @@ export default class PageDuck extends Base {
           return
         }
       }
-      const result = yield releaseConfigFile({ namespace, group, fileName: name, name })
+      const result = yield releaseConfigFile({ namespace, group, fileName: name })
       if (result) {
         notification.success({ description: '发布成功' })
         yield put({ type: types.FETCH_DATA })

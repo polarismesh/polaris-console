@@ -839,7 +839,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   ></Table>
                                 </section>
                                 <Text parent={'div'} theme={'strong'} style={{ marginBottom: '10px', fontWeight: 700 }}>
-                                  将转发至目标服务的一下实例分组
+                                  将转发至目标服务的以下实例分组
                                 </Text>
                                 <section style={{ marginBottom: '10px' }}>
                                   <Table
