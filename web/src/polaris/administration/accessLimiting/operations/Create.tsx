@@ -22,6 +22,8 @@ import Input from '@src/polaris/common/duckComponents/form/Input'
 import InputNumber from '@src/polaris/common/duckComponents/form/InputNumber'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
 import {
+  LimitResource,
+  LimitResourceOptions,
   LimitTypeOptions,
   LimitType,
   LimitMethodTypeOptions,
@@ -33,7 +35,7 @@ import {
   LimitFailoverOptions,
   LimitFailover,
   LimitAmountsValidationUnit,
-  LimitAmountsValidationUnitOptions,
+  LimitAmountsValidationUnitOptions, MaxAmountUnit, MaxAmountHeader,
 } from '../types'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { FieldAPI } from '@src/polaris/common/ducks/Form'
@@ -76,6 +78,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
 
   const {
     name: nameField,
+    resource: resourceField,
     type: typeField,
     namespace: namespaceField,
     service: serviceField,
@@ -91,6 +94,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
     .getAPI(store, dispatch)
     .getFields([
       'name',
+      'resource',
       'type',
       'namespace',
       'service',
@@ -106,10 +110,26 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
 
   const { type: methodTypeField, value: methodValueField } = methodField.getFields(['type', 'value'])
 
-  // 只有单机限流模式才有匀速排队
+  // 按CPU使用率时，只显式单机限流选项
+  const limitResource = resourceField.getValue()
+  const limitTypeOptions =
+    limitResource === LimitResource.QPS ? LimitTypeOptions : LimitTypeOptions.filter(o => o.value === LimitType.LOCAL)
+
+  // 只有QPS单机限流模式才有匀速排队
+  let limitActionOptions = LimitActionOptions
   const limitType = typeField.getValue()
-  const limitActionOptions =
-    limitType === LimitType.LOCAL ? LimitActionOptions : LimitActionOptions.filter(o => o.value === LimitAction.REJECT)
+  if (limitResource === LimitResource.QPS) {
+    if (limitType === LimitType.LOCAL) {
+      // 单机QPS限流 展示 快速失败 + 匀速排队
+      limitActionOptions = LimitActionOptions.filter(o => o.value !== LimitAction.BBR)
+    } else {
+      // 分布式QPS限流 只展示 快速失败
+      limitActionOptions = LimitActionOptions.filter(o => o.value === LimitAction.REJECT)
+    }
+  } else {
+    limitActionOptions = LimitActionOptions.filter(o => o.value === LimitAction.BBR)
+  }
+
   // 获取arguments amounts列表值
   const argumentsList = argumentsField.getValue()
   const amountsList = amountsField.getValue()
@@ -217,7 +237,8 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
 
   const [serviceInputValue, setServiceInputValue] = React.useState('')
 
-  const filteredLimitTypeOptions = LimitTypeOptions
+  // const filteredLimitTypeOptions = LimitTypeOptions
+  const filteredLimitResourceOptions = LimitResourceOptions
   return (
     <DetailPage
       store={store}
@@ -232,10 +253,25 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
             <FormField label='限流规则名称' field={nameField} message='最长64个字符' required>
               <Input field={nameField} maxLength={64} size='l' />
             </FormField>
+
+            <FormField label='限流资源' field={resourceField} required>
+              <Segment
+                value={resourceField.getValue()}
+                options={filteredLimitResourceOptions}
+                onChange={value => {
+                  resourceField.setValue(LimitResource[value])
+                  if (value === LimitResource.CPU) {
+                    typeField.setValue(LimitType.LOCAL)
+                    actionField.setValue(LimitAction.BBR)
+                  }
+                }}
+              />
+            </FormField>
+
             <FormField label='限流类型' field={typeField} required>
               <Segment
                 value={typeField.getValue()}
-                options={filteredLimitTypeOptions}
+                options={limitTypeOptions}
                 onChange={value => {
                   typeField.setValue(LimitType[value])
                   if (value === LimitType.GLOBAL) {
@@ -458,7 +494,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             const { id } = o.getFields(['id'])
                             return id.getValue()
                           }}
-                          style={{ width: '400px' }}
+                          style={{ width: '550px' }}
                           records={[...amountsField.asArray()]}
                           columns={[
                             {
@@ -493,13 +529,31 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                                 )
                               },
                             },
+                            limitResource === LimitResource.CPU && {
+                              key: 'precision',
+                              header: '滑动窗口精度',
+                              render: item => {
+                                const { precision } = item.getFields(['precision'])
+                                return (
+                                  <InputAdornment>
+                                    <InputNumber
+                                      field={precision}
+                                      min={1}
+                                      onInputChange={value => precision.setValue(+value)}
+                                      hideButton
+                                      size='l'
+                                    />
+                                  </InputAdornment>
+                                )
+                              },
+                            },
                             {
                               key: 'maxAmount',
-                              header: '请求数阈值',
+                              header: MaxAmountHeader[limitResource],
                               render: item => {
                                 const { maxAmount } = item.getFields(['maxAmount'])
                                 return (
-                                  <InputAdornment after='次'>
+                                  <InputAdornment after={MaxAmountUnit[limitResource]}>
                                     <InputNumber
                                       field={maxAmount}
                                       min={1}
@@ -548,6 +602,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                               maxAmount: 1,
                               validDurationNum: 1,
                               validDurationUnit: LimitAmountsValidationUnit.s,
+                              precision: 1,
                             })
                           }
                         >

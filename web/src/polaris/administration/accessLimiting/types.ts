@@ -5,6 +5,41 @@ export interface Lists {
   serviceList: []
 }
 
+// 限制资源类型，支持QPS, CPU
+export enum LimitResource {
+  QPS = 'QPS',
+  // CONCURRENCY = 'CONCURRENCY', // 并发量
+  CPU = 'CPU',
+}
+export const LimitResourceOptions = [
+  {
+    value: LimitResource.QPS,
+    text: 'QPS',
+  },
+  {
+    value: LimitResource.CPU,
+    text: 'CPU使用率',
+  },
+]
+export const LimitResourceMap = LimitResourceOptions.reduce((map, curr) => {
+  map[curr.value] = curr.text
+  return map
+}, {})
+
+// 阈值的标题
+export enum MaxAmountHeader {
+  QPS = '请求数阈值',
+  // CONCURRENCY = '次',
+  CPU = 'CPU使用率阈值',
+}
+
+// 阈值的计数单位
+export enum MaxAmountUnit {
+  QPS = '次',
+  // CONCURRENCY = '次',
+  CPU = '%',
+}
+
 // 限流类型，支持LOCAL（单机限流）, GLOBAL（分布式限流）
 export enum LimitType {
   GLOBAL = 'GLOBAL',
@@ -26,10 +61,11 @@ export const LimitTypeMap = LimitTypeOptions.reduce((map, curr) => {
   return map
 }, {})
 
-// 限流效果，支持REJECT（直接拒绝）,UNIRATE（匀速排队），默认REJECT
+// 限流效果，支持REJECT（直接拒绝）,UNIRATE（匀速排队），BBR（自适应），默认REJECT
 export enum LimitAction {
-  REJECT = 'REJECT',
-  UNIRATE = 'UNIRATE',
+  REJECT = 'REJECT', // 实现为令牌桶
+  UNIRATE = 'UNIRATE', // 实现为漏桶
+  BBR = 'BBR',
 }
 export const LimitActionOptions = [
   {
@@ -39,6 +75,10 @@ export const LimitActionOptions = [
   {
     value: LimitAction.UNIRATE,
     text: '匀速排队',
+  },
+  {
+    value: LimitAction.BBR,
+    text: '自适应',
   },
 ]
 
@@ -213,6 +253,7 @@ export const generateDefaultValues: Values = {
       validDurationNum: 1,
       validDurationUnit: LimitAmountsValidationUnit.s,
       maxAmount: 1,
+      precision: 1,
     },
   ],
   regex_combine: true,
@@ -220,5 +261,5 @@ export const generateDefaultValues: Values = {
   max_queue_delay: 1,
   failover: LimitFailover.FAILOVER_LOCAL,
   disable: true,
-  resource: 'QPS',
+  resource: LimitResource.QPS,
 }

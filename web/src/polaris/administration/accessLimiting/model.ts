@@ -6,7 +6,7 @@ import {
   LimitMethodType,
   LimitArgumentsType,
   LimitFailover,
-  LimitAmountsValidationUnit,
+  LimitAmountsValidationUnit, LimitResource,
 } from './types'
 
 export interface DescribeLimitRulesParams {
@@ -26,6 +26,7 @@ export interface DescribeLimitRulesParams {
 export interface LimitConfig {
   validDuration: string
   maxAmount: number
+  precision: number
 }
 
 export interface LimitConfigForFormFilling {
@@ -34,6 +35,7 @@ export interface LimitConfigForFormFilling {
   maxAmount: number
   validDurationNum: number
   validDurationUnit: LimitAmountsValidationUnit
+  precision: number // 滑动窗口精度
 }
 
 interface LimitMethodConfig {
@@ -101,6 +103,7 @@ export async function describeLimitRules(params: DescribeLimitRulesParams) {
 export interface CreateLimitRulesBaseParams {
   id?: string
   name: string // 规则名
+  resource: LimitResource // 限流资源
   type: LimitType // 限流类型
   namespace: string // 规则所属命名空间
   service: string // 规则所属服务名
@@ -110,7 +113,6 @@ export interface CreateLimitRulesBaseParams {
   max_queue_delay: number // 匀速排队的最大排队时长
   failover: LimitFailover // 失败处理策略
   disable: boolean // 是否停用该限流规则，默认启用
-  resource: string
 }
 
 export interface CreateLimitRulesParams extends CreateLimitRulesBaseParams {
