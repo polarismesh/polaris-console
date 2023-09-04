@@ -112,7 +112,7 @@ export default class AccessLimitingDetailPageDuck extends DetailPage {
           result.totalCount > 0 &&
           result.list.map((item: RateLimit) => ({
             ...item,
-            disable: item.disable,
+            disable: item.disable === false ? true : false,
             amounts:
               item.amounts?.length > 0
                 ? item.amounts.map(o => ({
