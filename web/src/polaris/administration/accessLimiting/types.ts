@@ -40,6 +40,13 @@ export enum MaxAmountUnit {
   CPU = '%',
 }
 
+// 阈值的计数单位
+export enum MaxAmountDefault {
+  QPS = 1,
+  // CONCURRENCY = '次',
+  CPU = 80,
+}
+
 // 限流类型，支持LOCAL（单机限流）, GLOBAL（分布式限流）
 export enum LimitType {
   GLOBAL = 'GLOBAL',
@@ -253,7 +260,7 @@ export const generateDefaultValues: Values = {
       validDurationNum: 1,
       validDurationUnit: LimitAmountsValidationUnit.s,
       maxAmount: 1,
-      precision: 1,
+      precision: 10,
     },
   ],
   regex_combine: true,

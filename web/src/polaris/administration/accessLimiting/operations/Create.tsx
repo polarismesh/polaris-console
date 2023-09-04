@@ -35,7 +35,7 @@ import {
   LimitFailoverOptions,
   LimitFailover,
   LimitAmountsValidationUnit,
-  LimitAmountsValidationUnitOptions, MaxAmountUnit, MaxAmountHeader,
+  LimitAmountsValidationUnitOptions, MaxAmountUnit, MaxAmountHeader, MaxAmountDefault,
 } from '../types'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { FieldAPI } from '@src/polaris/common/ducks/Form'
@@ -599,10 +599,10 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                           onClick={() =>
                             amountsField.asArray().push({
                               id: `${Math.round(Math.random() * 10000)}`,
-                              maxAmount: 1,
+                              maxAmount: MaxAmountDefault[limitResource],
                               validDurationNum: 1,
                               validDurationUnit: LimitAmountsValidationUnit.s,
-                              precision: 1,
+                              precision: 10,
                             })
                           }
                         >

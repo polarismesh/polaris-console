@@ -211,7 +211,12 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
                               header: MaxAmountHeader[strResource],
                               render: item => {
                                 const { maxAmount } = item
-                                return <Text>{maxAmount}{MaxAmountUnit[strResource]}</Text>
+                                return (
+                                  <Text>
+                                    {maxAmount}
+                                    {MaxAmountUnit[strResource]}
+                                  </Text>
+                                )
                               },
                             },
                           ]}
