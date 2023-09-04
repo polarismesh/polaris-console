@@ -1,4 +1,4 @@
-import { ConfigFileGroup, KeyValuePair, ConfigFile, ConfigFileRelease } from './types'
+import { ConfigFileGroup, KeyValuePair, ConfigFile, ConfigFileRelease, ConfigFileGroupTag } from './types'
 import { getApiRequest, apiRequest, putApiRequest, deleteApiRequest } from '@src/polaris/common/util/apiRequest'
 import { object2FormData } from '@src/polaris/common/helpers/form'
 
