@@ -10,19 +10,19 @@ import DynamicDuck from '@src/polaris/common/ducks/DynamicDuck'
 import { resolvePromise } from 'saga-duck/build/helper'
 import { showDialog } from '@src/polaris/common/helpers/showDialog'
 import Create from './operation/Create'
-import React from 'react'
-import FileDiff from './FileDiff'
 import {
   modifyConfigFile,
   deleteConfigFiles,
   describeConfigFilesByGroup,
   describeLastReleaseConfigFile,
-  releaseConfigFile,
 } from '../../model'
 import Fetcher from '@src/polaris/common/ducks/Fetcher'
 import { describeConfigFileReleaseHistories } from '@src/polaris/configuration/releaseHistory/model'
 import GetFileTemplate from './operation/GetFileTemplate'
 import GetFileTemplateDuck from './operation/GetFileTemplateDuck'
+import router from '@src/polaris/common/util/router'
+import ReleaseConfigDuck from './operation/ReleaseConfigDuck'
+import { TAB } from '../Page'
 interface MyFilter {
   namespace: string
   group: string
@@ -381,23 +381,12 @@ export default class PageDuck extends Base {
     })
     yield takeLatest(types.RELEASE_CURRENT_NODE, function*() {
       const currentNode = selectors.currentNode(yield select())
-      const { namespace, group, name, content, format } = currentNode
+      const { namespace, group, name } = currentNode
       const { configFileRelease: lastRelease } = yield describeLastReleaseConfigFile({ namespace, name, group })
-      if (lastRelease) {
-        const confirm = yield Modal.confirm({
-          size: 'xl',
-          caption: '内容对比',
-          description: <FileDiff original={lastRelease.content} now={content} format={format} />,
-        } as any)
-        if (!confirm) {
-          return
-        }
-      }
-      const result = yield releaseConfigFile({ namespace, group, fileName: name })
+      const result = yield ReleaseConfigDuck.show({ ...currentNode, lastRelease })
       if (result) {
         notification.success({ description: '发布成功' })
-        yield put({ type: types.FETCH_DATA })
-        yield put({ type: types.SET_EDITING, payload: false })
+        router.navigate(`/filegroup-detail?namespace=${namespace}&group=${group}&fileName=${name}&tab=${TAB.History}`)
       } else {
         notification.error({ description: '发布失败' })
       }

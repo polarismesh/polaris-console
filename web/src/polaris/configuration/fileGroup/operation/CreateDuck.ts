@@ -11,6 +11,7 @@ import { DescribeStrategyOption } from '@src/polaris/auth/constants'
 import { AuthStrategy, describeGovernanceStrategies } from '@src/polaris/auth/model'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { isReadOnlyNamespace } from '@src/polaris/service/utils'
+import { ConfigFileGroupTag } from '../types'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -43,15 +44,14 @@ export default class CreateDuck extends FormDialog {
       selectors,
       ducks: { form, userGroupSelect, userSelect },
     } = this
-    const userIds = userSelect.selector(yield select()).selection.map((user) => user.id)
-    const groupIds = userGroupSelect.selector(yield select()).selection.map((group) => group.id)
+    const userIds = userSelect.selector(yield select()).selection.map(user => user.id)
+    const groupIds = userGroupSelect.selector(yield select()).selection.map(group => group.id)
     const { userIds: originUserIds, groupIds: originGroupIds } = selectors.data(yield select())
-    const options = selectors.options(yield select())
-
-    const values = form.selectors.values(yield select())
-    const { name, comment, namespace } = values
     const { removeArray: removeUserIds } = diffAddRemoveArray(originUserIds, userIds)
     const { removeArray: removeGroupIds } = diffAddRemoveArray(originGroupIds, groupIds)
+    const options = selectors.options(yield select())
+    const values = form.selectors.values(yield select())
+    const { name, comment, namespace, department, business, configFileGroupTags } = values
 
     if (options.isModify) {
       const { code } = yield modifyConfigFileGroup({
@@ -62,6 +62,9 @@ export default class CreateDuck extends FormDialog {
         group_ids: groupIds,
         remove_user_ids: removeUserIds,
         remove_group_ids: removeGroupIds,
+        department: department || undefined,
+        business: business || undefined,
+        configFileGroupTags: configFileGroupTags?.length ? configFileGroupTags : undefined,
       })
       return code === 200000
     } else {
@@ -98,6 +101,28 @@ export default class CreateDuck extends FormDialog {
       listKey: 'namespaces',
       totalKey: 'amount',
     })({})
+    yield put({
+      type: types.SET_OPTIONS,
+      payload: {
+        ...options,
+        namespaceList: namespaceList.map(item => {
+          const disabled = isReadOnlyNamespace(item)
+          return {
+            ...item,
+            text: item.name,
+            value: item.name,
+            disabled,
+            tooltip: disabled && '该命名空间为只读命名空间',
+          }
+        }),
+      },
+    })
+    yield put(form.creators.setMeta(options))
+    yield put(
+      form.creators.setValues({
+        ...data,
+      }),
+    )
     yield put(userGroupSelect.creators.load({}))
     yield put(userSelect.creators.load({}))
     if (options.isModify) {
@@ -119,33 +144,11 @@ export default class CreateDuck extends FormDialog {
         type: types.UPDATE,
         payload: {
           ...data,
-          userIds: users.map((user) => user.id),
-          groupIds: groups.map((group) => group.id),
+          userIds: users.map(user => user.id),
+          groupIds: groups.map(group => group.id),
         },
       })
     }
-    yield put({
-      type: types.SET_OPTIONS,
-      payload: {
-        ...options,
-        namespaceList: namespaceList.map((item) => {
-          const disabled = isReadOnlyNamespace(item)
-          return {
-            ...item,
-            text: item.name,
-            value: item.name,
-            disabled,
-            tooltip: disabled && '该命名空间为只读命名空间',
-          }
-        }),
-      },
-    })
-    yield put(form.creators.setMeta(options))
-    yield put(
-      form.creators.setValues({
-        ...data,
-      }),
-    )
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel
   }
 }
@@ -156,6 +159,9 @@ export interface Values {
   name: string
   userIds?: string[]
   groupIds?: string[]
+  department: string
+  business: string
+  configFileGroupTags?: ConfigFileGroupTag[]
 }
 class CreateForm extends Form {
   Values: Values

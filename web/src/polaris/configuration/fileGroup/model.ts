@@ -1,4 +1,4 @@
-import { ConfigFileGroup, KeyValuePair, ConfigFile, ConfigFileRelease } from './types'
+import { ConfigFileGroup, KeyValuePair, ConfigFile, ConfigFileRelease, ConfigFileGroupTag } from './types'
 import { getApiRequest, apiRequest, putApiRequest, deleteApiRequest } from '@src/polaris/common/util/apiRequest'
 import { object2FormData } from '@src/polaris/common/helpers/form'
 
@@ -30,6 +30,9 @@ export interface CreateConfigFileGroupParams {
   createBy?: string
   user_ids?: string[]
   group_ids?: string[]
+  department?: string
+  business?: string
+  configFileGroupTags?: ConfigFileGroupTag[]
 }
 export interface CreateConfigFileGroupResult {
   configFileGroup: ConfigFileGroup
@@ -49,6 +52,9 @@ export interface ModifyConfigFileGroupParams {
   group_ids?: string[]
   remove_user_ids?: string[]
   remove_group_ids?: string[]
+  department?: string
+  business?: string
+  configFileGroupTags?: ConfigFileGroupTag[]
 }
 export interface ModifyConfigFileGroupResult {
   configFileGroup: ConfigFileGroup
@@ -187,6 +193,7 @@ export interface ReleaseConfigFileParams {
   fileName: string
   comment?: string
   createBy?: string
+  releaseDescription?: string
 }
 export interface ReleaseConfigFileResult {
   configFileRelease: ConfigFileRelease

@@ -22,17 +22,13 @@ import RouteCreatePage from '@src/polaris/service/detail/route/operations/Create
 import RouteCreateDuck from '@src/polaris/service/detail/route/operations/CreateDuck'
 const RouteCreate = connectWithDuck(RouteCreatePage, RouteCreateDuck)
 
-import FileGroupPage from '@src/polaris/configuration/fileGroup/Page'
-import FileGroupPageDuck from '@src/polaris/configuration/fileGroup/PageDuck'
-const FileGroup = connectWithDuck(FileGroupPage, FileGroupPageDuck)
-
 import FileGroupDetailPage from '@src/polaris/configuration/fileGroup/detail/Page'
 import FileGroupDetailPageDuck from '@src/polaris/configuration/fileGroup/detail/PageDuck'
 const FileGroupDetail = connectWithDuck(FileGroupDetailPage, FileGroupDetailPageDuck)
 
-import FileReleasePage from '@src/polaris/configuration/releaseHistory/Page'
-import FileReleasePageDuck from '@src/polaris/configuration/releaseHistory/PageDuck'
-const FileRelease = connectWithDuck(FileReleasePage, FileReleasePageDuck)
+import ConfigurationPage from '@src/polaris/configuration/Page'
+import ConfigurationPageDuck from '@src/polaris/configuration/PageDuck'
+const Configuration = connectWithDuck(ConfigurationPage, ConfigurationPageDuck)
 
 import UserPage from '@src/polaris/auth/user/Page'
 import UserPageDuck from '@src/polaris/auth/user/PageDuck'
@@ -275,9 +271,8 @@ export default function root() {
               <Route exact path='/route-create' component={RouteCreate} />
               <Route exact path='/accesslimit-create' component={LimitRuleCreate} />
               <Route exact path='/flow-monitor' component={FlowMonitor} />
-              <Route exact path='/filegroup' component={FileGroup} />
+              <Route exact path='/configuration' component={Configuration} />
               <Route exact path='/filegroup-detail' component={FileGroupDetail} />
-              <Route exact path='/file-release-history' component={FileRelease} />
               <Route exact path='/user' component={User} />
               <Route exact path='/usergroup' component={UserGroup} />
               <Route exact path='/policy' component={Policy} />

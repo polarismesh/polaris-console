@@ -1,7 +1,7 @@
 import { createToPayload } from 'saga-duck'
 import { takeLatest } from 'redux-saga-catch'
 import { put, select, take } from 'redux-saga/effects'
-import { Modal } from 'tea-component'
+import { Col, Form, FormItem, FormText, Modal, Row, Text } from 'tea-component'
 import { reduceFromPayload } from 'saga-duck/build/helper'
 import { GroupNameTagKey, DefaultGroupTagAttribute, FileNameTagKey } from './Page'
 import GridPageDuck, { Filter } from '@src/polaris/common/ducks/GridPage'
@@ -12,7 +12,10 @@ import { ConfigFileReleaseHistory, ConfigFileGroup } from '../fileGroup/types'
 import { describeConfigFileReleaseHistories } from './model'
 import { describeConfigFileGroups } from '../fileGroup/model'
 import React from 'react'
-import FileDiff from '../fileGroup/detail/file/FileDiff'
+import { toHighlightLanguage } from '../fileGroup/detail/file/Page'
+import { ConfigReleaseTypeMap, ConfigReleaseStatusMap } from './types'
+import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
+import { ComposedId } from '../Page'
 
 export interface ConfigFileReleaseHistoryItem extends ConfigFileReleaseHistory {
   id: string
@@ -31,7 +34,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
   Filter: Filter & CustomFilters
   Item: ConfigFileReleaseHistoryItem
   get baseUrl() {
-    return 'file-release-history'
+    return null
   }
   get quickTypes() {
     enum Types {
@@ -44,6 +47,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       SET_NAMESPACE,
       SET_GROUP_NAME,
       SET_FILENAME,
+      LOAD,
     }
     return {
       ...super.quickTypes,
@@ -106,6 +110,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
     const { types } = this
     return {
       ...super.creators,
+      load: createToPayload<ComposedId>(types.LOAD),
       setCustomFilters: createToPayload<CustomFilters>(types.SET_CUSTOM_FILTERS),
       changeTags: createToPayload(types.CHANGE_TAGS),
       showDiff: createToPayload(types.SHOW_DIFF),
@@ -177,20 +182,73 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
     yield takeLatest(types.SHOW_DIFF, function*(action) {
-      const { namespace, group, content, format, id, fileName } = action.payload
-      const { list: previousRelease } = yield describeConfigFileReleaseHistories({
+      const {
         namespace,
-        name: fileName,
-        group,
-        offset: 0,
-        limit: 1,
-        endId: id,
-      })
+        releaseDescription,
+        fileName,
+        content,
+        format,
+        name,
+        status,
+        type,
+        modifyBy,
+        modifyTime,
+      } = action.payload
 
       const modal = Modal.show({
         size: 'xl',
-        caption: '内容对比',
-        children: <FileDiff original={previousRelease?.[0]?.content || ''} now={content || ''} format={format} />,
+        caption: '发布详情',
+        children: (
+          <Row>
+            <Col span={8}>
+              <Form>
+                <FormItem label={'配置名称'}>
+                  <FormText>{fileName}</FormText>
+                </FormItem>
+                <FormItem label={'版本'}>
+                  <FormText>{name}</FormText>
+                </FormItem>
+                <FormItem label={'操作类型'}>
+                  <FormText>
+                    <Text parent={'div'}>{ConfigReleaseTypeMap[type]}</Text>
+                  </FormText>
+                </FormItem>
+                <FormItem label={'状态'}>
+                  <FormText>
+                    <Text theme={ConfigReleaseStatusMap[status]?.theme} parent={'div'}>
+                      {ConfigReleaseStatusMap[status]?.text}
+                    </Text>
+                  </FormText>
+                </FormItem>
+                <FormItem label={'命名空间'}>
+                  <FormText>{namespace}</FormText>
+                </FormItem>
+                <FormItem label={'格式'}>
+                  <FormText>{format || '-'}</FormText>
+                </FormItem>
+                <FormItem label={'备注'}>
+                  <FormText>{releaseDescription || '-'}</FormText>
+                </FormItem>
+                <FormItem label={'最后操作人'}>
+                  <FormText>{modifyBy}</FormText>
+                </FormItem>
+                <FormItem label={'最后发布时间'}>
+                  <FormText>{modifyTime}</FormText>
+                </FormItem>
+              </Form>
+            </Col>
+            <Col span={16}>
+              <section style={{ border: '1px solid #cfd5de', width: '100%', marginTop: '15px' }}>
+                <MonacoEditor
+                  language={toHighlightLanguage(format)}
+                  value={content}
+                  options={{ readOnly: true }}
+                  height={700}
+                />
+              </section>
+            </Col>
+          </Row>
+        ),
         destroyOnClose: true,
         onClose: () => modal.destroy(),
       })

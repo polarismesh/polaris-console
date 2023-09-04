@@ -74,7 +74,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             type={'simulate'}
             appearance={'button'}
             size='m'
-            disabled={options.isModify}
+            disabled={true}
           ></Select>
         </FormField>
         <FormField field={group} label={'配置分组'} required>
@@ -86,7 +86,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             type={'simulate'}
             appearance={'button'}
             size='m'
-            disabled={options.isModify}
+            disabled={true}
           ></Select>
         </FormField>
         <FormField
@@ -95,19 +95,19 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           required
           message={'可通过/分隔符创建文件夹，强烈建议文件名带上后缀，如：datasource/master.json'}
         >
-          <InputAdornment after={"文件格式: " + (format.getValue() === null ? "text" : format.getValue())}>
+          <InputAdornment after={'文件格式: ' + (format.getValue() === null ? 'text' : format.getValue())}>
             <Input
               field={name}
               disabled={options.isModify}
               maxLength={128}
               onChange={val => {
                 if (val.lastIndexOf('.') === -1) {
-                  format.setValue("text")
+                  format.setValue('text')
                   return
                 }
                 const suffix = val.substring(val.lastIndexOf('.') + 1)
-                if (suffix === "") {
-                  format.setValue("text")
+                if (suffix === '') {
+                  format.setValue('text')
                 } else {
                   format.setValue(suffix)
                 }
@@ -118,7 +118,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           </InputAdornment>
         </FormField>
         <FormField field={comment} label={'备注'}>
-          <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
+          <Input field={comment} maxLength={200} placeholder={'长度不超过200个字符'} size={'l'} />
         </FormField>
         <FormItem label={'配置标签'}>
           <TagTable tags={tags} />
