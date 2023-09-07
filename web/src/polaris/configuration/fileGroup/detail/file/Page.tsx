@@ -33,6 +33,8 @@ import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
 import { Link } from 'react-router-dom'
 import { FileFormat } from './operation/Create'
+import router from '@src/polaris/common/util/router'
+import { TAB } from '../Page'
 
 export const NoSearchResultKey = '__NO_SEARCH_RESULT__'
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
@@ -79,7 +81,7 @@ insertCSS(
 `,
 )
 
-function toHighlightLanguage(format?: string) {
+export function toHighlightLanguage(format?: string) {
   if (!format) {
     return FileFormat.TEXT
   }
@@ -207,12 +209,12 @@ export default function Page(props: DuckCmpProps<Duck>) {
                   fullExpandable
                   height={900}
                   style={{ width: '500px' }}
-                // onSelect={v => {
-                //   handlers.select(v)
-                // }}
-                // selectable
-                // selectedIds={selection}
-                // selectValueMode={'onlyLeaf'}
+                  // onSelect={v => {
+                  //   handlers.select(v)
+                  // }}
+                  // selectable
+                  // selectedIds={selection}
+                  // selectValueMode={'onlyLeaf'}
                 >
                   {renderTree(props, fileTree, '', '')}
                 </Tree>
@@ -230,7 +232,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                       }
                       operation={
                         <Link
-                          to={`/file-release-history?namespace=${currentNode.namespace}&group=${currentNode.group}&fileName=${currentNode.name}`}
+                          to={`/configuration?namespace=${currentNode.namespace}&group=${currentNode.group}&fileName=${currentNode.name}&tab=release`}
                           target={'_blank'}
                         >
                           <Text reset>查看发布历史</Text>
@@ -428,7 +430,11 @@ function renderTree(props, folder, path: string, currPath: string) {
     node = folder
   }
   const currentNode = selectors.currentNode(store)
-  const { hitPath, expandedIds } = selector(store)
+  const {
+    hitPath,
+    expandedIds,
+    data: { editable },
+  } = selector(store)
   if (!(Object.keys(node).length > 0)) {
     return <noscript />
   }
@@ -440,6 +446,7 @@ function renderTree(props, folder, path: string, currPath: string) {
         const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status, obj, props)
         const nextPath = `${currPath}${currPath ? '/' : ''}${childPath}`
         const folderIcon = expandedIds.indexOf(obj.name) > -1 ? 'folderopen' : 'folderclose'
+        const { namespace, group, name } = currentNode
         return (
           <TreeNode
             id={obj.__isDir__ ? nextPath : obj.name}
@@ -456,10 +463,33 @@ function renderTree(props, folder, path: string, currPath: string) {
                           e.stopPropagation()
                           handlers.edit(obj.name)
                         }}
+                        disabled={!editable}
                       >
                         编辑
                       </List.Item>
-                      <List.Item onClick={() => handlers.delete(obj.name)}>删除</List.Item>
+                      <List.Item
+                        onClick={e => {
+                          e.stopPropagation()
+                          router.navigate(
+                            `/filegroup-detail?namespace=${namespace}&group=${group}&fileName=${name}&tab=${TAB.Version}`,
+                          )
+                        }}
+                      >
+                        {'查看配置版本'}
+                      </List.Item>
+                      <List.Item
+                        onClick={e => {
+                          e.stopPropagation()
+                          router.navigate(
+                            `/filegroup-detail?namespace=${namespace}&group=${group}&fileName=${name}&tab=${TAB.History}`,
+                          )
+                        }}
+                      >
+                        {'查看发布历史'}
+                      </List.Item>
+                      <List.Item onClick={() => handlers.delete(obj.name)} disabled={!editable}>
+                        删除
+                      </List.Item>
                     </List>
                   </Dropdown>
                 </div>

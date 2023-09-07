@@ -1,23 +1,13 @@
-import DetailPageDuck from '@src/polaris/common/ducks/DetailPage'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
 import { select, put, takeLatest } from 'redux-saga/effects'
-
-import FileDuck from './file/PageDuck'
 import { TAB } from './Page'
-import { ConfigFileGroup } from '../types'
-import { describeConfigFileGroups } from '../model'
-import ReleaseHistoryDuck from '../../releaseHistory/PageDuck'
-import VersionDuck from './version/PageDuck'
-export interface ComposedId {
-  group: string
-  namespace: string
-}
-export default class ConfigFileDuck extends DetailPageDuck {
-  ComposedId: ComposedId
-  Data: ConfigFileGroup
+import FileGroupDuck from './fileGroup/PageDuck'
+import ReleaseDuck from './releaseHistory/PageDuck'
+import PageDuck from '../common/ducks/Page'
 
+export default class ServiceDetailDuck extends PageDuck {
   get baseUrl() {
-    return '/#/filegroup-detail'
+    return '/configuration'
   }
 
   get params() {
@@ -27,22 +17,22 @@ export default class ConfigFileDuck extends DetailPageDuck {
       {
         key: 'namespace',
         type: types.SET_NAMESPACE,
-        defaults: '',
+        selector: this.selectors.namespace,
       },
       {
         key: 'group',
         type: types.SET_GROUP_NAME,
-        defaults: '',
+        selector: this.selectors.group,
       },
       {
         key: 'fileName',
-        type: types.SET_FILE_NAME,
-        defaults: '',
+        type: types.SET_FILENAME,
+        selector: this.selectors.fileName,
       },
       {
         key: 'tab',
         type: types.SWITCH,
-        defaults: TAB.File,
+        defaults: TAB.FileGroup,
       },
     ]
   }
@@ -50,8 +40,9 @@ export default class ConfigFileDuck extends DetailPageDuck {
     enum Types {
       SWITCH,
       SET_NAMESPACE,
+      SET_SERVICE_NAME,
       SET_GROUP_NAME,
-      SET_FILE_NAME,
+      SET_FILENAME,
     }
     return {
       ...super.quickTypes,
@@ -61,19 +52,18 @@ export default class ConfigFileDuck extends DetailPageDuck {
   get quickDucks() {
     return {
       ...super.quickDucks,
-      [TAB.File]: FileDuck,
-      [TAB.Version]: VersionDuck,
-      [TAB.History]: ReleaseHistoryDuck,
+      [TAB.FileGroup]: FileGroupDuck,
+      [TAB.Release]: ReleaseDuck,
     }
   }
   get reducers() {
     const { types } = this
     return {
       ...super.reducers,
-      tab: reduceFromPayload(types.SWITCH, TAB.File),
+      tab: reduceFromPayload(types.SWITCH, TAB.FileGroup),
       namespace: reduceFromPayload(types.SET_NAMESPACE, ''),
+      fileName: reduceFromPayload(types.SET_FILENAME, ''),
       group: reduceFromPayload(types.SET_GROUP_NAME, ''),
-      fileName: reduceFromPayload(types.SET_FILE_NAME, ''),
     }
   }
   get creators() {
@@ -88,22 +78,21 @@ export default class ConfigFileDuck extends DetailPageDuck {
     return {
       ...super.rawSelectors,
       composedId: (state: State) => ({
+        fileName: state.fileName,
         group: state.group,
         namespace: state.namespace,
-        fileName: state.fileName,
       }),
       tab: (state: State) => state.tab,
+      namespace: (state: State) => state.namespace,
+      fileName: (state: State) => state.fileName,
+      group: (state: State) => state.group,
     }
   }
-  async getData(composedId: this['ComposedId']) {
-    const { group, namespace } = composedId
-    const result = await describeConfigFileGroups({
-      namespace,
-      group: group,
-      offset: 0,
-      limit: 10,
-    })
-    return result.list?.[0]
+  async getData() {
+    return {
+      list: [],
+      totalCount: 0,
+    }
   }
   *saga() {
     yield* super.saga()
@@ -112,15 +101,11 @@ export default class ConfigFileDuck extends DetailPageDuck {
   *watchTabs() {
     const duck = this
     const { types, ducks, selectors } = duck
-    yield takeLatest([types.SWITCH, types.FETCH_DONE], function*() {
+    yield takeLatest(types.SWITCH, function*() {
       const composedId = selectors.composedId(yield select())
       const tab = selectors.tab(yield select())
-      const data = selectors.data(yield select())
-      if (!composedId || !data) {
-        return
-      }
       const subDuck = ducks[tab]
-      yield put(subDuck.creators.load(composedId, data))
+      yield put(subDuck.creators.load({ ...composedId }))
     })
   }
 }

@@ -25,6 +25,9 @@ insertCSS(
 .black-placeholder-text .tea-text-weak{
   color: #000 !important;
 }
+.monitor-metric-board .tea-metrics-board__number{
+  font-size: 2rem;
+}
 `,
 )
 const tabs: Array<Tab> = [TAB.Overview, TAB.Service, TAB.Server].map(id => ({

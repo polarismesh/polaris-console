@@ -121,7 +121,7 @@ export default class CreateDuck extends FormDialog {
       selectors,
     } = this
     super.saga()
-    yield takeLatest(form.types.SET_VALUE, function* (action) {
+    yield takeLatest(form.types.SET_VALUE, function*(action) {
       if (!action.path || action.path?.indexOf('namespace') === -1) {
         return
       }

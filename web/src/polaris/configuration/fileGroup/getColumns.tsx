@@ -22,6 +22,16 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
     render: x => <Text tooltip={x.namespace}>{x.namespace || '-'}</Text>,
   },
   {
+    key: 'department',
+    header: '部门',
+    render: x => <Text tooltip={x.department}>{x.department || '-'}</Text>,
+  },
+  {
+    key: 'business',
+    header: '业务',
+    render: x => <Text tooltip={x.business}>{x.business || '-'}</Text>,
+  },
+  {
     key: 'comment',
     header: '备注',
     render: x => <Text tooltip={x.comment}>{x.comment || '-'}</Text>,
@@ -46,12 +56,16 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
             fn={dispatch => dispatch(creators.edit(x))}
             disabled={!x.editable}
             tip={!x.editable ? '无权限' : '编辑'}
-          >{'编辑'}</Action>
+          >
+            {'编辑'}
+          </Action>
           <Action
             fn={dispatch => dispatch(creators.remove(x))}
             disabled={!x.editable}
             tip={!x.editable ? '无权限' : '编辑'}
-          >{'删除'}</Action>
+          >
+            {'删除'}
+          </Action>
         </React.Fragment>
       )
     },

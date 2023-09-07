@@ -1,11 +1,20 @@
 import React, { useState } from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
-import { Button, Form, FormItem, Icon, Select } from 'tea-component'
+import { Button, Form, FormControl, FormItem, Icon, Select, Table, Text } from 'tea-component'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import ResourcePrincipalAuth from '@src/polaris/auth/user/operation/ResourcePrincipalAuth'
+import { scrollable, autotip } from 'tea-component/lib/table/addons'
+const removeArrayFieldValue = (field, index) => {
+  const newValue = field.getValue()
+  newValue.splice(index, 1)
+  field.setValue([...newValue])
+}
+const addTag = field => {
+  field.setValue([...(field.getValue() || []), { key: '', value: '' }])
+}
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -36,7 +45,14 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   } = duck
   const [showAdvance, setShowAdvance] = useState(false)
   const formApi = form.getAPI(store, dispatch)
-  const { namespace, comment, name } = formApi.getFields(['namespace', 'name', 'comment'])
+  const { namespace, comment, department, business, metadata, name } = formApi.getFields([
+    'namespace',
+    'comment',
+    'department',
+    'business',
+    'metadata',
+    'name',
+  ])
   const options = selectors.options(store)
 
   return (
@@ -62,8 +78,88 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             disabled={options?.isModify}
           />
         </FormField>
-        <FormField field={comment} label={'描述'}>
-          <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
+        <FormField field={department} label={'部门'}>
+          <Input field={department} />
+        </FormField>
+        <FormField field={business} label={'业务'}>
+          <Input field={business} />
+        </FormField>
+        <FormItem
+          label={
+            <>
+              <Text>{'标签'}</Text>
+            </>
+          }
+          message={'标签键的长度不能超过128字符，标签值的长度不能超过4096个字符'}
+        >
+          <Table
+            bordered
+            records={[...metadata.asArray()]}
+            columns={[
+              {
+                key: 'key',
+                header: '标签键',
+                render: field => {
+                  const key = field.getField('key')
+                  return (
+                    <FormControl
+                      status={key.getTouched() && key.getError() ? 'error' : null}
+                      showStatusIcon={false}
+                      style={{ display: 'inline' }}
+                      message={key.getTouched() && key.getError() ? key.getError() : null}
+                    >
+                      <Input field={key} maxLength={128}></Input>
+                    </FormControl>
+                  )
+                },
+              },
+              {
+                key: 'value',
+                header: '标签值',
+                render: field => {
+                  const value = field.getField('value')
+                  return (
+                    <FormControl
+                      status={value.getTouched() && value.getError() ? 'error' : null}
+                      showStatusIcon={false}
+                      style={{ display: 'inline' }}
+                      message={value.getTouched() && value.getError() ? value.getError() : null}
+                    >
+                      <Input field={value} maxLength={4096}></Input>
+                    </FormControl>
+                  )
+                },
+              },
+              {
+                key: 'action',
+                header: '操作',
+                render: (field, key, index) => {
+                  return (
+                    <Button
+                      type={'icon'}
+                      icon={'close'}
+                      onClick={() => removeArrayFieldValue(metadata, index)}
+                    ></Button>
+                  )
+                },
+              },
+            ]}
+            addons={[
+              scrollable({
+                maxHeight: '300px',
+              }),
+              autotip({ emptyText: '无标签' }),
+            ]}
+            bottomTip={
+              <Button onClick={() => addTag(metadata)} type={'link'}>
+                {'添加标签'}
+              </Button>
+            }
+          ></Table>
+        </FormItem>
+
+        <FormField field={comment} label={'备注'}>
+          <Input field={comment} maxLength={200} placeholder={'长度不超过200个字符'} size={'l'} />
         </FormField>
         <Button type='link' onClick={() => setShowAdvance(!showAdvance)} style={{ cursor: 'pointer' }}>
           <Icon type={showAdvance ? 'arrowup' : 'arrowdown'} />

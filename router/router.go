@@ -56,5 +56,7 @@ func Router(config *bootstrap.Config) {
 	MetricsRouter(r, config)
 
 	address := fmt.Sprintf("%v:%v", config.WebServer.ListenIP, config.WebServer.ListenPort)
-	r.Run(address)
+	if err := r.Run(address); err != nil {
+		fmt.Printf("run http server: %+v\n", err)
+	}
 }

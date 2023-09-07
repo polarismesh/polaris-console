@@ -773,9 +773,6 @@ func handleDescribeServiceInstancesMetric(discoverResp *model.DiscoverResponse, 
 				insMetric.Status = model.InstanceStatusUnHealthy
 			}
 		} else {
-			insMetric.ID = acutalIns.Id
-			insMetric.Host = acutalIns.Host
-			insMetric.Port = acutalIns.Port
 			insMetric.Status = model.InstanceStatusOffline
 			// insMetric.PutExtendInfo("offline_time", commontime.Time2String(time.Now()))
 		}
@@ -1103,12 +1100,10 @@ func describeServiceCallerMetricRequestTotal(conf *bootstrap.Config, service, na
 
 func describeServiceCallerMetricRequestTimeout(conf *bootstrap.Config, service, namespace, calleeMethod, calleeInstance,
 	start, end, step string) (map[string]map[string]map[string]float64, error) {
-
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
 		step = "60"
 	}
-
 	params := map[string]string{
 		"start": start,
 		"end":   end,

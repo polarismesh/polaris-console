@@ -8,7 +8,6 @@ import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import { replaceTags } from '../utils'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
-import BasicLayout from '@src/polaris/common/components/BaseLayout'
 
 insertCSS(
   'service',
@@ -55,13 +54,13 @@ const getHandlers = memorize(({ creators }: ConfigFileGroupDuck, dispatch) => ({
 export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
   const { duck, store, dispatch } = props
   const { selector } = duck
-  const columns = React.useMemo(() => getColumns(props), [])
+  const columns = getColumns(props)
   const handlers = getHandlers(props)
   const { tags, customFilters, namespaceList, configFileGroupList, namespace } = selector(store)
   const namespaceOptions = namespaceList.map(item => ({ text: item.name, value: item.name }))
   namespaceOptions.unshift({ text: '全部命名空间', value: '' })
   return (
-    <BasicLayout title={'发布历史'} store={store} selectors={duck.selectors} header={<></>}>
+    <>
       <Table.ActionPanel>
         <Justify
           right={
@@ -126,6 +125,6 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
         />
         <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
       </Card>
-    </BasicLayout>
+    </>
   )
 }

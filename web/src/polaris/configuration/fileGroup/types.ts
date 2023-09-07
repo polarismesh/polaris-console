@@ -9,6 +9,9 @@ export interface ConfigFileGroup {
   modifyBy: string
   fileCount: number
   editable: boolean
+  department?: string
+  business?: string
+  metadata?: ConfigFileGroupTag[]
 }
 export interface ConfigFile {
   name: string
@@ -46,6 +49,10 @@ export interface ConfigFileRelease {
   createBy: string
   modifyTime: string
   modifyBy: string
+  releaseDescription?: string
+  releaseStatus?: string
+  active: string
+  format: string
 }
 export interface ConfigFileReleaseHistory {
   id: string
@@ -64,4 +71,11 @@ export interface ConfigFileReleaseHistory {
   createBy: string
   modifyTime: string
   modifyBy: string
+  releaseDescription?: string
+  releaseStatus?: string
+  releaseReason?: string
+}
+export interface ConfigFileGroupTag {
+  key?: string
+  value?: string
 }

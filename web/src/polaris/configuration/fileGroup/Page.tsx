@@ -2,11 +2,13 @@ import React from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
 import ConfigFileGroupDuck from './PageDuck'
 import getColumns from './getColumns'
-import { Justify, Table, Button, Card, TagSearchBox, Select } from 'tea-component'
+import { Justify, Table, Button, Card, TagSearchBox, Select, Form, FormItem, FormText } from 'tea-component'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
-import BasicLayout from '@src/polaris/common/components/BaseLayout'
+import { expandable, filterable } from 'tea-component/lib/table/addons'
+import { ConfigFileGroup } from './types'
+import { showAllLabels } from '@src/polaris/service/utils'
 
 insertCSS(
   'service',
@@ -54,13 +56,14 @@ const getHandlers = memorize(({ creators }: ConfigFileGroupDuck, dispatch) => ({
 export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
   const { duck, store, dispatch } = props
   const { selector } = duck
-  const columns = React.useMemo(() => getColumns(props), [])
+  const columns = getColumns(props)
+  const [expandedKeys, setExpandedKeys] = React.useState([])
   const handlers = getHandlers(props)
   const { namespaceList, namespace } = selector(store)
   const namespaceOptions = namespaceList.map(item => ({ text: item.name, value: item.name }))
   namespaceOptions.unshift({ text: '全部命名空间', value: '' })
   return (
-    <BasicLayout title={'配置分组'} store={store} selectors={duck.selectors} header={<></>}>
+    <>
       <Table.ActionPanel>
         <Justify
           left={
@@ -110,39 +113,56 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
           duck={duck}
           dispatch={dispatch}
           store={store}
-          addons={
-            [
-              // selectable({
-              //   all: true,
-              //   value: selection,
-              //   onChange: handlers.select,
-              // }),
-              // filterable({
-              //   type: 'single',
-              //   column: 'namespace',
-              //   value: customFilters.namespace,
-              //   onChange: value => {
-              //     const replacedTags = replaceTags(NamespaceTagKey, value, tags, namespaceList, {
-              //       type: 'single',
-              //       key: NamespaceTagKey,
-              //       name: '命名空间',
-              //       values: namespaceList,
-              //     })
-              //     handlers.changeTags(replacedTags)
-              //   },
-              //   all: {
-              //     text: '全部',
-              //     value: '',
-              //   },
-              //   // 选项列表
-              //   options: namespaceList.map(item => ({ text: item.name, value: item.name })),
-              // }),
-            ]
-          }
+          addons={[
+            filterable({
+              type: 'single',
+              column: 'namespace',
+              value: namespace,
+              onChange: value => {
+                handlers.setNamespace(value)
+              },
+              all: {
+                text: '全部',
+                value: '',
+              },
+              // 选项列表
+              options: namespaceList.map(item => ({ text: item.name, value: item.name })),
+            }),
+            expandable({
+              // 已经展开的产品
+              expandedKeys,
+              // 发生展开行为时，回调更新展开键值
+              onExpandedKeysChange: keys => setExpandedKeys(keys),
+              render: (record: ConfigFileGroup) => {
+                const labelList = record.metadata
+                return (
+                  <Form>
+                    <FormItem label={'服务标签'}>
+                      <FormText>
+                        {labelList
+                          .slice(0, 5)
+                          .map(item => `${item.key}:${item.value || '-'}`)
+                          .join(' ; ') || '-'}
+                        {labelList.length > 5 && '...'}
+                        {labelList.length > 5 && (
+                          <Button onClick={() => showAllLabels(record.metadata)} type='link'>
+                            {'展示全部'}
+                          </Button>
+                        )}
+                      </FormText>
+                    </FormItem>
+                    <FormItem label={'备注'}>
+                      <FormText>{record.comment || '-'}</FormText>
+                    </FormItem>
+                  </Form>
+                )
+              },
+            }),
+          ]}
           columns={columns}
         />
         <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
       </Card>
-    </BasicLayout>
+    </>
   )
 }
