@@ -12,7 +12,14 @@ import { AuthStrategy, describeGovernanceStrategies } from '@src/polaris/auth/mo
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { isReadOnlyNamespace } from '@src/polaris/service/utils'
 import { ConfigFileGroupTag } from '../types'
-
+const convertMetadataArrayToMap = metadataArray => {
+  const metadataMap = {}
+  metadataArray.forEach(metadata => {
+    const { key, value } = metadata
+    metadataMap[key] = value
+  })
+  return metadataMap
+}
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
   isModify: boolean
@@ -51,7 +58,7 @@ export default class CreateDuck extends FormDialog {
     const { removeArray: removeGroupIds } = diffAddRemoveArray(originGroupIds, groupIds)
     const options = selectors.options(yield select())
     const values = form.selectors.values(yield select())
-    const { name, comment, namespace, department, business, configFileGroupTags } = values
+    const { name, comment, namespace, department, business, metadata: configFileGroupTags } = values
 
     if (options.isModify) {
       const { code } = yield modifyConfigFileGroup({
@@ -64,7 +71,7 @@ export default class CreateDuck extends FormDialog {
         remove_group_ids: removeGroupIds,
         department: department || undefined,
         business: business || undefined,
-        configFileGroupTags: configFileGroupTags?.length ? configFileGroupTags : undefined,
+        metadata: configFileGroupTags?.length ? convertMetadataArrayToMap(configFileGroupTags) : undefined,
       })
       return code === 200000
     } else {
@@ -74,6 +81,9 @@ export default class CreateDuck extends FormDialog {
         comment,
         user_ids: userIds,
         group_ids: groupIds,
+        department: department || undefined,
+        business: business || undefined,
+        metadata: configFileGroupTags?.length ? convertMetadataArrayToMap(configFileGroupTags) : undefined,
       })
       return code === 200000
     }
@@ -161,7 +171,7 @@ export interface Values {
   groupIds?: string[]
   department: string
   business: string
-  configFileGroupTags?: ConfigFileGroupTag[]
+  metadata?: ConfigFileGroupTag[]
 }
 class CreateForm extends Form {
   Values: Values

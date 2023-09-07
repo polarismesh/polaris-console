@@ -88,7 +88,7 @@ export const MenuConfig: MenuItemConfig = {
     {
       id: 'configuration',
       title: '配置管理',
-      icon: null,
+      icon: 'static/img/route-monitor.svg',
       featureKey: 'config',
       subMenus: null,
     },

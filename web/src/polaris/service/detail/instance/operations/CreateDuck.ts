@@ -15,7 +15,7 @@ export interface DialogOptions {
   batchEditType?: BATCH_EDIT_TYPE
 }
 export const enableNearbyString = 'internal-enable-nearby'
-const convertMetaData = (metaData: Record<string, string>): Array<KeyValuePair> => {
+export const convertMetaData = (metaData: Record<string, string>): Array<KeyValuePair> => {
   return Object.entries(metaData).map(([key, value]) => ({ key, value }))
 }
 

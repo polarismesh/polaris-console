@@ -45,12 +45,12 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   } = duck
   const [showAdvance, setShowAdvance] = useState(false)
   const formApi = form.getAPI(store, dispatch)
-  const { namespace, comment, department, business, configFileGroupTags, name } = formApi.getFields([
+  const { namespace, comment, department, business, metadata, name } = formApi.getFields([
     'namespace',
     'comment',
     'department',
     'business',
-    'configFileGroupTags',
+    'metadata',
     'name',
   ])
   const options = selectors.options(store)
@@ -94,7 +94,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         >
           <Table
             bordered
-            records={[...configFileGroupTags.asArray()]}
+            records={[...metadata.asArray()]}
             columns={[
               {
                 key: 'key',
@@ -138,7 +138,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                     <Button
                       type={'icon'}
                       icon={'close'}
-                      onClick={() => removeArrayFieldValue(configFileGroupTags, index)}
+                      onClick={() => removeArrayFieldValue(metadata, index)}
                     ></Button>
                   )
                 },
@@ -151,7 +151,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
               autotip({ emptyText: '无标签' }),
             ]}
             bottomTip={
-              <Button onClick={() => addTag(configFileGroupTags)} type={'link'}>
+              <Button onClick={() => addTag(metadata)} type={'link'}>
                 {'添加标签'}
               </Button>
             }

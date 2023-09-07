@@ -232,7 +232,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                       }
                       operation={
                         <Link
-                          to={`/file-release-history?namespace=${currentNode.namespace}&group=${currentNode.group}&fileName=${currentNode.name}`}
+                          to={`/configuration?namespace=${currentNode.namespace}&group=${currentNode.group}&fileName=${currentNode.name}&tab=release`}
                           target={'_blank'}
                         >
                           <Text reset>查看发布历史</Text>

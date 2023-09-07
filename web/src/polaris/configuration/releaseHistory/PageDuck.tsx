@@ -61,7 +61,13 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS, this.types.SET_NAMESPACE]
+    return [
+      ...super.watchTypes,
+      this.types.SEARCH,
+      this.types.SET_CUSTOM_FILTERS,
+      this.types.SET_NAMESPACE,
+      this.types.LOAD,
+    ]
   }
   get params() {
     const { types } = this
@@ -292,7 +298,6 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
 
   async getData(filters: this['Filter']) {
     const { page, count, namespace, fileName, group } = filters
-
     const result = await describeConfigFileReleaseHistories({
       limit: count,
       offset: (page - 1) * count,

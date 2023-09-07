@@ -11,7 +11,7 @@ export interface ConfigFileGroup {
   editable: boolean
   department?: string
   business?: string
-  configFileGroupTags?: ConfigFileGroupTag[]
+  metadata?: ConfigFileGroupTag[]
 }
 export interface ConfigFile {
   name: string

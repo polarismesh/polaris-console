@@ -18,6 +18,7 @@ import ExportConfigDuck from './operation/ExportConfigDuck'
 import ImportConfig from './operation/ImportConfig'
 import ImportConfigDuck from './operation/ImportConfigDuck'
 import { ComposedId } from '../Page'
+import { convertMetaData } from '@src/polaris/service/detail/instance/operations/CreateDuck'
 
 export interface ConfigFileGroupItem extends ConfigFileGroup {
   id: string
@@ -266,6 +267,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
         result.list?.map(item => ({
           ...item,
           id: item.id,
+          metadata: item.metadata ? convertMetaData(item.metadata as any) : [],
         })) || [],
     }
   }

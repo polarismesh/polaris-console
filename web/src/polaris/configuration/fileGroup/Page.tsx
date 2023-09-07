@@ -134,7 +134,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
               // 发生展开行为时，回调更新展开键值
               onExpandedKeysChange: keys => setExpandedKeys(keys),
               render: (record: ConfigFileGroup) => {
-                const labelList = record.configFileGroupTags
+                const labelList = record.metadata
                 return (
                   <Form>
                     <FormItem label={'服务标签'}>
@@ -145,7 +145,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                           .join(' ; ') || '-'}
                         {labelList.length > 5 && '...'}
                         {labelList.length > 5 && (
-                          <Button onClick={() => showAllLabels(record.configFileGroupTags)} type='link'>
+                          <Button onClick={() => showAllLabels(record.metadata)} type='link'>
                             {'展示全部'}
                           </Button>
                         )}
