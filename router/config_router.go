@@ -47,7 +47,7 @@ func ConfigRouter(r *gin.Engine, config *bootstrap.Config) {
 	// 查询配置发布列表
 	configV1.GET("configfiles/releases", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 配置发布回滚
-	configV1.GET("configfiles/releases/rollback", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	configV1.PUT("configfiles/releases/rollback", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 删除配置发布记录信息
 	configV1.GET("configfiles/releases/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 查询配置发布的版本列表

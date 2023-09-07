@@ -130,22 +130,12 @@ export interface ReleaseVersion {
 }
 
 /** 回滚配置发布 */
-export async function RollbackConfigFileReleases(params: RollbackConfigFileReleasesParams) {
+export async function RollbackConfigFileReleases(params: ConfigFileRelease[]) {
   const res = await putApiRequest<RollbackConfigFileReleasesResult>({
     action: '/config/v1/configfiles/releases/rollback',
     data: params,
   })
   return res
-}
-
-/**
- * **RollbackConfigFileReleases入参**
- *
- * 回滚配置发布
- */
-export interface RollbackConfigFileReleasesParams {
-  /** 回滚发布 */
-  rollbackConfigFileReleases: ConfigFileRelease[]
 }
 
 /**
@@ -155,7 +145,8 @@ export interface RollbackConfigFileReleasesParams {
  */
 export interface RollbackConfigFileReleasesResult {
   /** 回滚结果 */
-  result?: boolean
+  code: number
+  info: string
 }
 
 /** 删除配置发布 */
