@@ -23,7 +23,7 @@ export interface DescribeConfigFileReleaseParams {
   group: string
 
   /** 配置文件版本 */
-  releaseName: string
+  release_name: string
 
   /** 配置文件名称 */
   name: string

@@ -64,8 +64,8 @@ export default class VersionDiffDuck extends Base {
     } catch (e) {
       console.log(e)
     }
-    const { releaseVersions } = res
-    const releaseList = releaseVersions
+    const { configFileReleases } = res
+    const releaseList = configFileReleases
     yield put({
       type: this.types.SET_VERSION_LIST,
       payload: releaseList.map(item => ({
@@ -97,7 +97,7 @@ export default class VersionDiffDuck extends Base {
       const { configFileRelease } = yield DescribeConfigFileRelease({
         namespace,
         group,
-        releaseName: version,
+        release_name: version,
         name: currentRelease.fileName,
       })
       yield put({ type: types.SET_VERSION_CONFIG_MAP, payload: { ...versionMap, [version]: configFileRelease } })

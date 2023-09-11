@@ -155,7 +155,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       const { configFileRelease } = yield DescribeConfigFileRelease({
         namespace,
         group,
-        releaseName: name,
+        release_name: name,
         name: fileName,
       })
       yield VersionDiffDuck.show({ currentRelease: configFileRelease })
@@ -181,7 +181,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       const { configFileRelease } = yield DescribeConfigFileRelease({
         namespace,
         group,
-        releaseName: name,
+        release_name: name,
         name: fileName,
       })
       yield put({ type: types.SET_VERSION_CONFIG_MAP, payload: { ...versionMap, [name]: configFileRelease } })
