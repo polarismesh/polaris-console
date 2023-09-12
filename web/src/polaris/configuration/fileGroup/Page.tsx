@@ -137,7 +137,7 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                 const labelList = record.metadata
                 return (
                   <Form>
-                    <FormItem label={'服务标签'}>
+                    <FormItem label={'标签'}>
                       <FormText>
                         {labelList
                           .slice(0, 5)
