@@ -219,9 +219,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
         description: '删除后所有数据将被清除且不可恢复，请提前备份数据',
       })
       if (confirm) {
-        const result = yield DeleteConfigFileReleases({
-          configFileReleases: [{ namespace, fileName, group, releaseVersion: name }],
-        })
+        const result = yield DeleteConfigFileReleases([{ namespace, fileName, group, name: name }])
         if (result) {
           notification.success({ description: '删除成功' })
           yield put(creators.reload())
