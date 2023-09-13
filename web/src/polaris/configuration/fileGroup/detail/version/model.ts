@@ -150,22 +150,12 @@ export interface RollbackConfigFileReleasesResult {
 }
 
 /** 删除配置发布 */
-export async function DeleteConfigFileReleases(params: DeleteConfigFileReleasesParams) {
+export async function DeleteConfigFileReleases(params: ConfigFileReleaseDeletion[]) {
   const res = await apiRequest<DeleteConfigFileReleasesResult>({
     action: '/config/v1/configfiles/releases/delete',
     data: params,
   })
   return res
-}
-
-/**
- * **DeleteConfigFileReleases入参**
- *
- * 删除配置发布
- */
-export interface DeleteConfigFileReleasesParams {
-  /** 待删除配置发布详情 */
-  configFileReleases: ConfigFileReleaseDeletion[]
 }
 
 /**
@@ -189,9 +179,6 @@ export interface ConfigFileReleaseDeletion {
   /** 文件名称 */
   fileName?: string
 
-  /** 北极星版本 */
-  polarisVersion?: string
-
   /** TSF版本 */
-  releaseVersion?: string
+  name?: string
 }
