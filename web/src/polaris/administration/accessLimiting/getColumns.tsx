@@ -47,7 +47,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
   {
     key: 'method',
     header: '接口名称',
-    render: x => <Text>{x.method.value || '-'}</Text>,
+    render: x => <Text>{x.method?.value || '-'}</Text>,
   },
   {
     key: 'ctimeMtime',
