@@ -2,7 +2,7 @@ import BasicLayout from '../common/components/BaseLayout'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import ServicePageDuck, { EmptyCustomFilter } from './PageDuck'
-import { Button, Card, Justify, Table, FormItem, Form, FormText, TagSearchBox, Switch } from 'tea-component'
+import { Button, Card, Justify, Table, FormItem, Form, FormText, TagSearchBox } from 'tea-component'
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
@@ -34,6 +34,7 @@ export const DefaultServiceTagAttribute = {
 export const NamespaceTagKey = 'namespace'
 export const ServiceNameTagKey = 'serviceName'
 export const MetadataTagKey = 'serviceTag'
+export const HideEmptyServiceTagKey = 'hideEmptyService'
 
 function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
   const { duck, store } = props
@@ -80,6 +81,22 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
         )
       },
     },
+    {
+      type: 'single',
+      key: HideEmptyServiceTagKey,
+      name: '隐藏空服务',
+      values: [
+        {
+          name: '是',
+          value: true
+        },
+        {
+          name: '否',
+          value: false
+        },
+      ],
+      reusable: false,
+    }
   ]
 }
 export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
@@ -97,7 +114,6 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
       remove: payload => dispatch(creators.remove(payload)),
       setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
       changeTags: payload => dispatch(creators.changeTags(payload)),
-      setHideEmptyService: v => dispatch(creators.setHideEmptyService(v)),
     }),
     [],
   )
@@ -129,12 +145,6 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
           }
           right={
             <>
-              <Switch
-                defaultValue={false}
-                onChange={value => handlers.setHideEmptyService(value)}
-              >
-                隐藏空服务
-              </Switch>
               <TagSearchBox
                 attributes={getTagAttributes(props) as any}
                 style={{

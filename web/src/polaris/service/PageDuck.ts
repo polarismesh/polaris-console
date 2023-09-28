@@ -11,7 +11,7 @@ import { put, select } from 'redux-saga/effects'
 import { Modal, TagValue } from 'tea-component'
 import { checkAuth } from '../auth/model'
 import { KeyValuePair } from '../configuration/fileGroup/types'
-import { DefaultServiceTagAttribute, ServiceNameTagKey, MetadataTagKey } from './Page'
+import { DefaultServiceTagAttribute, ServiceNameTagKey, MetadataTagKey, HideEmptyServiceTagKey } from './Page'
 import { PolarisTokenKey } from '../common/util/common'
 import router from '../common/util/router'
 
@@ -23,6 +23,7 @@ export const EmptyCustomFilter = {
   searchMethod: 'accurate',
   department: '',
   business: '',
+  hideEmptyService: false,
 }
 
 interface Filter extends BaseFilter {
@@ -43,6 +44,7 @@ interface CustomFilters {
   searchMethod?: string
   department?: string
   business?: string
+  hideEmptyService?: boolean
 }
 
 export interface NamespaceItem extends Namespace {
@@ -75,7 +77,6 @@ export default class ServicePageDuck extends GridPageDuck {
       SET_AUTH_OPEN,
       CHANGE_TAGS,
       SET_TAGS,
-      SET_HIDE_EMPTY_SERVICE,
     }
     return {
       ...super.quickTypes,
@@ -89,20 +90,10 @@ export default class ServicePageDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS, this.types.SET_HIDE_EMPTY_SERVICE]
+    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS]
   }
   get params() {
-    return [
-      ...super.params,
-      {
-        key: 'hideEmptyService',
-        type: this.types.SET_HIDE_EMPTY_SERVICE,
-        selector: s => this.selector(s).hideEmptyService,
-        parse: v => (v === '1' || null),
-        stringify: v => v ? '1' : '',
-        defaults: false,
-      }
-    ]
+    return [...super.params]
   }
   get quickDucks() {
     return {
@@ -119,7 +110,6 @@ export default class ServicePageDuck extends GridPageDuck {
       expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
       authOpen: reduceFromPayload<boolean>(types.SET_AUTH_OPEN, false),
       tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
-      hideEmptyService: reduceFromPayload<boolean>(types.SET_HIDE_EMPTY_SERVICE, false),
     }
   }
   get creators() {
@@ -143,7 +133,6 @@ export default class ServicePageDuck extends GridPageDuck {
       setSelection: createToPayload<string[]>(types.SET_SELECTION),
       setExpandedKeys: createToPayload<string[]>(types.SET_EXPANDED_KEYS),
       changeTags: createToPayload(types.CHANGE_TAGS),
-      setHideEmptyService: createToPayload<boolean>(types.SET_HIDE_EMPTY_SERVICE),
     }
   }
   get rawSelectors() {
@@ -161,7 +150,7 @@ export default class ServicePageDuck extends GridPageDuck {
         searchMethod: state.customFilters.searchMethod,
         department: state.customFilters.department,
         business: state.customFilters.business,
-        hideEmptyService: state.hideEmptyService,
+        hideEmptyService: state.customFilters.hideEmptyService,
       }),
       customFilters: (state: State) => state.customFilters,
       selection: (state: State) => state.selection,
@@ -228,6 +217,8 @@ export default class ServicePageDuck extends GridPageDuck {
         const key = tag?.attr?.key || ServiceNameTagKey
         if (key === MetadataTagKey) {
           customFilters[key] = tag.values.map(item => ({ key: item.key, value: item.value }))
+        } else if (key === HideEmptyServiceTagKey) {
+          customFilters[key] = tag.values[0].value
         } else {
           if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
           else customFilters[key] = tag.values[0].key || tag.values[0].value
