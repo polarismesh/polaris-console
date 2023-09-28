@@ -33,6 +33,7 @@ interface Filter extends BaseFilter {
   searchMethod?: string
   department?: string
   business?: string
+  hideEmptyService?: boolean
 }
 interface CustomFilters {
   namespace?: string
@@ -74,6 +75,7 @@ export default class ServicePageDuck extends GridPageDuck {
       SET_AUTH_OPEN,
       CHANGE_TAGS,
       SET_TAGS,
+      SET_HIDE_EMPTY_SERVICE,
     }
     return {
       ...super.quickTypes,
@@ -87,10 +89,20 @@ export default class ServicePageDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS]
+    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS, this.types.SET_HIDE_EMPTY_SERVICE]
   }
   get params() {
-    return [...super.params]
+    return [
+      ...super.params,
+      {
+        key: 'hideEmptyService',
+        type: this.types.SET_HIDE_EMPTY_SERVICE,
+        selector: s => this.selector(s).hideEmptyService,
+        parse: v => (v === '1' || null),
+        stringify: v => v ? '1' : '',
+        defaults: false,
+      }
+    ]
   }
   get quickDucks() {
     return {
@@ -107,6 +119,7 @@ export default class ServicePageDuck extends GridPageDuck {
       expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
       authOpen: reduceFromPayload<boolean>(types.SET_AUTH_OPEN, false),
       tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
+      hideEmptyService: reduceFromPayload<boolean>(types.SET_HIDE_EMPTY_SERVICE, false),
     }
   }
   get creators() {
@@ -130,6 +143,7 @@ export default class ServicePageDuck extends GridPageDuck {
       setSelection: createToPayload<string[]>(types.SET_SELECTION),
       setExpandedKeys: createToPayload<string[]>(types.SET_EXPANDED_KEYS),
       changeTags: createToPayload(types.CHANGE_TAGS),
+      setHideEmptyService: createToPayload<boolean>(types.SET_HIDE_EMPTY_SERVICE),
     }
   }
   get rawSelectors() {
@@ -147,6 +161,7 @@ export default class ServicePageDuck extends GridPageDuck {
         searchMethod: state.customFilters.searchMethod,
         department: state.customFilters.department,
         business: state.customFilters.business,
+        hideEmptyService: state.hideEmptyService,
       }),
       customFilters: (state: State) => state.customFilters,
       selection: (state: State) => state.selection,
@@ -260,7 +275,7 @@ export default class ServicePageDuck extends GridPageDuck {
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, serviceTag, instanceIp, department, business } = filters
+    const { page, count, namespace, serviceTag, instanceIp, department, business, hideEmptyService } = filters
     const { key, value } = serviceTag?.[0] || {}
     const serviceName = filters.serviceName
     const result = await describeServices({
@@ -273,6 +288,7 @@ export default class ServicePageDuck extends GridPageDuck {
       host: instanceIp || undefined,
       department: department || undefined,
       business: business || undefined,
+      hide_empty_service: hideEmptyService || undefined,
     })
     return {
       totalCount: result.totalCount,

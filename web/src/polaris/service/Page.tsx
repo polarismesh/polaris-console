@@ -2,7 +2,7 @@ import BasicLayout from '../common/components/BaseLayout'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import ServicePageDuck, { EmptyCustomFilter } from './PageDuck'
-import { Button, Card, Justify, Table, FormItem, Form, FormText, TagSearchBox } from 'tea-component'
+import { Button, Card, Justify, Table, FormItem, Form, FormText, TagSearchBox, Switch } from 'tea-component'
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
@@ -97,6 +97,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
       remove: payload => dispatch(creators.remove(payload)),
       setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
       changeTags: payload => dispatch(creators.changeTags(payload)),
+      setHideEmptyService: v => dispatch(creators.setHideEmptyService(v)),
     }),
     [],
   )
@@ -128,6 +129,12 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
           }
           right={
             <>
+              <Switch
+                defaultValue={false}
+                onChange={value => handlers.setHideEmptyService(value)}
+              >
+                隐藏空服务
+              </Switch>
               <TagSearchBox
                 attributes={getTagAttributes(props) as any}
                 style={{
