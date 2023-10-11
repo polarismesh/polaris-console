@@ -1,6 +1,6 @@
 import moment from 'moment'
 import { getMonitorData } from '../models'
-import { SumUpReduceFunction, AvgReduceFunction, MaxReduceFunction, MinReduceFunction } from '../types'
+import { SumUpReduceFunction, AvgReduceFunction, MaxReduceFunction, MinReduceFunction, LatestValueReduceFunction } from '../types'
 
 export enum MetricName {
   Request = 'Request',
@@ -21,7 +21,7 @@ export const DefaultLineColors = Object.values(LineColor)
 
 export const getQueryMap = {
   [MetricName.Request]: (queryParam = {} as any) => {
-    const { calleeNamespace, calleeService, calleeMethod, calleeInstance } = queryParam
+    const { calleeNamespace, calleeService, calleeMethod, calleeInstance, step } = queryParam
     const conditionSets = {
       CalleeNamespace: calleeNamespace ? `callee_namespace="${calleeNamespace}"` : '',
       CalleeService: calleeService ? `callee_service="${calleeService}"` : '',
@@ -32,37 +32,43 @@ export const getQueryMap = {
       .filter(([, value]) => !!value)
       .map(([, value]) => value)
     const conditionString = conditions.join(',')
+    // 最小精度限制
+    let stepReq = step
+    if (stepReq < 60) {
+      stepReq = 60
+    }
     return [
       {
-        name: '总请求数',
+        name: '请求数',
         query: conditions.length
-          ? `sum(upstream_rq_total{${conditionString}}) or on() vector(0)`
-          : 'sum(upstream_rq_total) or on() vector(0)',
-        boardFunction: SumUpReduceFunction,
+            ? `sum(rate(upstream_rq_total{${conditionString}}[${stepReq}s])) or on() vector(0)`
+            : `sum(rate(upstream_rq_total{}[${stepReq}s])) or on() vector(0)`,
+        boardFunction: LatestValueReduceFunction,
         minStep: 60,
+        noLine: true,
       },
       {
         name: '成功请求数',
         query: conditions.length
-          ? `sum(upstream_rq_total{callee_result="success",${conditionString}}) or on() vector(0)`
-          : 'sum(upstream_rq_total{callee_result="success"}) or on() vector(0)',
-        boardFunction: SumUpReduceFunction,
+            ? `sum(rate(upstream_rq_total{callee_result="success",${conditionString}} [${stepReq}s])) or on() vector(0)`
+            : `sum(rate(upstream_rq_total{callee_result="success"}[${stepReq}s])) or on() vector(0)`,
+        boardFunction: LatestValueReduceFunction,
         minStep: 60,
       },
       {
         name: '限流请求数',
         query: conditions.length
-          ? `sum(upstream_rq_total{callee_result="flow_control",${conditionString}}) or on() vector(0)`
-          : 'sum(upstream_rq_total{callee_result="flow_control"}) or on() vector(0)',
-        boardFunction: SumUpReduceFunction,
+            ? `sum(rate(upstream_rq_total{callee_result="flow_control",${conditionString}}[${stepReq}s])) or on() vector(0)`
+            : `sum(rate(upstream_rq_total{callee_result="flow_control"}[${stepReq}s])) or on() vector(0)`,
+        boardFunction: LatestValueReduceFunction,
         minStep: 60,
       },
       {
         name: '熔断请求数',
         query: conditions.length
-          ? `sum(upstream_rq_total{callee_result="reject",${conditionString}}) or on() vector(0)`
-          : 'sum(upstream_rq_total{callee_result="reject"}) or on() vector(0)',
-        boardFunction: SumUpReduceFunction,
+            ? `sum(rate(upstream_rq_total{callee_result="reject",${conditionString}}[${stepReq}s])) or on() vector(0)`
+            : `sum(rate(upstream_rq_total{callee_result="reject"}[${stepReq}s])) or on() vector(0)`,
+        boardFunction: LatestValueReduceFunction,
         minStep: 60,
       },
     ]
