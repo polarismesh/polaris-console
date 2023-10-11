@@ -1271,9 +1271,13 @@ func DescribeServiceInstances(conf *bootstrap.Config) gin.HandlerFunc {
 
 		discoverResp, err := sendDiscoverRequest(ctx, conf, namespace, service, model.DiscoverRequest_INSTANCE)
 		if err != nil {
-			resp := model.NewResponse(int32(discoverResp.Code))
-			resp.Info = discoverResp.Info
-			ctx.JSON(model.CalcCode(resp.Code), resp)
+			if discoverResp != nil {
+				resp := model.NewResponse(int32(discoverResp.Code))
+				resp.Info = discoverResp.Info
+				ctx.JSON(model.CalcCode(resp.Code), resp)
+				return
+			}
+			ctx.JSON(model.CalcCode(int32(api.ExecuteException)), err.Error())
 			return
 		}
 
