@@ -279,7 +279,7 @@ export default class ServicePageDuck extends GridPageDuck {
       host: instanceIp || undefined,
       department: department || undefined,
       business: business || undefined,
-      hide_empty_service: hideEmptyService || undefined,
+      only_exist_health_instance: hideEmptyService || undefined,
     })
     return {
       totalCount: result.totalCount,

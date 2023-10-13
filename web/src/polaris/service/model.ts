@@ -11,7 +11,7 @@ export interface DescribeServicesParams {
   values?: string
   business?: string
   department?: string
-  hide_empty_service?: boolean
+  only_exist_health_instance?: boolean
 }
 export interface OperateServicesResult {
   amount: number
