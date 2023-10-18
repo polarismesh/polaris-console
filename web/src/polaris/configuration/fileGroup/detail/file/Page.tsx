@@ -78,6 +78,18 @@ insertCSS(
   .no-switcher .tea-tree__switcher{
     display:none;
   }
+  .config-editor .tea-monaco-editor-container {
+    padding-top: 50px;
+  }
+  .config-editor .tea-icon-fullscreenquit {
+    top: 65px;
+  }
+  .file-tree-container {
+    overflow-y: auto; 
+    overflow-x: hidden;
+    border: 1px solid #cfd5de;
+    border-top:none;
+  }
 `,
 )
 
@@ -174,7 +186,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
       <Card>
         <Card.Body>
           <Row showSplitLine gap={40}>
-            <div style={{ width: '450px', height: 1000, overflowY: 'hidden', margin: '15px 20px' }}>
+            <div style={{ width: '450px', height: 1002, overflowY: 'hidden', margin: '15px 20px' }}>
               <SearchBox
                 value={searchKeyword}
                 onChange={handlers.setSearchKeyword}
@@ -182,7 +194,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                 onSearch={handlers.searchPath}
                 style={{ width: '100%' }}
               />
-              <div style={{ height: 910, overflowY: 'scroll' }}>
+              <div className={'file-tree-container'}>
                 <Tree
                   activable
                   onActive={(activeIds, { nodeId }) => {
@@ -208,7 +220,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                   }}
                   fullExpandable
                   height={900}
-                  style={{ width: '500px' }}
+                  style={{ width: '450px', maxWidth: '450px' }}
                   // onSelect={v => {
                   //   handlers.select(v)
                   // }}
@@ -280,7 +292,9 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <FormItem label='加密状态'>
                               <FormText>
                                 <Text theme={currentNode.encrypted ? 'warning' : 'text'}>
-                                  {currentNode.encrypted ? `已开启加密, 加密算法为: ${currentNode.encryptAlgo}` : '未加密'}
+                                  {currentNode.encrypted
+                                    ? `已开启加密, 加密算法为: ${currentNode.encryptAlgo}`
+                                    : '未加密'}
                                 </Text>
                               </FormText>
                             </FormItem>
@@ -379,7 +393,10 @@ export default function Page(props: DuckCmpProps<Duck>) {
                           </Col>
                         </Row>
                       ) : (
-                        <section style={{ border: '1px solid #cfd5de', width: '100%' }}>
+                        <section
+                          style={{ border: '1px solid #cfd5de', width: '100%', height: '750px' }}
+                          className={'config-editor'}
+                        >
                           <MonacoEditor
                             language={toHighlightLanguage(currentNode?.format)}
                             value={editing ? editContent : currentNode?.content}
