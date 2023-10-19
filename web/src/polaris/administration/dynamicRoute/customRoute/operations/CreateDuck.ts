@@ -407,7 +407,7 @@ const validator = Form.combineValidators<Values>({
                 if (!v && data.type === RoutingArgumentsType.CALLER_IP) {
                   return '请输入IP'
                 }
-                if (!v && data.type !== RoutingArgumentsType.CALLER_IP) {
+                if (!v && data.type !== RoutingArgumentsType.CALLER_IP && data.value_value_type !== RoutingValueType.PARAMETER) {
                   return '请输入value值'
                 }
               },

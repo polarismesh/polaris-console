@@ -63,11 +63,10 @@ export const RoutingArgumentsTypeLabelMap = {
 export enum RoutingValueType {
   TEXT = 'TEXT',
   PARAMETER = 'PARAMETER',
-  VARIABLE = 'VARIABLE',
 }
 export const RoutingValueTextMap = {
   [RoutingValueType.TEXT]: '值',
-  [RoutingValueType.VARIABLE]: '变量',
+  [RoutingValueType.PARAMETER]: '变量',
 }
 export const RoutingValueTypeOptions = [
   {
@@ -76,7 +75,7 @@ export const RoutingValueTypeOptions = [
   },
   {
     text: '变量',
-    value: RoutingValueType.VARIABLE,
+    value: RoutingValueType.PARAMETER,
   },
 ]
 export const RoutingArgumentsTypeOptions = [
