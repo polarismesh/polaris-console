@@ -138,7 +138,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                 {rules?.map((rule, index) => {
                   const { sources, destinations } = rule
                   return (
-                    <Card key={index} style={{ width: 'calc(95% + 20px)', margin: '0' }} bordered>
+                    <Card key={index} style={{ width: 'calc(95% + 20px)', margin: '0 0 20px 0' }} bordered>
                       <Card.Header>
                         <Justify style={{ padding: '10px' }} left={<Text reset>{`规则${index + 1}`}</Text>}></Justify>
                       </Card.Header>
@@ -211,54 +211,86 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                         <Text parent={'div'} theme={'strong'} style={{ marginBottom: '20px' }}>
                           将转发至目标服务的以下实例分组
                         </Text>
-                        <section style={{ marginBottom: '20px' }}>
-                          {destinations?.length > 0 && (
-                            <Table
-                              verticalTop
-                              bordered
-                              records={destinations}
-                              columns={[
-                                {
-                                  key: 'labels',
-                                  header: '实例标签',
-                                  render: item => {
-                                    const { labels } = item
-                                    return (
-                                      <>
-                                        {labels.slice(0, 3).map((label, index) => getLabelTag(label, index))}
-                                        {labels.length > 3 && (
-                                          <Bubble content={labels.map((label, index) => getLabelTag(label, index))}>
-                                            <Tag>
-                                              <Button type={'icon'} icon={'more'}></Button>
-                                            </Tag>
-                                          </Bubble>
-                                        )}
-                                      </>
-                                    )
-                                  },
-                                },
-                                {
-                                  key: 'weight',
-                                  header: '权重',
-                                  width: 100,
-                                  render: item => {
-                                    const { weight } = item
-                                    return weight
-                                  },
-                                },
-                                {
-                                  key: 'isolate',
-                                  header: '是否隔离',
-                                  width: 100,
-                                  render: item => {
-                                    const { isolate } = item
-                                    return isolate ? '是' : '否'
-                                  },
-                                },
-                              ]}
-                            ></Table>
-                          )}
-                        </section>
+                        {destinations?.length > 0 &&
+                          destinations.map((destination, index) => {
+                            return (
+                              <Card style={{ marginBottom: '20px' }} key={index} bordered>
+                                <Card.Header>
+                                  <Justify
+                                    left={
+                                      <section style={{ padding: '5px 10px 5px 10px' }}>
+                                        <Text
+                                          reset
+                                          theme={'strong'}
+                                          style={{ marginRight: '10px', fontSize: '14px' }}
+                                        >{`第${index}优先级`}</Text>
+                                        <Text reset theme={'label'}>
+                                          优先级常用于容灾场景，高优先级实例故障后，路由至次优先级实例。相同优先级下分组权重加和为100。
+                                        </Text>
+                                      </section>
+                                    }
+                                  ></Justify>
+                                </Card.Header>
+                                <Card.Body>
+                                  <Table
+                                    verticalTop
+                                    bordered
+                                    records={destination}
+                                    columns={[
+                                      {
+                                        key: 'name',
+                                        header: '分组名',
+                                        width: 200,
+                                        render: item => {
+                                          const { name } = item
+                                          return name
+                                        },
+                                      },
+                                      {
+                                        key: 'weight',
+                                        header: '权重',
+                                        width: 100,
+                                        render: item => {
+                                          const { weight } = item
+                                          return weight
+                                        },
+                                      },
+                                      {
+                                        key: 'isolate',
+                                        header: '是否隔离',
+                                        width: 100,
+                                        render: item => {
+                                          const { isolate } = item
+                                          return isolate ? '是' : '否'
+                                        },
+                                      },
+                                      {
+                                        key: 'labels',
+                                        header: '实例标签',
+                                        render: item => {
+                                          const { labels } = item
+                                          return (
+                                            <>
+                                              {labels.slice(0, 3).map((label, index) => getLabelTag(label, index))}
+                                              {labels.length > 3 && (
+                                                <Bubble
+                                                  content={labels.map((label, index) => getLabelTag(label, index))}
+                                                >
+                                                  <Tag>
+                                                    <Button type={'icon'} icon={'more'}></Button>
+                                                  </Tag>
+                                                </Bubble>
+                                              )}
+                                            </>
+                                          )
+                                        },
+                                      },
+                                    ]}
+                                  ></Table>
+                                </Card.Body>
+                              </Card>
+                            )
+                          })}
                       </Card.Body>
                     </Card>
                   )

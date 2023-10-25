@@ -80,6 +80,7 @@ export interface RoutingRuleDestination {
   isolate: boolean
   labels: Record<string, RoutingLabel>
   name: string
+  priority?: number
 }
 export interface RoutingSourceArgument {
   type: string
