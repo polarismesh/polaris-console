@@ -639,527 +639,550 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               </Form>
             </Form.Item>
             <FormItem label='路由策略'>
-              {isDragging ? (
-                <DragDropContext
-                  onDragEnd={context => {
-                    const source = context.source.index
-                    const dest = context.destination.index
-                    if (source === dest) return
-                    const rulesList = rules.getValue()
-                    const [item] = rulesList.splice(source, 1)
-                    rulesList.splice(dest, 0, item)
-                    rules.setValue(rulesList)
-                    setIsDragging(false)
-                  }}
-                >
-                  <Droppable droppableId='route-drop' direction='vertical'>
-                    {provided => (
-                      <div ref={provided.innerRef} {...provided.droppableProps}>
-                        {[...rules.asArray()].map((rule, index) => {
-                          return (
-                            <Draggable key={index} draggableId={`规则${index + 1}`} index={index}>
-                              {provided => (
-                                <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                  <Card
-                                    bordered
-                                    style={{ backgroundColor: '#f8f8fa', maxWidth: '1200px', margin: '0px 0px 20px 0' }}
+              <Text theme={'label'} reset>
+                按照以下规则顺序进行匹配，可拖动调整顺序。若规则全未匹配上，则请求拒绝。
+              </Text>
+              <section style={{ marginTop: '10px' }}>
+                {isDragging ? (
+                  <DragDropContext
+                    onDragEnd={context => {
+                      const source = context.source.index
+                      const dest = context.destination.index
+                      if (source === dest) return
+                      const rulesList = rules.getValue()
+                      const [item] = rulesList.splice(source, 1)
+                      rulesList.splice(dest, 0, item)
+                      rules.setValue(rulesList)
+                      setIsDragging(false)
+                    }}
+                  >
+                    <Droppable droppableId='route-drop' direction='vertical'>
+                      {provided => (
+                        <div ref={provided.innerRef} {...provided.droppableProps}>
+                          {[...rules.asArray()].map((rule, index) => {
+                            return (
+                              <Draggable key={index} draggableId={`规则${index + 1}`} index={index}>
+                                {provided => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
                                   >
-                                    <Card.Header>
-                                      <Justify
-                                        left={
-                                          <Text reset>
-                                            <Button
-                                              type={'icon'}
-                                              icon={'drop'}
-                                              onClick={() => setIsDragging(!isDragging)}
-                                            ></Button>
-                                            {`规则${index + 1}`}
-                                          </Text>
-                                        }
-                                        style={{ padding: '10px' }}
-                                      ></Justify>
-                                    </Card.Header>
-                                  </Card>
-                                </div>
-                              )}
-                            </Draggable>
-                          )
-                        })}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-              ) : (
-                <>
-                  {[...rules.asArray()].map((rule, ruleIndex) => {
-                    const { sources: ruleSources, destinations: ruleDestinations } = rule.getFields([
-                      'sources',
-                      'destinations',
-                    ])
-                    const { arguments: argumentsField } = [...ruleSources.asArray()]?.[0]?.getFields(['arguments'])
-
-                    const filterSourceLabelList = sourceLabelList.map(item => {
-                      if (argumentsField.getValue().find(argument => argument.key === item.value)) {
-                        return { ...item, disabled: true }
-                      }
-                      return item
-                    })
-                    return (
-                      <Card
-                        bordered
-                        key={ruleIndex}
-                        style={{ backgroundColor: '#f8f8fa', maxWidth: '1200px', margin: '0px 0px 20px 0' }}
-                      >
-                        <Card.Header>
-                          <Justify
-                            left={
-                              <Text reset>
-                                <Button
-                                  type={'icon'}
-                                  icon={'drop'}
-                                  onClick={() => setIsDragging(!isDragging)}
-                                  disabled={isDestDragging}
-                                ></Button>
-                                {`规则${ruleIndex + 1}`}
-                              </Text>
-                            }
-                            right={
-                              <>
-                                <Button
-                                  type={'icon'}
-                                  icon={'plus'}
-                                  onClick={() => {
-                                    rules.asArray().splice(ruleIndex, 0, getEmptyRule())
-                                  }}
-                                ></Button>
-                                <Button
-                                  type={'icon'}
-                                  icon={'close'}
-                                  onClick={() => {
-                                    rules.asArray().remove(ruleIndex)
-                                  }}
-                                  disabled={rules.getValue()?.length === 1}
-                                ></Button>
-                              </>
-                            }
-                            style={{ padding: '10px' }}
-                          ></Justify>
-                        </Card.Header>
-                        <Card.Body>
-                          <Text parent={'div'} theme={'strong'} style={{ marginBottom: '10px', fontWeight: 700 }}>
-                            来源服务的请求满足以下匹配条件
-                          </Text>
-                          <section style={{ marginBottom: '10px' }}>
-                            <Table
-                              hideHeader
-                              verticalTop
-                              bordered
-                              bottomTip={
-                                <div>
-                                  <Icon type='plus' />
-                                  <Button
-                                    className='form-item-space'
-                                    type='link'
-                                    onClick={() => argumentsField.asArray().push(getEmptyLabel())}
-                                  >
-                                    添加
-                                  </Button>
-                                </div>
-                              }
-                              records={[...argumentsField.asArray()]}
-                              columns={[
-                                {
-                                  key: 'type',
-                                  header: '类型',
-                                  width: 200,
-                                  render: item => {
-                                    const { type, key } = item.getFields(['type', 'key'])
-                                    const validate = type.getTouched() && type.getError()
-                                    const option = RoutingArgumentsTypeOptions.find(
-                                      item => item.value === type.getValue(),
-                                    )
-                                    return (
-                                      <Bubble content={option?.text}>
-                                        <FormControl
-                                          status={validate ? 'error' : null}
-                                          message={validate ? type.getError() : ''}
-                                          showStatusIcon={false}
-                                          style={{ display: 'inline', padding: 0 }}
-                                        >
-                                          <Select
-                                            options={RoutingArgumentsTypeOptions}
-                                            value={type.getValue()}
-                                            onChange={value => {
-                                              type.setValue(RoutingArgumentsType[value])
-                                              key.setValue('')
-                                            }}
-                                            type={'simulate'}
-                                            appearance={'button'}
-                                            size={'full'}
-                                          ></Select>
-                                        </FormControl>
-                                      </Bubble>
-                                    )
-                                  },
-                                },
-                                {
-                                  key: 'key',
-                                  header: 'key',
-                                  render: item => {
-                                    return getArgumentsKeyComp(item, 'source', filterSourceLabelList)
-                                  },
-                                },
-                                {
-                                  key: 'value_type',
-                                  header: 'value_type',
-                                  width: 120,
-                                  render: item => {
-                                    const { value_type } = item.getFields(['value_type'])
-                                    return (
-                                      <Select
-                                        options={RouteLabelMatchTypeOptions}
-                                        value={value_type.getValue()}
-                                        onChange={value => value_type.setValue(value)}
-                                        type={'simulate'}
-                                        appearance={'button'}
-                                        matchButtonWidth
-                                        size={'full'}
-                                      />
-                                    )
-                                  },
-                                },
-                                {
-                                  key: 'value_value_type',
-                                  header: 'value_value_type',
-                                  width: 80,
-                                  render(item) {
-                                    const { value_value_type } = item.getFields(['value_value_type'])
-
-                                    return (
-                                      <Select
-                                        options={RoutingValueTypeOptions}
-                                        value={value_value_type.getValue()}
-                                        onChange={value => {
-                                          value_value_type.setValue(value)
-                                        }}
-                                        type={'simulate'}
-                                        appearance={'button'}
-                                        matchButtonWidth
-                                        size={'s'}
-                                      />
-                                    )
-                                  },
-                                },
-                                {
-                                  key: 'value',
-                                  header: 'value',
-                                  render: item => {
-                                    return getArgumentsValueComp(item, argumentsField, 'source')
-                                  },
-                                },
-                                {
-                                  key: 'close',
-                                  header: '',
-                                  width: 50,
-                                  render(item, rowKey, recordIndex) {
-                                    const index = Number(recordIndex)
-                                    return (
-                                      <Button
-                                        type='icon'
-                                        icon='close'
-                                        onClick={() => {
-                                          argumentsField.asArray().remove(index)
-                                        }}
-                                      />
-                                    )
-                                  },
-                                },
-                              ]}
-                              addons={[autotip({ emptyText: '无匹配条件' })]}
-                            ></Table>
-                          </section>
-                          <Text parent={'div'} theme={'strong'} style={{ marginBottom: '10px', fontWeight: 700 }}>
-                            将转发至目标服务的以下实例分组，按优先级转发，可拖动调整优先级：
-                          </Text>
-                          {isDestDragging ? (
-                            <DragDropContext
-                              onDragEnd={context => {
-                                const source = context.source.index
-                                const dest = context.destination.index
-                                if (source === dest) return
-                                const destinationList = ruleDestinations.getValue()
-                                const [item] = destinationList.splice(source, 1)
-                                destinationList.splice(dest, 0, item)
-                                ruleDestinations.setValue(destinationList)
-                                setIsDestDragging(false)
-                              }}
-                            >
-                              <Droppable droppableId='destination-drop' direction='vertical'>
-                                {destProvided => (
-                                  <div ref={destProvided.innerRef} {...destProvided.droppableProps}>
-                                    {[...ruleDestinations.asArray()].map((destination, index) => {
-                                      return (
-                                        <Draggable key={index} draggableId={`实例分组${index + 1}`} index={index}>
-                                          {destProvided => (
-                                            <div
-                                              ref={destProvided.innerRef}
-                                              {...destProvided.draggableProps}
-                                              {...destProvided.dragHandleProps}
-                                            >
-                                              <Card style={{ marginBottom: '15px' }} key={index} bordered>
-                                                <Card.Header>
-                                                  <Justify
-                                                    left={
-                                                      <section style={{ padding: '5px 10px 5px 0' }}>
-                                                        <Text
-                                                          reset
-                                                          theme={'strong'}
-                                                          style={{ marginRight: '10px', fontSize: '14px' }}
-                                                        >
-                                                          <Button
-                                                            type={'icon'}
-                                                            icon={'drop'}
-                                                            onClick={() => setIsDestDragging(!isDestDragging)}
-                                                            disabled={isDragging}
-                                                          ></Button>
-                                                          {`第${index}优先级`}
-                                                        </Text>
-                                                        <Text theme={'label'} reset>
-                                                          优先级常用于容灾场景，高优先级实例故障后，路由至次优先级实例。相同优先级下分组权重加和为100。
-                                                        </Text>
-                                                      </section>
-                                                    }
-                                                  ></Justify>
-                                                </Card.Header>
-                                              </Card>
-                                            </div>
-                                          )}
-                                        </Draggable>
-                                      )
-                                    })}
-                                    {destProvided.placeholder}
-                                  </div>
-                                )}
-                              </Droppable>
-                            </DragDropContext>
-                          ) : (
-                            <>
-                              {[...ruleDestinations.asArray()].map((destination, index) => {
-                                const groupComponent = (
-                                  <>
-                                    <Card style={{ marginBottom: '15px' }} key={index} bordered>
+                                    <Card
+                                      bordered
+                                      style={{
+                                        backgroundColor: '#f8f8fa',
+                                        maxWidth: '1200px',
+                                        margin: '0px 0px 20px 0',
+                                      }}
+                                    >
                                       <Card.Header>
                                         <Justify
                                           left={
-                                            <section style={{ padding: '5px 10px 5px 0' }}>
-                                              <Text
-                                                reset
-                                                theme={'strong'}
-                                                style={{ marginRight: '10px', fontSize: '14px' }}
-                                              >
-                                                <Button
-                                                  type={'icon'}
-                                                  icon={'drop'}
-                                                  onClick={() => setIsDestDragging(!isDestDragging)}
-                                                  disabled={isDragging}
-                                                ></Button>
-                                                {`第${index}优先级`}
-                                              </Text>
-                                              <Text theme={'label'} reset>
-                                                优先级常用于容灾场景，高优先级实例故障后，路由至次优先级实例。相同优先级下分组权重加和为100。
-                                              </Text>
-                                            </section>
+                                            <Text reset>
+                                              <Button
+                                                type={'icon'}
+                                                icon={'drop'}
+                                                onClick={() => setIsDragging(!isDragging)}
+                                              ></Button>
+                                              {`规则【${index + 1}】`}
+                                            </Text>
                                           }
-                                          right={
-                                            <Button
-                                              type={'icon'}
-                                              icon={'close'}
-                                              onClick={() => {
-                                                ruleDestinations.asArray().remove(index)
-                                              }}
-                                              disabled={ruleDestinations.getValue()?.length === 1}
-                                            ></Button>
-                                          }
+                                          style={{ padding: '10px' }}
                                         ></Justify>
                                       </Card.Header>
-                                      {!isDestDragging && (
-                                        <Card.Body>
-                                          <Table
-                                            verticalTop
-                                            bordered
-                                            records={[...destination.asArray()]}
-                                            columns={[
-                                              {
-                                                key: 'name',
-                                                header: '实例分组名称',
-                                                width: 200,
-                                                render: item => {
-                                                  const { name } = item.getFields(['name'])
-                                                  return <Input field={name} size={'m'}></Input>
+                                    </Card>
+                                  </div>
+                                )}
+                              </Draggable>
+                            )
+                          })}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
+                ) : (
+                  <>
+                    {[...rules.asArray()].map((rule, ruleIndex) => {
+                      const { sources: ruleSources, destinations: ruleDestinations } = rule.getFields([
+                        'sources',
+                        'destinations',
+                      ])
+                      const { arguments: argumentsField } = [...ruleSources.asArray()]?.[0]?.getFields(['arguments'])
+
+                      const filterSourceLabelList = sourceLabelList.map(item => {
+                        if (argumentsField.getValue().find(argument => argument.key === item.value)) {
+                          return { ...item, disabled: true }
+                        }
+                        return item
+                      })
+                      return (
+                        <Card
+                          bordered
+                          key={ruleIndex}
+                          style={{ backgroundColor: '#f8f8fa', maxWidth: '1200px', margin: '0px 0px 20px 0' }}
+                        >
+                          <Card.Header>
+                            <Justify
+                              left={
+                                <Text reset>
+                                  <Button
+                                    type={'icon'}
+                                    icon={'drop'}
+                                    onClick={() => setIsDragging(!isDragging)}
+                                    disabled={isDestDragging}
+                                  ></Button>
+                                  <Text
+                                    style={{ fontSize: '14px', fontWeight: 700, verticalAlign: 'middle' }}
+                                  >{`规则【${ruleIndex + 1}】`}</Text>
+                                </Text>
+                              }
+                              right={
+                                <>
+                                  <Button
+                                    type={'icon'}
+                                    icon={'plus'}
+                                    onClick={() => {
+                                      rules.asArray().splice(ruleIndex, 0, getEmptyRule())
+                                    }}
+                                  ></Button>
+                                  <Button
+                                    type={'icon'}
+                                    icon={'close'}
+                                    onClick={() => {
+                                      rules.asArray().remove(ruleIndex)
+                                    }}
+                                    disabled={rules.getValue()?.length === 1}
+                                  ></Button>
+                                </>
+                              }
+                              style={{ padding: '10px' }}
+                            ></Justify>
+                          </Card.Header>
+                          <Card.Body>
+                            <Text
+                              parent={'div'}
+                              theme={'strong'}
+                              style={{ marginBottom: '10px', fontWeight: 700, fontSize: '14px' }}
+                            >
+                              来源服务的请求满足以下匹配条件
+                            </Text>
+                            <section style={{ marginBottom: '10px' }}>
+                              <Table
+                                hideHeader
+                                verticalTop
+                                bordered
+                                bottomTip={
+                                  <div>
+                                    <Icon type='plus' />
+                                    <Button
+                                      className='form-item-space'
+                                      type='link'
+                                      onClick={() => argumentsField.asArray().push(getEmptyLabel())}
+                                    >
+                                      添加
+                                    </Button>
+                                  </div>
+                                }
+                                records={[...argumentsField.asArray()]}
+                                columns={[
+                                  {
+                                    key: 'type',
+                                    header: '类型',
+                                    width: 200,
+                                    render: item => {
+                                      const { type, key } = item.getFields(['type', 'key'])
+                                      const validate = type.getTouched() && type.getError()
+                                      const option = RoutingArgumentsTypeOptions.find(
+                                        item => item.value === type.getValue(),
+                                      )
+                                      return (
+                                        <Bubble content={option?.text}>
+                                          <FormControl
+                                            status={validate ? 'error' : null}
+                                            message={validate ? type.getError() : ''}
+                                            showStatusIcon={false}
+                                            style={{ display: 'inline', padding: 0 }}
+                                          >
+                                            <Select
+                                              options={RoutingArgumentsTypeOptions}
+                                              value={type.getValue()}
+                                              onChange={value => {
+                                                type.setValue(RoutingArgumentsType[value])
+                                                key.setValue('')
+                                              }}
+                                              type={'simulate'}
+                                              appearance={'button'}
+                                              size={'full'}
+                                            ></Select>
+                                          </FormControl>
+                                        </Bubble>
+                                      )
+                                    },
+                                  },
+                                  {
+                                    key: 'key',
+                                    header: 'key',
+                                    render: item => {
+                                      return getArgumentsKeyComp(item, 'source', filterSourceLabelList)
+                                    },
+                                  },
+                                  {
+                                    key: 'value_type',
+                                    header: 'value_type',
+                                    width: 120,
+                                    render: item => {
+                                      const { value_type } = item.getFields(['value_type'])
+                                      return (
+                                        <Select
+                                          options={RouteLabelMatchTypeOptions}
+                                          value={value_type.getValue()}
+                                          onChange={value => value_type.setValue(value)}
+                                          type={'simulate'}
+                                          appearance={'button'}
+                                          matchButtonWidth
+                                          size={'full'}
+                                        />
+                                      )
+                                    },
+                                  },
+                                  {
+                                    key: 'value_value_type',
+                                    header: 'value_value_type',
+                                    width: 80,
+                                    render(item) {
+                                      const { value_value_type } = item.getFields(['value_value_type'])
+
+                                      return (
+                                        <Select
+                                          options={RoutingValueTypeOptions}
+                                          value={value_value_type.getValue()}
+                                          onChange={value => {
+                                            value_value_type.setValue(value)
+                                          }}
+                                          type={'simulate'}
+                                          appearance={'button'}
+                                          matchButtonWidth
+                                          size={'s'}
+                                        />
+                                      )
+                                    },
+                                  },
+                                  {
+                                    key: 'value',
+                                    header: 'value',
+                                    render: item => {
+                                      return getArgumentsValueComp(item, argumentsField, 'source')
+                                    },
+                                  },
+                                  {
+                                    key: 'close',
+                                    header: '',
+                                    width: 50,
+                                    render(item, rowKey, recordIndex) {
+                                      const index = Number(recordIndex)
+                                      return (
+                                        <Button
+                                          type='icon'
+                                          icon='close'
+                                          onClick={() => {
+                                            argumentsField.asArray().remove(index)
+                                          }}
+                                        />
+                                      )
+                                    },
+                                  },
+                                ]}
+                                addons={[autotip({ emptyText: '无匹配条件' })]}
+                              ></Table>
+                            </section>
+                            <Text
+                              parent={'div'}
+                              theme={'strong'}
+                              style={{ marginBottom: '10px', fontWeight: 700, fontSize: '14px' }}
+                            >
+                              将转发至目标服务的以下实例分组，按优先级转发，可拖动调整优先级：
+                            </Text>
+                            {isDestDragging ? (
+                              <DragDropContext
+                                onDragEnd={context => {
+                                  const source = context.source.index
+                                  const dest = context.destination.index
+                                  if (source === dest) return
+                                  const destinationList = ruleDestinations.getValue()
+                                  const [item] = destinationList.splice(source, 1)
+                                  destinationList.splice(dest, 0, item)
+                                  ruleDestinations.setValue(destinationList)
+                                  setIsDestDragging(false)
+                                }}
+                              >
+                                <Droppable droppableId='destination-drop' direction='vertical'>
+                                  {destProvided => (
+                                    <div ref={destProvided.innerRef} {...destProvided.droppableProps}>
+                                      {[...ruleDestinations.asArray()].map((destination, index) => {
+                                        return (
+                                          <Draggable key={index} draggableId={`实例分组${index + 1}`} index={index}>
+                                            {destProvided => (
+                                              <div
+                                                ref={destProvided.innerRef}
+                                                {...destProvided.draggableProps}
+                                                {...destProvided.dragHandleProps}
+                                              >
+                                                <Card style={{ marginBottom: '15px' }} key={index} bordered>
+                                                  <Card.Header>
+                                                    <Justify
+                                                      left={
+                                                        <section style={{ padding: '5px 10px 5px 0' }}>
+                                                          <Text
+                                                            reset
+                                                            theme={'strong'}
+                                                            style={{ marginRight: '10px', fontSize: '14px' }}
+                                                          >
+                                                            <Button
+                                                              type={'icon'}
+                                                              icon={'drop'}
+                                                              onClick={() => setIsDestDragging(!isDestDragging)}
+                                                              disabled={isDragging}
+                                                            ></Button>
+                                                            {`第【${index}】优先级`}
+                                                          </Text>
+                                                          <Text theme={'label'} reset>
+                                                            优先级常用于容灾场景，高优先级实例故障后，路由至次优先级实例。相同优先级下分组权重加和为100。
+                                                          </Text>
+                                                        </section>
+                                                      }
+                                                    ></Justify>
+                                                  </Card.Header>
+                                                </Card>
+                                              </div>
+                                            )}
+                                          </Draggable>
+                                        )
+                                      })}
+                                      {destProvided.placeholder}
+                                    </div>
+                                  )}
+                                </Droppable>
+                              </DragDropContext>
+                            ) : (
+                              <>
+                                {[...ruleDestinations.asArray()].map((destination, index) => {
+                                  const groupComponent = (
+                                    <>
+                                      <Card style={{ marginBottom: '15px' }} key={index} bordered>
+                                        <Card.Header>
+                                          <Justify
+                                            left={
+                                              <section style={{ padding: '5px 10px 5px 0' }}>
+                                                <Text
+                                                  reset
+                                                  theme={'strong'}
+                                                  style={{ marginRight: '10px', fontSize: '14px' }}
+                                                >
+                                                  <Button
+                                                    type={'icon'}
+                                                    icon={'drop'}
+                                                    onClick={() => setIsDestDragging(!isDestDragging)}
+                                                    disabled={isDragging}
+                                                  ></Button>
+                                                  {`第【${index}】优先级`}
+                                                </Text>
+                                                <Text theme={'label'} reset>
+                                                  优先级常用于容灾场景，高优先级实例故障后，路由至次优先级实例。相同优先级下分组权重加和为100。
+                                                </Text>
+                                              </section>
+                                            }
+                                            right={
+                                              <Button
+                                                type={'icon'}
+                                                icon={'close'}
+                                                onClick={() => {
+                                                  ruleDestinations.asArray().remove(index)
+                                                }}
+                                                disabled={ruleDestinations.getValue()?.length === 1}
+                                              ></Button>
+                                            }
+                                          ></Justify>
+                                        </Card.Header>
+                                        {!isDestDragging && (
+                                          <Card.Body>
+                                            <Table
+                                              verticalTop
+                                              bordered
+                                              records={[...destination.asArray()]}
+                                              columns={[
+                                                {
+                                                  key: 'name',
+                                                  header: '实例分组名称',
+                                                  width: 200,
+                                                  render: item => {
+                                                    const { name } = item.getFields(['name'])
+                                                    return <Input field={name} size={'m'}></Input>
+                                                  },
                                                 },
-                                              },
-                                              {
-                                                key: 'weight',
-                                                header: (
-                                                  <>
-                                                    权重
-                                                    <Bubble content={'相对权重，数值范围：0-100'}>
-                                                      <Icon type={'info'}></Icon>
-                                                    </Bubble>
-                                                  </>
-                                                ),
-                                                width: 150,
-                                                render: item => {
-                                                  const { weight } = item.getFields(['weight'])
-                                                  const validate = weight.getTouched() && weight.getError()
-                                                  return (
-                                                    <FormControl
-                                                      status={validate ? 'error' : null}
-                                                      message={validate ? weight.getError() : ''}
-                                                      showStatusIcon={false}
-                                                      style={{ display: 'inline', padding: 0 }}
-                                                    >
-                                                      <InputNumber
-                                                        field={weight}
-                                                        hideButton
-                                                        min={0}
-                                                        max={100}
-                                                      ></InputNumber>
-                                                    </FormControl>
-                                                  )
+                                                {
+                                                  key: 'weight',
+                                                  header: (
+                                                    <>
+                                                      权重
+                                                      <Bubble content={'相对权重，数值范围：0-100'}>
+                                                        <Icon type={'info'}></Icon>
+                                                      </Bubble>
+                                                    </>
+                                                  ),
+                                                  width: 150,
+                                                  render: item => {
+                                                    const { weight } = item.getFields(['weight'])
+                                                    const validate = weight.getTouched() && weight.getError()
+                                                    return (
+                                                      <FormControl
+                                                        status={validate ? 'error' : null}
+                                                        message={validate ? weight.getError() : ''}
+                                                        showStatusIcon={false}
+                                                        style={{ display: 'inline', padding: 0 }}
+                                                      >
+                                                        <InputNumber
+                                                          field={weight}
+                                                          hideButton
+                                                          min={0}
+                                                          max={100}
+                                                        ></InputNumber>
+                                                      </FormControl>
+                                                    )
+                                                  },
                                                 },
-                                              },
-                                              {
-                                                key: 'isolate',
-                                                header: '是否隔离',
-                                                width: 100,
-                                                render: item => {
-                                                  const { isolate } = item.getFields(['isolate'])
-                                                  return (
-                                                    <Checkbox
-                                                      value={isolate.getValue()}
-                                                      onChange={v => isolate.setValue(v)}
-                                                      style={{ marginTop: '6px' }}
-                                                    ></Checkbox>
-                                                  )
+                                                {
+                                                  key: 'isolate',
+                                                  header: '是否隔离',
+                                                  width: 100,
+                                                  render: item => {
+                                                    const { isolate } = item.getFields(['isolate'])
+                                                    return (
+                                                      <Checkbox
+                                                        value={isolate.getValue()}
+                                                        onChange={v => isolate.setValue(v)}
+                                                        style={{ marginTop: '6px' }}
+                                                      ></Checkbox>
+                                                    )
+                                                  },
                                                 },
-                                              },
-                                              {
-                                                key: 'labels',
-                                                header: '实例标签',
-                                                render: (item, _, recordIndex) => {
-                                                  const { labels } = item.getFields(['labels'])
-                                                  const validate = labels.getTouched() && labels.getError()
-                                                  const labelFieldArray = [...labels.asArray()]
-                                                  return (
-                                                    <FormControl
-                                                      status={validate ? 'error' : null}
-                                                      message={validate ? labels.getError() : ''}
-                                                      showStatusIcon={false}
-                                                      style={{ display: 'inline', padding: 0 }}
-                                                    >
-                                                      {labelFieldArray
-                                                        .slice(0, 3)
-                                                        .map((labelField, index) =>
-                                                          getLabelTag(labelField.getValue(), index, labels),
-                                                        )}
-                                                      {labels.getValue()?.length > 3 && (
-                                                        <Bubble
-                                                          content={labelFieldArray.map((labelField, index) =>
+                                                {
+                                                  key: 'labels',
+                                                  header: '实例标签',
+                                                  render: (item, _, recordIndex) => {
+                                                    const { labels } = item.getFields(['labels'])
+                                                    const validate = labels.getTouched() && labels.getError()
+                                                    const labelFieldArray = [...labels.asArray()]
+                                                    return (
+                                                      <FormControl
+                                                        status={validate ? 'error' : null}
+                                                        message={validate ? labels.getError() : ''}
+                                                        showStatusIcon={false}
+                                                        style={{ display: 'inline', padding: 0 }}
+                                                      >
+                                                        {labelFieldArray
+                                                          .slice(0, 3)
+                                                          .map((labelField, index) =>
                                                             getLabelTag(labelField.getValue(), index, labels),
                                                           )}
-                                                          trigger={'click'}
-                                                        >
-                                                          <Button type={'icon'} icon={'more'}></Button>
-                                                        </Bubble>
-                                                      )}
-                                                      <Tag style={{ padding: 0, margin: 0 }}>
-                                                        <RouteLabelSelectPanel
-                                                          labelsField={labels}
-                                                          argumentsField={argumentsField}
-                                                          id={`${ruleIndex}-${index}-${recordIndex}`}
-                                                        />
-                                                      </Tag>
-                                                    </FormControl>
-                                                  )
+                                                        {labels.getValue()?.length > 3 && (
+                                                          <Bubble
+                                                            content={labelFieldArray.map((labelField, index) =>
+                                                              getLabelTag(labelField.getValue(), index, labels),
+                                                            )}
+                                                            trigger={'click'}
+                                                          >
+                                                            <Button type={'icon'} icon={'more'}></Button>
+                                                          </Bubble>
+                                                        )}
+                                                        <Tag style={{ padding: 0, margin: 0 }}>
+                                                          <RouteLabelSelectPanel
+                                                            labelsField={labels}
+                                                            argumentsField={argumentsField}
+                                                            id={`${ruleIndex}-${index}-${recordIndex}`}
+                                                          />
+                                                        </Tag>
+                                                      </FormControl>
+                                                    )
+                                                  },
                                                 },
-                                              },
-                                              {
-                                                key: 'close',
-                                                header: '',
-                                                width: 50,
-                                                render(item, rowKey, recordIndex) {
-                                                  const index = Number(recordIndex)
-                                                  return (
-                                                    <Button
-                                                      type='icon'
-                                                      icon='close'
-                                                      onClick={() => {
-                                                        destination.asArray().remove(index)
-                                                      }}
-                                                    />
-                                                  )
+                                                {
+                                                  key: 'close',
+                                                  header: '',
+                                                  width: 50,
+                                                  render(item, rowKey, recordIndex) {
+                                                    const index = Number(recordIndex)
+                                                    return (
+                                                      <Button
+                                                        type='icon'
+                                                        icon='close'
+                                                        onClick={() => {
+                                                          destination.asArray().remove(index)
+                                                        }}
+                                                      />
+                                                    )
+                                                  },
                                                 },
-                                              },
-                                            ]}
-                                            addons={[autotip({ emptyText: '无匹配条件' })]}
-                                          ></Table>
-                                          <div style={{ marginTop: '8px' }}>
-                                            <Icon type='plus' />
-                                            <Button
-                                              className='form-item-space'
-                                              type='link'
-                                              onClick={() =>
-                                                destination
-                                                  .asArray()
-                                                  .push(getEmptyDestination(destination.getValue().length))
-                                              }
-                                              disabled={destination.getValue().length >= 10}
-                                            >
-                                              添加实例分组
-                                            </Button>
-                                          </div>
-                                        </Card.Body>
-                                      )}
-                                    </Card>
-                                  </>
-                                )
-                                if (isDestDragging) {
-                                  return (
-                                    <Draggable key={index} draggableId={`实例分组${index + 1}`} index={index}>
-                                      {destProvided => (
-                                        <div
-                                          ref={destProvided.innerRef}
-                                          {...destProvided.draggableProps}
-                                          {...destProvided.dragHandleProps}
-                                        >
-                                          {groupComponent}
-                                        </div>
-                                      )}
-                                    </Draggable>
+                                              ]}
+                                              addons={[autotip({ emptyText: '无匹配条件' })]}
+                                            ></Table>
+                                            <div style={{ marginTop: '8px' }}>
+                                              <Icon type='plus' />
+                                              <Button
+                                                className='form-item-space'
+                                                type='link'
+                                                onClick={() =>
+                                                  destination
+                                                    .asArray()
+                                                    .push(getEmptyDestination(destination.getValue().length))
+                                                }
+                                                disabled={destination.getValue().length >= 10}
+                                              >
+                                                添加实例分组
+                                              </Button>
+                                            </div>
+                                          </Card.Body>
+                                        )}
+                                      </Card>
+                                    </>
                                   )
-                                }
-                                return groupComponent
-                              })}
-                            </>
-                          )}
-                          <div style={{ marginTop: '8px' }}>
-                            <Icon type='plus' />
-                            <Button
-                              className='form-item-space'
-                              type='link'
-                              onClick={() => ruleDestinations.asArray().push([getEmptyDestination(0)])}
-                            >
-                              添加次优先级
-                            </Button>
-                          </div>
-                        </Card.Body>
-                      </Card>
-                    )
-                  })}
-                </>
-              )}
+                                  if (isDestDragging) {
+                                    return (
+                                      <Draggable key={index} draggableId={`实例分组${index + 1}`} index={index}>
+                                        {destProvided => (
+                                          <div
+                                            ref={destProvided.innerRef}
+                                            {...destProvided.draggableProps}
+                                            {...destProvided.dragHandleProps}
+                                          >
+                                            {groupComponent}
+                                          </div>
+                                        )}
+                                      </Draggable>
+                                    )
+                                  }
+                                  return groupComponent
+                                })}
+                              </>
+                            )}
+                            <div style={{ marginTop: '8px' }}>
+                              <Icon type='plus' />
+                              <Button
+                                className='form-item-space'
+                                type='link'
+                                onClick={() => ruleDestinations.asArray().push([getEmptyDestination(0)])}
+                              >
+                                添加次优先级
+                              </Button>
+                            </div>
+                          </Card.Body>
+                        </Card>
+                      )
+                    })}
+                  </>
+                )}
+              </section>
               <div style={{ marginTop: '8px' }}>
                 <Icon type='plus' />
                 <Button className='form-item-space' type='link' onClick={() => rules.asArray().push(getEmptyRule())}>

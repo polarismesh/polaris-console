@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { useState } from 'react'
 import { memorize, DuckCmpProps } from 'saga-duck'
 import Duck from './PageDuck'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
@@ -89,6 +88,7 @@ insertCSS(
     overflow-x: hidden;
     border: 1px solid #cfd5de;
     border-top:none;
+    height:100%;
   }
 `,
 )
@@ -272,22 +272,26 @@ export default function Page(props: DuckCmpProps<Duck>) {
                               <FormText>{currentNode.releaseTime || '-'}</FormText>
                             </FormItem>
                             <FormItem label='标签'>
-                              <FormText>
-                                <Bubble
-                                  placement={'right'}
-                                  content={
-                                    <>
-                                      {currentNode.tags?.map(item => (
+                              <Bubble
+                                placement={'right'}
+                                content={
+                                  currentNode.tags.length > 3
+                                    ? currentNode.tags?.map(item => (
                                         <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
-                                      ))}
-                                    </>
-                                  }
-                                >
-                                  <Text overflow>
-                                    {currentNode.tags?.map(item => `${item.key}:${item.value}`).join(',') || '-'}
+                                      ))
+                                    : null
+                                }
+                              >
+                                <FormText>
+                                  <Text overflow style={{ width: '100%' }}>
+                                    {currentNode.tags
+                                      ?.slice(0, 3)
+                                      ?.map(item => `${item.key}:${item.value}`)
+                                      .join(',') || '-'}
+                                    {currentNode.tags?.length > 3 ? '...' : ''}
                                   </Text>
-                                </Bubble>
-                              </FormText>
+                                </FormText>
+                              </Bubble>
                             </FormItem>
                             <FormItem label='加密状态'>
                               <FormText>
