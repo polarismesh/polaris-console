@@ -200,6 +200,8 @@ type jwtClaims struct {
 
 // parseJWTThenSetToken 从jwt中抽取userID 和 token
 func parseJWTThenSetToken(c *gin.Context, conf *bootstrap.Config) (string, string, error) {
+	receiveUserId := c.Request.Header.Get("x-polaris-user")
+
 	jwtCookie, _ := c.Request.Cookie("jwt")
 	if jwtCookie == nil {
 		return "", "", nil
@@ -215,6 +217,10 @@ func parseJWTThenSetToken(c *gin.Context, conf *bootstrap.Config) (string, strin
 	if !ok || !token.Valid || claims.UserID == "" {
 		return "", "", errors.New("jwt token is invalid")
 	}
+	if receiveUserId != claims.UserID {
+		return "", "", errors.New("Login information comparison failed. Maybe the login information came from illegal injection.")
+	}
+
 	c.Request.Header.Set("x-polaris-user", claims.UserID)
 	c.Request.Header.Set("x-polaris-token", claims.Token)
 	return claims.UserID, claims.Token, nil
