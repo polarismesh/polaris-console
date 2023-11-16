@@ -177,7 +177,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
                   delete curr.key
                   return map
                 }, {}) as any,
-                priority: group.priority || rule.destinations.length - index,
+                priority: group.priority || index,
               })),
             )
             .reduce((prev, curr) => {
