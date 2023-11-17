@@ -325,6 +325,7 @@ export default function Overview(props: Props) {
                   calleeService: service,
                   calleeMethod: interfaceName,
                   calleeInstance: currentInstance?.ip,
+                  step: step,
                 })}
                 cardProps={{ bordered: true }}
                 cardBodyProps={{ title: '服务请求数' }}

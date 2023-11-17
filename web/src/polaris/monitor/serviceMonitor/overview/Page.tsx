@@ -12,6 +12,22 @@ import { FilterType } from '../Page'
 interface Props extends DuckCmpProps<BaseInfoDuck> {
   filterMap: Record<string, React.ReactNode>
 }
+
+function getButtonValue(step: React.ReactNode): string {
+    if (typeof step === 'string') {
+        return step;
+    } else if (React.isValidElement(step)) {
+        const selectElement = step as React.ReactElement;
+        if (React.isValidElement(selectElement.props.children)) {
+            const buttonElement = selectElement.props.children as React.ReactElement;
+            if (typeof buttonElement.props.value === 'string') {
+                return buttonElement.props.value;
+            }
+        }
+    }
+    return '';
+}
+
 export default function Overview(props: Props) {
   const { duck, store, filterMap, dispatch } = props
   const { selector, creators } = duck
@@ -43,7 +59,7 @@ export default function Overview(props: Props) {
         <Col span={12}>
           <MetricCard
             {...basicQueryParam}
-            query={getQueryMap[MetricName.Request]({ calleeNamespace: namespace })}
+            query={getQueryMap[MetricName.Request]({ calleeNamespace: namespace, step: getButtonValue(filterMap[FilterType.Step]) })}
             cardProps={{ bordered: true }}
             cardBodyProps={{ title: '服务请求数' }}
           ></MetricCard>
