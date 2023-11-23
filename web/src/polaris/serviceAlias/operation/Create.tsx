@@ -63,6 +63,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
 
         <FormField field={service} label={'指向服务'} required>
           <Select
+            searchable
             value={service.getValue()}
             options={options.serviceList}
             onChange={(value, context: any) => {

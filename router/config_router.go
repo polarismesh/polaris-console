@@ -40,9 +40,18 @@ func ConfigRouter(r *gin.Engine, config *bootstrap.Config) {
 	configV1.PUT("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	configV1.DELETE("configfiles", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	configV1.DELETE("configfiles/batchdelete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
-	// 配置文件发布
+	// 发布配置文件
 	configV1.POST("configfiles/release", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 查询单个配置发布信息
 	configV1.GET("configfiles/release", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 查询配置发布列表
+	configV1.GET("configfiles/releases", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 配置发布回滚
+	configV1.PUT("configfiles/releases/rollback", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 删除配置发布记录信息
+	configV1.POST("configfiles/releases/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 查询配置发布的版本列表
+	configV1.GET("configfiles/release/versions", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 配置文件发布历史
 	configV1.GET("configfiles/releasehistory", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	//配置文件模板

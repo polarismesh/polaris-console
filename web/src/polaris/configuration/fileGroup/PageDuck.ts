@@ -17,6 +17,8 @@ import ExportConfig from './operation/ExportConfig'
 import ExportConfigDuck from './operation/ExportConfigDuck'
 import ImportConfig from './operation/ImportConfig'
 import ImportConfigDuck from './operation/ImportConfigDuck'
+import { ComposedId } from '../Page'
+import { convertMetaData } from '@src/polaris/service/detail/instance/operations/CreateDuck'
 
 export interface ConfigFileGroupItem extends ConfigFileGroup {
   id: string
@@ -89,6 +91,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       customFilters: reduceFromPayload<CustomFilters>(types.SET_CUSTOM_FILTERS, EmptyCustomFilter),
       namespaceList: reduceFromPayload<NamespaceItem[]>(types.SET_NAMESPACE_LIST, []),
       namespace: reduceFromPayload<string>(types.SET_NAMESPACE, ''),
+      composedId: reduceFromPayload(types.LOAD, {} as ComposedId),
     }
   }
   get creators() {
@@ -100,10 +103,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
       create: createToPayload<void>(types.CREATE),
       exportConfig: createToPayload<void>(types.EXPORT_CONFIG),
       importConfig: createToPayload(types.IMPORT_CONFIG),
-      load: (composedId, data) => ({
-        type: types.LOAD,
-        payload: { composedId, data },
-      }),
+      load: createToPayload<ComposedId>(types.LOAD),
       select: createToPayload<string[]>(types.SELECT),
       setCustomFilters: createToPayload<CustomFilters>(types.SET_CUSTOM_FILTERS),
       changeTags: createToPayload(types.CHANGE_TAGS),
@@ -267,6 +267,7 @@ export default class ConfigFileGroupDuck extends GridPageDuck {
         result.list?.map(item => ({
           ...item,
           id: item.id,
+          metadata: item.metadata ? convertMetaData(item.metadata as any) : [],
         })) || [],
     }
   }

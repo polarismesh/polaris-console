@@ -115,12 +115,12 @@ export const getQueryMap = {
         name: '均值',
         query:
           interfaceName && podName
-            ? `avg(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+            ? `avg(client_rq_timeout_avg{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `avg(client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
+            ? `avg(client_rq_timeout_avg{api=~"${interfaceName}"}) or on() vector(0)`
             : podName
-            ? `avg(client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
-            : `avg(client_rq_timeout) or on() vector(0)`,
+            ? `avg(client_rq_timeout_avg{polaris_server_instance="${podName}"}) or on() vector(0)`
+            : `avg(client_rq_timeout_avg) or on() vector(0)`,
         boardFunction: AvgReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -130,12 +130,12 @@ export const getQueryMap = {
         name: '最大值',
         query:
           interfaceName && podName
-            ? `max(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+            ? `max(client_rq_timeout_avg{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `max(client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
+            ? `max(client_rq_timeout_avg{api=~"${interfaceName}"}) or on() vector(0)`
             : podName
-            ? `max(client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
-            : `max(client_rq_timeout) or on() vector(0)`,
+            ? `max(client_rq_timeout_avg{polaris_server_instance="${podName}"}) or on() vector(0)`
+            : `max(client_rq_timeout_avg) or on() vector(0)`,
         boardFunction: MaxReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -145,12 +145,12 @@ export const getQueryMap = {
         name: '最小值',
         query:
           interfaceName && podName
-            ? `min(client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+            ? `min(client_rq_timeout_avg{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `min(client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
+            ? `min(client_rq_timeout_avg{api=~"${interfaceName}"}) or on() vector(0)`
             : podName
-            ? `min(client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
-            : `min(client_rq_timeout) or on() vector(0)`,
+            ? `min(client_rq_timeout_avg{polaris_server_instance="${podName}"}) or on() vector(0)`
+            : `min(client_rq_timeout_avg) or on() vector(0)`,
         boardFunction: MinReduceFunction,
         unit: 'ms',
         minStep: 60,
@@ -160,12 +160,12 @@ export const getQueryMap = {
         name: 'P99',
         query:
           interfaceName && podName
-            ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+            ? `quantile(0.99, client_rq_timeout_avg{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
+            ? `quantile(0.99, client_rq_timeout_avg{api=~"${interfaceName}"}) or on() vector(0)`
             : podName
-            ? `quantile(0.99, client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
-            : `quantile(0.99, client_rq_timeout) or on() vector(0)`,
+            ? `quantile(0.99, client_rq_timeout_avg{polaris_server_instance="${podName}"}) or on() vector(0)`
+            : `quantile(0.99, client_rq_timeout_avg) or on() vector(0)`,
         asyncBoardFunction: async () => {
           const res = await getMonitorData({
             start,
@@ -173,12 +173,12 @@ export const getQueryMap = {
             step: interval,
             query:
               interfaceName && podName
-                ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+                ? `quantile(0.99, client_rq_timeout_avg{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
                 : interfaceName
-                ? `quantile(0.99, client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
+                ? `quantile(0.99, client_rq_timeout_avg{api=~"${interfaceName}"}) or on() vector(0)`
                 : podName
-                ? `quantile(0.99, client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
-                : `quantile(0.99, client_rq_timeout) or on() vector(0)`,
+                ? `quantile(0.99, client_rq_timeout_avg{polaris_server_instance="${podName}"}) or on() vector(0)`
+                : `quantile(0.99, client_rq_timeout_avg) or on() vector(0)`,
           })
           const point = res?.[0]?.values?.[0]
           if (!point) return '-'
@@ -193,12 +193,12 @@ export const getQueryMap = {
         name: 'P95',
         query:
           interfaceName && podName
-            ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+            ? `quantile(0.95, client_rq_timeout_avg{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
             : interfaceName
-            ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
+            ? `quantile(0.95, client_rq_timeout_avg{api=~"${interfaceName}"}) or on() vector(0)`
             : podName
-            ? `quantile(0.95, client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
-            : `quantile(0.95, client_rq_timeout) or on() vector(0)`,
+            ? `quantile(0.95, client_rq_timeout_avg{polaris_server_instance="${podName}"}) or on() vector(0)`
+            : `quantile(0.95, client_rq_timeout_avg) or on() vector(0)`,
         asyncBoardFunction: async () => {
           const res = await getMonitorData({
             start,
@@ -206,12 +206,12 @@ export const getQueryMap = {
             step: interval,
             query:
               interfaceName && podName
-                ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
+                ? `quantile(0.95, client_rq_timeout_avg{api=~"${interfaceName}",polaris_server_instance="${podName}"}) or on() vector(0)`
                 : interfaceName
-                ? `quantile(0.95, client_rq_timeout{api=~"${interfaceName}"}) or on() vector(0)`
+                ? `quantile(0.95, client_rq_timeout_avg{api=~"${interfaceName}"}) or on() vector(0)`
                 : podName
-                ? `quantile(0.95, client_rq_timeout{polaris_server_instance="${podName}"}) or on() vector(0)`
-                : `quantile(0.95, client_rq_timeout) or on() vector(0)`,
+                ? `quantile(0.95, client_rq_timeout_avg{polaris_server_instance="${podName}"}) or on() vector(0)`
+                : `quantile(0.95, client_rq_timeout_avg) or on() vector(0)`,
           })
           const point = res?.[0]?.values?.[0]
           if (!point) return '-'

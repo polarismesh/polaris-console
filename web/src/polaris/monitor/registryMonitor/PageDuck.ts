@@ -126,6 +126,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
         namespace: state.namespace,
       }),
       tab: (state: State) => state.tab,
+      loading: () => false, //避免重新绘制页面，关闭全局loading提示
     }
   }
   async getData() {

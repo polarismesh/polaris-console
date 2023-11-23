@@ -18,7 +18,7 @@ import { EditType } from './Create'
 import PageDuck from '@src/polaris/common/ducks/Page'
 import DynamicDuck from '@src/polaris/common/ducks/DynamicDuck'
 
-const convertMetadataMapInArray = o => {
+export const convertMetadataMapInArray = o => {
   return o.map(item => {
     const metadata = item.metadata
     const convertedMetadata = Object.keys(metadata).map(key => {
@@ -34,7 +34,7 @@ const convertMetadataMapInArray = o => {
     }
   })
 }
-const convertMetadataArrayToMap = metadataArray => {
+export const convertMetadataArrayToMap = metadataArray => {
   const metadataMap = {}
   metadataArray.forEach(metadata => {
     const { key, value, type } = metadata

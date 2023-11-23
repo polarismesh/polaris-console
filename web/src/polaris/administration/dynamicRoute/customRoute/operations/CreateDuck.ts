@@ -15,6 +15,7 @@ import {
   CustomRoute,
   describeCustomRoute,
   modifyCustomRoute,
+  RoutingRuleDestination,
 } from '../model'
 import { RouteLabelMatchType, RoutingArgumentsType, RoutingValueType } from '../types'
 import { describeInstanceLabels } from '@src/polaris/service/detail/instance/model'
@@ -28,6 +29,28 @@ interface ComposedId {
 interface Data {
   namespaceList: { value: string; text: string }[]
   serviceList: { value: string; text: string; namespace: string }[]
+}
+
+export const convertDestinations = (destinations: RoutingRuleDestination[]) => {
+  const handledDestinations = []
+  const priorityCount = Array.from(new Set(destinations.map(item => item.priority)))
+  const priorityMap = priorityCount.reduce((prev, curr, index) => {
+    prev[curr] = index
+    return prev
+  }, {})
+  destinations.forEach(item => {
+    const destinationIndex = priorityMap[item.priority]
+    const handledItem = {
+      ...item,
+      labels: Object.entries(item.labels).map(([key, value]) => ({ key, ...value })),
+    }
+    if (!handledDestinations[destinationIndex]) {
+      handledDestinations[destinationIndex] = [handledItem]
+    } else {
+      handledDestinations[destinationIndex].push(handledItem)
+    }
+  })
+  return handledDestinations
 }
 
 export default class CustomRouteCreatePageDuck extends DetailPage {
@@ -140,37 +163,49 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
       const originValues = ducks.form.selectors.values(yield select())
       const { id, namespace, service } = yield select(selectors.composedId)
       const values = JSON.parse(JSON.stringify(originValues))
-      const handledRules = values.rules.map((rule, index) => {
-        const handledDestinations = rule.destinations.map((destination, index) => ({
-          ...destination,
-          service: values.destination.service,
-          namespace: values.destination.namespace,
-          labels: destination.labels.reduce((map, curr) => {
-            map[curr.key] = curr
-            delete curr.key
-            return map
-          }, {}) as any,
-          name: `group-${index}`,
-        }))
-        const handledSources = rule.sources.map(source => ({
-          service: values.source.service,
-          namespace: values.source.namespace,
-          arguments: source.arguments.map(item => ({
-            type: item.type,
-            key: item.key,
-            value: {
-              type: item.value_type,
-              value: item.value,
-              value_type: item.value_value_type,
-            },
-          })),
-        }))
-        return {
-          name: `规则${index}`,
-          sources: handledSources,
-          destinations: handledDestinations,
-        }
-      })
+      let handledRules
+      try {
+        handledRules = values.rules.map((rule, index) => {
+          const handledDestinations = rule.destinations
+            .map((destination, index) =>
+              destination.map(group => ({
+                ...group,
+                service: values.destination.service,
+                namespace: values.destination.namespace,
+                labels: group?.labels?.reduce((map, curr) => {
+                  map[curr.key] = curr
+                  delete curr.key
+                  return map
+                }, {}) as any,
+                priority: group.priority || index,
+              })),
+            )
+            .reduce((prev, curr) => {
+              return [...prev, ...curr]
+            }, [])
+
+          const handledSources = rule.sources.map(source => ({
+            service: values.source.service,
+            namespace: values.source.namespace,
+            arguments: source.arguments.map(item => ({
+              type: item.type,
+              key: item.key,
+              value: {
+                type: item.value_type,
+                value: item.value,
+                value_type: item.value_value_type,
+              },
+            })),
+          }))
+          return {
+            name: `规则${index}`,
+            sources: handledSources,
+            destinations: handledDestinations,
+          }
+        })
+      } catch (e) {
+        console.log(e)
+      }
       const params = {
         ...values,
         rules: undefined,
@@ -223,34 +258,35 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
         })
         result.list =
           result.totalCount > 0 &&
-          result.list.map((item: CustomRoute) => ({
-            ...item,
-            source: {
-              service: item.routing_config?.rules?.[0]?.sources?.[0].service,
-              namespace: item.routing_config?.rules?.[0]?.sources?.[0].namespace,
-            },
-            destination: {
-              service: item.routing_config?.rules?.[0].destinations?.[0]?.service,
-              namespace: item.routing_config?.rules?.[0].destinations?.[0]?.namespace,
-            },
-            rules: item.routing_config.rules.map(rule => ({
+          result.list.map((item: CustomRoute) => {
+            return {
               ...item,
-              sources: rule.sources.map(source => ({
-                ...source,
-                arguments: source?.arguments.map(item => ({
-                  type: item.type,
-                  key: item.key,
-                  value_type: item.value.type,
-                  value_value_type: item.value.value_type,
-                  value: item.value.value,
-                })),
-              })),
-              destinations: rule.destinations.map(destination => ({
-                ...destination,
-                labels: Object.entries(destination.labels).map(([key, value]) => ({ key, ...value })),
-              })),
-            })),
-          }))
+              source: {
+                service: item.routing_config?.rules?.[0]?.sources?.[0].service,
+                namespace: item.routing_config?.rules?.[0]?.sources?.[0].namespace,
+              },
+              destination: {
+                service: item.routing_config?.rules?.[0].destinations?.[0]?.service,
+                namespace: item.routing_config?.rules?.[0].destinations?.[0]?.namespace,
+              },
+              rules: item.routing_config.rules.map(rule => {
+                return {
+                  ...item,
+                  sources: rule.sources.map(source => ({
+                    ...source,
+                    arguments: source?.arguments.map(item => ({
+                      type: item.type,
+                      key: item.key,
+                      value_type: item.value.type,
+                      value_value_type: item.value.value_type,
+                      value: item.value.value,
+                    })),
+                  })),
+                  destinations: convertDestinations(rule.destinations),
+                }
+              }),
+            }
+          })
         ruleDetailInfo = result.list[0]
         yield put(ducks.form.creators.setValues(ruleDetailInfo))
         yield put({
@@ -330,7 +366,7 @@ export interface RouteDestinationArgument {
 export interface RouteRuleField {
   name: string
   sources: RouteRuleSourceField[]
-  destinations: RouteRuleDestinationField[]
+  destinations: RouteRuleDestinationField[][]
 }
 export interface RouteRuleSourceField {
   service: string
@@ -407,7 +443,11 @@ const validator = Form.combineValidators<Values>({
                 if (!v && data.type === RoutingArgumentsType.CALLER_IP) {
                   return '请输入IP'
                 }
-                if (!v && data.type !== RoutingArgumentsType.CALLER_IP) {
+                if (
+                  !v &&
+                  data.type !== RoutingArgumentsType.CALLER_IP &&
+                  data.value_value_type !== RoutingValueType.PARAMETER
+                ) {
                   return '请输入value值'
                 }
               },
@@ -416,14 +456,46 @@ const validator = Form.combineValidators<Values>({
         },
       ],
       destinations: [
-        {
-          labels(v) {
-            if (!v.length) {
-              return '请输入标签分组'
-            }
-          },
+        destination => {
+          const res = Form.combineValidators<RouteRuleDestinationField[]>([
+            {
+              labels(v) {
+                if (!v.length) {
+                  return '请输入标签分组'
+                }
+              },
+              weight(v) {
+                const totalWeight = destination.reduce((prev, curr) => {
+                  prev += curr.weight
+                  return prev
+                }, 0)
+                if (totalWeight !== 100) {
+                  return '流量目的地权重总和不为100%'
+                }
+              },
+            },
+          ])(destination)
+          return res
         },
       ],
+      //   [
+      //     {
+      //       labels(v) {
+      //         if (!v.length) {
+      //           return '请输入标签分组'
+      //         }
+      //       },
+      //     },
+      //     {
+      //       weight(v, values, meta) {
+      //         console.log(v, values, meta)
+      //         if (!v && v !== 0) {
+      //           return '请输入权重'
+      //         }
+      //       },
+      //     },
+      //   ],
+      // ],
     },
   ],
 })
@@ -468,14 +540,16 @@ export class RouteCreateDuck extends Form {
             },
           ],
           destinations: [
-            {
-              service: '',
-              namespace: '',
-              labels: [],
-              weight: 100,
-              isolate: false,
-              name: '',
-            },
+            [
+              {
+                service: '',
+                namespace: '',
+                labels: [],
+                weight: 100,
+                isolate: false,
+                name: '分组1',
+              },
+            ],
           ],
         },
       ],

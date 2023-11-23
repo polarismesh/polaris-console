@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { useState } from 'react'
 import { memorize, DuckCmpProps } from 'saga-duck'
 import Duck from './PageDuck'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
@@ -33,6 +32,8 @@ import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
 import { Link } from 'react-router-dom'
 import { FileFormat } from './operation/Create'
+import router from '@src/polaris/common/util/router'
+import { TAB } from '../Page'
 
 export const NoSearchResultKey = '__NO_SEARCH_RESULT__'
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
@@ -76,10 +77,23 @@ insertCSS(
   .no-switcher .tea-tree__switcher{
     display:none;
   }
+  .config-editor .tea-monaco-editor-container {
+    padding-top: 50px;
+  }
+  .config-editor .tea-icon-fullscreenquit {
+    top: 65px;
+  }
+  .file-tree-container {
+    overflow-y: auto; 
+    overflow-x: hidden;
+    border: 1px solid #cfd5de;
+    border-top:none;
+    height:100%;
+  }
 `,
 )
 
-function toHighlightLanguage(format?: string) {
+export function toHighlightLanguage(format?: string) {
   if (!format) {
     return FileFormat.TEXT
   }
@@ -172,7 +186,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
       <Card>
         <Card.Body>
           <Row showSplitLine gap={40}>
-            <div style={{ width: '450px', height: 1000, overflowY: 'hidden', margin: '15px 20px' }}>
+            <div style={{ width: '450px', height: 1002, overflowY: 'hidden', margin: '15px 20px' }}>
               <SearchBox
                 value={searchKeyword}
                 onChange={handlers.setSearchKeyword}
@@ -180,7 +194,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                 onSearch={handlers.searchPath}
                 style={{ width: '100%' }}
               />
-              <div style={{ height: 910, overflowY: 'scroll' }}>
+              <div className={'file-tree-container'}>
                 <Tree
                   activable
                   onActive={(activeIds, { nodeId }) => {
@@ -206,13 +220,13 @@ export default function Page(props: DuckCmpProps<Duck>) {
                   }}
                   fullExpandable
                   height={900}
-                  style={{ width: '500px' }}
-                // onSelect={v => {
-                //   handlers.select(v)
-                // }}
-                // selectable
-                // selectedIds={selection}
-                // selectValueMode={'onlyLeaf'}
+                  style={{ width: '450px', maxWidth: '450px' }}
+                  // onSelect={v => {
+                  //   handlers.select(v)
+                  // }}
+                  // selectable
+                  // selectedIds={selection}
+                  // selectValueMode={'onlyLeaf'}
                 >
                   {renderTree(props, fileTree, '', '')}
                 </Tree>
@@ -230,7 +244,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                       }
                       operation={
                         <Link
-                          to={`/file-release-history?namespace=${currentNode.namespace}&group=${currentNode.group}&fileName=${currentNode.name}`}
+                          to={`/configuration?namespace=${currentNode.namespace}&group=${currentNode.group}&fileName=${currentNode.name}&tab=release`}
                           target={'_blank'}
                         >
                           <Text reset>查看发布历史</Text>
@@ -258,27 +272,33 @@ export default function Page(props: DuckCmpProps<Duck>) {
                               <FormText>{currentNode.releaseTime || '-'}</FormText>
                             </FormItem>
                             <FormItem label='标签'>
-                              <FormText>
-                                <Bubble
-                                  placement={'right'}
-                                  content={
-                                    <>
-                                      {currentNode.tags?.map(item => (
+                              <Bubble
+                                placement={'right'}
+                                content={
+                                  currentNode.tags.length > 3
+                                    ? currentNode.tags?.map(item => (
                                         <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
-                                      ))}
-                                    </>
-                                  }
-                                >
-                                  <Text overflow>
-                                    {currentNode.tags?.map(item => `${item.key}:${item.value}`).join(',') || '-'}
+                                      ))
+                                    : null
+                                }
+                              >
+                                <FormText>
+                                  <Text overflow style={{ width: '100%' }}>
+                                    {currentNode.tags
+                                      ?.slice(0, 3)
+                                      ?.map(item => `${item.key}:${item.value}`)
+                                      .join(',') || '-'}
+                                    {currentNode.tags?.length > 3 ? '...' : ''}
                                   </Text>
-                                </Bubble>
-                              </FormText>
+                                </FormText>
+                              </Bubble>
                             </FormItem>
                             <FormItem label='加密状态'>
                               <FormText>
                                 <Text theme={currentNode.encrypted ? 'warning' : 'text'}>
-                                  {currentNode.encrypted ? `已开启加密, 加密算法为: ${currentNode.encryptAlgo}` : '未加密'}
+                                  {currentNode.encrypted
+                                    ? `已开启加密, 加密算法为: ${currentNode.encryptAlgo}`
+                                    : '未加密'}
                                 </Text>
                               </FormText>
                             </FormItem>
@@ -377,7 +397,10 @@ export default function Page(props: DuckCmpProps<Duck>) {
                           </Col>
                         </Row>
                       ) : (
-                        <section style={{ border: '1px solid #cfd5de', width: '100%' }}>
+                        <section
+                          style={{ border: '1px solid #cfd5de', width: '100%', height: '750px' }}
+                          className={'config-editor'}
+                        >
                           <MonacoEditor
                             language={toHighlightLanguage(currentNode?.format)}
                             value={editing ? editContent : currentNode?.content}
@@ -428,7 +451,11 @@ function renderTree(props, folder, path: string, currPath: string) {
     node = folder
   }
   const currentNode = selectors.currentNode(store)
-  const { hitPath, expandedIds } = selector(store)
+  const {
+    hitPath,
+    expandedIds,
+    data: { editable },
+  } = selector(store)
   if (!(Object.keys(node).length > 0)) {
     return <noscript />
   }
@@ -440,6 +467,7 @@ function renderTree(props, folder, path: string, currPath: string) {
         const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status, obj, props)
         const nextPath = `${currPath}${currPath ? '/' : ''}${childPath}`
         const folderIcon = expandedIds.indexOf(obj.name) > -1 ? 'folderopen' : 'folderclose'
+        const { namespace, group, name } = currentNode
         return (
           <TreeNode
             id={obj.__isDir__ ? nextPath : obj.name}
@@ -456,10 +484,33 @@ function renderTree(props, folder, path: string, currPath: string) {
                           e.stopPropagation()
                           handlers.edit(obj.name)
                         }}
+                        disabled={!editable}
                       >
                         编辑
                       </List.Item>
-                      <List.Item onClick={() => handlers.delete(obj.name)}>删除</List.Item>
+                      <List.Item
+                        onClick={e => {
+                          e.stopPropagation()
+                          router.navigate(
+                            `/filegroup-detail?namespace=${namespace}&group=${group}&fileName=${name}&tab=${TAB.Version}`,
+                          )
+                        }}
+                      >
+                        {'查看配置版本'}
+                      </List.Item>
+                      <List.Item
+                        onClick={e => {
+                          e.stopPropagation()
+                          router.navigate(
+                            `/filegroup-detail?namespace=${namespace}&group=${group}&fileName=${name}&tab=${TAB.History}`,
+                          )
+                        }}
+                      >
+                        {'查看发布历史'}
+                      </List.Item>
+                      <List.Item onClick={() => handlers.delete(obj.name)} disabled={!editable}>
+                        删除
+                      </List.Item>
                     </List>
                   </Dropdown>
                 </div>

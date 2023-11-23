@@ -6,7 +6,7 @@ import { describeServices } from '@src/polaris/service/model'
 import { put } from 'redux-saga/effects'
 import { takeLatest } from 'redux-saga-catch'
 import { CustomRoute, describeCustomRoute } from '../model'
-import { Values } from '../operations/CreateDuck'
+import { Values, convertDestinations } from '../operations/CreateDuck'
 
 interface ComposedId {
   id: string
@@ -137,10 +137,7 @@ export default class RouteDetailPageDuck extends DetailPage {
                   value: item.value.value,
                 })),
               })),
-              destinations: rule.destinations.map(destination => ({
-                ...destination,
-                labels: Object.entries(destination.labels).map(([key, value]) => ({ key, ...value })),
-              })),
+              destinations: convertDestinations(rule.destinations),
             })),
           }))
         ruleDetailInfo = result.list[0]

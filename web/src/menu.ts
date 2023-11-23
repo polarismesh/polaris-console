@@ -86,23 +86,17 @@ export const MenuConfig: MenuItemConfig = {
       ],
     },
     {
-      id: 'configuration',
+      id: 'config-manage',
       title: '配置中心',
-      icon: null,
-      featureKey: 'config',
+      icon: '',
       subMenus: [
         {
-          id: 'filegroup',
-          title: '配置分组',
+          id: 'configuration',
+          title: '配置管理',
           icon: 'static/img/route-monitor.svg',
+          featureKey: 'config',
           subMenus: null,
-        },
-        {
-          id: 'file-release-history',
-          title: '发布历史',
-          icon: 'static/img/route-monitor.svg',
-          subMenus: null,
-        },
+        }
       ],
     },
     {
