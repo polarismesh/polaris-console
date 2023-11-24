@@ -5,7 +5,16 @@ import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { Values } from '../operations/CreateDuck'
 
 import { Form, Card, Text, Table, H6, FormItem, FormText } from 'tea-component'
-import { LimitType, LimitTypeMap, LimitMethodTypeMap, LimitAction, LimitActionMap, LimitFailoverMap } from '../types'
+import {
+  LimitResource,
+  LimitResourceMap,
+  LimitType,
+  LimitTypeMap,
+  LimitMethodTypeMap,
+  LimitAction,
+  LimitActionMap,
+  LimitFailoverMap, MaxAmountUnit, MaxAmountHeader,
+} from '../types'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 
 insertCSS(
@@ -38,6 +47,7 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
   const { ruleDetail } = selector(store)
   const {
     name,
+    resource: strResource,
     type: strLimitType,
     namespace,
     service,
@@ -69,6 +79,11 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
             <FormItem label='限流规则名称'>
               <FormText>{name || '-'}</FormText>
             </FormItem>
+
+            <FormItem label='限流资源'>
+              <FormText>{LimitResourceMap[strResource]}</FormText>
+            </FormItem>
+
             <FormItem label='限流类型'>
               <FormText>{LimitTypeMap[strLimitType]}</FormText>
             </FormItem>
@@ -183,12 +198,25 @@ export default purify(function AccessLimitingDetailPag(props: DuckCmpProps<Acces
                                 )
                               },
                             },
+                            strResource === LimitResource.CPU && {
+                              key: 'precision',
+                              header: '滑动窗口精度',
+                              render: item => {
+                                const { precision } = item
+                                return <Text>{precision}</Text>
+                              },
+                            },
                             {
                               key: 'maxAmount',
-                              header: '请求数阈值',
+                              header: MaxAmountHeader[strResource],
                               render: item => {
                                 const { maxAmount } = item
-                                return <Text>{maxAmount}次</Text>
+                                return (
+                                  <Text>
+                                    {maxAmount}
+                                    {MaxAmountUnit[strResource]}
+                                  </Text>
+                                )
                               },
                             },
                           ]}

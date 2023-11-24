@@ -221,6 +221,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
       const handledAmounts = values.amounts.map(item => ({
         maxAmount: item.maxAmount,
         validDuration: `${item.validDurationNum}${item.validDurationUnit}`,
+        precision: item.precision,
       }))
 
       const handledArguments = values.arguments.map(item => ({
@@ -278,6 +279,7 @@ export default class LimitRuleCreatePageDuck extends DetailPage {
                     maxAmount: o.maxAmount,
                     validDurationNum: Number(o.validDuration.substring(0, o.validDuration.length - 1)),
                     validDurationUnit: o.validDuration.substring(o.validDuration.length - 1, o.validDuration.length),
+                    precision: o.precision,
                   }))
                 : [],
             arguments:

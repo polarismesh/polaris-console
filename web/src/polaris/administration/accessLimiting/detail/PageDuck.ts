@@ -120,6 +120,7 @@ export default class AccessLimitingDetailPageDuck extends DetailPage {
                     maxAmount: o.maxAmount,
                     validDurationNum: Number(o.validDuration.substring(0, o.validDuration.length - 1)),
                     validDurationUnit: o.validDuration.substring(o.validDuration.length - 1, o.validDuration.length),
+                    precision: o.precision,
                   }))
                 : [],
             arguments:
