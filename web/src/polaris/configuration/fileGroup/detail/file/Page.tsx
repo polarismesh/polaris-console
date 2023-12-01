@@ -330,7 +330,13 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             >
                               发布
                             </Button>
-
+                            <Button
+                              type={'primary'}
+                              disabled={editing || !data.editable}
+                              onClick={() => handlers.releaseCurrentFile()}
+                            >
+                              灰度发布
+                            </Button>
                             {editing ? (
                               <>
                                 <Button type={'weak'} onClick={() => handlers.getTemplate(currentNode)}>
