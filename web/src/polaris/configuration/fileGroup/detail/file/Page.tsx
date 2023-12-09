@@ -34,6 +34,7 @@ import { Link } from 'react-router-dom'
 import { FileFormat } from './operation/Create'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '../Page'
+import { ConfigFile } from '../../types'
 
 export const NoSearchResultKey = '__NO_SEARCH_RESULT__'
 const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
@@ -49,6 +50,8 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   fetchData: path => dispatch(creators.fetchData(path)),
   setEditContent: v => dispatch(creators.setEditContent(v)),
   releaseCurrentFile: () => dispatch(creators.releaseCurrentFile()),
+  betaReleaseCurrentFile: () => dispatch(creators.betaReleaseCurrentFile()),
+  stopBetaReleaseCurrentFile: () => dispatch(creators.stopBetaReleaseCurrentFile()),
   showReleaseHistory: v => dispatch(creators.showReleaseHistory(v)),
   select: v => dispatch(creators.select(v)),
   cancel: () => dispatch(creators.cancel()),
@@ -221,12 +224,12 @@ export default function Page(props: DuckCmpProps<Duck>) {
                   fullExpandable
                   height={900}
                   style={{ width: '450px', maxWidth: '450px' }}
-                  // onSelect={v => {
-                  //   handlers.select(v)
-                  // }}
-                  // selectable
-                  // selectedIds={selection}
-                  // selectValueMode={'onlyLeaf'}
+                // onSelect={v => {
+                //   handlers.select(v)
+                // }}
+                // selectable
+                // selectedIds={selection}
+                // selectValueMode={'onlyLeaf'}
                 >
                   {renderTree(props, fileTree, '', '')}
                 </Tree>
@@ -277,8 +280,8 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 content={
                                   currentNode.tags.length > 3
                                     ? currentNode.tags?.map(item => (
-                                        <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
-                                      ))
+                                      <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
+                                    ))
                                     : null
                                 }
                               >
@@ -325,18 +328,30 @@ export default function Page(props: DuckCmpProps<Duck>) {
                           <>
                             <Button
                               type={'primary'}
-                              disabled={editing || !data.editable}
+                              disabled={editing || !data.editable || isBetaingRelease(currentNode)}
                               onClick={() => handlers.releaseCurrentFile()}
                             >
                               发布
                             </Button>
-                            <Button
-                              type={'primary'}
-                              disabled={editing || !data.editable}
-                              onClick={() => handlers.releaseCurrentFile()}
-                            >
-                              灰度发布
-                            </Button>
+                            {isBetaingRelease(currentNode) ?
+                              (
+                                <Button
+                                  type={'primary'}
+                                  disabled={editing || !data.editable}
+                                  onClick={() => handlers.stopBetaReleaseCurrentFile()}
+                                >
+                                  停止灰度
+                                </Button>
+                              ) : (
+                                <Button
+                                  type={'weak'}
+                                  disabled={editing || !data.editable}
+                                  onClick={() => handlers.betaReleaseCurrentFile()}
+                                >
+                                  灰度发布
+                                </Button>
+                              )
+                            }
                             {editing ? (
                               <>
                                 <Button type={'weak'} onClick={() => handlers.getTemplate(currentNode)}>
@@ -348,7 +363,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                               </>
                             ) : (
                               <Button
-                                disabled={!data.editable}
+                                disabled={!data.editable || isBetaingRelease(currentNode)}
                                 type={'weak'}
                                 onClick={() => handlers.editCurrentNode()}
                               >
@@ -432,6 +447,10 @@ export default function Page(props: DuckCmpProps<Duck>) {
       </Card>
     </>
   )
+}
+
+function isBetaingRelease(file: ConfigFile) {
+  return file.status === FileStatus.Betaing
 }
 
 function getFileNameContext(fileName, status, file, props) {

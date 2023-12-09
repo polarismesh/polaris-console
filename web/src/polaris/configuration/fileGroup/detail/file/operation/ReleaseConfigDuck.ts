@@ -45,6 +45,7 @@ export default class ReleaseConfigDuck extends Base {
     })
   }
 }
+
 export interface Fvalues {
   regionId: number
   instanceId: string

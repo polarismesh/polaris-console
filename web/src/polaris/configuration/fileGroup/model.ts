@@ -1,4 +1,4 @@
-import { ConfigFileGroup, KeyValuePair, ConfigFile, ConfigFileRelease } from './types'
+import { ConfigFileGroup, KeyValuePair, ConfigFile, ConfigFileRelease, ClientLabel } from './types'
 import { getApiRequest, apiRequest, putApiRequest, deleteApiRequest } from '@src/polaris/common/util/apiRequest'
 import { object2FormData } from '@src/polaris/common/helpers/form'
 
@@ -194,6 +194,8 @@ export interface ReleaseConfigFileParams {
   comment?: string
   createBy?: string
   releaseDescription?: string
+  betaLabels?: ClientLabel[]
+  releaseType?: string
 }
 export interface ReleaseConfigFileResult {
   configFileRelease: ConfigFileRelease
@@ -216,6 +218,19 @@ export interface DescribeLastReleaseConfigFileResult {
 export async function describeLastReleaseConfigFile(params: DescribeLastReleaseConfigFileParams) {
   const res = await getApiRequest<DescribeLastReleaseConfigFileResult>({
     action: 'config/v1/configfiles/release',
+    data: params,
+  })
+  return res
+}
+export interface StopBetaReleaseConfigFileParams {
+  file_name: string
+  namespace: string
+  group: string
+}
+export type StopConfigFileBetaReleaseResult = {}
+export async function stopBetaReleaseConfigFile(params: StopBetaReleaseConfigFileParams[]) {
+  const res = await apiRequest<StopConfigFileBetaReleaseResult>({
+    action: 'config/v1/configfiles/releases/stopbeta',
     data: params,
   })
   return res
@@ -315,7 +330,6 @@ export async function importConfigFile(params: ImportConfigFilesParams) {
 
   return res
 }
-
 
 export interface ConfigFileEncryptAlgorithm {
   algorithms: string[]

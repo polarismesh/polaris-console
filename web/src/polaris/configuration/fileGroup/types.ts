@@ -52,6 +52,7 @@ export interface ConfigFileRelease {
   releaseDescription?: string
   releaseStatus?: string
   active: string
+  releaseType?: string
   format: string
 }
 export interface ConfigFileReleaseHistory {
@@ -79,3 +80,73 @@ export interface ConfigFileGroupTag {
   key?: string
   value?: string
 }
+
+export interface ClientLabel {
+  key?: string
+  value: {
+    type: string
+    value: string
+    value_type: string
+  }
+}
+
+// 匹配规则类型
+export enum ClientLabelType {
+  CLIENT_ID = 'CLIENT_ID',
+  // CLIENT_LANGUAGE = 'CLIENT_LANGUAGE',
+  CLIENT_IP = 'CLIENT_IP',
+}
+
+export const ClientLabelTypeOptions = [
+  {
+    value: ClientLabelType.CLIENT_ID,
+    text: '客户端ID',
+  },
+  {
+    value: ClientLabelType.CLIENT_IP,
+    text: '客户端Host',
+  },
+  // {
+  //   value: ClientLabelType.CLIENT_LANGUAGE,
+  //   text: '请求头(HEADER)',
+  // },
+]
+export const ClientLabelTextMap = ClientLabelTypeOptions.reduce((map, curr) => {
+  map[curr.value] = curr.text
+  return map
+}, {})
+
+export enum ClientLabelMatchType {
+  EXACT = 'EXACT',
+  REGEX = 'REGEX',
+  NOT_EQUALS = 'NOT_EQUALS',
+  IN = 'IN',
+  NOT_IN = 'NOT_IN',
+  RANGE = 'RANGE',
+}
+export const ClientLabelMatchTypeOptions = [
+  {
+    value: ClientLabelMatchType.EXACT,
+    text: '等于',
+  },
+  {
+    value: ClientLabelMatchType.REGEX,
+    text: '正则表达式匹配',
+  },
+  {
+    value: ClientLabelMatchType.NOT_EQUALS,
+    text: '不等于',
+  },
+  {
+    value: ClientLabelMatchType.IN,
+    text: '包含',
+  },
+  {
+    value: ClientLabelMatchType.NOT_IN,
+    text: '不包含',
+  },
+]
+export const RouteLabelTextMap = ClientLabelMatchTypeOptions.reduce((map, curr) => {
+  map[curr.value] = curr.text
+  return map
+}, {})
