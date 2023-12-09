@@ -15,6 +15,7 @@ import {
   deleteConfigFiles,
   describeConfigFilesByGroup,
   describeLastReleaseConfigFile,
+  stopBetaReleaseConfigFile,
 } from '../../model'
 import Fetcher from '@src/polaris/common/ducks/Fetcher'
 import { describeConfigFileReleaseHistories } from '@src/polaris/configuration/releaseHistory/model'
@@ -22,7 +23,9 @@ import GetFileTemplate from './operation/GetFileTemplate'
 import GetFileTemplateDuck from './operation/GetFileTemplateDuck'
 import router from '@src/polaris/common/util/router'
 import ReleaseConfigDuck from './operation/ReleaseConfigDuck'
+import BetaReleaseConfigDuck from './operation/BetaReleaseConfigDuck'
 import { TAB } from '../Page'
+import { ClientLabel } from '../../types'
 interface MyFilter {
   namespace: string
   group: string
@@ -128,6 +131,8 @@ export default class PageDuck extends Base {
       SET_EDITING,
       SET_EDIT_CONTENT,
       RELEASE_CURRENT_NODE,
+      BETA_RELEASE_CURRENT_NODE,
+      STOP_BETA_RELEASE_CURRENT_NODE,
       SAVE_CURRENT_NODE,
       SHOW_RELEASE_HISTORY,
       SET_HISTORY_MAP,
@@ -188,6 +193,8 @@ export default class PageDuck extends Base {
       edit: createToPayload<string>(types.EDIT_FILE_META),
       setEditContent: createToPayload<string>(types.SET_EDIT_CONTENT),
       releaseCurrentFile: createToPayload<void>(types.RELEASE_CURRENT_NODE),
+      betaReleaseCurrentFile: createToPayload<void>(types.BETA_RELEASE_CURRENT_NODE),
+      stopBetaReleaseCurrentFile: createToPayload<void>(types.STOP_BETA_RELEASE_CURRENT_NODE),
       showReleaseHistory: createToPayload<ConfigFile>(types.SHOW_RELEASE_HISTORY),
       save: createToPayload<void>(types.SAVE_CURRENT_NODE),
       select: createToPayload<string[]>(types.SELECT),
@@ -213,7 +220,7 @@ export default class PageDuck extends Base {
   *saga() {
     yield* super.saga()
     const { types, selectors, creators, selector, ducks } = this
-    yield takeLatest(types.LOAD, function*(action) {
+    yield takeLatest(types.LOAD, function* (action) {
       const { composedId, data } = action.payload
       yield put({ type: types.SET_DATA, payload: data })
       yield put({ type: types.SET_COMPOSE_ID, payload: composedId })
@@ -221,12 +228,12 @@ export default class PageDuck extends Base {
       // 重置搜索框
       yield put({ type: types.SET_SEARCH_PATH_KEYWORD, payload: '' })
     })
-    yield takeLatest(types.ADD, function*() {
+    yield takeLatest(types.ADD, function* () {
       const composedId = selectors.composedId(yield select())
 
       const res = yield* resolvePromise(
         new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(
                 yield* duck.execute({ namespace: composedId.namespace, group: composedId.group }, { isModify: false }),
@@ -241,11 +248,11 @@ export default class PageDuck extends Base {
         yield put({ type: types.FETCH_DATA })
       }
     })
-    yield takeLatest(types.GET_FILE_TEMPLATE, function*(action) {
+    yield takeLatest(types.GET_FILE_TEMPLATE, function* (action) {
       const file = action.payload
       const templateContent = yield* resolvePromise(
         new Promise(resolve => {
-          showDialog(GetFileTemplate, GetFileTemplateDuck, function*(duck: GetFileTemplateDuck) {
+          showDialog(GetFileTemplate, GetFileTemplateDuck, function* (duck: GetFileTemplateDuck) {
             try {
               const result = yield* duck.execute({}, { file })
               resolve(result)
@@ -260,11 +267,11 @@ export default class PageDuck extends Base {
         yield put(creators.setEditContent(templateContent as string))
       }
     })
-    yield takeLatest(types.EDIT_FILE_META, function*(action) {
+    yield takeLatest(types.EDIT_FILE_META, function* (action) {
       const { fileMap } = selector(yield select())
       const res = yield* resolvePromise(
         new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute(fileMap[action.payload], { isModify: true }))
             } finally {
@@ -277,17 +284,17 @@ export default class PageDuck extends Base {
         yield put({ type: types.FETCH_DATA })
       }
     })
-    yield takeLatest(types.CANCEL, function*() {
+    yield takeLatest(types.CANCEL, function* () {
       const currentNode = selectors.currentNode(yield select())
       yield put({ type: types.SET_EDITING, payload: false })
       yield put(creators.setEditContent(currentNode.content))
     })
-    yield takeLatest(types.EDIT_CURRENT_NODE, function*() {
+    yield takeLatest(types.EDIT_CURRENT_NODE, function* () {
       const currentNode = selectors.currentNode(yield select())
       yield put({ type: types.SET_EDITING, payload: true })
       yield put(creators.setEditContent(currentNode.content))
     })
-    yield takeLatest(types.DELETE, function*(action) {
+    yield takeLatest(types.DELETE, function* (action) {
       const { namespace, group } = selectors.composedId(yield select())
       const confirm = yield Modal.confirm({
         message: '确认删除配置文件？',
@@ -304,7 +311,7 @@ export default class PageDuck extends Base {
         }
       }
     })
-    yield takeLatest(types.FETCH_DATA, function*() {
+    yield takeLatest(types.FETCH_DATA, function* () {
       const composedId = selectors.composedId(yield select())
       const searchKeyword = selectors.searchKeyword(yield select())
       const currentNode = selectors.currentNode(yield select())
@@ -326,7 +333,7 @@ export default class PageDuck extends Base {
         yield put({ type: types.SET_CURRENT_SHOW_NODE, payload: fileMap[currentNode.name] })
       }
     })
-    yield takeLatest(types.SEARCH_PATH, function*(action) {
+    yield takeLatest(types.SEARCH_PATH, function* (action) {
       if (action.payload === '') {
         yield put({ type: types.SET_EXPANDED_IDS, payload: [...new Set([])] })
         yield put({ type: types.SET_HIT_PATH, payload: [...new Set([])] })
@@ -351,7 +358,7 @@ export default class PageDuck extends Base {
       yield put({ type: types.SET_EXPANDED_IDS, payload: [...new Set(hitPath)] })
       yield put({ type: types.SET_HIT_PATH, payload: [...new Set(hitPath)] })
     })
-    yield takeLatest(types.CLICK_FILE_ITEM, function*(action) {
+    yield takeLatest(types.CLICK_FILE_ITEM, function* (action) {
       const { editing, currentNode, fileMap } = selector(yield select())
       const nextNode = fileMap[action.payload]
       if (editing && currentNode.name !== nextNode.name) {
@@ -364,7 +371,7 @@ export default class PageDuck extends Base {
       yield put({ type: types.SET_CURRENT_SHOW_NODE, payload: nextNode })
       yield put({ type: types.SET_EDITING, payload: false })
     })
-    yield takeLatest(types.SHOW_RELEASE_HISTORY, function*(action) {
+    yield takeLatest(types.SHOW_RELEASE_HISTORY, function* (action) {
       const { showHistoryMap } = selector(yield select())
       const { fileName, namespace, group } = action.payload
       if (showHistoryMap[fileName]) {
@@ -379,7 +386,7 @@ export default class PageDuck extends Base {
       }
       yield put(releaseHistoryDuck.creators.fetch({ name: fileName, namespace, group }))
     })
-    yield takeLatest(types.RELEASE_CURRENT_NODE, function*() {
+    yield takeLatest(types.RELEASE_CURRENT_NODE, function* () {
       const currentNode = selectors.currentNode(yield select())
       const { namespace, group, name } = currentNode
       const { configFileRelease: lastRelease } = yield describeLastReleaseConfigFile({ namespace, name, group })
@@ -391,7 +398,30 @@ export default class PageDuck extends Base {
         notification.error({ description: '发布失败' })
       }
     })
-    yield takeLatest(types.SAVE_CURRENT_NODE, function*() {
+    yield takeLatest(types.BETA_RELEASE_CURRENT_NODE, function* () {
+      const currentNode = selectors.currentNode(yield select())
+      const { namespace, group, name } = currentNode
+      const { configFileRelease: lastRelease } = yield describeLastReleaseConfigFile({ namespace, name, group })
+      const result = yield BetaReleaseConfigDuck.show({ ...currentNode, lastRelease })
+      if (result) {
+        notification.success({ description: '发布成功' })
+        router.navigate(`/filegroup-detail?namespace=${namespace}&group=${group}&fileName=${name}&tab=${TAB.History}`)
+      } else {
+        notification.error({ description: '发布失败' })
+      }
+    })
+    yield takeLatest(types.STOP_BETA_RELEASE_CURRENT_NODE, function* () {
+      const currentNode = selectors.currentNode(yield select())
+      const { namespace, group, name } = currentNode
+      const result = yield stopBetaReleaseConfigFile([{ namespace, file_name: name, group }])
+      if (result) {
+        notification.success({ description: '停止灰度发布成功' })
+        yield put({ type: types.FETCH_DATA })
+      } else {
+        notification.error({ description: '停止灰度发布成功失败' })
+      }
+    })
+    yield takeLatest(types.SAVE_CURRENT_NODE, function* () {
       const {
         editContent,
         currentNode,

@@ -18,7 +18,14 @@ export default ({
       render: x => (
         <Text>
           {x.fileName}
-          {x.active ? (
+          {(x.active && x.releaseType === 'gray') ? (
+            <Badge theme='warning' dark style={{ verticalAlign: 'bottom', marginLeft: '5px' }}>
+              {'灰度使用中'}
+            </Badge>
+          ) : (
+            <></>
+          )}
+          {(x.active && x.releaseType !== 'gray') ? (
             <Badge dark style={{ verticalAlign: 'bottom', marginLeft: '5px' }}>
               {'使用中'}
             </Badge>
