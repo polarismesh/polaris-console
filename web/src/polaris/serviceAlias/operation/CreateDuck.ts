@@ -35,14 +35,14 @@ export default class CreateDuck extends FormDialog {
     } = this
     const options = selectors.options(yield select())
     const values = form.selectors.values(yield select())
-
+    const [serviceName, namespaceName] = values.service.split('=>')
     if (options.isModify) {
       const res = yield* resolvePromise(
         modifyGovernanceAlias({
           alias: values.alias,
           alias_namespace: values.alias_namespace,
-          namespace: values.namespace,
-          service: values.service,
+          namespace: namespaceName,
+          service: serviceName,
           comment: values.comment,
         }),
       )
@@ -52,8 +52,8 @@ export default class CreateDuck extends FormDialog {
         createGovernanceAlias({
           alias: values.alias,
           alias_namespace: values.alias_namespace,
-          namespace: values.namespace,
-          service: values.service,
+          namespace: namespaceName,
+          service: serviceName,
           comment: values.comment,
         }),
       )
@@ -99,7 +99,7 @@ export default class CreateDuck extends FormDialog {
           return {
             ...item,
             text: `${item.name}（${item.namespace}）`,
-            value: item.name,
+            value: `${item.name}=>${item.namespace}`,
           }
         }),
       },
@@ -108,6 +108,7 @@ export default class CreateDuck extends FormDialog {
     yield put(
       form.creators.setValues({
         ...data,
+        service: data.service ? `${data.service}=>${data.namespace}` : undefined,
       }),
     )
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel
