@@ -65,9 +65,10 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           <Select
             value={service.getValue()}
             options={options.serviceList}
-            onChange={(value, context: any) => {
+            onChange={value => {
+              const [, namespaceName] = value.split('=>')
               service.setValue(value)
-              namespace.setValue(context.option.namespace)
+              namespace.setValue(namespaceName)
             }}
             type={'simulate'}
             appearance={'button'}
