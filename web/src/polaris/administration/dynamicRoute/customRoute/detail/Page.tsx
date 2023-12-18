@@ -35,6 +35,9 @@ insertCSS(
   .compact-form-control .tea-form__controls{
     padding-right: 0px;
   }
+  .compact-form-control .tea-form__controls--text{
+    padding-top: 0px;
+  }
 `,
 )
 

@@ -2,9 +2,23 @@ import React from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
 import ConfigFileGroupDuck from './PageDuck'
 import getColumns from './getColumns'
-import { Justify, Table, Button, Card, TagSearchBox, Col, Row, Form, FormItem, FormText, Badge } from 'tea-component'
+import {
+  Justify,
+  Table,
+  Button,
+  Card,
+  TagSearchBox,
+  Col,
+  Row,
+  Form,
+  FormItem,
+  FormText,
+  Badge,
+  Text,
+  Bubble,
+} from 'tea-component'
 
-import { toHighlightLanguage } from '../file/Page'
+import { isBetaingRelease, toHighlightLanguage } from '../file/Page'
 import { highlightSelectable } from '@src/polaris/common/helpers/highlightSelectable'
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
@@ -141,6 +155,32 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                       </Form>
                     </Col>
                   </Row>
+                  {true && (
+                    <Form style={{ marginTop: '15px' }}>
+                      <FormItem label='标签'>
+                        <Bubble
+                          placement={'right'}
+                          content={
+                            currentSelected.tags.length > 3
+                              ? currentSelected.tags?.map(item => (
+                                  <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
+                                ))
+                              : null
+                          }
+                        >
+                          <FormText>
+                            <Text overflow style={{ width: '100%' }}>
+                              {currentSelected.tags
+                                ?.slice(0, 3)
+                                ?.map(item => `${item.key}:${item.value}`)
+                                .join(',') || '-'}
+                              {currentSelected.tags?.length > 3 ? '...' : ''}
+                            </Text>
+                          </FormText>
+                        </Bubble>
+                      </FormItem>
+                    </Form>
+                  )}
                   <section style={{ border: '1px solid #cfd5de', width: '100%', marginTop: '15px' }}>
                     <MonacoEditor
                       language={toHighlightLanguage(currentSelected?.format)}

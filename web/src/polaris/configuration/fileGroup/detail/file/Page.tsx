@@ -224,12 +224,12 @@ export default function Page(props: DuckCmpProps<Duck>) {
                   fullExpandable
                   height={900}
                   style={{ width: '450px', maxWidth: '450px' }}
-                // onSelect={v => {
-                //   handlers.select(v)
-                // }}
-                // selectable
-                // selectedIds={selection}
-                // selectValueMode={'onlyLeaf'}
+                  // onSelect={v => {
+                  //   handlers.select(v)
+                  // }}
+                  // selectable
+                  // selectedIds={selection}
+                  // selectValueMode={'onlyLeaf'}
                 >
                   {renderTree(props, fileTree, '', '')}
                 </Tree>
@@ -280,8 +280,8 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 content={
                                   currentNode.tags.length > 3
                                     ? currentNode.tags?.map(item => (
-                                      <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
-                                    ))
+                                        <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
+                                      ))
                                     : null
                                 }
                               >
@@ -333,25 +333,23 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             >
                               发布
                             </Button>
-                            {isBetaingRelease(currentNode) ?
-                              (
-                                <Button
-                                  type={'primary'}
-                                  disabled={editing || !data.editable}
-                                  onClick={() => handlers.stopBetaReleaseCurrentFile()}
-                                >
-                                  停止灰度
-                                </Button>
-                              ) : (
-                                <Button
-                                  type={'weak'}
-                                  disabled={editing || !data.editable}
-                                  onClick={() => handlers.betaReleaseCurrentFile()}
-                                >
-                                  灰度发布
-                                </Button>
-                              )
-                            }
+                            {isBetaingRelease(currentNode) ? (
+                              <Button
+                                type={'primary'}
+                                disabled={editing || !data.editable}
+                                onClick={() => handlers.stopBetaReleaseCurrentFile()}
+                              >
+                                停止灰度
+                              </Button>
+                            ) : (
+                              <Button
+                                type={'weak'}
+                                disabled={editing || !data.editable}
+                                onClick={() => handlers.betaReleaseCurrentFile()}
+                              >
+                                灰度发布
+                              </Button>
+                            )}
                             {editing ? (
                               <>
                                 <Button type={'weak'} onClick={() => handlers.getTemplate(currentNode)}>
@@ -449,11 +447,11 @@ export default function Page(props: DuckCmpProps<Duck>) {
   )
 }
 
-function isBetaingRelease(file: ConfigFile) {
+export function isBetaingRelease(file: ConfigFile) {
   return file.status === FileStatus.Betaing
 }
 
-function getFileNameContext(fileName, status, file, props) {
+function getFileNameContext(fileName, status, file) {
   const splitArray = fileName.split('/')
   return (
     <div>
@@ -489,7 +487,7 @@ function renderTree(props, folder, path: string, currPath: string) {
       {Object.keys(node)?.map(childPath => {
         if (childPath === '__isDir__') return <noscript />
         const obj = node[childPath]
-        const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status, obj, props)
+        const showContent = obj.__isDir__ ? childPath : getFileNameContext(obj.name, obj.status, obj)
         const nextPath = `${currPath}${currPath ? '/' : ''}${childPath}`
         const folderIcon = expandedIds.indexOf(obj.name) > -1 ? 'folderopen' : 'folderclose'
         const { namespace, group, name } = currentNode

@@ -4,10 +4,15 @@ import Duck from './BetaReleaseConfigDuck'
 import FileDiff from '../FileDiff'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
-import { Form, FormItem, FormControl, FormText, Button, Stepper, Icon, Select, Table, Text } from 'tea-component'
+import { Form, FormItem, FormControl, FormText, Button, Stepper, Select, Table, Text } from 'tea-component'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { scrollable, autotip } from 'tea-component/lib/table/addons'
-import { ClientLabelTypeOptions, ClientLabelType, ClientLabelMatchTypeOptions, ClientLabelMatchType } from '../../../types'
+import {
+  ClientLabelTypeOptions,
+  ClientLabelType,
+  ClientLabelMatchTypeOptions,
+  ClientLabelMatchType,
+} from '../../../types'
 
 const removeArrayFieldValue = (field, index) => {
   const newValue = field.getValue()
@@ -18,7 +23,7 @@ const addTag = field => {
   field.setValue([...(field.getValue() || []), { key: '', value: '' }])
 }
 
-export default purify(function (props: DuckCmpProps<Duck>) {
+export default purify(function(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks, selector } = duck
   const formApi = ducks.form.getAPI(store, dispatch)
@@ -81,18 +86,15 @@ export default purify(function (props: DuckCmpProps<Duck>) {
                 key: 'type',
                 header: '匹配方式',
                 render: field => {
-                  const {value} = field.getFields(['value'])
+                  const { value } = field.getFields(['value'])
                   return (
-                    <FormControl
-                      showStatusIcon={false}
-                      style={{ display: 'inline' }}
-                    >
+                    <FormControl showStatusIcon={false} style={{ display: 'inline' }}>
                       <Select
                         options={ClientLabelMatchTypeOptions}
                         value={value.getFields(['type']).type.getValue()}
                         onChange={choseValue => {
                           value.getFields(['type']).type.setValue(ClientLabelMatchType[choseValue])
-                          value.getFields(['value_type']).value_type.setValue("TEXT")
+                          value.getFields(['value_type']).value_type.setValue('TEXT')
                         }}
                         type={'simulate'}
                         appearance={'button'}

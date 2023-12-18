@@ -129,12 +129,12 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
 
   *saga() {
     const { types, selector, creators } = this
-    yield takeLatest(types.LOAD, function* (action) {
+    yield takeLatest(types.LOAD, function*(action) {
       const { composedId, data } = action.payload
       yield put({ type: types.SET_DATA, payload: data })
       yield put({ type: types.SET_COMPOSE_ID, payload: composedId })
     })
-    yield takeLatest(types.CHANGE_TAGS, function* (action) {
+    yield takeLatest(types.CHANGE_TAGS, function*(action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
       const validTags = tags.map(item => {
@@ -150,7 +150,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       })
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
-    yield takeLatest(types.SHOW_DIFF, function* (action) {
+    yield takeLatest(types.SHOW_DIFF, function*(action) {
       const { namespace, group, name, fileName } = action.payload
       const { configFileRelease } = yield DescribeConfigFileRelease({
         namespace,
@@ -160,7 +160,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       })
       yield VersionDiffDuck.show({ currentRelease: configFileRelease })
     })
-    yield takeLatest(types.SET_INIT_DATA, function* () {
+    yield takeLatest(types.SET_INIT_DATA, function*() {
       const { composedId } = selector(yield select())
       const tags = []
       if (composedId?.fileName) {
@@ -175,7 +175,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       }
       yield put({ type: types.CHANGE_TAGS, payload: tags })
     })
-    yield takeLatest(types.SET_SELECTED, function* (action) {
+    yield takeLatest(types.SET_SELECTED, function*(action) {
       const { versionMap } = selector(yield select())
       const { namespace, group, name, fileName } = action.payload
       const { configFileRelease } = yield DescribeConfigFileRelease({
@@ -186,7 +186,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       })
       yield put({ type: types.SET_VERSION_CONFIG_MAP, payload: { ...versionMap, [name]: configFileRelease } })
     })
-    yield takeLatest(types.ROLLBACK, function* (action) {
+    yield takeLatest(types.ROLLBACK, function*(action) {
       const { name, fileName, releaseDescription } = action.payload
       const confirm = yield Modal.confirm({
         message: `确定回滚配置${fileName}到以下版本？`,
@@ -211,7 +211,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
         }
       }
     })
-    yield takeLatest(types.DELETE, function* (action) {
+    yield takeLatest(types.DELETE, function*(action) {
       const { fileName, namespace, group, name } = action.payload
 
       const confirm = yield Modal.confirm({

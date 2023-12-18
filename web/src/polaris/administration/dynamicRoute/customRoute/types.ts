@@ -8,6 +8,9 @@ export enum RouteLabelMatchType {
   NOT_IN = 'NOT_IN',
   RANGE = 'RANGE',
 }
+export const checkNeedTagInput = v => {
+  return v === RouteLabelMatchType.IN || v === RouteLabelMatchType.NOT_IN
+}
 export const RouteLabelMatchTypeOptions = [
   {
     value: RouteLabelMatchType.EXACT,

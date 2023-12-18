@@ -34,12 +34,14 @@ import {
   LimitFailover,
   LimitAmountsValidationUnit,
   LimitAmountsValidationUnitOptions,
+  checkNeedTagInput,
 } from '../types'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { FieldAPI } from '@src/polaris/common/ducks/Form'
 import { LimitArgumentsConfigForFormFilling } from '../model'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
+import TagSelectOrInput from '@src/polaris/common/components/TagSelectOrInput'
 
 insertCSS(
   'create-rule-form',
@@ -185,7 +187,23 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
       )
     } else {
       valueComponent = (
-        <Input placeholder='请输入Value值' field={valueField} onChange={value => valueField.setValue(value)} />
+        <>
+          <TagSelectOrInput
+            useTagSelect={checkNeedTagInput(operatorField.getValue())}
+            inputProps={{ placeholder: '请输入Value值', size: 'full' }}
+            tagSelectProps={{
+              options: data?.serviceList.filter(o => {
+                if (keyField.getValue()) {
+                  return o.namespace === keyField.getValue()
+                } else {
+                  return data?.serviceList
+                }
+              }),
+              style: { display: 'block', width: '100%' },
+            }}
+            field={valueField}
+          ></TagSelectOrInput>
+        </>
       )
     }
 
@@ -300,11 +318,15 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                       </AutoComplete>
                     </FormField>
                     <FormField label='接口名称' field={methodField} align='middle'>
-                      <Input
+                      <TagSelectOrInput
+                        useTagSelect={checkNeedTagInput(methodTypeField.getValue())}
+                        inputProps={{ placeholder: '请输入接口名称，默认全选', className: 'form-item-space' }}
+                        tagSelectProps={{
+                          style: { width: '500px', verticalAlign: 'middle', marginRight: '10px' },
+                          placeholder: '请输入接口名称，默认全选',
+                        }}
                         field={methodValueField}
-                        placeholder='请输入接口名称，默认全选'
-                        className='form-item-space'
-                      />
+                      ></TagSelectOrInput>
                       <Select
                         options={LimitMethodTypeOptions}
                         value={methodTypeField.getValue()}
@@ -325,12 +347,13 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             return id.getValue()
                           }}
                           bordered
-                          style={{ width: '830px' }}
+                          style={{ width: '100%' }}
                           records={[...argumentsField.asArray()]}
                           columns={[
                             {
                               key: 'type',
                               header: '类型',
+                              width: 220,
                               render: item => {
                                 const { type, key } = item.getFields(['type', 'key'])
                                 const validate = type.getTouched() && type.getError()
@@ -360,6 +383,7 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                             {
                               key: 'key',
                               header: 'key',
+                              width: 220,
                               render: item => {
                                 const { type } = item.getFields(['type'])
                                 return getArgumentsKeyComp(type.getValue(), item)

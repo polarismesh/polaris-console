@@ -23,6 +23,7 @@ import {
   InputNumber as TeaInputNumber,
   SelectOptionWithGroup,
   Switch,
+  TagSelect,
 } from 'tea-component'
 import FormDuck from '@src/polaris/common/ducks/Form'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
@@ -43,6 +44,7 @@ import {
   RoutingValueTypeOptions,
   RoutingValueTextMap,
   RoutingArgumentsTypeLabelMap,
+  checkNeedTagInput,
 } from '../types'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { autotip } from 'tea-component/lib/table/addons'
@@ -143,7 +145,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
     type: string,
     filteredLabelList,
   ) {
-    const { key: keyField, value: valueField, type: labelType, value_type } = recordField.getFields([
+    const { key: keyField, value: valueField, type: labelType } = recordField.getFields([
       'key',
       'value',
       'type',
@@ -285,6 +287,30 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
           />
         </>
       )
+    } else if (checkNeedTagInput(value_type.getValue()) || checkNeedTagInput(labelType.getValue())) {
+      const tagOptions = [
+        ...(isVariableType ? variableOptions : []),
+        ...(isVariableType
+          ? []
+          : valueOptions.filter(item =>
+              valueField.getValue() ? item.text.indexOf(valueField.getValue()) > -1 : true,
+            )),
+      ]
+      valueComponent = (
+        <>
+          <TagSelect
+            options={tagOptions}
+            value={valueField
+              ?.getValue()
+              ?.split(',')
+              ?.filter(item => item)}
+            onChange={tags => {
+              valueField.setValue(tags.join(','))
+            }}
+            style={{ display: 'block' }}
+          />
+        </>
+      )
     } else if (labelType.getValue() === RoutingArgumentsType.CUSTOM || type === 'destination') {
       valueComponent = (
         <AutoComplete
@@ -343,12 +369,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
       }
       return item
     })
-    const { type, value_type, key: keyField, value: valueField } = labelField.getFields([
-      'type',
-      'value_type',
-      'key',
-      'value',
-    ])
+    const { type, value_type } = labelField.getFields(['type', 'value_type', 'key', 'value'])
 
     return (
       <PopConfirm
@@ -356,7 +377,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
         message={
           <Row>
             <Col span={8}>{getArgumentsKeyComp(labelField, 'destination', filterDestinationLabelList)}</Col>
-            <Col span={5}>
+            <Col span={4}>
               <Select
                 options={RouteLabelMatchTypeOptions}
                 value={type.getValue()}
@@ -382,10 +403,10 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                 size={'s'}
               />
             </Col>
-            <Col span={8}>{getArgumentsValueComp(labelField, argumentsField, 'destination')}</Col>
+            <Col span={9}>{getArgumentsValueComp(labelField, argumentsField, 'destination')}</Col>
           </Row>
         }
-        placement={'right'}
+        placement={'top'}
         style={{ width: '800px', maxWidth: 'none' }}
         onVisibleChange={visible => {
           if (visible) setLabelPopConfirmVisible(id)

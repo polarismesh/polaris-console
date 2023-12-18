@@ -24,7 +24,7 @@ import Input from '@src/polaris/common/duckComponents/form/Input'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
 import CreateDuck from './CreateDuck'
-import { LimitMethodType, LimitMethodTypeOptions } from '../../accessLimiting/types'
+import { LimitMethodType, LimitMethodTypeOptions, checkNeedTagInput } from '../../accessLimiting/types'
 import {
   BreakerType,
   ErrorConditionOptions,
@@ -39,6 +39,7 @@ import {
 } from '../types'
 import Select from '@src/polaris/common/duckComponents/form/Select'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
+import TagSelectOrInput from '@src/polaris/common/components/TagSelectOrInput'
 
 const addArrayFieldValue = (field, defaultValue) => {
   field.setValue([...field.getValue(), defaultValue])
@@ -284,11 +285,17 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                           </FormField>
                           {level.getValue() === BreakLevelType.Method && (
                             <FormField label='接口名称' field={methodValue} align='middle'>
-                              <Input
+                              <TagSelectOrInput
+                                useTagSelect={checkNeedTagInput(methodType.getValue())}
+                                inputProps={{
+                                  placeholder: '请输入接口名称',
+                                  style: { width: 'calc(80% - 101px)', borderRight: '0px' },
+                                }}
+                                tagSelectProps={{
+                                  style: { width: 'calc(80% - 111px)', marginRight: '10px', verticalAlign: 'middle' },
+                                }}
                                 field={methodValue}
-                                placeholder='请输入接口名称'
-                                style={{ width: 'calc(80% - 101px)', borderRight: '0px' }}
-                              />
+                              ></TagSelectOrInput>
                               <TeaSelect
                                 options={LimitMethodTypeOptions}
                                 value={methodType.getValue()}
@@ -320,7 +327,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                         const { condition, inputType } = field.getFields(['condition', 'inputType'])
                         const { value, type } = condition.getFields(['value', 'type'])
                         return (
-                          <Form layout={'inline'} key={index}>
+                          <Form layout={'inline'} key={index} className={''}>
                             <FormField field={inputType} showStatusIcon={false}>
                               <TeaSelect
                                 value={inputType.getValue()}
@@ -345,6 +352,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   field={type}
                                   options={LimitMethodTypeOptions}
                                   disabled={inputType.getValue() === ErrorConditionType.DELAY}
+                                  size={'s'}
                                 />
                               </FormItem>
                             )}
@@ -352,8 +360,19 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                               showStatusIcon={false}
                               field={value}
                               suffix={inputType.getValue() === ErrorConditionType.DELAY ? '毫秒' : ''}
+                              style={{ paddingTop: '0px' }}
                             >
-                              <Input field={value} />
+                              <TagSelectOrInput
+                                useTagSelect={
+                                  inputType.getValue() !== ErrorConditionType.DELAY &&
+                                  checkNeedTagInput(type.getValue())
+                                }
+                                inputProps={{}}
+                                tagSelectProps={{
+                                  style: { maxWidth: '600px', width: '100%' },
+                                }}
+                                field={value}
+                              ></TagSelectOrInput>
                             </FormField>
                             {errorConditions.getValue().length > 1 && (
                               <FormItem>

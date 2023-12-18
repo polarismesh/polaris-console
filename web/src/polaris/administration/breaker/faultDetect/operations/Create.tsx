@@ -19,7 +19,11 @@ import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
 import CreateDuck from './CreateDuck'
 
-import { LimitMethodType, LimitMethodTypeOptions } from '@src/polaris/administration/accessLimiting/types'
+import {
+  LimitMethodType,
+  LimitMethodTypeOptions,
+  checkNeedTagInput,
+} from '@src/polaris/administration/accessLimiting/types'
 import {
   BlockHttpBodyMethod,
   FaultDetectHttpMethodOptions,
@@ -27,6 +31,7 @@ import {
   FaultDetectProtocolOptions,
 } from '../types'
 import { BreakerType } from '../../types'
+import TagSelectOrInput from '@src/polaris/common/components/TagSelectOrInput'
 
 const addArrayFieldValue = (field, defaultValue) => {
   field.setValue([...field.getValue(), defaultValue])
@@ -170,7 +175,15 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
               </AutoComplete>
             </FormField>
             <FormField label='接口名称' field={methodValue} align='middle'>
-              <Input field={methodValue} placeholder='请输入接口名称' style={{ width: '200px', borderRight: '0px' }} />
+              <TagSelectOrInput
+                useTagSelect={checkNeedTagInput(methodType.getValue())}
+                inputProps={{ placeholder: '请输入接口名称', style: { width: '200px', borderRight: '0px' } }}
+                tagSelectProps={{
+                  style: { width: '200px', verticalAlign: 'middle', marginRight: '10px' },
+                  placeholder: '请输入接口名称',
+                }}
+                field={methodValue}
+              ></TagSelectOrInput>
               <TeaSelect
                 options={LimitMethodTypeOptions}
                 value={methodType.getValue()}
