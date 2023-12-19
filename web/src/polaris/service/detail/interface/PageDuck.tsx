@@ -19,7 +19,6 @@ import { saveAs } from 'file-saver'
 import {
   GovernanceInterfaceDescription,
   GovernanceServiceContract,
-  GovernanceServiceContractVersion,
   DescribeGovernanceServiceContractVersions,
   DescribeGovernanceServiceContracts,
   DeleteGovernanceServiceContractInterfaces,
@@ -189,7 +188,7 @@ export default class InterfacePageDuck extends GridPageDuck {
       composedId: reduceFromPayload<ComposedId>(types.SET_COMPOSE_ID, {} as ComposedId),
       tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
       selectedVersion: reduceFromPayload<string>(types.SET_CONTRACT_VERSION, ''),
-      contractVersionList: reduceFromPayload<GovernanceServiceContractVersion & SelectOptionWithGroup[]>(
+      contractVersionList: reduceFromPayload<(GovernanceServiceContract & SelectOptionWithGroup)[]>(
         types.SET_CONTRACT_VERSION_LIST,
         [],
       ),
@@ -330,7 +329,7 @@ export default class InterfacePageDuck extends GridPageDuck {
       const {
         grid: { list },
         selectedVersion,
-        composedId: { namespace, name: service },
+        contractVersionList,
       } = selector(yield select())
       const selectionList = list.filter(item => data.includes(item.id))
       const confirm = yield Modal.confirm({
@@ -356,12 +355,9 @@ export default class InterfacePageDuck extends GridPageDuck {
         okText: '删除',
       })
       if (confirm) {
-        const [name, contractVersion] = selectedVersion.split('=>')
+        const { id } = contractVersionList?.find(item => item.value === selectedVersion)
         const res = yield DeleteGovernanceServiceContractInterfaces({
-          name,
-          version: contractVersion,
-          namespace,
-          service,
+          id,
           interfaces: selectionList.map(item => ({ id: item.id })),
         })
         if (res) notification.success({ description: '删除成功' })

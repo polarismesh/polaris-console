@@ -200,7 +200,7 @@ export interface GovernanceServiceContractVersion {
 /** 服务契约定义 */
 export interface GovernanceServiceContract {
   /** 契约ID */
-  iD?: string
+  id?: string
 
   /** 契约名称 */
   name?: string
@@ -282,7 +282,7 @@ export function DeleteGovernanceServiceContractInterfaces(params: DeleteGovernan
  */
 export interface DeleteGovernanceServiceContractInterfacesParams {
   /** 契约ID */
-  iD?: string
+  id?: string
 
   /** 契约名称 */
   name?: string
