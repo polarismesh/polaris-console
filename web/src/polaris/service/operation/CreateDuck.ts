@@ -13,6 +13,21 @@ import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { DescribeStrategyOption } from '@src/polaris/auth/constants'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
 
+export enum VisibilityMode {
+  Single = 'single',
+  All = 'all',
+}
+export const VisibilityModeMap = {
+  [VisibilityMode.Single]: '仅当前命名空间可见',
+  [VisibilityMode.All]: '全部命名空间可见（包括新增）',
+}
+export const CheckVisibilityMode = (exportTo = [], namespace) => {
+  return exportTo?.includes('*')
+    ? VisibilityMode.All
+    : exportTo.length === 1 && exportTo?.[0] === namespace
+    ? VisibilityMode.Single
+    : ''
+}
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
   isModify: boolean
@@ -46,8 +61,8 @@ export default class CreateDuck extends FormDialog {
       selectors,
       ducks: { form, userGroupSelect, userSelect },
     } = this
-    const userIds = userSelect.selector(yield select()).selection.map((item) => item.id)
-    const groupIds = userGroupSelect.selector(yield select()).selection.map((item) => item.id)
+    const userIds = userSelect.selector(yield select()).selection.map(item => item.id)
+    const groupIds = userGroupSelect.selector(yield select()).selection.map(item => item.id)
     const { userIds: originUsers, groupIds: originGroups } = selectors.data(yield select())
     const options = selectors.options(yield select())
     const values = form.selectors.values(yield select())
@@ -148,14 +163,14 @@ export default class CreateDuck extends FormDialog {
       yield put(userSelect.creators.select(users))
       yield put({
         type: types.UPDATE,
-        payload: { ...data, userIds: users.map((item) => item.id), groupIds: groups.map((item) => item.id) },
+        payload: { ...data, userIds: users.map(item => item.id), groupIds: groups.map(item => item.id) },
       })
     }
     yield put({
       type: types.SET_OPTIONS,
       payload: {
         ...options,
-        namespaceList: namespaceList.map((item) => {
+        namespaceList: namespaceList.map(item => {
           const disabled = isReadOnlyNamespace(item)
           return {
             ...item,
@@ -187,6 +202,8 @@ export interface Values {
   id?: string
   userIds?: string[]
   groupIds?: string[]
+  service_export_to: string[]
+  visibilityMode: string
 }
 class CreateForm extends Form {
   Values: Values
