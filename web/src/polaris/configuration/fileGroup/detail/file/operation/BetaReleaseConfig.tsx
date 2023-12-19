@@ -13,6 +13,7 @@ import {
   ClientLabelMatchTypeOptions,
   ClientLabelMatchType,
 } from '../../../types'
+import TagSelectOrInput, { checkNeedTagInput } from '@src/polaris/common/components/TagSelectOrInput'
 
 const removeArrayFieldValue = (field, index) => {
   const newValue = field.getValue()
@@ -59,6 +60,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
               {
                 key: 'key',
                 header: '标签键',
+                width: 150,
                 render: field => {
                   const key = field.getField('key')
                   return (
@@ -85,6 +87,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
               {
                 key: 'type',
                 header: '匹配方式',
+                width: 120,
                 render: field => {
                   const { value } = field.getFields(['value'])
                   return (
@@ -98,7 +101,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                         }}
                         type={'simulate'}
                         appearance={'button'}
-                        size={'full'}
+                        size={'s'}
                       ></Select>
                     </FormControl>
                   )
@@ -109,6 +112,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 header: '标签值',
                 render: field => {
                   const value = field.getField('value').getField('value')
+                  const type = field.getField('value').getField('type')
                   return (
                     <FormControl
                       status={value.getTouched() && value.getError() ? 'error' : null}
@@ -116,7 +120,14 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       style={{ display: 'inline' }}
                       message={value.getTouched() && value.getError() ? value.getError() : null}
                     >
-                      <Input field={value} maxLength={4096}></Input>
+                      <TagSelectOrInput
+                        useTagSelect={checkNeedTagInput(type.getValue())}
+                        inputProps={{ placeholder: '请输入Value值', size: 'full', maxLength: 4096 }}
+                        tagSelectProps={{
+                          style: { width: '100%', verticalAlign: 'middle' },
+                        }}
+                        field={value}
+                      ></TagSelectOrInput>
                     </FormControl>
                   )
                 },
@@ -124,6 +135,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
               {
                 key: 'action',
                 header: '操作',
+                width: 50,
                 render: (field, key, index) => {
                   return (
                     <Button

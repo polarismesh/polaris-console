@@ -7,6 +7,9 @@ interface Props {
   tagSelectProps: Omit<TagSelectProps, 'onChange' | 'value'>
   useTagSelect: boolean
 }
+export const checkNeedTagInput = v => {
+  return v === 'IN' || v === 'NOT_IN'
+}
 export default function(props: Props) {
   const { field, useTagSelect, inputProps, tagSelectProps } = props
   return (

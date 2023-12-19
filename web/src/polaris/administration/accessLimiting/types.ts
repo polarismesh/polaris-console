@@ -99,9 +99,7 @@ export const LimitMethodTypeOptions = [
     text: '不包含',
   },
 ]
-export const checkNeedTagInput = v => {
-  return v === LimitMethodType.IN || v === LimitMethodType.NOT_IN
-}
+
 export const LimitMethodTypeMap = LimitMethodTypeOptions.reduce((map, curr) => {
   map[curr.value] = curr.text
   return map

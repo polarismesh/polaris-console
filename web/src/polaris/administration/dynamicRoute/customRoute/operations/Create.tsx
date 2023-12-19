@@ -44,10 +44,10 @@ import {
   RoutingValueTypeOptions,
   RoutingValueTextMap,
   RoutingArgumentsTypeLabelMap,
-  checkNeedTagInput,
 } from '../types'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { autotip } from 'tea-component/lib/table/addons'
+import { checkNeedTagInput } from '@src/polaris/common/components/TagSelectOrInput'
 insertCSS(
   'create-rule-form',
   `.card-module-h6-title-style {

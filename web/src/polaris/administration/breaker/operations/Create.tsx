@@ -24,7 +24,7 @@ import Input from '@src/polaris/common/duckComponents/form/Input'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
 import CreateDuck from './CreateDuck'
-import { LimitMethodType, LimitMethodTypeOptions, checkNeedTagInput } from '../../accessLimiting/types'
+import { LimitMethodType, LimitMethodTypeOptions } from '../../accessLimiting/types'
 import {
   BreakerType,
   ErrorConditionOptions,
@@ -39,7 +39,7 @@ import {
 } from '../types'
 import Select from '@src/polaris/common/duckComponents/form/Select'
 import Switch from '@src/polaris/common/duckComponents/form/Switch'
-import TagSelectOrInput from '@src/polaris/common/components/TagSelectOrInput'
+import TagSelectOrInput, { checkNeedTagInput } from '@src/polaris/common/components/TagSelectOrInput'
 
 const addArrayFieldValue = (field, defaultValue) => {
   field.setValue([...field.getValue(), defaultValue])

@@ -34,14 +34,13 @@ import {
   LimitFailover,
   LimitAmountsValidationUnit,
   LimitAmountsValidationUnitOptions,
-  checkNeedTagInput,
 } from '../types'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { FieldAPI } from '@src/polaris/common/ducks/Form'
 import { LimitArgumentsConfigForFormFilling } from '../model'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
-import TagSelectOrInput from '@src/polaris/common/components/TagSelectOrInput'
+import TagSelectOrInput, { checkNeedTagInput } from '@src/polaris/common/components/TagSelectOrInput'
 
 insertCSS(
   'create-rule-form',

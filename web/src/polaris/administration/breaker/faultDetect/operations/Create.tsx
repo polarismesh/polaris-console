@@ -19,11 +19,7 @@ import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
 import CreateDuck from './CreateDuck'
 
-import {
-  LimitMethodType,
-  LimitMethodTypeOptions,
-  checkNeedTagInput,
-} from '@src/polaris/administration/accessLimiting/types'
+import { LimitMethodType, LimitMethodTypeOptions } from '@src/polaris/administration/accessLimiting/types'
 import {
   BlockHttpBodyMethod,
   FaultDetectHttpMethodOptions,
@@ -31,7 +27,7 @@ import {
   FaultDetectProtocolOptions,
 } from '../types'
 import { BreakerType } from '../../types'
-import TagSelectOrInput from '@src/polaris/common/components/TagSelectOrInput'
+import TagSelectOrInput, { checkNeedTagInput } from '@src/polaris/common/components/TagSelectOrInput'
 
 const addArrayFieldValue = (field, defaultValue) => {
   field.setValue([...field.getValue(), defaultValue])
