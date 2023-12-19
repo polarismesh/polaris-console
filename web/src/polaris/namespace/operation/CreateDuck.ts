@@ -11,6 +11,8 @@ import { UserSelectDuck } from '@src/polaris/auth/userGroup/operation/CreateDuck
 import { UserGroupSelectDuck } from '@src/polaris/auth/user/operation/AttachUserGroupDuck'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { DescribeStrategyOption } from '@src/polaris/auth/constants'
+import { describeNamespaces } from '@src/polaris/service/model'
+import { VisibilityMode, CheckVisibilityMode } from '@src/polaris/service/operation/CreateDuck'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -50,6 +52,12 @@ export default class CreateDuck extends FormDialog {
     const values = form.selectors.values(yield select())
     const userIds = userSelect.selector(yield select()).selection.map(item => item.id)
     const groupIds = userGroupSelect.selector(yield select()).selection.map(item => item.id)
+    const service_export_to =
+      values.visibilityMode === VisibilityMode.Single
+        ? [values.name]
+        : values.visibilityMode === VisibilityMode.All
+        ? ['*']
+        : values.service_export_to
     if (options.isModify) {
       const { removeArray: removeUserIds } = diffAddRemoveArray(originUsers, userIds)
       const { removeArray: removeGroupIds } = diffAddRemoveArray(originGroups, groupIds)
@@ -62,6 +70,7 @@ export default class CreateDuck extends FormDialog {
             group_ids: groupIds,
             remove_user_ids: removeUserIds,
             remove_group_ids: removeGroupIds,
+            service_export_to,
           },
         ]),
       )
@@ -74,6 +83,7 @@ export default class CreateDuck extends FormDialog {
             comment: values.comment,
             user_ids: userIds,
             group_ids: groupIds,
+            service_export_to,
           },
         ]),
       )
@@ -103,6 +113,19 @@ export default class CreateDuck extends FormDialog {
       yield put(userGroupSelect.creators.load({}))
       yield put(userSelect.creators.load({}))
     }
+    const { list: namespaceList } = yield getAllList(describeNamespaces, { listKey: 'content' })({})
+    yield put({
+      type: types.SET_OPTIONS,
+      payload: {
+        ...options,
+        namespaceList: namespaceList.map(item => {
+          return {
+            ...item,
+            value: item.name,
+          }
+        }),
+      },
+    })
     if (options.isModify && options.authOpen) {
       const { list: allStrategies } = yield getAllList(describeGovernanceStrategies, { listKey: 'content' })({
         res_id: data.id,
@@ -123,10 +146,13 @@ export default class CreateDuck extends FormDialog {
         payload: { ...data, userIds: users.map(item => item.id), groupIds: groups.map(item => item.id) },
       })
     }
+    const visibilityMode = CheckVisibilityMode(data.service_export_to, data.name)
+    if (visibilityMode === VisibilityMode.All) data.service_export_to = []
     yield put(form.creators.setMeta(options))
     yield put(
       form.creators.setValues({
         ...data,
+        visibilityMode,
       }),
     )
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel
@@ -139,12 +165,19 @@ export interface Values {
   id: string
   userIds: string[]
   groupIds: string[]
+  service_export_to?: string[]
+  visibilityMode?: string
 }
 class CreateForm extends Form {
   Values: Values
   Meta: {}
   validate(v: this['Values'], meta: this['Meta']) {
     return validator(v, meta)
+  }
+  get defaultValue(): this['Values'] {
+    return {
+      visibilityMode: VisibilityMode.Single,
+    } as this['Values']
   }
 }
 const validator = CreateForm.combineValidators<Values, {}>({

@@ -15,6 +15,7 @@ export interface CreateNamespaceParams {
   owners?: string
   user_ids?: string[]
   group_ids?: string[]
+  service_export_to?: string[]
 }
 export interface CreateNamespaceResult {
   namespace: Namespace
@@ -27,6 +28,7 @@ export interface ModifyNamespaceParams {
   group_ids?: string[]
   remove_user_ids?: string[]
   remove_group_ids?: string[]
+  service_export_to?: string[]
 }
 export interface ModifyNamespaceResult {
   size: number
