@@ -31,16 +31,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   } = duck
 
   const formApi = form.getAPI(store, dispatch)
-  const {
-    namespace,
-    name,
-    comment,
-    metadata,
-    department,
-    business,
-    service_export_to,
-    visibilityMode,
-  } = formApi.getFields([
+  const { namespace, name, comment, metadata, department, business, export_to, visibilityMode } = formApi.getFields([
     'namespace',
     'name',
     'comment',
@@ -48,7 +39,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     'ports',
     'business',
     'department',
-    'service_export_to',
+    'export_to',
     'visibilityMode',
   ])
   const options = selectors.options(store)
@@ -88,7 +79,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
               value={visibilityMode.getValue()}
               onChange={v => {
                 visibilityMode.setValue(v)
-                service_export_to.setValue([])
+                export_to.setValue([])
               }}
             >
               <Radio name={VisibilityMode.Single}>{'仅当前命名空间'}</Radio>
@@ -98,10 +89,10 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           <SelectMultiple
             searchable
             allOption={{ text: '当前全部命名空间', value: 'all' }}
-            value={service_export_to.getValue() || []}
+            value={export_to.getValue() || []}
             options={options.namespaceList || []}
             onChange={value => {
-              service_export_to.setValue(value)
+              export_to.setValue(value)
               visibilityMode.setValue('')
             }}
             appearance={'button'}

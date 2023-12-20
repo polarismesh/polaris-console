@@ -17,6 +17,8 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
     header: '服务可见性',
     render: x => {
       const visibilityMode = CheckVisibilityMode(x.service_export_to, x.name)
+
+      if (!visibilityMode.length) return '-'
       return (
         <Text>
           {visibilityMode ? (

@@ -202,7 +202,7 @@ export interface Values {
   id?: string
   userIds?: string[]
   groupIds?: string[]
-  service_export_to: string[]
+  export_to: string[]
   visibilityMode: string
 }
 class CreateForm extends Form {

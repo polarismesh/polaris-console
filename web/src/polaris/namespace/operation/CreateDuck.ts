@@ -11,7 +11,6 @@ import { UserSelectDuck } from '@src/polaris/auth/userGroup/operation/CreateDuck
 import { UserGroupSelectDuck } from '@src/polaris/auth/user/operation/AttachUserGroupDuck'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { DescribeStrategyOption } from '@src/polaris/auth/constants'
-import { describeNamespaces } from '@src/polaris/service/model'
 import { VisibilityMode, CheckVisibilityMode } from '@src/polaris/service/operation/CreateDuck'
 
 export interface DialogOptions {
@@ -113,8 +112,7 @@ export default class CreateDuck extends FormDialog {
       yield put(userGroupSelect.creators.load({}))
       yield put(userSelect.creators.load({}))
     }
-    const { list: namespaceList } = yield
-    getAllList(describeComplicatedNamespaces, {
+    const { list: namespaceList } = yield getAllList(describeComplicatedNamespaces, {
       listKey: 'namespaces',
       totalKey: 'amount',
     })({})
