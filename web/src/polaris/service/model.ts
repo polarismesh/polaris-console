@@ -29,6 +29,7 @@ export interface CreateServicesParams {
   department: string
   user_ids?: string[]
   group_ids?: string[]
+  export_to?: string[]
 }
 
 export interface ModifyServicesParams {
@@ -47,6 +48,7 @@ export interface ModifyServicesParams {
   group_ids?: string[]
   remove_user_ids?: string[]
   remove_group_ids?: string[]
+  export_to?: string[]
 }
 export interface DescribeNamespacesResult {
   amount: number

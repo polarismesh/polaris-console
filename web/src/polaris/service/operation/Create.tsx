@@ -1,6 +1,6 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
-import Duck, { VisibilityMode } from './CreateDuck'
+import Duck, { CheckVisibilityMode, VisibilityMode } from './CreateDuck'
 import { Form, Select, Text, Icon, Bubble, Button, FormItem, Radio, RadioGroup, SelectMultiple } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
@@ -42,6 +42,8 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     'export_to',
     'visibilityMode',
   ])
+  
+  visibilityMode.setValue(CheckVisibilityMode(export_to.getValue(), namespace))
   const options = selectors.options(store)
   const [showAdvance, setShowAdvance] = React.useState(false)
 

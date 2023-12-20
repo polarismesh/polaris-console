@@ -24,7 +24,7 @@ export const VisibilityModeMap = {
 export const CheckVisibilityMode = (exportTo = [], namespace) => {
   return exportTo?.includes('*')
     ? VisibilityMode.All
-    : exportTo.length === 1 && exportTo?.[0] === namespace
+    : (exportTo.length === 1 && exportTo?.[0] === namespace) || exportTo.length === 0
     ? VisibilityMode.Single
     : ''
 }
@@ -97,6 +97,7 @@ export default class CreateDuck extends FormDialog {
             group_ids: groupIds,
             remove_user_ids: removeUserIds,
             remove_group_ids: removeGroupIds,
+            export_to: values.export_to,
           },
         ]),
       )
@@ -115,6 +116,7 @@ export default class CreateDuck extends FormDialog {
             department: values.department,
             user_ids: userIds,
             group_ids: groupIds,
+            export_to: values.export_to,
           },
         ]),
       )
