@@ -4,7 +4,7 @@ import { NamespaceItem } from '../PageDuck'
 import FormDialog from '@src/polaris/common/ducks/FormDialog'
 import { resolvePromise } from '@src/polaris/common/helpers/saga'
 import Form from '@src/polaris/common/ducks/Form'
-import { modifyNamespace, createNamespace } from '../model'
+import { modifyNamespace, createNamespace, describeComplicatedNamespaces } from '../model'
 import { AuthStrategy, describeGovernanceStrategies } from '@src/polaris/auth/model'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { UserSelectDuck } from '@src/polaris/auth/userGroup/operation/CreateDuck'
@@ -113,7 +113,11 @@ export default class CreateDuck extends FormDialog {
       yield put(userGroupSelect.creators.load({}))
       yield put(userSelect.creators.load({}))
     }
-    const { list: namespaceList } = yield getAllList(describeNamespaces, { listKey: 'content' })({})
+    const { list: namespaceList } = yield
+    getAllList(describeComplicatedNamespaces, {
+      listKey: 'namespaces',
+      totalKey: 'amount',
+    })({})
     yield put({
       type: types.SET_OPTIONS,
       payload: {
