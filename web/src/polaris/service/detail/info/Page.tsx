@@ -13,7 +13,7 @@ export default function BaseInfo(props: DuckCmpProps<BaseInfoDuck>) {
   const serviceTags = Object.keys(data.metadata || {})
     .filter(item => item !== enableNearbyString)
     .map(item => `${item}:${data.metadata[item]}`)
-  const visibilityMode = CheckVisibilityMode(data.service_export_to, data.name)
+  const visibilityMode = CheckVisibilityMode(data.export_to, data.name)
   return (
     <>
       <Card>
@@ -27,27 +27,33 @@ export default function BaseInfo(props: DuckCmpProps<BaseInfoDuck>) {
                 <FormItem label={'服务名'}>
                   <FormText>{data.name}</FormText>
                 </FormItem>
-                <FormItem>
+                <FormItem label={'可见性'}>
                   <FormText>
                     <Text>
-                      {visibilityMode ? (
-                        VisibilityMode[visibilityMode]
+                      {data.export_to?.length === 0 ? (
+                        '-'
                       ) : (
-                        <Bubble
-                          trigger={'click'}
-                          content={
-                            <Text>
-                              <Text parent={'div'}>{'服务可见的命名空间列表'}</Text>
-                              {data.service_export_to?.map(item => (
-                                <Text parent={'div'} key={item}>
-                                  {item}
+                        <>
+                          {visibilityMode ? (
+                            VisibilityMode[visibilityMode]
+                          ) : (
+                            <Bubble
+                              trigger={'click'}
+                              content={
+                                <Text>
+                                  <Text parent={'div'}>{'服务可见的命名空间列表'}</Text>
+                                  {data.export_to?.map(item => (
+                                    <Text parent={'div'} key={item}>
+                                      {item}
+                                    </Text>
+                                  ))}
                                 </Text>
-                              ))}
-                            </Text>
-                          }
-                        >
-                          {data.service_export_to ? data.service_export_to?.slice(0, 3)?.join(',') + '...' : '-'}
-                        </Bubble>
+                              }
+                            >
+                              {data.export_to ? data.export_to?.slice(0, 3)?.join(',') + '...' : '-'}
+                            </Bubble>
+                          )}
+                        </>
                       )}
                     </Text>
                   </FormText>

@@ -15,7 +15,7 @@ export interface Service {
   editable: boolean
   healthy_instance_count?: string
   total_instance_count?: string
-  service_export_to?: string[]
+  export_to?: string[]
 }
 
 export interface Namespace {
