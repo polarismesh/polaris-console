@@ -98,13 +98,13 @@ export enum ClientLabelType {
 }
 
 export const ClientLabelTypeOptions = [
-  {
-    value: ClientLabelType.CLIENT_ID,
-    text: '客户端ID',
-  },
+  // {
+  //   value: ClientLabelType.CLIENT_ID,
+  //   text: '客户端ID',
+  // },
   {
     value: ClientLabelType.CLIENT_IP,
-    text: '客户端Host',
+    text: '客户端IP',
   },
   // {
   //   value: ClientLabelType.CLIENT_LANGUAGE,
