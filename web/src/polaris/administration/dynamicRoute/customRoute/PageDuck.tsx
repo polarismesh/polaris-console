@@ -267,6 +267,7 @@ export default class CustomRouteDuck extends GridPageDuck {
             cmdb_mod2: '',
             cmdb_mod3: '',
             department: serviceData.department,
+            export_to: serviceData.export_to,
           },
         ]),
       )

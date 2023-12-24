@@ -224,12 +224,12 @@ export default function Page(props: DuckCmpProps<Duck>) {
                   fullExpandable
                   height={900}
                   style={{ width: '450px', maxWidth: '450px' }}
-                  // onSelect={v => {
-                  //   handlers.select(v)
-                  // }}
-                  // selectable
-                  // selectedIds={selection}
-                  // selectValueMode={'onlyLeaf'}
+                // onSelect={v => {
+                //   handlers.select(v)
+                // }}
+                // selectable
+                // selectedIds={selection}
+                // selectValueMode={'onlyLeaf'}
                 >
                   {renderTree(props, fileTree, '', '')}
                 </Tree>
@@ -280,8 +280,8 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 content={
                                   currentNode.tags.length > 3
                                     ? currentNode.tags?.map(item => (
-                                        <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
-                                      ))
+                                      <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
+                                    ))
                                     : null
                                 }
                               >
