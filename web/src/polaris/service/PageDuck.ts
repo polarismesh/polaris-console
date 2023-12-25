@@ -11,7 +11,7 @@ import { put, select } from 'redux-saga/effects'
 import { Modal, TagValue } from 'tea-component'
 import { checkAuth } from '../auth/model'
 import { KeyValuePair } from '../configuration/fileGroup/types'
-import { DefaultServiceTagAttribute, ServiceNameTagKey, MetadataTagKey } from './Page'
+import { DefaultServiceTagAttribute, ServiceNameTagKey, MetadataTagKey, HideEmptyServiceTagKey } from './Page'
 import { PolarisTokenKey } from '../common/util/common'
 import router from '../common/util/router'
 
@@ -23,6 +23,7 @@ export const EmptyCustomFilter = {
   searchMethod: 'accurate',
   department: '',
   business: '',
+  hideEmptyService: false,
 }
 
 interface Filter extends BaseFilter {
@@ -33,6 +34,7 @@ interface Filter extends BaseFilter {
   searchMethod?: string
   department?: string
   business?: string
+  hideEmptyService?: boolean
 }
 interface CustomFilters {
   namespace?: string
@@ -42,6 +44,7 @@ interface CustomFilters {
   searchMethod?: string
   department?: string
   business?: string
+  hideEmptyService?: boolean
 }
 
 export interface NamespaceItem extends Namespace {
@@ -147,6 +150,7 @@ export default class ServicePageDuck extends GridPageDuck {
         searchMethod: state.customFilters.searchMethod,
         department: state.customFilters.department,
         business: state.customFilters.business,
+        hideEmptyService: state.customFilters.hideEmptyService,
       }),
       customFilters: (state: State) => state.customFilters,
       selection: (state: State) => state.selection,
@@ -213,6 +217,8 @@ export default class ServicePageDuck extends GridPageDuck {
         const key = tag?.attr?.key || ServiceNameTagKey
         if (key === MetadataTagKey) {
           customFilters[key] = tag.values.map(item => ({ key: item.key, value: item.value }))
+        } else if (key === HideEmptyServiceTagKey) {
+          customFilters[key] = tag.values[0].value
         } else {
           if (tag.attr.type === 'input') customFilters[key] = tag.values[0].name
           else customFilters[key] = tag.values[0].key || tag.values[0].value
@@ -260,7 +266,7 @@ export default class ServicePageDuck extends GridPageDuck {
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, serviceTag, instanceIp, department, business } = filters
+    const { page, count, namespace, serviceTag, instanceIp, department, business, hideEmptyService } = filters
     const { key, value } = serviceTag?.[0] || {}
     const serviceName = filters.serviceName
     const result = await describeServices({
@@ -273,6 +279,7 @@ export default class ServicePageDuck extends GridPageDuck {
       host: instanceIp || undefined,
       department: department || undefined,
       business: business || undefined,
+      only_exist_health_instance: hideEmptyService || undefined,
     })
     return {
       totalCount: result.totalCount,
