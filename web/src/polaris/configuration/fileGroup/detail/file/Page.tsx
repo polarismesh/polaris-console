@@ -457,6 +457,7 @@ function getFileNameContext(fileName, status, file) {
     <div>
       <span className='configuration-tree-node-content'>{splitArray[splitArray.length - 1]}</span>
       {FileStatus.Edited === status && <Badge theme='warning'>待发布</Badge>}
+      {FileStatus.Betaing === status && <Badge theme='warning'>灰度发布中</Badge>}
       {file.isEncrypt && <Badge theme='warning'>已加密</Badge>}
     </div>
   )

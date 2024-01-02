@@ -32,6 +32,13 @@ export default ({
           ) : (
             <></>
           )}
+          {(!x.active && x.releaseType === 'gray') ? (
+            <Badge theme='default' style={{ verticalAlign: 'bottom', marginLeft: '5px' }}>
+              {'灰度版本'}
+            </Badge>
+          ) : (
+            <></>
+          )}
         </Text>
       ),
     },

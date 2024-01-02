@@ -3,7 +3,7 @@ import FormDuck from '@src/polaris/common/ducks/Form'
 import Base from '@src/polaris/common/ducks/DialogPure'
 import Create from './BetaReleaseConfig'
 import { showDialog } from '@src/polaris/common//helpers/showDialog'
-import { ClientLabel, ConfigFileRelease } from '../../../types'
+import { ClientLabel, ClientLabelView, ConfigFileRelease } from '../../../types'
 import { releaseConfigFile } from '../../../model'
 
 interface Data {
@@ -56,7 +56,7 @@ export interface Fvalues {
   namespace: string
   group: string
   name: string
-  clientLabels?: ClientLabel[]
+  clientLabels?: ClientLabelView[]
 }
 
 export class BetaCreateFormDuck extends FormDuck {
@@ -79,7 +79,16 @@ export class BetaCreateFormDuck extends FormDuck {
       fileName: name,
       name: releaseVersion,
       releaseDescription: comment,
-      betaLabels: clientLabels,
+      betaLabels: clientLabels.map(l => {
+        return {
+          key: l.key,
+          value: {
+            value: l.value,
+            type: l.type,
+            value_type: l.value_type
+          },
+        }
+      }),
       releaseType: 'gray',
     })
     return result

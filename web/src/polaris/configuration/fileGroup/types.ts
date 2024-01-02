@@ -54,6 +54,7 @@ export interface ConfigFileRelease {
   active: string
   releaseType?: string
   format: string
+  betaLabels: ClientLabel[]
 }
 export interface ConfigFileReleaseHistory {
   id: string
@@ -90,11 +91,20 @@ export interface ClientLabel {
   }
 }
 
+export interface ClientLabelView {
+  key_type: string
+  key: string
+  type: string
+  value: string
+  value_type: string
+}
+
 // 匹配规则类型
 export enum ClientLabelType {
   CLIENT_ID = 'CLIENT_ID',
   // CLIENT_LANGUAGE = 'CLIENT_LANGUAGE',
   CLIENT_IP = 'CLIENT_IP',
+  CUSTOM = 'CUSTOM',
 }
 
 export const ClientLabelTypeOptions = [
@@ -110,6 +120,10 @@ export const ClientLabelTypeOptions = [
   //   value: ClientLabelType.CLIENT_LANGUAGE,
   //   text: '请求头(HEADER)',
   // },
+  {
+    value: ClientLabelType.CUSTOM,
+    text: '自定义',
+  },
 ]
 export const ClientLabelTextMap = ClientLabelTypeOptions.reduce((map, curr) => {
   map[curr.value] = curr.text
@@ -146,7 +160,7 @@ export const ClientLabelMatchTypeOptions = [
     text: '不包含',
   },
 ]
-export const RouteLabelTextMap = ClientLabelMatchTypeOptions.reduce((map, curr) => {
+export const ClientLabelMatchMap = ClientLabelMatchTypeOptions.reduce((map, curr) => {
   map[curr.value] = curr.text
   return map
 }, {})
