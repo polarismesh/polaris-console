@@ -17,7 +17,7 @@ export function TagTable(props: ITagTableProps) {
         {
           key: 'tagName',
           header: '标签名',
-          width: '150px',
+          width: '250px',
           render: item => {
             const { key } = item.getFields(['key'])
             const validate = key.getTouched() && key.getError()
@@ -58,7 +58,7 @@ export function TagTable(props: ITagTableProps) {
         {
           key: 'close',
           header: '删除',
-          width: '80px',
+          width: '50px',
           render: (item, rowKey, recordIndex) => {
             const index = Number(recordIndex)
             // const length = [...props.tags.asArray()].length

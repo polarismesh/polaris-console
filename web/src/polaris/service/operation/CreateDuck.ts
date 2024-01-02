@@ -22,6 +22,9 @@ export const VisibilityModeMap = {
   [VisibilityMode.All]: '全部命名空间可见（包括新增）',
 }
 export const CheckVisibilityMode = (exportTo = [], namespace) => {
+  if (exportTo === null) {
+    return VisibilityMode.Single
+  }
   return exportTo?.includes('*')
     ? VisibilityMode.All
     : (exportTo.length === 1 && exportTo?.[0] === namespace) || exportTo.length === 0

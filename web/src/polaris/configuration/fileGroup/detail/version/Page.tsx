@@ -25,6 +25,7 @@ import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagin
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { scrollable } from 'tea-component/lib/table/addons'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
+import { ClientLabel, ClientLabelTextMap, ClientLabelType, ClientLabelMatchMap } from '../../types'
 
 insertCSS(
   'service',
@@ -163,8 +164,8 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                           content={
                             currentSelected.tags.length > 3
                               ? currentSelected.tags?.map(item => (
-                                  <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
-                                ))
+                                <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
+                              ))
                               : null
                           }
                         >
@@ -181,6 +182,15 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
                       </FormItem>
                     </Form>
                   )}
+                  {
+                    (currentSelected.releaseType === 'gray' ? <>
+                      <Form style={{ marginTop: '15px' }}>
+                        <FormItem label={'灰度标签'}>
+                          <FormText>{formatBetaLabels(currentSelected.betaLabels)}</FormText>
+                        </FormItem>
+                      </Form>
+                    </> : <></>)
+                  }
                   <section style={{ border: '1px solid #cfd5de', width: '100%', marginTop: '15px' }}>
                     <MonacoEditor
                       language={toHighlightLanguage(currentSelected?.format)}
@@ -198,3 +208,10 @@ export default function ServicePage(props: DuckCmpProps<ConfigFileGroupDuck>) {
     </>
   )
 }
+
+function formatBetaLabels(labels: ClientLabel[]) {
+  return labels.map(item => {
+    return `${item.key} ${ClientLabelMatchMap[item.value.type]} ${item.value.value}`
+  }).join(';')
+}
+

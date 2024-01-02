@@ -4,7 +4,7 @@ import Duck from './BetaReleaseConfigDuck'
 import FileDiff from '../FileDiff'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
-import { Form, FormItem, FormControl, FormText, Button, Stepper, Select, Table, Text } from 'tea-component'
+import { Icon, Form, FormItem, FormControl, FormText, Button, Stepper, Select, Table, Text } from 'tea-component'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { scrollable, autotip } from 'tea-component/lib/table/addons'
 import {
@@ -12,6 +12,8 @@ import {
   ClientLabelType,
   ClientLabelMatchTypeOptions,
   ClientLabelMatchType,
+  ClientLabelTextMap,
+  ClientLabelMatchMap,
 } from '../../../types'
 import TagSelectOrInput, { checkNeedTagInput } from '@src/polaris/common/components/TagSelectOrInput'
 
@@ -24,7 +26,7 @@ const addTag = field => {
   field.setValue([...(field.getValue() || []), { key: '', value: '' }])
 }
 
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks, selector } = duck
   const formApi = ducks.form.getAPI(store, dispatch)
@@ -54,27 +56,40 @@ export default purify(function(props: DuckCmpProps<Duck>) {
           message={'标签键的长度不能超过128字符，标签值的长度不能超过4096个字符'}
         >
           <Table
+            verticalTop
             bordered
+            bottomTip={
+              <div>
+                <Icon type='plus' />
+                <Button
+                  className='form-item-space'
+                  type='link'
+                  onClick={() => clientLabels.asArray().push(getEmptyLabel())}
+                >
+                  添加
+                </Button>
+              </div>
+            }
             records={[...clientLabels.asArray()]}
             columns={[
               {
-                key: 'key',
-                header: '标签键',
+                key: 'type',
+                header: '类型',
                 width: 150,
                 render: field => {
-                  const key = field.getField('key')
+                  const key_type = field.getField('key_type')
                   return (
                     <FormControl
-                      status={key.getTouched() && key.getError() ? 'error' : null}
+                      status={key_type.getTouched() && key_type.getError() ? 'error' : null}
                       showStatusIcon={false}
                       style={{ display: 'inline' }}
-                      message={key.getTouched() && key.getError() ? key.getError() : null}
+                      message={key_type.getTouched() && key_type.getError() ? key_type.getError() : null}
                     >
                       <Select
                         options={ClientLabelTypeOptions}
-                        value={key.getValue()}
+                        value={key_type.getValue()}
                         onChange={value => {
-                          key.setValue(ClientLabelType[value])
+                          key_type.setValue(ClientLabelType[value])
                         }}
                         type={'simulate'}
                         appearance={'button'}
@@ -85,19 +100,36 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 },
               },
               {
-                key: 'type',
-                header: '匹配方式',
-                width: 120,
+                key: 'key',
+                header: '键',
                 render: field => {
-                  const { value } = field.getFields(['value'])
+                  const key = field.getField('key')
+                  const keyType = field.getField('key_type')
+                  // 如果不是用户自定义标签，就不需要输入
+                  const disableInputKey = !(keyType.getValue() === ClientLabelType.CUSTOM)
+                  if (disableInputKey) {
+                    key.setValue(keyType.getValue())
+                  }
+                  return (
+                    <Input placeholder='请输入Value值' disabled={disableInputKey} field={key} onChange={value => key.setValue(value)}></Input>
+                  )
+                },
+              },
+              {
+                key: 'value_type',
+                header: '匹配方式',
+                width: 80,
+                render: field => {
+                  const { type } = field.getFields(['type'])
+                  const { value_type } = field.getFields(['value_type'])
                   return (
                     <FormControl showStatusIcon={false} style={{ display: 'inline' }}>
                       <Select
                         options={ClientLabelMatchTypeOptions}
-                        value={value.getFields(['type']).type.getValue()}
+                        value={type.getValue()}
                         onChange={choseValue => {
-                          value.getFields(['type']).type.setValue(ClientLabelMatchType[choseValue])
-                          value.getFields(['value_type']).value_type.setValue('TEXT')
+                          type.setValue(ClientLabelMatchType[choseValue])
+                          value_type.setValue('TEXT')
                         }}
                         type={'simulate'}
                         appearance={'button'}
@@ -109,10 +141,10 @@ export default purify(function(props: DuckCmpProps<Duck>) {
               },
               {
                 key: 'value',
-                header: '标签值',
+                header: '值',
                 render: field => {
-                  const value = field.getField('value').getField('value')
-                  const type = field.getField('value').getField('type')
+                  const value = field.getField('value')
+                  const type = field.getField('type')
                   return (
                     <FormControl
                       status={value.getTouched() && value.getError() ? 'error' : null}
@@ -133,31 +165,23 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 },
               },
               {
-                key: 'action',
-                header: '操作',
+                key: 'close',
+                header: '',
                 width: 50,
-                render: (field, key, index) => {
+                render(item, rowKey, recordIndex) {
+                  const index = Number(recordIndex)
                   return (
                     <Button
-                      type={'icon'}
-                      icon={'close'}
-                      onClick={() => removeArrayFieldValue(clientLabels, index)}
-                    ></Button>
+                      type='icon'
+                      icon='close'
+                      onClick={() => {
+                        clientLabels.asArray().remove(index)
+                      }}
+                    />
                   )
                 },
               },
             ]}
-            addons={[
-              scrollable({
-                maxHeight: '300px',
-              }),
-              autotip({ emptyText: '无标签' }),
-            ]}
-            bottomTip={
-              <Button onClick={() => addTag(clientLabels)} type={'link'}>
-                {'添加标签'}
-              </Button>
-            }
           ></Table>
         </FormItem>
       </Form>
@@ -210,4 +234,12 @@ export default purify(function(props: DuckCmpProps<Duck>) {
       {stepInfo[step]}
     </Dialog>
   )
+})
+
+const getEmptyLabel = () => ({
+  type: "TEXT",
+  key_type: ClientLabelType.CUSTOM,
+  key: '',
+  value: '',
+  value_type: ClientLabelMatchType.EXACT,
 })
