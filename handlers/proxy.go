@@ -202,8 +202,10 @@ type jwtClaims struct {
 func parseJWTThenSetToken(c *gin.Context, conf *bootstrap.Config) (string, string, error) {
 	jwtCookie, _ := c.Request.Cookie("jwt")
 	if jwtCookie == nil {
+		log.Info("not found target jwt cookie in request")
 		return "", "", nil
 	}
+	log.Errorf("parse jwt with claims fail: %#v", jwtCookie)
 	token, err := jwt.ParseWithClaims(jwtCookie.Value, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(conf.WebServer.JWT.SecretKey), nil
 	})
