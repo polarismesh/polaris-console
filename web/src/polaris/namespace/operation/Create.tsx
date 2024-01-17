@@ -58,7 +58,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             disabled={options?.isModify}
           />
         </FormField>
-        <FormItem label={'服务可见性'} tips={'当前命名空间下的服务被允许可见的命名空间列表'} required>
+        {/* <FormItem label={'服务可见性'} tips={'当前命名空间下的服务被允许可见的命名空间列表'} required>
           <section style={{ marginBottom: '15px' }}>
             <RadioGroup
               value={visibilityMode.getValue()}
@@ -83,7 +83,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             appearance={'button'}
             size='l'
           ></SelectMultiple>
-        </FormItem>
+        </FormItem> */}
         <FormField field={comment} label={'描述'}>
           <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
         </FormField>

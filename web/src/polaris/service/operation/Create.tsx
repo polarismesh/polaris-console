@@ -69,7 +69,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             size={'l'}
           />
         </FormField>
-        <FormItem
+        {/* <FormItem
           label={'可见性'}
           tips={'当前服务允许可见的命名空间列表，当与命名空间的服务可见性冲突时，优先使用该选项配置'}
           required
@@ -98,7 +98,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             appearance={'button'}
             size='l'
           ></SelectMultiple>
-        </FormItem>
+        </FormItem> */}
         <FormField field={department} label={'部门'}>
           <Input field={department} size={'l'} />
         </FormField>

@@ -27,7 +27,7 @@ export default function BaseInfo(props: DuckCmpProps<BaseInfoDuck>) {
                 <FormItem label={'服务名'}>
                   <FormText>{data.name}</FormText>
                 </FormItem>
-                <FormItem label={'可见性'}>
+                {/* <FormItem label={'可见性'}>
                   <FormText>
                     <Text>
                       {data.export_to?.length === 0 ? (
@@ -57,7 +57,7 @@ export default function BaseInfo(props: DuckCmpProps<BaseInfoDuck>) {
                       )}
                     </Text>
                   </FormText>
-                </FormItem>
+                </FormItem> */}
                 <FormItem label={'部门'}>
                   <FormText>{data.department || '-'}</FormText>
                 </FormItem>
