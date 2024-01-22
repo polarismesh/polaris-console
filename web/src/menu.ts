@@ -113,12 +113,14 @@ export const MenuConfig: MenuItemConfig = {
         {
           id: 'registry-monitor',
           title: '注册配置监控',
+          featureKey: 'registry-monitor',
           icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
         {
           id: 'service-monitor',
           title: '服务调用监控',
+          featureKey: 'service-monitor',
           icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
