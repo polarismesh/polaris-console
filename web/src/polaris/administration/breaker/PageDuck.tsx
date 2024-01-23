@@ -166,7 +166,7 @@ export default class ServicePageDuck extends GridPageDuck {
     }))
     yield put({
       type: this.types.SET_NAMESPACE_LIST,
-      payload: options,
+      payload: [{ text: '全部命名空间', name: '全部命名空间', value: '*', key: '*' }, ...options],
     })
   }
 
