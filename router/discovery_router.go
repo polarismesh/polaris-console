@@ -73,6 +73,10 @@ func DiscoveryV1Router(r *gin.Engine, config *bootstrap.Config) {
 	v1.GET("/:resource/rules", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// 查看服务绑定的熔断规则
 	v1.GET("/:resource/all", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 查询服务契约版本列表
+	v1.GET("/:resource/contract/versions", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 查询服务契约列表
+	v1.GET("/:resource/contracts", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	// 修改资源
 	v1.PUT("/:resource", handlers.ReverseProxyForServer(&config.PolarisServer, config))
@@ -107,6 +111,13 @@ func DiscoveryV1Router(r *gin.Engine, config *bootstrap.Config) {
 	v1.POST("/circuitbreaker/rules/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 	// delete the FaultDetector rules
 	v1.POST("/faultdetectors/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+
+	// 服务契约
+	v1.POST("/service/contracts/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 在对应契约版本中添加接口列表
+	v1.POST("/service/contract/methods", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	// 在对应契约版本中删除部份接口列表
+	v1.POST("/service/contract/methods/delete", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 }
 
 // DiscoveryV2Router 路由请求
