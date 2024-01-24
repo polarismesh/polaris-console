@@ -205,7 +205,6 @@ func parseJWTThenSetToken(c *gin.Context, conf *bootstrap.Config) (string, strin
 		log.Info("not found target jwt cookie in request")
 		return "", "", nil
 	}
-	log.Errorf("parse jwt with claims fail: %#v", jwtCookie)
 	token, err := jwt.ParseWithClaims(jwtCookie.Value, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(conf.WebServer.JWT.SecretKey), nil
 	})
