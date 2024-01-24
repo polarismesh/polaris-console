@@ -15,6 +15,7 @@ export interface Service {
   editable: boolean
   healthy_instance_count?: string
   total_instance_count?: string
+  export_to?: string[]
 }
 
 export interface Namespace {
@@ -28,6 +29,7 @@ export interface Namespace {
   total_service_count?: number
   total_health_instance_count?: number
   total_instance_count?: number
+  service_export_to?: string[]
 }
 
 export const READ_ONLY_NAMESPACE = BuildConfig.readonlyNamespace

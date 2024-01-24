@@ -1,9 +1,10 @@
 import * as React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import NamespacePageDuck, { NamespaceItem } from './PageDuck'
-import { Text } from 'tea-component'
+import { Bubble, Text } from 'tea-component'
 import { Column } from '../common/ducks/GridPage'
 import Action from '../common/duckComponents/grid/Action'
+import { CheckVisibilityMode, VisibilityMode } from '../service/operation/CreateDuck'
 
 export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column<NamespaceItem>[] => [
   {
@@ -11,6 +12,38 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
     header: '名称',
     render: x => <Text>{x.name}</Text>,
   },
+  // {
+  //   key: 'service_export_to',
+  //   header: '服务可见性',
+  //   render: x => {
+  //     const visibilityMode = CheckVisibilityMode(x.service_export_to, x.name)
+
+  //     if (!visibilityMode.length) return '-'
+  //     return (
+  //       <Text>
+  //         {visibilityMode ? (
+  //           VisibilityMode[visibilityMode]
+  //         ) : (
+  //           <Bubble
+  //             trigger={'click'}
+  //             content={
+  //               <Text>
+  //                 <Text parent={'div'}>{'服务可见的命名空间列表'}</Text>
+  //                 {x.service_export_to?.map(item => (
+  //                   <Text parent={'div'} key={item}>
+  //                     {item}
+  //                   </Text>
+  //                 ))}
+  //               </Text>
+  //             }
+  //           >
+  //             {x.service_export_to ? x.service_export_to?.slice(0, 3)?.join(',') + '...' : '-'}
+  //           </Bubble>
+  //         )}
+  //       </Text>
+  //     )
+  //   },
+  // },
   {
     key: 'commnet',
     header: '描述',

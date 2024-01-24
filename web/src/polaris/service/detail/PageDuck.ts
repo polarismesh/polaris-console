@@ -10,6 +10,7 @@ import CircuitBreakerDuck from '@src/polaris/administration/breaker/PageDuck'
 
 import { Service } from '../types'
 import { describeServices } from '../model'
+import InterfacePageDuck from './interface/PageDuck'
 
 export default class RegistryDetailDuck extends DetailPageDuck {
   ComposedId: ComposedId
@@ -59,6 +60,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
       [TAB.Route]: RouteDuck,
       [TAB.AccessLimit]: AccessLimitDuck,
       [TAB.CircuitBreaker]: CircuitBreakerDuck,
+      [TAB.Interface]: InterfacePageDuck,
     }
   }
   get reducers() {
