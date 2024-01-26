@@ -41,6 +41,7 @@ import { LimitArgumentsConfigForFormFilling } from '../model'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
 import TagSelectOrInput, { checkNeedTagInput } from '@src/polaris/common/components/TagSelectOrInput'
+import { FeatureDisplayType, useCheckFeatureValid } from '@src/polaris/common/util/checkFeature'
 
 insertCSS(
   'create-rule-form',
@@ -233,8 +234,13 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
   }, [composedId?.namespace, composedId?.service])
 
   const [serviceInputValue, setServiceInputValue] = React.useState('')
-
-  const filteredLimitTypeOptions = LimitTypeOptions
+  const [globalLimitFeature] = useCheckFeatureValid(['accesslimit-global'])
+  const globalLimitEnable = globalLimitFeature ? globalLimitFeature?.display === FeatureDisplayType.visible : true
+  const filteredLimitTypeOptions = LimitTypeOptions.map(item => ({
+    ...item,
+    disabled: item.value === LimitType.GLOBAL && !globalLimitEnable,
+    tooltip: item.value === LimitType.GLOBAL && !globalLimitEnable ? globalLimitFeature?.tip : '',
+  }))
   return (
     <DetailPage
       store={store}
@@ -618,23 +624,34 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
                     {actionField.getValue() === LimitAction.UNIRATE && (
                       <FormField field={max_queue_delay_Field} label='最大排队时长'>
                         <InputAdornment after='秒'>
-                          <InputNumber field={max_queue_delay_Field} min={1} hideButton onInputChange={(val) => {
-                            const timeWindow = amountsField.getValue().map((item, index) => {
-                              let seconds = 1
-                              if (item.validDurationUnit === LimitAmountsValidationUnit.m) {
-                                seconds = 60
+                          <InputNumber
+                            field={max_queue_delay_Field}
+                            min={1}
+                            hideButton
+                            onInputChange={val => {
+                              const timeWindow = amountsField
+                                .getValue()
+                                .map((item, index) => {
+                                  let seconds = 1
+                                  if (item.validDurationUnit === LimitAmountsValidationUnit.m) {
+                                    seconds = 60
+                                  }
+                                  if (item.validDurationUnit === LimitAmountsValidationUnit.h) {
+                                    seconds = 3600
+                                  }
+                                  return (item.validDurationNum * seconds) / item.maxAmount
+                                })
+                                .sort((a, b) => {
+                                  return a - b
+                                })
+                                .pop()
+                              if (timeWindow < max_queue_delay_Field.getValue()) {
+                                max_queue_delay_Field.setError(
+                                  '排队时长非法, 必须大于等于最小请求间隔窗口(窗口时长/请求数阈值)',
+                                )
                               }
-                              if (item.validDurationUnit === LimitAmountsValidationUnit.h) {
-                                seconds = 3600
-                              }
-                              return (item.validDurationNum * seconds) / item.maxAmount
-                            }).sort((a, b) => {
-                              return a - b
-                            }).pop()
-                            if (timeWindow < max_queue_delay_Field.getValue()) {
-                              max_queue_delay_Field.setError("排队时长非法, 必须大于等于最小请求间隔窗口(窗口时长/请求数阈值)")
-                            }
-                          }} />
+                            }}
+                          />
                         </InputAdornment>
                       </FormField>
                     )}
