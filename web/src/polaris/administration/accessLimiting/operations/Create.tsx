@@ -40,6 +40,7 @@ import { FieldAPI } from '@src/polaris/common/ducks/Form'
 import { LimitArgumentsConfigForFormFilling } from '../model'
 import router from '@src/polaris/common/util/router'
 import { TAB } from '@src/polaris/service/detail/types'
+import { FeatureDisplayType, useCheckFeatureValid } from '@src/polaris/common/util/checkFeature'
 
 insertCSS(
   'create-rule-form',
@@ -216,8 +217,13 @@ export default purify(function LimitRuleCreatePage(props: DuckCmpProps<LimitRule
   }, [composedId?.namespace, composedId?.service])
 
   const [serviceInputValue, setServiceInputValue] = React.useState('')
-
-  const filteredLimitTypeOptions = LimitTypeOptions
+  const [globalLimitFeature] = useCheckFeatureValid(['accesslimit-global'])
+  const globalLimitEnable = globalLimitFeature ? globalLimitFeature?.display === FeatureDisplayType.visible : true
+  const filteredLimitTypeOptions = LimitTypeOptions.map(item => ({
+    ...item,
+    disabled: item.value === LimitType.GLOBAL && !globalLimitEnable,
+    tooltip: item.value === LimitType.GLOBAL && !globalLimitEnable ? globalLimitFeature?.tip : '',
+  }))
   return (
     <DetailPage
       store={store}
