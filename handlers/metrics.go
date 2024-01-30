@@ -255,7 +255,7 @@ func handleDescribeServicesMetric(discoverResp *model.BatchQueryResponse, timeou
 func describeServiceMetricsRequestTotal(conf *bootstrap.Config, namespace, start, end, step string) (map[string]map[string]*model.ServiceMetric, error) {
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
-		step = "60"
+		step = "10"
 	}
 	params := map[string]string{
 		"start": start,
@@ -329,7 +329,7 @@ func describeServiceMetricsRequestTotal(conf *bootstrap.Config, namespace, start
 func describeServiceMetricsRequestTimeout(conf *bootstrap.Config, namespace, start, end, step string) (map[string]map[string]float64, error) {
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
-		step = "60"
+		step = "10"
 	}
 	params := map[string]string{
 		"start": start,
@@ -490,7 +490,7 @@ func handleDescribeServiceInterfacesMetric(timeoutResp map[string]float64,
 func describeServiceInterfaceList(conf *bootstrap.Config, start, end, step string) (map[string]struct{}, error) {
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
-		step = "60"
+		step = "10"
 	}
 	params := map[string]string{
 		"query": "group(upstream_rq_total) by (callee_method)",
@@ -524,7 +524,7 @@ func describeServiceInterfaceList(conf *bootstrap.Config, start, end, step strin
 func describeServiceInterfaceMetricsRequestTotal(conf *bootstrap.Config, namespace, service, calleeInstance, start, end, step string) (map[string]*model.InterfaceMetric, error) {
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
-		step = "60"
+		step = "10"
 	}
 	params := map[string]string{
 		"start": start,
@@ -600,7 +600,7 @@ func describeServiceInterfaceMetricsRequestTotal(conf *bootstrap.Config, namespa
 func describeServiceInterfaceMetricsRequestTimeout(conf *bootstrap.Config, namespace, service, calleeInstance, start, end, step string) (map[string]float64, error) {
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
-		step = "60"
+		step = "10"
 	}
 	params := map[string]string{
 		"start": start,
@@ -789,7 +789,7 @@ func describeServiceInstanceRequestTimeout(conf *bootstrap.Config, service, name
 	start, end, step string) (map[string]float64, error) {
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
-		step = "60"
+		step = "10"
 	}
 	params := map[string]string{
 		"start": start,
@@ -849,7 +849,7 @@ func describeServiceInstanceRequestTotal(conf *bootstrap.Config, service, namesp
 	start, end, step string) (map[string]*model.InstanceMetric, error) {
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
-		step = "60"
+		step = "10"
 	}
 	params := map[string]string{
 		"start": start,
@@ -1017,7 +1017,7 @@ func describeServiceCallerMetricRequestTotal(conf *bootstrap.Config, service, na
 	calleeInstance, start, end, step string) (map[string]map[string]map[string]*model.CallerMetric, error) {
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
-		step = "60"
+		step = "10"
 	}
 	params := map[string]string{
 		"start": start,
@@ -1102,7 +1102,7 @@ func describeServiceCallerMetricRequestTimeout(conf *bootstrap.Config, service, 
 	start, end, step string) (map[string]map[string]map[string]float64, error) {
 	stepVal, _ := strconv.ParseInt(step, 10, 64)
 	if stepVal < 60 {
-		step = "60"
+		step = "10"
 	}
 	params := map[string]string{
 		"start": start,
