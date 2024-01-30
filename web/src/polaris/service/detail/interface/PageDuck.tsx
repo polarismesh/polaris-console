@@ -265,6 +265,17 @@ export default class InterfacePageDuck extends GridPageDuck {
     })
     yield takeLatest(types.SHOW_DETAIL, function*(action) {
       const detail = action.payload as InterfacePageDuck['Item']
+      if (detail.protocol === "dubbo") {
+        yield Modal.confirm({
+          size: 'l',
+          message: 'dubbo接口详情',
+          description: (
+            <Form>
+              <FormText>{detail.content}</FormText>
+            </Form>
+          )
+        })
+      }
       const parameterDetail = JSON.parse(detail.content)?.[detail.method?.toLowerCase()]
       const requestParameter = parameterDetail.parameters
       const responses = parameterDetail.responses
