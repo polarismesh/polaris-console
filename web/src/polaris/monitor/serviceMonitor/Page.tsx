@@ -52,8 +52,8 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
   const needAllNamespace = selectors.needAllNamespace(store)
   const StepOptions = [
     {
-      text: '1秒',
-      value: '1',
+      text: '秒级',
+      value: '10',
       disabled: gap > 60 * 60,
     },
     {
@@ -114,6 +114,7 @@ export default purify(function ServiceDetail(props: DuckCmpProps<ServiceDetailDu
           appearance='button'
           options={StepOptions}
           value={step.toString()}
+          defaultValue={StepOptions[0].value}
           onChange={v => dispatch(creators.setStep(Number(v)))}
         ></Select>
       </FormItem>

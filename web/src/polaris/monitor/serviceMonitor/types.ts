@@ -19,6 +19,8 @@ export enum LineColor {
 
 export const DefaultLineColors = Object.values(LineColor)
 
+const miniStep = 10;
+
 export const getQueryMap = {
   [MetricName.Request]: (queryParam = {} as any) => {
     const { calleeNamespace, calleeService, calleeMethod, calleeInstance } = queryParam
@@ -39,7 +41,7 @@ export const getQueryMap = {
           ? `sum(upstream_rq_total{${conditionString}}) or on() vector(0)`
           : 'sum(upstream_rq_total) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
-        minStep: 60,
+        minStep: miniStep,
       },
       {
         name: '成功请求数',
@@ -47,7 +49,7 @@ export const getQueryMap = {
           ? `sum(upstream_rq_total{callee_result="success",${conditionString}}) or on() vector(0)`
           : 'sum(upstream_rq_total{callee_result="success"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
-        minStep: 60,
+        minStep: miniStep,
       },
       {
         name: '限流请求数',
@@ -55,7 +57,7 @@ export const getQueryMap = {
           ? `sum(upstream_rq_total{callee_result="flow_control",${conditionString}}) or on() vector(0)`
           : 'sum(upstream_rq_total{callee_result="flow_control"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
-        minStep: 60,
+        minStep: miniStep,
       },
       {
         name: '熔断请求数',
@@ -63,7 +65,7 @@ export const getQueryMap = {
           ? `sum(upstream_rq_total{callee_result="reject",${conditionString}}) or on() vector(0)`
           : 'sum(upstream_rq_total{callee_result="reject"}) or on() vector(0)',
         boardFunction: SumUpReduceFunction,
-        minStep: 60,
+        minStep: miniStep,
       },
     ]
   },
@@ -89,7 +91,7 @@ export const getQueryMap = {
           : 'avg(upstream_rq_timeout) or on() vector(0)',
         boardFunction: AvgReduceFunction,
         unit: 'ms',
-        minStep: 60,
+        minStep: miniStep,
         color: LineColor.Blue,
       },
       {
@@ -99,7 +101,7 @@ export const getQueryMap = {
           : 'max(upstream_rq_max_timeout) or on() vector(0)',
         boardFunction: MaxReduceFunction,
         unit: 'ms',
-        minStep: 60,
+        minStep: miniStep,
         color: LineColor.Red,
       },
       {
@@ -109,7 +111,7 @@ export const getQueryMap = {
           : 'min(upstream_rq_timeout) or on() vector(0)',
         boardFunction: MinReduceFunction,
         unit: 'ms',
-        minStep: 60,
+        minStep: miniStep,
         color: LineColor.Green,
       },
       {
@@ -132,7 +134,7 @@ export const getQueryMap = {
           return value
         },
         unit: 'ms',
-        minStep: 60,
+        minStep: miniStep,
         color: LineColor.Yellow,
       },
       {
@@ -155,7 +157,7 @@ export const getQueryMap = {
           return value
         },
         unit: 'ms',
-        minStep: 60,
+        minStep: miniStep,
         color: LineColor.Gray,
       },
     ]
@@ -188,7 +190,7 @@ export const getQueryMap = {
       {
         name: '错误码统计',
         query: `sum by (callee_result_code) (upstream_rq_total{${conditionString}})`,
-        minStep: 60,
+        minStep: miniStep,
         multiMetricName: 'callee_result_code',
         multiValue: true,
       },
@@ -330,7 +332,7 @@ export const getTableQueryMap = {
         query: conditions.length
           ? `sort_desc(sum by (callee_result_code) (upstream_rq_total{${conditionString}}))`
           : 'sort_desc(sum by (callee_result_code) (upstream_rq_total))',
-        minStep: 60,
+        minStep: miniStep,
       },
     ]
   },
