@@ -3,9 +3,10 @@ import { purify, DuckCmpProps } from 'saga-duck'
 
 import Duck from './PageDuck'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
-import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, Bubble } from 'tea-component'
+import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, Copy, Bubble } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
+import { FeatureDisplayType, useCheckFeatureValid } from '@src/polaris/common/util/checkFeature'
 insertCSS(
   'login',
   `.login-background{
@@ -21,6 +22,8 @@ export default purify(function(props: DuckCmpProps<Duck>) {
   const { userName, password } = ducks.form.getAPI(store, dispatch).getFields(['userName', 'password'])
   const { preError } = selector(store)
   const licenseToolTip = preError && 'License已超过最大过期时间'
+  const [loginTip] = useCheckFeatureValid(['loginInfoTip'])
+  const showLoginTip = loginTip ? loginTip?.display === FeatureDisplayType.visible : true
   return (
     <div
       style={{ background: 'url(static/img/login-background.png)', backgroundSize: '100% 100%' }}
@@ -73,6 +76,15 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       </Text>
                     </Col>
                   </Row>
+                  {showLoginTip && (
+                    <Row>
+                      <Col>
+                        <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
+                          初始用户名和密码为<Copy text={'polaris'}>polaris</Copy>/<Copy text={'polaris'}>polaris</Copy>
+                        </Text>
+                      </Col>
+                    </Row>
+                  )}
                   <Form style={{ padding: '20px 0px' }}>
                     <FormField field={userName} label={'用户名'}>
                       <Input field={userName} size={'full'} disabled={preError} placeholder={licenseToolTip} />
