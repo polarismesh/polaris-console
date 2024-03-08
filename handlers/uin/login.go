@@ -395,6 +395,12 @@ func newHttpRequest(method string, url string, req interface{}, headers map[stri
 		return nil, err
 	}
 	if response.StatusCode != http.StatusOK {
+		// 特殊处理一下，获取token的Get请求，如果是400（找不到用户）的话，可以返回成功，由上层判断是否真的失败
+		if method == http.MethodGet {
+			log.Info("[uin] return success for get request", zap.String("url", url), zap.Any("req", req), zap.Error(err),
+				zap.Any("rsp", ret.String()), zap.Int("code", response.StatusCode))
+			return ret.Bytes(), nil
+		}
 		log.Error("[uin] response status err", zap.String("url", url), zap.Any("req", req), zap.Error(err),
 			zap.Any("rsp", ret.String()), zap.Int("code", response.StatusCode))
 		return nil, fmt.Errorf("http request return code: %d", response.StatusCode)
