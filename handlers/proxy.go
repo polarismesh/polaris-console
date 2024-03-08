@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/polarismesh/polaris-console/handlers/uin"
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
@@ -134,7 +135,16 @@ func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstr
 }
 
 func verifyAccessPermission(c *gin.Context, conf *bootstrap.Config) bool {
-	userID, token, err := parseJWTThenSetToken(c, conf)
+	var userID, token string
+	var err error
+	jwtCookie, _ := c.Request.Cookie("jwt")
+	if jwtCookie != nil {
+		userID, token, err = parseJWTThenSetToken(c, conf)
+	} else {
+		log.Info("not found target jwt cookie in request, try to get userid, token from uin")
+		userID, token, err = uin.GetPolarisCurrentUinToken(c, conf)
+	}
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code": http.StatusProxyAuthRequired,

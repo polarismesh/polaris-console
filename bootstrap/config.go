@@ -55,6 +55,10 @@ type Config struct {
 	PolarisServer PolarisServer `yaml:"polarisServer"`
 	MonitorServer MonitorServer `yaml:"monitorServer"`
 	Futures       string        `yaml:"futures"`
+	LoginService  struct {
+		Verify  string `yaml:"verify"`
+		Account string `yaml:"account"`
+	} `yaml:"loginService"`
 }
 
 func (c *Config) HasFutures(s string) bool {
