@@ -621,11 +621,6 @@ export interface CheckAuthResult {
 
 /** 检查策略是否已开启 */
 export async function checkAuth(params: CheckAuthParams) {
-  if (!window.localStorage.getItem(PolarisTokenKey)) {
-    showNoLoginTip()
-    //router.navigate('/login')
-    return false
-  }
   const result = await getApiRequest<CheckAuthResult>({ action: 'core/v1/auth/status', data: params })
   return result.optionSwitch.options.auth === 'true'
 }
