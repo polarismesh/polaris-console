@@ -158,9 +158,16 @@ func GetPolarisCurrentUinToken(c *gin.Context, conf *bootstrap.Config) (string, 
 	if err != nil {
 		return "", "", err
 	}
+	if user == nil {
+		return "", "", fmt.Errorf("not found user id: %s", uin.Value)
+	}
+
 	if !user.TokenEnable {
 		return "", "", fmt.Errorf("xxxxxx TODO")
 	}
+
+	c.Request.Header.Set("x-polaris-user", user.ID)
+	c.Request.Header.Set("x-polaris-token", user.AuthToken)
 	return user.ID, user.AuthToken, nil
 }
 
@@ -332,6 +339,11 @@ func GetPolarisUserTokenRequest(id string, conf *bootstrap.Config) (*PolarisUser
 	}
 
 	if rsp.Code != 200000 {
+		if rsp.Code == 400312 {
+			log.Info("[uin] not found user", zap.String("id", id))
+			return nil, nil
+		}
+
 		log.Error("[uin] get user token return code is not 0", zap.String("id", id),
 			zap.Int32("code", rsp.Code), zap.String("info", rsp.Info))
 		return nil, fmt.Errorf("%s", rsp.Info)
