@@ -2,7 +2,8 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { notification } from 'tea-component'
 import tips from './tips'
 import { userLogout } from './common'
-import insertCSS from "../helpers/insertCSS";
+import insertCSS from '../helpers/insertCSS'
+import { showNoLoginTip } from '@src/polaris/service/utils'
 
 insertCSS(
   `request-notification`,
@@ -25,8 +26,25 @@ export interface ApiResponse {
 }
 export const SuccessCode = 200000
 export const TokenNotExistCode = 407
+const errorHandle = error => {
+  if (error.response.status === TokenNotExistCode) {
+    handleTokenNotExist()
+    return
+  }
+  if (error.response) {
+    if (error.response?.data?.code === TokenNotExistCode) {
+      handleTokenNotExist()
+      return
+    }
+    notification.error({
+      unique: true,
+      title: '请求错误',
+      description: error.response?.data?.info,
+    })
+  }
+}
 const handleTokenNotExist = () => {
-  userLogout()
+  showNoLoginTip() //userLogout()
 }
 export async function apiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts, noError = false } = options
@@ -41,23 +59,8 @@ export async function apiRequest<T>(options: APIRequestOption) {
           ...(opts?.headers ?? {}),
         },
       })
-      .catch(function (error) {
-        if (error.response.status === TokenNotExistCode) {
-          handleTokenNotExist()
-          return
-        }
-        if (error.response) {
-          if (error.response?.data?.code === TokenNotExistCode) {
-            handleTokenNotExist()
-            return
-          }
-          notification.error({
-            style: { zIndex: 9999 },
-            unique: true,
-            title: '请求错误',
-            description: error.response?.data?.info,
-          })
-        }
+      .catch(function(error) {
+        errorHandle(error)
       })) as AxiosResponse<T & ApiResponse>
 
     if (res.data.code > 200000 && !noError) {
@@ -83,27 +86,13 @@ export async function getApiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
-        if (error.response.status === TokenNotExistCode) {
-          handleTokenNotExist()
-          return
-        }
-        if (error.response) {
-          if (error.response?.data?.code === TokenNotExistCode) {
-            handleTokenNotExist()
-            return
-          }
-          notification.error({
-            unique: true,
-            title: '请求错误',
-            description: error.response?.data?.info,
-          })
-        }
+      .catch(function(error) {
+        errorHandle(error)
       })) as AxiosResponse<T & ApiResponse>
-    if (res.data.code > 200000 && !noError) {
+    if (res?.data?.code > 200000 && !noError) {
       throw res.data.info
     }
-    return res.data
+    return res?.data
   } catch (e) {
     console.error(e)
   } finally {
@@ -122,23 +111,8 @@ export async function putApiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
-        if (error.response.status === TokenNotExistCode) {
-          handleTokenNotExist()
-          return
-        }
-        if (error.response) {
-          if (error.response?.data?.code === TokenNotExistCode) {
-            handleTokenNotExist()
-            return
-          }
-          notification.error({
-            style: { zIndex: 9999 },
-            unique: true,
-            title: '请求错误',
-            description: error.response?.data?.info,
-          })
-        }
+      .catch(function(error) {
+        errorHandle(error)
       })) as AxiosResponse<T & ApiResponse>
     if (res.data.code > 200000 && !noError) {
       throw res.data.info
@@ -163,22 +137,8 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
           'X-Polaris-User': window.localStorage.getItem('login-user-id'),
         },
       })
-      .catch(function (error) {
-        if (error.response.status === TokenNotExistCode) {
-          handleTokenNotExist()
-          return
-        }
-        if (error.response) {
-          if (error.response?.data?.code === TokenNotExistCode) {
-            handleTokenNotExist()
-            return
-          }
-          notification.error({
-            unique: true,
-            title: '请求错误',
-            description: error.response?.data?.info,
-          })
-        }
+      .catch(function(error) {
+        errorHandle(error)
       })) as AxiosResponse<T & ApiResponse>
     if (res.data.code > 200000 && !noError) {
       throw res.data.info
@@ -208,7 +168,7 @@ const DefaultOptions = {
  * @param listKey 返回结果中列表的键名称 默认list
  */
 export function getAllList(fetchFun: (params?: any) => Promise<any>, options: FetchAllOptions = {}) {
-  return async function (params: any) {
+  return async function(params: any) {
     const fetchOptions = { ...DefaultOptions, ...options }
     let allList = [],
       pageNo = 0

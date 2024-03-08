@@ -238,14 +238,14 @@ export default function root() {
                       >
                         账号信息
                       </List.Item>
-                      <List.Item
+                      {/* <List.Item
                         onClick={() => {
                           userLogout()
                           close()
                         }}
                       >
                         退出
-                      </List.Item>
+                      </List.Item> */}
                     </List>
                   )}
                 >

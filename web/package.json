@@ -47,6 +47,7 @@
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.17.0",
+    "js-cookie": "^3.0.5",
     "json-format": "^1.0.1",
     "lodash.merge": "^4.6.2",
     "monaco-yaml": "^4.0.2",
