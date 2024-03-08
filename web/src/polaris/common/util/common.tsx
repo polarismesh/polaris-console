@@ -66,12 +66,12 @@ export function checkIsUserLogin() {
   return !!window.localStorage.getItem(PolarisTokenKey)
 }
 export function userLogout() {
-  window.localStorage.setItem(PolarisTokenKey, '')
-  window.localStorage.setItem(LoginUserNameKey, '')
-  window.localStorage.setItem(LoginRoleKey, '')
-  window.localStorage.setItem(LoginUserIdKey, '')
-  window.localStorage.setItem(LoginUserOwnerIdKey, '')
-  router.navigate('/login')
+  // window.localStorage.setItem(PolarisTokenKey, '')
+  // window.localStorage.setItem(LoginUserNameKey, '')
+  // window.localStorage.setItem(LoginRoleKey, '')
+  // window.localStorage.setItem(LoginUserIdKey, '')
+  // window.localStorage.setItem(LoginUserOwnerIdKey, '')
+  // router.navigate('/login')
 }
 
 export function formatDesc(desc) {

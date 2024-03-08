@@ -4,12 +4,15 @@ import { DuckMap, reduceFromPayload, createToPayload } from 'saga-duck'
 import { takeEvery, takeLatest, runAndTakeLatest } from 'redux-saga-catch'
 import RouteDuck, { Param } from '../ducks/Route'
 import { createElement, ReactElement } from 'react'
-import { Alert } from 'tea-component'
+import { Alert, notification } from 'tea-component'
 import { PolarisTokenKey } from '../util/common'
 import router from '../util/router'
 import insertCSS from '../helpers/insertCSS'
 import React from 'react'
-
+import Cookies from 'js-cookie'
+import { showNoLoginTip } from '@src/polaris/service/utils'
+import { checkAuth } from '@src/polaris/auth/model'
+import { getApiRequest } from '../util/apiRequest'
 insertCSS(
   `license-notification`,
   `
@@ -195,7 +198,7 @@ export default abstract class PageDuck extends DuckMap {
   }
   *sagaUseTitle() {
     const { types, selector } = this
-    yield runAndTakeLatest(types.SET_TITLE, function* () {
+    yield runAndTakeLatest(types.SET_TITLE, function*() {
       const { title } = selector(yield select())
       if (!title) {
         return
@@ -220,7 +223,7 @@ export default abstract class PageDuck extends DuckMap {
         [],
       )
       // 标记为路由向属性同步
-      actions.forEach((action) => {
+      actions.forEach(action => {
         action.fromRoute = true
       })
       const len = actions.length
@@ -238,7 +241,7 @@ export default abstract class PageDuck extends DuckMap {
     // 属性变化，同步到路由上
     const watchTypeSet = new Set([types.ROUTE_CHANGED, ...watchRouteTypes])
     yield takeLatest(
-      (action) => watchTypeSet.has(action.type) && !action.fromRoute,
+      action => watchTypeSet.has(action.type) && !action.fromRoute,
       function* attrToRoute(action) {
         // 如果是路由向属性同步的，无视
         // TODO 如果一个fromRoute=false的动作后，紧接着一个fromRoute=true的动作
@@ -261,8 +264,8 @@ export default abstract class PageDuck extends DuckMap {
       yield all(
         this.preEffects
           // 兼容（返回false表示中止）
-          .map((effect) =>
-            call(function* () {
+          .map(effect =>
+            call(function*() {
               if ((yield effect) === false) {
                 throw null
               }
@@ -342,11 +345,14 @@ get preSagas(){
     return true
   }
   *checkUserLogin() {
-    if (!window.localStorage.getItem(PolarisTokenKey)) {
-      router.navigate('/login')
-    } else {
-      return true
-    }
+    yield getApiRequest({ action: 'core/v1/auth/status', data: {} }) //这里TCS取不到登录态cookie，用请求代替
+    // const login = Cookies.get('skey') && Cookies.get('uin')
+    // if (!login) {
+    //   showNoLoginTip()
+    //   //router.navigate('/login')
+    // } else {
+    //   return true
+    // }
   }
   *checkLicense() {
     return true
@@ -393,13 +399,13 @@ get preSagas(){
       return this._routesSelector
     }
     const { selector, selectors } = this
-    return (this._routesSelector = (state) =>
+    return (this._routesSelector = state =>
       this.params.reduce((map, param) => {
         let routeSelector
         if (param.selector) {
           routeSelector = selectors[param.selector as string] || param.selector
         } else {
-          routeSelector = selectors[param.key] || ((state) => selector(state)[param.key])
+          routeSelector = selectors[param.key] || (state => selector(state)[param.key])
         }
         map[param.key] = routeSelector(state)
         return map
@@ -416,7 +422,7 @@ get preSagas(){
       if (param.creator) {
         creator = creators[param.creator as string] || param.creator
       } else {
-        creator = creators[param.key] || ((payload) => ({ type: param.type, payload }))
+        creator = creators[param.key] || (payload => ({ type: param.type, payload }))
       }
       map[param.key] = creator
       return map

@@ -165,6 +165,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               onExpandedKeysChange: keys => handlers.setExpandedKeys(keys),
               render: record => {
                 const labelList = Object.keys(record.metadata || {})
+                const isEnableNearby = record.metadata?.[enableNearbyString] === 'true'
                 return (
                   <Form>
                     <FormItem label='服务标签'>
@@ -185,7 +186,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                       <FormText>{record.comment || '-'}</FormText>
                     </FormItem>
                     <FormItem label='就近访问'>
-                      <FormText>{record.metadata?.[enableNearbyString] ? '开启' : '关闭'}</FormText>
+                      <FormText>{isEnableNearby ? '开启' : '关闭'}</FormText>
                     </FormItem>
                   </Form>
                 )

@@ -1,5 +1,5 @@
 import { Namespace, READ_ONLY_NAMESPACE } from './types'
-import { Modal, Table } from 'tea-component'
+import { Modal, Table, notification } from 'tea-component'
 import React from 'react'
 import { scrollable } from 'tea-component/lib/table/addons'
 import LabelTable from '../common/components/LabelTable'
@@ -17,7 +17,7 @@ export const isReadOnlyConfigGroup = (group: ConfigFileGroup) => {
   return !group.editable
 }
 
-export const showAllLabels = (labels) => {
+export const showAllLabels = labels => {
   Modal.confirm({
     message: `标签展示`,
     description: (
@@ -25,5 +25,17 @@ export const showAllLabels = (labels) => {
         <LabelTable labels={labels}></LabelTable>
       </>
     ),
+  })
+}
+let hasNologinTip = false
+export const showNoLoginTip = () => {
+  if (hasNologinTip) return
+  hasNologinTip = true
+  notification.error({
+    description: '北极星未登录，请前往TCS控制台登录。',
+    duration: 0,
+    onClose: () => {
+      hasNologinTip = false
+    },
   })
 }

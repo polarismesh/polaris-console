@@ -2,6 +2,7 @@ import { apiRequest, getApiRequest, putApiRequest, SuccessCode, ApiResponse } fr
 import { ttl, once } from '../common/helpers/cacheable'
 import router from '../common/util/router'
 import { PolarisTokenKey } from '../common/util/common'
+import { showNoLoginTip } from '../service/utils'
 
 /** 删除治理中心鉴权策略 */
 export async function deleteGovernanceStrategies(params: DeleteGovernanceStrategiesParams[]) {
@@ -614,18 +615,24 @@ export type CheckAuthParams = {}
 export interface CheckAuthResult {
   /** 执行结果 */
   optionSwitch: {
-    options: { auth: string }
+    options: { auth: string; clientOpen: string; consoleOpen: string }
   }
 }
 
 /** 检查策略是否已开启 */
 export async function checkAuth(params: CheckAuthParams) {
   if (!window.localStorage.getItem(PolarisTokenKey)) {
-    router.navigate('/login')
+    showNoLoginTip()
+    //router.navigate('/login')
     return false
   }
   const result = await getApiRequest<CheckAuthResult>({ action: 'core/v1/auth/status', data: params })
   return result.optionSwitch.options.auth === 'true'
+}
+
+export async function describeAuthStatus(params: CheckAuthParams) {
+  const result = await getApiRequest<CheckAuthResult>({ action: 'core/v1/auth/status', data: params })
+  return result.optionSwitch.options
 }
 
 export const cacheCheckAuth = once(checkAuth, ttl(30 * 60 * 1000))
