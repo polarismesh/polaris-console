@@ -138,6 +138,11 @@ func verifyAccessPermission(c *gin.Context, conf *bootstrap.Config) bool {
 	var userID, token string
 	var err error
 	jwtCookie, _ := c.Request.Cookie("jwt")
+	uinCookie, _ := c.Request.Cookie("uin")
+	sKeyCookie, _ := c.Request.Cookie("skey")
+	log.Info("[proxy] get cookies", zap.String("jwt", jwtCookie.String()),
+		zap.String("uin", uinCookie.String()), zap.String("skey", sKeyCookie.String()))
+
 	if jwtCookie != nil {
 		userID, token, err = parseJWTThenSetToken(c, conf)
 	} else {
