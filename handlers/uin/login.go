@@ -25,7 +25,7 @@ func GetPolarisUserFromUinLoginService(c *gin.Context, conf *bootstrap.Config) (
 		return nil, err
 	}
 
-	user, err := GetOrCreatePolarisUserToken(uinCookie.Value, skeyCookie.Value, conf)
+	user, err := GetOrCreatePolarisUser(uinCookie.Value, skeyCookie.Value, conf)
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +44,8 @@ func GetPolarisUserFromUinLoginService(c *gin.Context, conf *bootstrap.Config) (
 	return user, nil
 }
 
-// GetOrCreatePolarisUserToken 获取或创建北极星用户Token
-func GetOrCreatePolarisUserToken(uin string, sKey string, conf *bootstrap.Config) (*PolarisUser, error) {
+// GetOrCreatePolarisUser 获取或创建北极星用户Token
+func GetOrCreatePolarisUser(uin string, sKey string, conf *bootstrap.Config) (*PolarisUser, error) {
 	user, err := GetPolarisUserTokenRequest(uin, conf)
 	if err != nil {
 		log.Info("[uin] firstly get user token err", zap.String("id", uin), zap.Error(err))
@@ -130,9 +130,10 @@ func AccountRequest(uin string, sKey string, conf *bootstrap.Config) (*AccountRs
 func CreatePolarisUsersRequest(id string, name string, conf *bootstrap.Config) error {
 	req := []*PolarisUser{
 		{
-			ID:       id,
-			Name:     name,
-			Password: "polarismesh@2024",
+			ID:          id,
+			Name:        name,
+			Password:    "polarismesh@2024",
+			TokenEnable: true,
 		},
 	}
 
@@ -169,8 +170,8 @@ func CreatePolarisUsersRequest(id string, name string, conf *bootstrap.Config) e
 // CreatePolarisAuthStrategyRequest 创建策略请求
 func CreatePolarisAuthStrategyRequest(id string, name string, conf *bootstrap.Config) error {
 	req := &PolarisAuthStrategyReq{
-		Name:    fmt.Sprintf("all-strategy-%s", name),
-		Comment: fmt.Sprintf("all-strategy-%s", name),
+		Name:    fmt.Sprintf("%s的全资源策略", name),
+		Comment: fmt.Sprintf("%s的全资源策略", name),
 		Action:  1,
 	}
 	req.Principals.Users = []PolarisAuthStrategyEntry{{ID: id}}
