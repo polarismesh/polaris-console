@@ -53,7 +53,7 @@ func newHttpRequest(method string, url string, req interface{}, headers map[stri
 	if response.StatusCode != http.StatusOK {
 		// 如果是参数错误，那有可能是资源已经存在，交给上层逻辑来判断
 		if response.StatusCode == http.StatusBadRequest {
-			log.Info("[uin] response status is bad request, maybe resource is existed, return nil",
+			log.Info("[uin] response status is bad request, maybe resource is existed or not found, return nil",
 				zap.String("url", url), zap.Any("req", req), zap.Any("rsp", ret.String()),
 				zap.Int("code", response.StatusCode))
 			return ret.Bytes(), nil

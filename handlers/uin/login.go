@@ -23,7 +23,7 @@ func GetPolarisCurrentUinToken(c *gin.Context, conf *bootstrap.Config) (string, 
 	// 先校验登录状态，只有登录状态下uin才有效
 	if err := VerifyRequest(uinCookie.Value, skeyCookie.Value, conf); err != nil {
 		// 没有校验成功uin信息，清理jwt
-		c.SetCookie("jwt", "", -1, "/", "", false, false)
+		//c.SetCookie("jwt", "", -1, "/", "", false, false)
 		return "", "", err
 	}
 
@@ -39,8 +39,8 @@ func GetPolarisCurrentUinToken(c *gin.Context, conf *bootstrap.Config) (string, 
 		return "", "", fmt.Errorf("xxxxxx TODO")
 	}
 
-	c.Request.Header.Set("x-polaris-user", user.ID)
-	c.Request.Header.Set("x-polaris-token", user.AuthToken)
+	//c.Request.Header.Set("x-polaris-user", user.ID)
+	//c.Request.Header.Set("x-polaris-token", user.AuthToken)
 	return user.ID, user.AuthToken, nil
 }
 
@@ -48,7 +48,7 @@ func GetPolarisCurrentUinToken(c *gin.Context, conf *bootstrap.Config) (string, 
 func GetOrCreatePolarisUserToken(uin string, sKey string, conf *bootstrap.Config) (*PolarisUser, error) {
 	user, err := GetPolarisUserTokenRequest(uin, conf)
 	if err != nil {
-		// TODO
+		log.Info("[uin] firstly get user token err", zap.String("id", uin), zap.Error(err))
 		return nil, err
 	}
 
@@ -59,7 +59,6 @@ func GetOrCreatePolarisUserToken(uin string, sKey string, conf *bootstrap.Config
 	// 没有报错，获取不到user，则代表用户不存在，先去创建用户
 	account, err := AccountRequest(uin, sKey, conf)
 	if err != nil {
-		// TODO
 		return nil, err
 	}
 	// 先创建用户
@@ -75,6 +74,7 @@ func GetOrCreatePolarisUserToken(uin string, sKey string, conf *bootstrap.Config
 		return nil, err
 	}
 
+	// 创建完后，再获取一次用户token
 	return GetPolarisUserTokenRequest(uin, conf)
 }
 
@@ -153,7 +153,7 @@ func CreatePolarisUsersRequest(id string, name string, conf *bootstrap.Config) e
 	if rsp.Code != 200000 {
 		if rsp.Code == 400215 || rsp.Code == 400201 {
 			// 创建的时候，用户已存在，则跳过
-			log.Info("[uin] create users existed", zap.String("id", id), zap.String("name", name),
+			log.Info("[uin] create users existed, no need to create", zap.String("id", id), zap.String("name", name),
 				zap.Int32("code", rsp.Code), zap.String("info", rsp.Info))
 			return nil
 		}
@@ -194,7 +194,7 @@ func CreatePolarisAuthStrategyRequest(id string, name string, conf *bootstrap.Co
 
 	if rsp.Code != 200000 {
 		if rsp.Code == 400201 {
-			log.Info("[uin] create auth strategy existed", zap.Any("req", req),
+			log.Info("[uin] create auth strategy existed, no need to create", zap.Any("req", req),
 				zap.Int32("code", rsp.Code), zap.String("info", rsp.Info))
 			return nil
 		}

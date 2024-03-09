@@ -135,15 +135,33 @@ func ReverseProxyForServer(polarisServer *bootstrap.PolarisServer, conf *bootstr
 }
 
 func verifyAccessPermission(c *gin.Context, conf *bootstrap.Config) bool {
-	var userID, token string
+	//var userID, token string
 	var err error
 	jwtCookie, _ := c.Request.Cookie("jwt")
 	uinCookie, _ := c.Request.Cookie("uin")
-	sKeyCookie, _ := c.Request.Cookie("skey")
+	skeyCookie, _ := c.Request.Cookie("skey")
 	log.Info("[proxy] get cookies", zap.String("jwt", jwtCookie.String()),
-		zap.String("uin", uinCookie.String()), zap.String("skey", sKeyCookie.String()))
+		zap.String("uin", uinCookie.String()), zap.String("skey", skeyCookie.String()))
+	if uinCookie == nil || skeyCookie == nil {
+		log.Error("[proxy] cookie jwt or uin or skey is null")
+		c.SetCookie("jwt", "", -1, "/", "", false, false)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": http.StatusProxyAuthRequired,
+			"info": "Proxy Authentication Required",
+		})
+		return false
+	}
 
-	if jwtCookie != nil {
+	_, _, err = uin.GetPolarisCurrentUinToken(c, conf)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": http.StatusProxyAuthRequired,
+			"info": "Proxy Authentication Required",
+		})
+		return false
+	}
+
+	/*if jwtCookie != nil {
 		userID, token, err = parseJWTThenSetToken(c, conf)
 	} else {
 		log.Info("[proxy] not found target jwt cookie in request, try to get userid, token from uin")
@@ -175,7 +193,7 @@ func verifyAccessPermission(c *gin.Context, conf *bootstrap.Config) bool {
 			"info": "generate jwt token occurs error",
 		})
 		return false
-	}
+	}*/
 	return true
 }
 
