@@ -152,7 +152,7 @@ func GetPolarisCurrentUinToken(c *gin.Context, conf *bootstrap.Config) (string, 
 	// 先校验登录状态，只有登录状态下uin才有效
 	if err := VerifyRequest(uinCookie.Value, skeyCookie.Value, conf); err != nil {
 		// 没有校验成功uin信息，清理jwt
-		c.SetCookie("jwt", "", 5, "/", "", false, false)
+		c.SetCookie("jwt", "", -1, "/", "", false, false)
 		return "", "", err
 	}
 
@@ -408,9 +408,16 @@ func newHttpRequest(method string, url string, req interface{}, headers map[stri
 		return nil, err
 	}
 	if response.StatusCode != http.StatusOK {
-		log.Error("[uin] response status err", zap.String("url", url), zap.Any("req", req), zap.Error(err),
+		// 如果是参数错误，那有可能是资源已经存在，交给上层逻辑来判断
+		if response.StatusCode == http.StatusBadRequest {
+			log.Info("[uin] response status is bad request, maybe resource is existed, return nil",
+				zap.String("url", url), zap.Any("req", req), zap.Any("rsp", ret.String()),
+				zap.Int("code", response.StatusCode))
+			return ret.Bytes(), nil
+		}
+		log.Error("[uin] response status err", zap.String("url", url), zap.Any("req", req),
 			zap.Any("rsp", ret.String()), zap.Int("code", response.StatusCode))
-		return ret.Bytes(), fmt.Errorf("http request return code: %d", response.StatusCode)
+		return nil, fmt.Errorf("http request return code: %d", response.StatusCode)
 	}
 
 	return ret.Bytes(), nil
