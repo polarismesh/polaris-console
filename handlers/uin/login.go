@@ -142,24 +142,26 @@ func newLoginServiceReq(uin string, sKey string, interfaceName string) *LoginSer
 
 // GetPolarisCurrentUinToken 获取北极星当前uin下对应的用户token信息
 func GetPolarisCurrentUinToken(c *gin.Context, conf *bootstrap.Config) (string, string, error) {
-	uin, _ := c.Request.Cookie("uin")
-	skey, _ := c.Request.Cookie("skey")
-	if uin == nil || skey == nil {
-		log.Error("[uin] not found uin or skey in the cookies")
+	uinCookie, _ := c.Request.Cookie("uin")
+	skeyCookie, _ := c.Request.Cookie("skey")
+	if uinCookie == nil || skeyCookie == nil {
+		log.Error("[uinCookie] not found uin or skey in the cookies")
 		return "", "", fmt.Errorf("not found uin or skey from the cookie")
 	}
 
 	// 先校验登录状态，只有登录状态下uin才有效
-	if err := VerifyRequest(uin.Value, skey.Value, conf); err != nil {
+	if err := VerifyRequest(uinCookie.Value, skeyCookie.Value, conf); err != nil {
+		// 没有校验成功uin信息，清理jwt
+		c.SetCookie("jwt", "", 5, "/", "", false, false)
 		return "", "", err
 	}
 
-	user, err := GetOrCreatePolarisUserToken(uin.Value, skey.Value, conf)
+	user, err := GetOrCreatePolarisUserToken(uinCookie.Value, skeyCookie.Value, conf)
 	if err != nil {
 		return "", "", err
 	}
 	if user == nil {
-		return "", "", fmt.Errorf("not found user id: %s", uin.Value)
+		return "", "", fmt.Errorf("not found user id: %s", uinCookie.Value)
 	}
 
 	if !user.TokenEnable {
@@ -276,6 +278,12 @@ func CreatePolarisUsersRequest(id string, name string, conf *bootstrap.Config) e
 	}
 
 	if rsp.Code != 200000 {
+		if rsp.Code == 400215 || rsp.Code == 400201 {
+			// 创建的时候，用户已存在，则跳过
+			log.Info("[uin] create users existed", zap.String("id", id), zap.String("name", name),
+				zap.Int32("code", rsp.Code), zap.String("info", rsp.Info))
+			return nil
+		}
 		log.Error("[uin] create users return code is not 0", zap.Any("req", req),
 			zap.Int32("code", rsp.Code), zap.String("info", rsp.Info))
 		return fmt.Errorf("%s", rsp.Info)
@@ -312,6 +320,11 @@ func CreatePolarisAuthStrategyRequest(id string, name string, conf *bootstrap.Co
 	}
 
 	if rsp.Code != 200000 {
+		if rsp.Code == 400201 {
+			log.Info("[uin] create auth strategy existed", zap.Any("req", req),
+				zap.Int32("code", rsp.Code), zap.String("info", rsp.Info))
+			return nil
+		}
 		log.Error("[uin] create auth strategy return code is not 0", zap.Any("req", req),
 			zap.Int32("code", rsp.Code), zap.String("info", rsp.Info))
 		return fmt.Errorf("%s", rsp.Info)
@@ -340,7 +353,7 @@ func GetPolarisUserTokenRequest(id string, conf *bootstrap.Config) (*PolarisUser
 
 	if rsp.Code != 200000 {
 		if rsp.Code == 400312 {
-			log.Info("[uin] not found user", zap.String("id", id))
+			log.Info("[uin] not found user, maybe need to create", zap.String("id", id))
 			return nil, nil
 		}
 
@@ -395,15 +408,9 @@ func newHttpRequest(method string, url string, req interface{}, headers map[stri
 		return nil, err
 	}
 	if response.StatusCode != http.StatusOK {
-		// 特殊处理一下，获取token的Get请求，如果是400（找不到用户）的话，可以返回成功，由上层判断是否真的失败
-		if method == http.MethodGet {
-			log.Info("[uin] return success for get request", zap.String("url", url), zap.Any("req", req), zap.Error(err),
-				zap.Any("rsp", ret.String()), zap.Int("code", response.StatusCode))
-			return ret.Bytes(), nil
-		}
 		log.Error("[uin] response status err", zap.String("url", url), zap.Any("req", req), zap.Error(err),
 			zap.Any("rsp", ret.String()), zap.Int("code", response.StatusCode))
-		return nil, fmt.Errorf("http request return code: %d", response.StatusCode)
+		return ret.Bytes(), fmt.Errorf("http request return code: %d", response.StatusCode)
 	}
 
 	return ret.Bytes(), nil

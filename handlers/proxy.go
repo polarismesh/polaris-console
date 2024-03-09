@@ -159,6 +159,8 @@ func verifyAccessPermission(c *gin.Context, conf *bootstrap.Config) bool {
 	}
 
 	if ok := checkAuthoration(c, conf); !ok {
+		// 校验失败，证明jwt异常，这个时候要清理jwt的信息
+		c.SetCookie("jwt", "", 5, "/", "", false, false)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code": http.StatusProxyAuthRequired,
 			"info": "Proxy Authentication Required",
