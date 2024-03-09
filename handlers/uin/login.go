@@ -11,37 +11,37 @@ import (
 	"time"
 )
 
-// GetPolarisCurrentUinToken 获取北极星当前uin下对应的用户token信息
-func GetPolarisCurrentUinToken(c *gin.Context, conf *bootstrap.Config) (string, string, error) {
+// GetPolarisUserFromUinLoginService 获取北极星当前uin下对应的用户token信息
+func GetPolarisUserFromUinLoginService(c *gin.Context, conf *bootstrap.Config) (*PolarisUser, error) {
 	uinCookie, _ := c.Request.Cookie("uin")
 	skeyCookie, _ := c.Request.Cookie("skey")
 	if uinCookie == nil || skeyCookie == nil {
 		log.Error("[uinCookie] not found uin or skey in the cookies")
-		return "", "", fmt.Errorf("not found uin or skey from the cookie")
+		return nil, fmt.Errorf("not found uin or skey from the cookie")
 	}
 
 	// 先校验登录状态，只有登录状态下uin才有效
 	if err := VerifyRequest(uinCookie.Value, skeyCookie.Value, conf); err != nil {
-		// 没有校验成功uin信息，清理jwt
-		//c.SetCookie("jwt", "", -1, "/", "", false, false)
-		return "", "", err
+		return nil, err
 	}
 
 	user, err := GetOrCreatePolarisUserToken(uinCookie.Value, skeyCookie.Value, conf)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 	if user == nil {
-		return "", "", fmt.Errorf("not found user id: %s", uinCookie.Value)
+		return nil, fmt.Errorf("not found user id: %s", uinCookie.Value)
 	}
 
 	if !user.TokenEnable {
-		return "", "", fmt.Errorf("xxxxxx TODO")
+		log.Error("[uin] user token is not enable", zap.String("id", user.ID), zap.String("name", user.Name))
+		return nil, fmt.Errorf("user(%s, %s) token is not enable", user.ID, user.Name)
 	}
 
-	//c.Request.Header.Set("x-polaris-user", user.ID)
-	//c.Request.Header.Set("x-polaris-token", user.AuthToken)
-	return user.ID, user.AuthToken, nil
+	// 获取用户ID和token成功后，设置在请求Header里，转发到polaris-server
+	c.Request.Header.Set("x-polaris-user", user.ID)
+	c.Request.Header.Set("x-polaris-token", user.AuthToken)
+	return user, nil
 }
 
 // GetOrCreatePolarisUserToken 获取或创建北极星用户Token
