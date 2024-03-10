@@ -1,5 +1,5 @@
 import { Namespace, READ_ONLY_NAMESPACE } from './types'
-import { Modal, Table, notification } from 'tea-component'
+import { ExternalLink, Modal, Table, notification } from 'tea-component'
 import React from 'react'
 import { scrollable } from 'tea-component/lib/table/addons'
 import LabelTable from '../common/components/LabelTable'
@@ -30,9 +30,14 @@ export const showAllLabels = labels => {
 let hasNologinTip = false
 export const showNoLoginTip = () => {
   if (hasNologinTip) return
+  const tcsConsole = `${window.location.protocol}//${window.location.host.replace('polaris', 'o')}`
   hasNologinTip = true
   notification.error({
-    description: '北极星未登录，请前往TCS控制台登录。',
+    description: (
+      <>
+        北极星未登录，请前往<ExternalLink href={tcsConsole}>TCS控制台</ExternalLink>登录。
+      </>
+    ),
     duration: 0,
     onClose: () => {
       hasNologinTip = false
