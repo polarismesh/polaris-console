@@ -1,6 +1,7 @@
 import React from 'react'
 import { ExternalLink, Text } from 'tea-component'
 import router from './router'
+import Cookies from 'js-cookie'
 
 // 为node节点或master节点生成id
 export function genIdForNode() {
@@ -33,14 +34,14 @@ export function isOwner() {
 }
 
 export function getUin() {
-  return window.localStorage.getItem(LoginUserIdKey)
+  return Cookies.get(LoginUserIdKey) || ''
 }
 export function getOwnerUin() {
   const ownerId = window.localStorage.getItem(LoginUserOwnerIdKey)
   return ownerId === '' ? getUin() : ownerId
 }
 export function getLoginName() {
-  return window.localStorage.getItem(LoginUserNameKey)
+  return Cookies.get(LoginUserNameKey) || ''
 }
 export const diffAddRemoveArray = (originArray: string[] = [], currentArray: string[] = []) => {
   const addArray = [...currentArray],
@@ -58,9 +59,9 @@ export const diffAddRemoveArray = (originArray: string[] = [], currentArray: str
 }
 export const PolarisTokenKey = 'polaris_token'
 export const LoginRoleKey = 'login-role'
-export const LoginUserIdKey = 'login-user-id'
+export const LoginUserIdKey = 'polarisLoginUin'
 export const LoginUserOwnerIdKey = 'login-owner-id'
-export const LoginUserNameKey = 'login-name'
+export const LoginUserNameKey = 'polarisLoginName'
 
 export function checkIsUserLogin() {
   return !!window.localStorage.getItem(PolarisTokenKey)

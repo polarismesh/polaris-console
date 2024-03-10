@@ -226,29 +226,7 @@ export default function root() {
                     文档
                   </a>
                 </NavMenu.Item>
-                <NavMenu.Item
-                  type='dropdown'
-                  overlay={close => (
-                    <List type='option'>
-                      <List.Item
-                        onClick={() => {
-                          router.navigate(`/user-detail?id=${getUin()}`)
-                          close()
-                        }}
-                      >
-                        账号信息
-                      </List.Item>
-                      {/* <List.Item
-                        onClick={() => {
-                          userLogout()
-                          close()
-                        }}
-                      >
-                        退出
-                      </List.Item> */}
-                    </List>
-                  )}
-                >
+                <NavMenu.Item type='default' selected={false}>
                   {getLoginName()}
                 </NavMenu.Item>
               </>

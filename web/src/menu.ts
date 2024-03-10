@@ -138,12 +138,6 @@ export const MenuConfig: MenuItemConfig = {
           subMenus: null,
         },
         {
-          id: 'usergroup',
-          title: '用户组',
-          icon: 'static/img/user-icon.svg',
-          subMenus: null,
-        },
-        {
           id: 'policy',
           title: '策略',
           icon: 'static/img/user-icon.svg',
