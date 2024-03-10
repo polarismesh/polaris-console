@@ -14,12 +14,10 @@ export default ({ duck: { creators }, dispatch }: DuckCmpProps<Duck>): Column<Us
       render: x => {
         const canRead = isOwner() || getUin().toString() === x.id
         return canRead ? (
-          <Link style={{ display: 'block' }} data-event={'nav'} to={`/user-detail?id=${x.id}`}>
-            <Text>
-              {x.name}
-              {getUin().toString() === x.id && '（当前登录）'}
-            </Text>
-          </Link>
+          <Text>
+            {x.name}
+            {getUin().toString() === x.id && '（当前登录）'}
+          </Text>
         ) : (
           <Text>
             {x.name} {getUin().toString() === x.id && '（当前登录）'}
