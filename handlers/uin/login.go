@@ -39,7 +39,7 @@ func GetPolarisUserFromUinLoginService(c *gin.Context, conf *bootstrap.Config) (
 	}
 
 	// 设置cookie
-	c.SetCookie("uinName", user.Name, 600, "/", "", false, false)
+	c.SetCookie("uinName", fmt.Sprintf("%s$%s", user.ID, user.Name), 600, "/", "", false, false)
 
 	// 获取用户ID和token成功后，设置在请求Header里，转发到polaris-server
 	c.Request.Header.Set("x-polaris-user", user.ID)
