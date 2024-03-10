@@ -34,14 +34,14 @@ export function isOwner() {
 }
 
 export function getUin() {
-  return Cookies.get(LoginUserIdKey)?.split('$')?.[0]
+  return Cookies.get(LoginUserIdKey) || ''
 }
 export function getOwnerUin() {
   const ownerId = window.localStorage.getItem(LoginUserOwnerIdKey)
   return ownerId === '' ? getUin() : ownerId
 }
 export function getLoginName() {
-  return Cookies.get(LoginUserNameKey)?.split('$')?.[1]
+  return Cookies.get(LoginUserNameKey) || ''
 }
 export const diffAddRemoveArray = (originArray: string[] = [], currentArray: string[] = []) => {
   const addArray = [...currentArray],
@@ -59,9 +59,9 @@ export const diffAddRemoveArray = (originArray: string[] = [], currentArray: str
 }
 export const PolarisTokenKey = 'polaris_token'
 export const LoginRoleKey = 'login-role'
-export const LoginUserIdKey = 'uinName'
+export const LoginUserIdKey = 'polarisLoginUin'
 export const LoginUserOwnerIdKey = 'login-owner-id'
-export const LoginUserNameKey = 'uinName'
+export const LoginUserNameKey = 'polarisLoginName'
 
 export function checkIsUserLogin() {
   return !!window.localStorage.getItem(PolarisTokenKey)
