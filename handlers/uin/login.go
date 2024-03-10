@@ -21,11 +21,11 @@ func GetPolarisUserFromUinLoginService(c *gin.Context, conf *bootstrap.Config) (
 	}
 
 	// 先校验登录状态，只有登录状态下uin才有效
-	if err := VerifyRequest(uinCookie.Value, skeyCookie.Value, conf); err != nil {
+	if err := verifyRequest(uinCookie.Value, skeyCookie.Value, conf); err != nil {
 		return nil, err
 	}
 
-	user, err := GetOrCreatePolarisUser(uinCookie.Value, skeyCookie.Value, conf)
+	user, err := getOrCreatePolarisUser(uinCookie.Value, skeyCookie.Value, conf)
 	if err != nil {
 		return nil, err
 	}
@@ -38,15 +38,19 @@ func GetPolarisUserFromUinLoginService(c *gin.Context, conf *bootstrap.Config) (
 		return nil, fmt.Errorf("user(%s, %s) token is not enable", user.ID, user.Name)
 	}
 
+	// 设置cookie
+	c.SetCookie("uinName", user.Name, 600, "/", "", false, false)
+
 	// 获取用户ID和token成功后，设置在请求Header里，转发到polaris-server
 	c.Request.Header.Set("x-polaris-user", user.ID)
 	c.Request.Header.Set("x-polaris-token", user.AuthToken)
+
 	return user, nil
 }
 
-// GetOrCreatePolarisUser 获取或创建北极星用户Token
-func GetOrCreatePolarisUser(uin string, sKey string, conf *bootstrap.Config) (*PolarisUser, error) {
-	user, err := GetPolarisUserTokenRequest(uin, conf)
+// getOrCreatePolarisUser 获取或创建北极星用户信息
+func getOrCreatePolarisUser(uin string, sKey string, conf *bootstrap.Config) (*PolarisUser, error) {
+	user, err := getPolarisUserRequest(uin, conf)
 	if err != nil {
 		log.Info("[uin] firstly get user token err", zap.String("id", uin), zap.Error(err))
 		return nil, err
@@ -57,12 +61,12 @@ func GetOrCreatePolarisUser(uin string, sKey string, conf *bootstrap.Config) (*P
 	}
 
 	// 没有报错，获取不到user，则代表用户不存在，先去创建用户
-	account, err := AccountRequest(uin, sKey, conf)
+	account, err := accountRequest(uin, sKey, conf)
 	if err != nil {
 		return nil, err
 	}
 	// 先创建用户
-	if err := CreatePolarisUsersRequest(uin, account.Data.Name, conf); err != nil {
+	if err := createPolarisUsersRequest(uin, account.Data.Name, conf); err != nil {
 		return nil, err
 	}
 
@@ -70,16 +74,16 @@ func GetOrCreatePolarisUser(uin string, sKey string, conf *bootstrap.Config) (*P
 	time.Sleep(time.Second + time.Millisecond*100)
 
 	// 再创建用户的策略
-	if err := CreatePolarisAuthStrategyRequest(uin, account.Data.Name, conf); err != nil {
+	if err := createPolarisAuthStrategyRequest(uin, account.Data.Name, conf); err != nil {
 		return nil, err
 	}
 
-	// 创建完后，再获取一次用户token
-	return GetPolarisUserTokenRequest(uin, conf)
+	// 创建完后，再获取一次用户信息
+	return getPolarisUserRequest(uin, conf)
 }
 
-// VerifyRequest 发起verify请求
-func VerifyRequest(uin string, sKey string, conf *bootstrap.Config) error {
+// verifyRequest 发起verify请求
+func verifyRequest(uin string, sKey string, conf *bootstrap.Config) error {
 	req := newLoginServiceReq(uin, sKey, VerifyInterfaceName)
 	ret, err := newHttpRequest(http.MethodPost, conf.LoginService.Verify, req, nil)
 	if err != nil {
@@ -102,8 +106,8 @@ func VerifyRequest(uin string, sKey string, conf *bootstrap.Config) error {
 	return nil
 }
 
-// AccountRequest 发起Account请求
-func AccountRequest(uin string, sKey string, conf *bootstrap.Config) (*AccountRsp, error) {
+// accountRequest 发起Account请求
+func accountRequest(uin string, sKey string, conf *bootstrap.Config) (*AccountRsp, error) {
 	req := newLoginServiceReq(uin, sKey, AccountInterfaceName)
 	ret, err := newHttpRequest(http.MethodPost, conf.LoginService.Account, req, nil)
 	if err != nil {
@@ -126,13 +130,14 @@ func AccountRequest(uin string, sKey string, conf *bootstrap.Config) (*AccountRs
 	return &rsp, nil
 }
 
-// CreatePolarisUsersRequest 创建用户请求
-func CreatePolarisUsersRequest(id string, name string, conf *bootstrap.Config) error {
+// createPolarisUsersRequest 创建用户请求
+func createPolarisUsersRequest(id string, name string, conf *bootstrap.Config) error {
 	req := []*PolarisUser{
 		{
 			ID:          id,
 			Name:        name,
 			Password:    "polarismesh@2024",
+			Source:      "QCloud",
 			TokenEnable: true,
 		},
 	}
@@ -151,8 +156,8 @@ func CreatePolarisUsersRequest(id string, name string, conf *bootstrap.Config) e
 		return err
 	}
 
-	if rsp.Code != 200000 {
-		if rsp.Code == 400215 || rsp.Code == 400201 {
+	if rsp.Code != PolarisCodeSuccess {
+		if rsp.Code == PolarisCodeUserExist || rsp.Code == PolarisCodeResourceExist {
 			// 创建的时候，用户已存在，则跳过
 			log.Info("[uin] create users existed, no need to create", zap.String("id", id), zap.String("name", name),
 				zap.Int32("code", rsp.Code), zap.String("info", rsp.Info))
@@ -167,8 +172,8 @@ func CreatePolarisUsersRequest(id string, name string, conf *bootstrap.Config) e
 	return nil
 }
 
-// CreatePolarisAuthStrategyRequest 创建策略请求
-func CreatePolarisAuthStrategyRequest(id string, name string, conf *bootstrap.Config) error {
+// createPolarisAuthStrategyRequest 创建策略请求
+func createPolarisAuthStrategyRequest(id string, name string, conf *bootstrap.Config) error {
 	req := &PolarisAuthStrategyReq{
 		Name:    fmt.Sprintf("%s的全资源策略", name),
 		Comment: fmt.Sprintf("%s的全资源策略", name),
@@ -193,8 +198,8 @@ func CreatePolarisAuthStrategyRequest(id string, name string, conf *bootstrap.Co
 		return err
 	}
 
-	if rsp.Code != 200000 {
-		if rsp.Code == 400201 {
+	if rsp.Code != PolarisCodeSuccess {
+		if rsp.Code == PolarisCodeResourceExist {
 			log.Info("[uin] create auth strategy existed, no need to create", zap.Any("req", req),
 				zap.Int32("code", rsp.Code), zap.String("info", rsp.Info))
 			return nil
@@ -208,8 +213,8 @@ func CreatePolarisAuthStrategyRequest(id string, name string, conf *bootstrap.Co
 	return nil
 }
 
-// GetPolarisUserTokenRequest 发起获取北极星用户Token的请求
-func GetPolarisUserTokenRequest(id string, conf *bootstrap.Config) (*PolarisUser, error) {
+// getPolarisUserRequest 发起获取北极星用户Token的请求
+func getPolarisUserRequest(id string, conf *bootstrap.Config) (*PolarisUser, error) {
 	url := fmt.Sprintf("http://%s%s?id=%s", conf.PolarisServer.Address, conf.WebServer.AuthURL+"/user/token", id)
 	headers := make(map[string]string)
 	headers["X-Polaris-Token"] = conf.PolarisServer.PolarisToken
@@ -225,8 +230,8 @@ func GetPolarisUserTokenRequest(id string, conf *bootstrap.Config) (*PolarisUser
 		return nil, err
 	}
 
-	if rsp.Code != 200000 {
-		if rsp.Code == 400312 {
+	if rsp.Code != PolarisCodeSuccess {
+		if rsp.Code == PolarisCodeNotFoundUser {
 			log.Info("[uin] not found user, maybe need to create", zap.String("id", id))
 			return nil, nil
 		}
