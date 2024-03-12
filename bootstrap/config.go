@@ -42,7 +42,7 @@ type StaffDepartment struct {
 type PolarisServer struct {
 	Address      string `yaml:"address"`
 	PolarisToken string `yaml:"polarisToken"`
-	OwnerUin     string `yaml:"OwnerUin"`
+	OwnerUin     string `yaml:"ownerUin"`
 }
 
 type MonitorServer struct {
