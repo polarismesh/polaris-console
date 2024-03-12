@@ -252,6 +252,7 @@ export default function root() {
           <Content>
             <Switch>
               <Route exact path='/' component={Service} />
+              <Route exact path='/login' component={Service} />
               <Route exact path='/namespace' component={Namespace} />
               <Route exact path='/service' component={Service} />
               <Route exact path='/service-detail' component={ServiceDetail} />
