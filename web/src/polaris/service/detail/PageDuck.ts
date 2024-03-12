@@ -1,6 +1,6 @@
 import DetailPageDuck from '@src/polaris/common/ducks/DetailPage'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
-import { select, put, takeLatest } from 'redux-saga/effects'
+import { select, put, take } from 'redux-saga/effects'
 import { TAB, ComposedId } from './types'
 import InfoDuck from './info/PageDuck'
 import InstanceDuck from './instance/PageDuck'
@@ -10,6 +10,7 @@ import CircuitBreakerDuck from '@src/polaris/administration/breaker/PageDuck'
 
 import { Service } from '../types'
 import { describeServices } from '../model'
+import { takeEvery } from 'redux-saga'
 
 export default class RegistryDetailDuck extends DetailPageDuck {
   ComposedId: ComposedId
@@ -105,7 +106,7 @@ export default class RegistryDetailDuck extends DetailPageDuck {
   *watchTabs() {
     const duck = this
     const { types, ducks, selectors } = duck
-    yield takeLatest([types.SWITCH, types.FETCH_DONE], function*() {
+    yield takeEvery([types.SWITCH, types.FETCH_DONE], function*() {
       const composedId = selectors.composedId(yield select())
       const tab = selectors.tab(yield select())
       const data = selectors.data(yield select())
@@ -113,6 +114,8 @@ export default class RegistryDetailDuck extends DetailPageDuck {
         return
       }
       const subDuck = ducks[tab]
+      const ready = subDuck.selectors.ready(yield select())
+      if (!ready) yield take(subDuck.types.READY)
       yield put(subDuck.creators.load({ ...composedId, ...data }))
     })
   }
