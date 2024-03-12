@@ -39,11 +39,6 @@ export default function ServicePage(props: DuckCmpProps<Duck>) {
         <Justify
           left={
             <>
-              {!isInDetailpage && isOwner() && (
-                <Button type={'primary'} onClick={handlers.create}>
-                  {'新建'}
-                </Button>
-              )}
               {isInDetailpage && isOwner() && (
                 <Button type={'primary'} onClick={handlers.modifyGroup}>
                   {'编辑用户组'}
