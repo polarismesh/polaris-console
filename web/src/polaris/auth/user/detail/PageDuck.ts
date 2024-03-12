@@ -111,9 +111,16 @@ export default abstract class CreateDuck extends DetailPage {
     yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
     yield takeLatest(types.FETCH_DONE, function*() {
       const { id } = selectors.composedId(yield select())
+      yield put({ type: types.FETCH_USEABLE_RESOURCE })
       yield put(policy.creators.load({ principalId: id, principalType: AuthSubjectType.USER }))
       yield put(userGroup.creators.load({ userId: id }, {}))
+    })
+    yield takeLatest(types.FETCH_USEABLE_RESOURCE, function*() {
+      const { id } = selectors.composedId(yield select())
       yield put(useableResource.creators.fetch({ principal_id: id, principal_type: AuthSubjectType.USER }))
+      yield delay(1000)
+      const data = useableResource.selectors.data(yield select())
+      if (!data) yield put({ type: types.FETCH_USEABLE_RESOURCE })
     })
     yield takeLatest(types.MODIFY_COMMENT, function*() {
       const { id } = yield select(selectors.composedId)

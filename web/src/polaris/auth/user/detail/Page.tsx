@@ -11,7 +11,7 @@ import DetailPage from '@src/polaris/common/duckComponents/DetailPage'
 import { isOwner, getUin, getOwnerUin } from '@src/polaris/common/util/common'
 import UseableResource from '../../common/UseableResource'
 
-export default purify(function (props: DuckCmpProps<Duck>) {
+export default purify(function(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { selectors, selector, creators, ducks } = duck
   const composedId = selectors.composedId(store)
@@ -20,7 +20,7 @@ export default purify(function (props: DuckCmpProps<Duck>) {
   const { data, authOpen } = selector(store)
   if (!data) return <noscript />
   const { comment, auth_token, token_enable, email, mobile } = data
-  const resourceData = ducks.useableResource.selectors.data(store)
+  const resourceData = ducks.useableResource.selectors.data(store) || { namespaces: [], services: [], configGroups: [] }
   return (
     <DetailPage
       store={store}
