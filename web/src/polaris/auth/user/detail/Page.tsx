@@ -20,7 +20,11 @@ export default purify(function(props: DuckCmpProps<Duck>) {
   const { data, authOpen } = selector(store)
   if (!data) return <noscript />
   const { comment, auth_token, token_enable, email, mobile } = data
-  const resourceData = ducks.useableResource.selectors.data(store) || { namespaces: [], services: [], configGroups: [] }
+  const resourceData = ducks.useableResource.selectors.data(store) || {
+    namespaces: [],
+    services: [],
+    config_groups: [],
+  }
   return (
     <DetailPage
       store={store}
