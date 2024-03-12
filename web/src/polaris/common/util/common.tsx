@@ -37,8 +37,9 @@ export function getUin() {
   return Cookies.get(LoginUserIdKey) || ''
 }
 export function getOwnerUin() {
-  const ownerId = window.localStorage.getItem(LoginUserOwnerIdKey)
-  return ownerId === '' ? getUin() : ownerId
+  return ''
+  // const ownerId = window.localStorage.getItem(LoginUserOwnerIdKey)
+  // return ownerId === '' ? getUin() : ownerId
 }
 export function getLoginName() {
   return Cookies.get(LoginUserNameKey) || ''
