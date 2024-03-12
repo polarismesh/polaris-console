@@ -116,7 +116,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                               {token_enable ? '禁用' : '启用'}
                             </Button>
                           )}
-                          <Button type='link' onClick={() => dispatch(creators.resetToken())}>
+                          <Button type='link' onClick={() => dispatch(creators.resetToken())} disabled={isOwner()}>
                             {'重置'}
                           </Button>
                         </>
