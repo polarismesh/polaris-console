@@ -30,16 +30,17 @@ export function getClosest(element: any, selector: string) {
 }
 
 export function isOwner() {
-  return window.localStorage.getItem(LoginRoleKey) === 'main'
+  const uin = getUin()
+  const ownerUin = getOwnerUin()
+  return uin && ownerUin && getUin() === getOwnerUin()
 }
 
 export function getUin() {
   return Cookies.get(LoginUserIdKey) || ''
 }
 export function getOwnerUin() {
-  return ''
-  // const ownerId = window.localStorage.getItem(LoginUserOwnerIdKey)
-  // return ownerId === '' ? getUin() : ownerId
+  const ownerId = Cookies.get(LoginUserOwnerIdKey) || ''
+  return ownerId
 }
 export function getLoginName() {
   return Cookies.get(LoginUserNameKey) || ''
@@ -61,7 +62,7 @@ export const diffAddRemoveArray = (originArray: string[] = [], currentArray: str
 export const PolarisTokenKey = 'polaris_token'
 export const LoginRoleKey = 'login-role'
 export const LoginUserIdKey = 'polarisLoginUin'
-export const LoginUserOwnerIdKey = 'login-owner-id'
+export const LoginUserOwnerIdKey = 'polarisOwnerUin'
 export const LoginUserNameKey = 'polarisLoginName'
 
 export function checkIsUserLogin() {

@@ -14,10 +14,12 @@ export default ({ duck: { creators }, dispatch }: DuckCmpProps<Duck>): Column<Us
       render: x => {
         const canRead = isOwner() || getUin().toString() === x.id
         return canRead ? (
-          <Text>
-            {x.name}
-            {getUin().toString() === x.id && '（当前登录）'}
-          </Text>
+          <Link style={{ display: 'block' }} data-event={'nav'} to={`/user-detail?id=${x.id}`}>
+            <Text>
+              {x.name}
+              {getUin().toString() === x.id && '（当前登录）'}
+            </Text>
+          </Link>
         ) : (
           <Text>
             {x.name} {getUin().toString() === x.id && '（当前登录）'}
@@ -29,7 +31,7 @@ export default ({ duck: { creators }, dispatch }: DuckCmpProps<Duck>): Column<Us
     {
       key: 'userType',
       header: '用户类型',
-      render: x => <Text>{isOwner() ? '主账号' : '子账号'}</Text>,
+      render: x => <Text>{getOwnerUin()?.toString() === x.id ? '主账号' : '子账号'}</Text>,
     },
     {
       key: 'id',
@@ -47,7 +49,11 @@ export default ({ duck: { creators }, dispatch }: DuckCmpProps<Duck>): Column<Us
       render: x => (
         <>
           {isOwner() && (
-            <Button type='link' disabled={getOwnerUin().toString() === x.id} onClick={() => dispatch(creators.auth(x))}>
+            <Button
+              type='link'
+              disabled={getOwnerUin()?.toString() === x.id}
+              onClick={() => dispatch(creators.auth(x))}
+            >
               {'授权'}
             </Button>
           )}
