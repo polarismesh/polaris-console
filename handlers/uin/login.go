@@ -41,6 +41,7 @@ func GetPolarisUserFromUinLoginService(c *gin.Context, conf *bootstrap.Config) (
 	// 设置cookie，返回给界面的登录信息
 	c.SetCookie("polarisLoginUin", user.ID, 600, "/", "", false, false)
 	c.SetCookie("polarisLoginName", user.Name, 600, "/", "", false, false)
+	c.SetCookie("polarisOwnerUin", conf.PolarisServer.OwnerUin, 600, "/", "", false, false)
 
 	// 获取用户ID和token成功后，设置在请求Header里，转发到polaris-server
 	c.Request.Header.Set("x-polaris-user", user.ID)
@@ -74,10 +75,10 @@ func getOrCreatePolarisUser(uin string, sKey string, conf *bootstrap.Config) (*P
 	// 等待1s，等Server获取到最新的用户信息加载到Cache
 	time.Sleep(time.Second + time.Millisecond*100)
 
-	// 再创建用户的策略
-	if err := createPolarisAuthStrategyRequest(uin, account.Data.Name, conf); err != nil {
-		return nil, err
-	}
+	// 子账号默认没有权限，去掉创建用户策略
+	//if err := createPolarisAuthStrategyRequest(uin, account.Data.Name, conf); err != nil {
+	//	return nil, err
+	//}
 
 	// 创建完后，再获取一次用户信息
 	return getPolarisUserRequest(uin, conf)
