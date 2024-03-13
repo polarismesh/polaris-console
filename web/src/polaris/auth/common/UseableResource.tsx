@@ -15,7 +15,7 @@ interface Props {
   resources: {
     namespaces: StrategyResourceEntry[]
     services: StrategyResourceEntry[]
-    configGroups: StrategyResourceEntry[]
+    config_groups: StrategyResourceEntry[]
   }
 }
 export default purify(function(props: Props) {
