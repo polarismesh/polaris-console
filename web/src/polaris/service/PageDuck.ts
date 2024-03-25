@@ -12,9 +12,7 @@ import { Modal, TagValue } from 'tea-component'
 import { checkAuth } from '../auth/model'
 import { KeyValuePair } from '../configuration/fileGroup/types'
 import { DefaultServiceTagAttribute, ServiceNameTagKey, MetadataTagKey } from './Page'
-import { PolarisTokenKey } from '../common/util/common'
-import router from '../common/util/router'
-import { showNoLoginTip } from './utils'
+import { getUin } from '../common/util/common'
 
 export const EmptyCustomFilter = {
   namespace: '',
@@ -174,7 +172,7 @@ export default class ServicePageDuck extends GridPageDuck {
     const authOpen = yield checkAuth({})
     yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
     if (authOpen) {
-      if (window.localStorage.getItem(PolarisTokenKey)) yield* this.loadNamespaceList()
+      if (getUin()) yield* this.loadNamespaceList()
       //else router.navigate('/login')
     } else {
       yield* this.loadNamespaceList()
