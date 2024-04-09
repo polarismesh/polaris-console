@@ -38,7 +38,7 @@ export default function InterfacePage(props: DuckCmpProps<ServiceAliasDuck>) {
                 onChange={handlers.selectContractVersion}
                 value={selectedVersion}
                 options={contractVersionList}
-                size={'m'}
+                size={'l'}
                 matchButtonWidth
               />
             </section>
