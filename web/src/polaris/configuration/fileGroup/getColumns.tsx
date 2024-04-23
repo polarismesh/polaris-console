@@ -12,7 +12,7 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
     header: '名称',
     render: x => (
       <Text>
-        <Link to={`/filegroup-detail?group=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
+        {x.editable ? <Link to={`/filegroup-detail?group=${x.name}&namespace=${x.namespace}`}>{x.name}</Link> : x.name}
       </Text>
     ),
   },
@@ -46,12 +46,16 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
             fn={dispatch => dispatch(creators.edit(x))}
             disabled={!x.editable}
             tip={!x.editable ? '无权限' : '编辑'}
-          >{'编辑'}</Action>
+          >
+            {'编辑'}
+          </Action>
           <Action
             fn={dispatch => dispatch(creators.remove(x))}
             disabled={!x.editable}
             tip={!x.editable ? '无权限' : '编辑'}
-          >{'删除'}</Action>
+          >
+            {'删除'}
+          </Action>
         </React.Fragment>
       )
     },
