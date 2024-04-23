@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { notification } from 'tea-component'
 import tips from './tips'
-import { userLogout } from './common'
 import insertCSS from '../helpers/insertCSS'
 import { showNoLoginTip } from '@src/polaris/service/utils'
 
@@ -50,25 +49,25 @@ export async function apiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts, noError = false } = options
   try {
     tips.showLoading({})
-    const res = (await axios
-      .post<T & ApiResponse>(action, data, {
-        ...opts,
-        headers: {
-          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-          'X-Polaris-User': window.localStorage.getItem('login-user-id'),
-          ...(opts?.headers ?? {}),
-        },
-      })
-      .catch(function(error) {
-        errorHandle(error)
-      })) as AxiosResponse<T & ApiResponse>
+    const res = (await axios.post<T & ApiResponse>(action, data, {
+      ...opts,
+      headers: {
+        'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+        'X-Polaris-User': window.localStorage.getItem('login-user-id'),
+        ...(opts?.headers ?? {}),
+      },
+    })) as AxiosResponse<T & ApiResponse>
 
     if (res.data.code > 200000 && !noError) {
       throw res.data.info
     }
     return res.data
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    if (error.response.data instanceof Blob) {
+      error.response.data = JSON.parse(await error.response.data.text())
+    }
+    errorHandle(error)
+    console.error(error)
   } finally {
     tips.hideLoading()
   }
@@ -77,24 +76,24 @@ export async function getApiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts, noError = false } = options
   try {
     tips.showLoading({})
-    const res = (await axios
-      .get<T & ApiResponse>(action, {
-        params: data,
-        ...opts,
-        headers: {
-          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-          'X-Polaris-User': window.localStorage.getItem('login-user-id'),
-        },
-      })
-      .catch(function(error) {
-        errorHandle(error)
-      })) as AxiosResponse<T & ApiResponse>
+    const res = (await axios.get<T & ApiResponse>(action, {
+      params: data,
+      ...opts,
+      headers: {
+        'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+        'X-Polaris-User': window.localStorage.getItem('login-user-id'),
+      },
+    })) as AxiosResponse<T & ApiResponse>
     if (res?.data?.code > 200000 && !noError) {
       throw res.data.info
     }
     return res?.data
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    if (error.response.data instanceof Blob) {
+      error.response.data = JSON.parse(await error.response.data.text())
+    }
+    errorHandle(error)
+    console.error(error)
   } finally {
     tips.hideLoading()
   }
@@ -103,23 +102,23 @@ export async function putApiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts, noError = false } = options
   try {
     tips.showLoading({})
-    const res = (await axios
-      .put<T & ApiResponse>(action, data, {
-        ...opts,
-        headers: {
-          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-          'X-Polaris-User': window.localStorage.getItem('login-user-id'),
-        },
-      })
-      .catch(function(error) {
-        errorHandle(error)
-      })) as AxiosResponse<T & ApiResponse>
+    const res = (await axios.put<T & ApiResponse>(action, data, {
+      ...opts,
+      headers: {
+        'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+        'X-Polaris-User': window.localStorage.getItem('login-user-id'),
+      },
+    })) as AxiosResponse<T & ApiResponse>
     if (res.data.code > 200000 && !noError) {
       throw res.data.info
     }
     return res.data
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    if (error.response.data instanceof Blob) {
+      error.response.data = JSON.parse(await error.response.data.text())
+    }
+    errorHandle(error)
+    console.error(error)
   } finally {
     tips.hideLoading()
   }
@@ -128,24 +127,24 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
   const { action, data = {}, opts, noError = false } = options
   try {
     tips.showLoading({})
-    const res = (await axios
-      .delete<T & ApiResponse>(action, {
-        params: data,
-        ...opts,
-        headers: {
-          'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
-          'X-Polaris-User': window.localStorage.getItem('login-user-id'),
-        },
-      })
-      .catch(function(error) {
-        errorHandle(error)
-      })) as AxiosResponse<T & ApiResponse>
+    const res = (await axios.delete<T & ApiResponse>(action, {
+      params: data,
+      ...opts,
+      headers: {
+        'X-Polaris-Token': window.localStorage.getItem('polaris_token'),
+        'X-Polaris-User': window.localStorage.getItem('login-user-id'),
+      },
+    })) as AxiosResponse<T & ApiResponse>
     if (res.data.code > 200000 && !noError) {
       throw res.data.info
     }
     return res.data
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    if (error.response.data instanceof Blob) {
+      error.response.data = JSON.parse(await error.response.data.text())
+    }
+    errorHandle(error)
+    console.error(error)
   } finally {
     tips.hideLoading()
   }

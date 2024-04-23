@@ -4,7 +4,7 @@ import FormField from '@src/polaris/common/duckComponents/form/Field'
 import React, { useState } from 'react'
 import { DuckCmpProps, memorize, purify } from 'saga-duck'
 import { Form, Select, Segment, Table } from 'tea-component'
-import { selectable } from 'tea-component/lib/table/addons'
+import { autotip, pageable, selectable } from 'tea-component/lib/table/addons'
 import ExportConfigDuck from './ExportConfigDuck'
 
 const segmentOptions = [
@@ -42,7 +42,9 @@ const ExportConfigForm = purify(function ExportConfigForm(props: DuckCmpProps<Ex
           <Select
             searchable
             value={namespace.getValue()}
-            options={options?.namespaceList ?? []}
+            options={
+              options?.namespaceList ? options?.namespaceList.map(item => ({ ...item, disabled: !item.editable })) : []
+            }
             onChange={value => handlers.changeNamespace(value)}
             type={'simulate'}
             appearance={'button'}
@@ -75,7 +77,12 @@ const ConfigFileGroupTable = purify(function ConfigFileGroupTable(props: DuckCmp
       onChange: (value: string[]) => {
         groups.setValue(value)
       },
+      rowSelectable(rowKey, context) {
+        return context.record.editable
+      },
     }),
+    pageable({}),
+    autotip({}),
   ]
 
   return (

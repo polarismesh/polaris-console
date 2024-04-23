@@ -83,13 +83,13 @@ export default class ExportConfigDuck extends FormDialog {
     const options = selectors.options(yield select())
     const data = form.selectors.values(yield select())
     if (data.exportType === '*') {
-      data.groups = options.configFileGroupList.map(c => c.name)
+      data.groups = options.configFileGroupList.filter(c => c.editable).map(c => c.name)
     }
     const zipBlob = yield exportConfigFile({
       namespace: data.namespace,
       groups: data.groups,
     })
-    save('config.zip', zipBlob)
+    if (zipBlob) save('config.zip', zipBlob)
   }
 
   *onShow() {
