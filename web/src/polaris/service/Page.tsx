@@ -2,7 +2,7 @@ import BasicLayout from '../common/components/BaseLayout'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import ServicePageDuck, { EmptyCustomFilter } from './PageDuck'
-import { Button, Card, Justify, Table, FormItem, Form, FormText, TagSearchBox } from 'tea-component'
+import { Button, Card, Justify, Table, FormItem, Form, FormText, TagSearchBox, ListItem } from 'tea-component'
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import getColumns from './getColumns'
@@ -43,7 +43,7 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
       type: 'single',
       key: NamespaceTagKey,
       name: '命名空间',
-      values: namespaceList,
+      values: namespaceList.filter(item => item.editable),
     },
     {
       type: 'input',

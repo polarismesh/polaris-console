@@ -159,6 +159,7 @@ export default class ServicePageDuck extends GridPageDuck {
       text: item.name,
       value: item.name,
       key: item.name,
+      disabled: !item.editable,
     }))
     yield put({
       type: this.types.SET_NAMESPACE_LIST,
