@@ -43,7 +43,7 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
       type: 'single',
       key: NamespaceTagKey,
       name: '命名空间',
-      values: namespaceList,
+      values: namespaceList.filter(item => item.editable),
     },
     {
       type: 'input',
