@@ -370,9 +370,9 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                         </FormText>
                       </FormItem>
                       <FormItem label='健康检查'>
-                        <FormText>{record.healthCheck?.type ? '开启' : '关闭'}</FormText>
+                        <FormText>{record.enableHealthCheck ? '开启' : '关闭'}</FormText>
                       </FormItem>
-                      {record.healthCheck?.type && (
+                      {record.enableHealthCheck && (
                         <FormItem label='健康检查方式'>
                           <FormText>
                             检查方式：
