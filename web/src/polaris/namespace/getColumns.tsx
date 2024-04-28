@@ -4,7 +4,7 @@ import NamespacePageDuck, { NamespaceItem } from './PageDuck'
 import { Bubble, Text } from 'tea-component'
 import { Column } from '../common/ducks/GridPage'
 import Action from '../common/duckComponents/grid/Action'
-import { CheckVisibilityMode, VisibilityMode } from '../service/operation/CreateDuck'
+import { CheckVisibilityMode, VisibilityMode, VisibilityModeMap } from '../service/operation/CreateDuck'
 
 export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column<NamespaceItem>[] => [
   {
@@ -17,12 +17,11 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
     header: '服务可见性',
     render: x => {
       const visibilityMode = CheckVisibilityMode(x.service_export_to, x.name)
-
       if (!visibilityMode.length) return '-'
       return (
-        <Text>
+        <Text reset>
           {visibilityMode ? (
-            VisibilityMode[visibilityMode]
+            VisibilityModeMap[visibilityMode]
           ) : (
             <Bubble
               trigger={'click'}
