@@ -4,7 +4,7 @@ import NamespacePageDuck, { NamespaceItem } from './PageDuck'
 import { Bubble, Text } from 'tea-component'
 import { Column } from '../common/ducks/GridPage'
 import Action from '../common/duckComponents/grid/Action'
-import { CheckVisibilityMode, VisibilityMode, VisibilityModeMap } from '../service/operation/CreateDuck'
+import { CheckVisibilityMode, VisibilityModeMap } from '../service/operation/CreateDuck'
 
 export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column<NamespaceItem>[] => [
   {
@@ -17,14 +17,13 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
     header: '服务可见性',
     render: x => {
       const visibilityMode = CheckVisibilityMode(x.service_export_to, x.name)
-      if (!visibilityMode.length) return '-'
       return (
         <Text reset>
           {visibilityMode ? (
             VisibilityModeMap[visibilityMode]
           ) : (
             <Bubble
-              trigger={'click'}
+              trigger={'hover'}
               content={
                 <Text>
                   <Text parent={'div'}>{'服务可见的命名空间列表'}</Text>
@@ -36,7 +35,7 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
                 </Text>
               }
             >
-              {x.service_export_to ? x.service_export_to?.slice(0, 3)?.join(',') + '...' : '-'}
+              <Text>{x.service_export_to ? x.service_export_to?.slice(0, 3)?.join(',') + '...' : '-'}</Text>
             </Bubble>
           )}
         </Text>

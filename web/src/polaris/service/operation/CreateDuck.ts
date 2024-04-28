@@ -22,7 +22,7 @@ export const VisibilityModeMap = {
   [VisibilityMode.All]: '全部命名空间可见（包括新增）',
 }
 export const CheckVisibilityMode = (exportTo = [], namespace) => {
-  if (exportTo === null) {
+  if (!exportTo?.length) {
     return VisibilityMode.Single
   }
   return exportTo?.includes('*')
@@ -80,7 +80,9 @@ export default class CreateDuck extends FormDialog {
     if (values.enableNearby) {
       metaData[enableNearbyString] = 'true'
     }
-
+    if (values?.visibilityMode === VisibilityMode.All) {
+      values.export_to = ['*']
+    }
     if (options.isModify) {
       const res = yield* resolvePromise(
         modifyServices([
@@ -187,9 +189,13 @@ export default class CreateDuck extends FormDialog {
       },
     })
     yield put(form.creators.setMeta(options))
+    const visibilityMode = CheckVisibilityMode(data.export_to, data.namespace)
+    if (visibilityMode === VisibilityMode.All) data.export_to = []
+    yield put(form.creators.setMeta(options))
     yield put(
       form.creators.setValues({
         ...data,
+        visibilityMode,
       }),
     )
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel

@@ -2,7 +2,7 @@ import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import { Card, Col, Form, LoadingTip, Row, Text, FormItem, FormText, Bubble } from 'tea-component'
 import BaseInfoDuck from './PageDuck'
-import { CheckVisibilityMode, VisibilityMode, enableNearbyString } from '../../operation/CreateDuck'
+import { CheckVisibilityMode, VisibilityModeMap, enableNearbyString } from '../../operation/CreateDuck'
 
 export default function BaseInfo(props: DuckCmpProps<BaseInfoDuck>) {
   const { duck, store } = props
@@ -30,31 +30,27 @@ export default function BaseInfo(props: DuckCmpProps<BaseInfoDuck>) {
                 <FormItem label={'可见性'}>
                   <FormText>
                     <Text>
-                      {data.export_to?.length === 0 ? (
-                        '-'
-                      ) : (
-                        <>
-                          {visibilityMode ? (
-                            VisibilityMode[visibilityMode]
-                          ) : (
-                            <Bubble
-                              trigger={'click'}
-                              content={
-                                <Text>
-                                  <Text parent={'div'}>{'服务可见的命名空间列表'}</Text>
-                                  {data.export_to?.map(item => (
-                                    <Text parent={'div'} key={item}>
-                                      {item}
-                                    </Text>
-                                  ))}
-                                </Text>
-                              }
-                            >
-                              {data.export_to ? data.export_to?.slice(0, 3)?.join(',') + '...' : '-'}
-                            </Bubble>
-                          )}
-                        </>
-                      )}
+                      <>
+                        {visibilityMode ? (
+                          VisibilityModeMap[visibilityMode]
+                        ) : (
+                          <Bubble
+                            trigger={'click'}
+                            content={
+                              <Text>
+                                <Text parent={'div'}>{'服务可见的命名空间列表'}</Text>
+                                {data.export_to?.map(item => (
+                                  <Text parent={'div'} key={item}>
+                                    {item}
+                                  </Text>
+                                ))}
+                              </Text>
+                            }
+                          >
+                            {data.export_to ? data.export_to?.slice(0, 3)?.join(',') + '...' : '-'}
+                          </Bubble>
+                        )}
+                      </>
                     </Text>
                   </FormText>
                 </FormItem>

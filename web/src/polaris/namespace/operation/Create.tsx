@@ -58,32 +58,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             disabled={options?.isModify}
           />
         </FormField>
-        <FormItem label={'服务可见性'} tips={'当前命名空间下的服务被允许可见的命名空间列表'} required>
-          <section style={{ marginBottom: '15px' }}>
-            <RadioGroup
-              value={visibilityMode.getValue()}
-              onChange={v => {
-                visibilityMode.setValue(v)
-                service_export_to.setValue([])
-              }}
-            >
-              <Radio name={VisibilityMode.Single}>{'仅当前命名空间'}</Radio>
-              <Radio name={VisibilityMode.All}>{'全部命名空间（包括新增）'}</Radio>
-            </RadioGroup>
-          </section>
-          <SelectMultiple
-            searchable
-            allOption={{ text: '当前全部命名空间', value: 'all' }}
-            value={service_export_to.getValue() || []}
-            options={options.namespaceList || []}
-            onChange={value => {
-              service_export_to.setValue(value)
-              visibilityMode.setValue('')
-            }}
-            appearance={'button'}
-            size='l'
-          ></SelectMultiple>
-        </FormItem>
+
         <FormField field={comment} label={'描述'}>
           <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
         </FormField>
@@ -95,15 +70,47 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
               {'高级设置'}
             </Button>
             {showAdvance && (
-              <FormItem label={'授权'}>
-                <ResourcePrincipalAuth
-                  userDuck={userSelect}
-                  userGroupDuck={userGroupSelect}
-                  duck={duck}
-                  store={store}
-                  dispatch={dispatch}
-                />
-              </FormItem>
+              <>
+                {' '}
+                <FormItem label={'授权'}>
+                  <ResourcePrincipalAuth
+                    userDuck={userSelect}
+                    userGroupDuck={userGroupSelect}
+                    duck={duck}
+                    store={store}
+                    dispatch={dispatch}
+                  />
+                </FormItem>
+                <FormItem label={'服务可见性'} tips={'当前命名空间下的服务被允许可见的命名空间列表'} required>
+                  <section style={{ marginBottom: '15px' }}>
+                    <RadioGroup
+                      value={visibilityMode.getValue()}
+                      onChange={v => {
+                        visibilityMode.setValue(v)
+                        service_export_to.setValue([])
+                      }}
+                    >
+                      <Radio name={VisibilityMode.Single}>{'仅当前命名空间'}</Radio>
+                      <Radio name={VisibilityMode.All}>{'全部命名空间（包括新增）'}</Radio>
+                      <Radio name={''}>{'指定命名空间'}</Radio>
+                    </RadioGroup>
+                  </section>
+                  {visibilityMode.getValue() === '' && (
+                    <SelectMultiple
+                      searchable
+                      allOption={{ text: '当前全部命名空间', value: 'all' }}
+                      value={service_export_to.getValue() || []}
+                      options={options.namespaceList || []}
+                      onChange={value => {
+                        service_export_to.setValue(value)
+                        visibilityMode.setValue('')
+                      }}
+                      appearance={'button'}
+                      size='l'
+                    ></SelectMultiple>
+                  )}
+                </FormItem>
+              </>
             )}
           </>
         )}

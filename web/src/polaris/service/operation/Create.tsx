@@ -1,6 +1,6 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
-import Duck, { CheckVisibilityMode, VisibilityMode } from './CreateDuck'
+import Duck, { VisibilityMode } from './CreateDuck'
 import { Form, Select, Text, Icon, Bubble, Button, FormItem, Radio, RadioGroup, SelectMultiple } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
@@ -42,8 +42,6 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     'export_to',
     'visibilityMode',
   ])
-  
-  visibilityMode.setValue(CheckVisibilityMode(export_to.getValue(), namespace))
   const options = selectors.options(store)
   const [showAdvance, setShowAdvance] = React.useState(false)
 
@@ -71,36 +69,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             size={'l'}
           />
         </FormField>
-        <FormItem
-          label={'可见性'}
-          tips={'当前服务允许可见的命名空间列表，当与命名空间的服务可见性冲突时，优先使用该选项配置'}
-          required
-        >
-          <section style={{ marginBottom: '15px' }}>
-            <RadioGroup
-              value={visibilityMode.getValue()}
-              onChange={v => {
-                visibilityMode.setValue(v)
-                export_to.setValue([])
-              }}
-            >
-              <Radio name={VisibilityMode.Single}>{'仅当前命名空间'}</Radio>
-              <Radio name={VisibilityMode.All}>{'全部命名空间（包括新增）'}</Radio>
-            </RadioGroup>
-          </section>
-          <SelectMultiple
-            searchable
-            allOption={{ text: '当前全部命名空间', value: 'all' }}
-            value={export_to.getValue() || []}
-            options={options.namespaceList || []}
-            onChange={value => {
-              export_to.setValue(value)
-              visibilityMode.setValue('')
-            }}
-            appearance={'button'}
-            size='l'
-          ></SelectMultiple>
-        </FormItem>
+
         <FormField field={department} label={'部门'}>
           <Input field={department} size={'l'} />
         </FormField>
@@ -135,15 +104,50 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
               {'高级设置'}
             </Button>
             {showAdvance && (
-              <FormItem label={'授权'}>
-                <ResourcePrincipalAuth
-                  userDuck={userSelect}
-                  userGroupDuck={userGroupSelect}
-                  duck={duck}
-                  store={store}
-                  dispatch={dispatch}
-                />
-              </FormItem>
+              <>
+                <FormItem label={'授权'}>
+                  <ResourcePrincipalAuth
+                    userDuck={userSelect}
+                    userGroupDuck={userGroupSelect}
+                    duck={duck}
+                    store={store}
+                    dispatch={dispatch}
+                  />
+                </FormItem>
+                <FormItem
+                  label={'可见性'}
+                  tips={'当前服务允许可见的命名空间列表，当与命名空间的服务可见性冲突时，优先使用该选项配置'}
+                  required
+                >
+                  <section style={{ marginBottom: '15px' }}>
+                    <RadioGroup
+                      value={visibilityMode.getValue()}
+                      onChange={v => {
+                        visibilityMode.setValue(v)
+                        export_to.setValue([])
+                      }}
+                    >
+                      <Radio name={VisibilityMode.Single}>{'仅当前命名空间'}</Radio>
+                      <Radio name={VisibilityMode.All}>{'全部命名空间（包括新增）'}</Radio>
+                      <Radio name={''}>{'指定命名空间'}</Radio>
+                    </RadioGroup>
+                  </section>
+                  {visibilityMode.getValue() === '' && (
+                    <SelectMultiple
+                      searchable
+                      allOption={{ text: '当前全部命名空间', value: 'all' }}
+                      value={export_to.getValue() || []}
+                      options={options.namespaceList || []}
+                      onChange={value => {
+                        export_to.setValue(value)
+                        visibilityMode.setValue('')
+                      }}
+                      appearance={'button'}
+                      size='l'
+                    ></SelectMultiple>
+                  )}
+                </FormItem>
+              </>
             )}
           </>
         )}
