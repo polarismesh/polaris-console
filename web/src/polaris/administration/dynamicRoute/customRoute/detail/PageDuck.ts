@@ -134,6 +134,7 @@ export default class RouteDetailPageDuck extends DetailPage {
                   type: item.type,
                   key: item.key,
                   value_type: item.value.type,
+                  value_value_type: item.value.value_type,
                   value: item.value.value,
                 })),
               })),

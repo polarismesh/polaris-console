@@ -20,7 +20,7 @@ import {
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import PageDuck from './PageDuck'
 import { Values } from '../operations/CreateDuck'
-import { RouteArgumentTextMap, RouteLabelTextMap } from '../types'
+import { RouteArgumentTextMap, RouteLabelTextMap, RoutingValueType } from '../types'
 import { getLabelTag } from '../operations/Create'
 
 insertCSS(
@@ -197,12 +197,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<PageDuck>) {
                                 },
                                 {
                                   key: 'value',
-                                  header: '值',
+                                  header: '值/变量',
                                   render: item => {
-                                    const { value } = item
+                                    const { value, value_value_type } = item
+                                    const v = value_value_type === RoutingValueType.PARAMETER ? '变量' : value
                                     return (
-                                      <Text reset overflow tooltip={value}>
-                                        {value}
+                                      <Text reset overflow tooltip={v}>
+                                        {v}
                                       </Text>
                                     )
                                   },
