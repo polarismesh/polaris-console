@@ -34,6 +34,7 @@ export const DefaultServiceTagAttribute = {
 export const NamespaceTagKey = 'namespace'
 export const ServiceNameTagKey = 'serviceName'
 export const MetadataTagKey = 'serviceTag'
+export const HideEmptyServiceTagKey = 'hideEmptyService'
 
 function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
   const { duck, store } = props
@@ -80,6 +81,22 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
         )
       },
     },
+    {
+      type: 'single',
+      key: HideEmptyServiceTagKey,
+      name: '隐藏空服务',
+      values: [
+        {
+          name: '是',
+          value: true
+        },
+        {
+          name: '否',
+          value: false
+        },
+      ],
+      reusable: false,
+    }
   ]
 }
 export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
