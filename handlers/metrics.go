@@ -587,7 +587,6 @@ func describeServiceInterfaceMetricsRequestTotal(conf *bootstrap.Config, namespa
 		case string(RetReject), string(RetFlowControl):
 			allInter.FlowControlRequest += total
 			inter.FlowControlRequest += total
-			inter.AbnormalRequest += total
 		}
 
 	}
