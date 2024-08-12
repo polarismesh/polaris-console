@@ -77,5 +77,5 @@ func AuthRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	v1.GET("/auth/principal/resources", handlers.ReverseProxyForServer(&config.PolarisServer, config))
 
 	// 获取鉴权开关状态信息
-	v1.GET("/auth/status", handlers.ReverseProxyForServer(&config.PolarisServer, config))
+	v1.GET("/auth/status", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
 }
