@@ -146,6 +146,7 @@ export default class ServicePageDuck extends GridPageDuck {
         namespace: state.data.namespace,
         customFilters: state.customFilters,
         editable: state.data.editable,
+        deleteable: state.data.deleteable,
       }),
       customFilters: (state: State) => state.customFilters,
       selection: (state: State) => state.selection,

@@ -285,6 +285,8 @@ export class BreakerRuleCreateDuck extends Form {
         send: '',
         receive: [],
       },
+      editable: true,
+      deleteable: true
     }
   }
 

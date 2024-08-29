@@ -81,6 +81,8 @@ export interface RateLimit {
   resource: string // 限流资源
   // priority: number // 限流规则优先级
   // labels: Record<string, MetadataItem>
+  editable: boolean
+  deleteable: boolean
 }
 
 export interface DescribeLimitRulesResult {

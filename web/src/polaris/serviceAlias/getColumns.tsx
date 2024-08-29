@@ -61,8 +61,8 @@ export default ({ duck: { creators } }: DuckCmpProps<ServiceAliasPageDuck>): Col
               {'编辑'}
             </Action>
             <Action
-              disabled={!x.editable}
-              tip={!x.editable ? '无写权限' : '删除'}
+              disabled={!x.deleteable}
+              tip={!x.deleteable ? '无写权限' : '删除'}
               fn={dispatch => dispatch(creators.remove([x.id]))}
             >
               {'删除'}

@@ -381,20 +381,13 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
       </Row>
     </>
   )
-  const [alertVisible, setAlertVisible] = React.useState(true);
   return isInDetailpage ? (
     contentElement
   ) : (
     <BasicLayout title={'策略'} store={store} selectors={duck.selectors} header={<></>}>
       <Card>
         <Card.Body>
-            <Alert visible={alertVisible}
-              onClose={() => setAlertVisible(false)}
-              extra={
-                <Button type="link" onClick={() => setAlertVisible(false)}>
-                  关闭
-                </Button>
-              }>{authStatusMsg}</Alert>
+          <Alert>{authStatusMsg}</Alert>
           {contentElement}
         </Card.Body>
       </Card>

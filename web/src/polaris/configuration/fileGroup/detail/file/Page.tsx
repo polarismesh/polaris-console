@@ -478,7 +478,7 @@ function renderTree(props, folder, path: string, currPath: string) {
   const {
     hitPath,
     expandedIds,
-    data: { editable },
+    data: { editable, deleteable },
   } = selector(store)
   if (!(Object.keys(node).length > 0)) {
     return <noscript />
@@ -532,7 +532,7 @@ function renderTree(props, folder, path: string, currPath: string) {
                       >
                         {'查看发布历史'}
                       </List.Item>
-                      <List.Item onClick={() => handlers.delete(obj.name)} disabled={!editable}>
+                      <List.Item onClick={() => handlers.delete(obj.name)} disabled={!deleteable}>
                         删除
                       </List.Item>
                     </List>

@@ -189,31 +189,12 @@ export interface DescribeGovernanceUserTokenResult {
 export type ModifyGovernanceServicesResult = {}
 
 /** 修改治理中心鉴权策略 */
-export async function modifyGovernanceStrategy(params: ModifyGovernanceStrategyParams[]) {
+export async function modifyGovernanceStrategy(params: ModifyAuthStrategy[]) {
   const result = await putApiRequest<ModifyGovernanceStrategyResult>({
     action: 'core/v1/auth/strategies',
     data: params,
   })
   return result.responses.every(item => Number(item.code) === SuccessCode)
-}
-/** **ModifyGovernanceStrategy入参**
-
-修改治理中心鉴权策略  */
-export interface ModifyGovernanceStrategyParams {
-  /** 策略名称 */
-  id: string
-
-  /** 涉及的用户 or 用户组 */
-  principals?: Principal
-
-  /** 资源操作权限 */
-  action?: string
-
-  /** 简单描述 */
-  comment?: string
-
-  /** 策略关联的资源 */
-  resources?: StrategyResource
 }
 /** **ModifyGovernanceStrategy出参**
 
@@ -680,6 +661,18 @@ export interface AuthStrategy {
   resources?: StrategyResource
 
   default_strategy?: boolean
+
+  /** 鉴权规则来源 */
+  source?: string
+
+  /** 服务端接口 */
+  functions?: string[]
+
+  /** 策略生效的资源标签 */
+  resource_labels?: string[]
+
+  /** 策略资源标签 */
+  metadata?: Record<string, string>
 }
 /** 鉴权策略涉及的用户 or 用户组信息 */
 export interface Principal {
@@ -688,6 +681,9 @@ export interface Principal {
 
   /** 用户组ID列表 */
   groups?: PrincipalEntry[]
+
+  /** 角色ID列表 */
+  roles?: PrincipalEntry[]
 }
 /** 鉴权策略资源信息 */
 export interface StrategyResource {
@@ -702,6 +698,33 @@ export interface StrategyResource {
 
   /** 配置组ID列表 */
   config_groups?: StrategyResourceEntry[]
+
+  /** 路由规则ID列表 */
+  router_rules?: StrategyResourceEntry[]
+
+  /** 泳道规则ID列表 */
+  lane_rules?: StrategyResourceEntry[]
+
+  /** 熔断规则ID列表 */
+  circuitbreaker_rules?: StrategyResourceEntry[]
+
+  /** 主动探测规则ID列表 */
+  faultdetect_rules?: StrategyResourceEntry[]
+
+  /** 限流规则ID列表 */
+  ratelimit_rules?: StrategyResourceEntry[]
+
+  /** 用户ID列表 */
+  users?: StrategyResourceEntry[]
+
+  /** 用户组ID列表 */
+  user_groups?: StrategyResourceEntry[]
+
+  /** 资源鉴权规则ID列表 */
+  auth_policies?: StrategyResourceEntry[]
+
+  /** 角色ID列表 */
+  roles?: StrategyResourceEntry[]
 }
 /** 资源 */
 export interface StrategyResourceEntry {
@@ -841,14 +864,37 @@ export interface ModifyAuthStrategy {
   remove_resources?: StrategyResource
 
   /** 鉴权策略动作 */
-  action?: string[]
+  action?: string
 
   /** 简单描述 */
   comment?: string
 
   /** 腾讯云主账户ID */
   owner?: string
+
+  /** 鉴权规则来源 */
+  source?: string
+
+  /** 服务端接口 */
+  functions?: string[]
+
+  /** 策略生效的资源标签 */
+  resource_labels?: StrategyResourceLabel[]
+
+  /** 策略资源标签 */
+  metadata?: Record<string, string>
 }
+
+export interface StrategyResourceLabel {
+  /** 标签键 */
+  key?: string
+  /** 标签值 */
+  value?: string
+  /** 比较类型 */
+  compare_type?: string
+}
+
+
 export interface PrincipalEntry {
   /** 用户ID｜用户组ID */
   id: string

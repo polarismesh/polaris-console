@@ -9,6 +9,7 @@ export interface ConfigFileGroup {
   modifyBy: string
   fileCount: number
   editable: boolean
+  deleteable: boolean
   department?: string
   business?: string
   metadata?: ConfigFileGroupTag[]

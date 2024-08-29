@@ -11,6 +11,7 @@ export default ({
 }: DuckCmpProps<ConfigFileReleaseDuck>): Column<ConfigFileRelease>[] => {
   const { data } = selector(store)
   const editable = data.editable
+  const deleteable = data.deleteable
   return [
     {
       key: 'fileName',
@@ -62,7 +63,7 @@ export default ({
             <Action fn={dispatch => dispatch(creators.rollback(x))} disabled={!editable || !!x.active}>
               {'回滚'}
             </Action>
-            <Action fn={dispatch => dispatch(creators.delete(x))} disabled={!editable}>
+            <Action fn={dispatch => dispatch(creators.delete(x))} disabled={!deleteable}>
               {'删除'}
             </Action>
           </React.Fragment>

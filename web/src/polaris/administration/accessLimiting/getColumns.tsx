@@ -79,10 +79,12 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
         id: string
         text: string
         fn: (dispatch?: Dispatch<any>, e?) => void
+        disabled?: boolean
       }[] = [
         {
           id: 'switchStatus',
           text: x.disable ? '禁用' : '启用',
+          disabled: !x.editable,
           fn: dispatch => {
             const swtichStatusAction = x.disable ? SwitchStatusAction.disable : SwitchStatusAction.start
             dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
@@ -91,6 +93,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
         {
           id: 'modify',
           text: '编辑',
+          disabled:!x.editable,
           fn: dispatch => {
             dispatch(creators.modify(x))
           },
@@ -98,6 +101,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
         {
           id: 'remove',
           text: '删除',
+          disabled:!x.deleteable,
           fn: dispatch => {
             dispatch(creators.delete(x))
           },
@@ -106,7 +110,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
       return (
         <React.Fragment>
           {actions.map(action => (
-            <Action key={action.id} text={action.text} fn={action.fn} />
+            <Action disabled={action.disabled} key={action.id} text={action.text} fn={action.fn} />
           ))}
         </React.Fragment>
       )

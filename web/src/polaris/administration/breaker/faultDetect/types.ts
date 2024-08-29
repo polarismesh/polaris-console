@@ -33,6 +33,8 @@ export interface FaultDetectRule {
   }
   ctime?: string
   mtime?: string
+  editable: boolean
+  deleteable: boolean
 }
 export enum FaultDetectProtocol {
   HTTP = 'HTTP',

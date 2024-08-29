@@ -28,6 +28,8 @@ export interface CircuitBreakerRule {
   ctime?: string
   mtime?: string
   etime?: string
+  editable: boolean
+  deleteable: boolean
 }
 export interface ErrorCondition {
   inputType: string

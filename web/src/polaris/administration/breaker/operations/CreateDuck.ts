@@ -349,6 +349,8 @@ export class BreakerRuleCreateDuck extends Form {
           body: '',
         },
       },
+      editable: true,
+      deleteable: true
     }
   }
 

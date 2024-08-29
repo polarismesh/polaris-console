@@ -96,12 +96,14 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
         return (
           <React.Fragment>
             <Action
+              disabled={!x.editable}
               text={x.enable ? '禁用' : '启用'}
               fn={() => {
                 dispatch(creators.toggle(x))
               }}
             />
             <Action
+              disabled={!x.editable}
               text={'编辑'}
               fn={() => {
                 const type = checkRuleType(x?.level)
@@ -109,6 +111,7 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
               }}
             />
             <Action
+              disabled={!x.deleteable}
               text={'删除'}
               fn={() => {
                 dispatch(creators.remove(x))

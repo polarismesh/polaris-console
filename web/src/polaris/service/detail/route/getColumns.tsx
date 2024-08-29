@@ -79,7 +79,7 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
       header: '操作',
       render: x => {
         const {
-          data: { namespace, editable },
+          data: { namespace, editable, deleteable },
         } = selector(store)
 
         return (
@@ -100,8 +100,8 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
             </Action>
             <Action
               fn={dispatch => dispatch(creators.create(x.id))}
-              disabled={isReadOnly(namespace) || !editable}
-              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '在该规则前新建规则'}
+              disabled={isReadOnly(namespace) || !deleteable}
+              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !deleteable ? '无写权限' : '在该规则前新建规则'}
             >
               <Icon type={'plus'}></Icon>
             </Action>

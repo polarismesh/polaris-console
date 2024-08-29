@@ -11,6 +11,8 @@ export interface CustomRoute {
   mtime: string
   etime: string
   routing_policy: string
+  editable: boolean
+  deleteable: boolean
 }
 
 export interface DescribeCustomRouteParams {
