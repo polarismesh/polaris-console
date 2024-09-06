@@ -96,7 +96,7 @@ export const MenuConfig: MenuItemConfig = {
           icon: 'static/img/route-monitor.svg',
           featureKey: 'config',
           subMenus: null,
-        }
+        },
       ],
     },
     {
@@ -105,12 +105,14 @@ export const MenuConfig: MenuItemConfig = {
       icon: null,
       subMenus: [
         {
+          featureKey: 'metricBase',
           id: 'registry-monitor',
           title: '注册配置监控',
           icon: 'static/img/circuit-monitor.svg',
           subMenus: null,
         },
         {
+          featureKey: 'metricService',
           id: 'service-monitor',
           title: '服务调用监控',
           icon: 'static/img/circuit-monitor.svg',

@@ -251,6 +251,13 @@ export default function root() {
             <Menu collapsable theme='dark' title={MenuConfig.title}>
               {MenuConfig.subMenus.map(o => {
                 if (o.subMenus) {
+                  const allHidden = o.subMenus.every(subMenuItem => {
+                    const currentFeature = feature?.find(item => item.name === subMenuItem.featureKey)
+                    return currentFeature?.display === FeatureDisplayType.hidden
+                  })
+                  if (allHidden) {
+                    return <noscript />
+                  }
                   return (
                     <Menu.Group key={o.id} title={o.title}>
                       {o.subMenus.map(item => recursiveRenderMenuItem(item))}
