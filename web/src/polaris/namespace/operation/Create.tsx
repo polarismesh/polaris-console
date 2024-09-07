@@ -72,7 +72,10 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
 
           {showAdvance && (
             <>
-              <FormItem label={'同步全局注册中心'}>
+              <FormItem
+                label={'同步全局注册中心'}
+                tips={'开启后该命名空间下全部服务将均注册至全局注册中心相同命名空间下'}
+              >
                 <Switch
                   value={sync_to_global_registry.getValue()}
                   onChange={v => sync_to_global_registry.setValue(v)}
