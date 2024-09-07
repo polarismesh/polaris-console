@@ -43,6 +43,11 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
     },
   },
   {
+    key: 'sync_to_global_registry',
+    header: '同步全局注册中心',
+    render: x => <Text>{x.sync_to_global_registry ? '开启' : '关闭' || '-'}</Text>,
+  },
+  {
     key: 'commnet',
     header: '描述',
     render: x => <Text tooltip={x.comment}>{x.comment || '-'}</Text>,

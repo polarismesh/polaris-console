@@ -169,6 +169,7 @@ export interface Values {
   groupIds: string[]
   service_export_to?: string[]
   visibilityMode?: string
+  sync_to_global_registry: boolean
 }
 class CreateForm extends Form {
   Values: Values

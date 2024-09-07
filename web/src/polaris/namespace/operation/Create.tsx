@@ -1,7 +1,7 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
-import { Form, Button, Icon, FormItem, Radio, RadioGroup, SelectMultiple } from 'tea-component'
+import { Form, Button, Icon, FormItem, Radio, RadioGroup, SelectMultiple, Switch } from 'tea-component'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
@@ -37,11 +37,12 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   } = duck
 
   const formApi = form.getAPI(store, dispatch)
-  const { name, comment, service_export_to, visibilityMode } = formApi.getFields([
+  const { name, comment, service_export_to, visibilityMode, sync_to_global_registry } = formApi.getFields([
     'name',
     'comment',
     'service_export_to',
     'visibilityMode',
+    'sync_to_global_registry',
   ])
   const options = selectors.options(store)
   const [showAdvance, setShowAdvance] = React.useState(false)
@@ -71,17 +72,12 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
 
           {showAdvance && (
             <>
-              {options.authOpen && (
-                <FormItem label={'授权'}>
-                  <ResourcePrincipalAuth
-                    userDuck={userSelect}
-                    userGroupDuck={userGroupSelect}
-                    duck={duck}
-                    store={store}
-                    dispatch={dispatch}
-                  />
-                </FormItem>
-              )}
+              <FormItem label={'同步全局注册中心'}>
+                <Switch
+                  value={sync_to_global_registry.getValue()}
+                  onChange={v => sync_to_global_registry.setValue(v)}
+                ></Switch>
+              </FormItem>
               <FormItem label={'服务可见性'} tips={'当前命名空间下的服务被允许可见的命名空间列表'} required>
                 <section style={{ marginBottom: '15px' }}>
                   <RadioGroup
@@ -111,6 +107,17 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                   ></SelectMultiple>
                 )}
               </FormItem>
+              {options.authOpen && (
+                <FormItem label={'授权'}>
+                  <ResourcePrincipalAuth
+                    userDuck={userSelect}
+                    userGroupDuck={userGroupSelect}
+                    duck={duck}
+                    store={store}
+                    dispatch={dispatch}
+                  />
+                </FormItem>
+              )}
             </>
           )}
         </>
