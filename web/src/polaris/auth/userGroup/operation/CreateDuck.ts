@@ -152,3 +152,27 @@ export class UserSelectDuck extends SearchableMultiSelect {
     return result
   }
 }
+
+export class FunctionSelectDuck extends SearchableMultiSelect {
+  Item: UserItem
+  getId(item: this['Item']) {
+    return item.id
+  }
+
+  get autoSearch() {
+    return false
+  }
+
+  get autoClearBeforeLoad() {
+    return false
+  }
+
+  async getData(filter) {
+    const { keyword } = filter
+
+    const result = await getAllList(describeGovernanceUsers, { listKey: 'content' })(keyword ? { name: keyword } : {})
+
+    return result
+  }
+}
+

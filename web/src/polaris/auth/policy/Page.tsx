@@ -39,6 +39,15 @@ export enum AuthResourceType {
   NAMESPACE = 'namespaces',
   SERVICE = 'services',
   CONFIGURATION = 'config_groups',
+  ROUTER_RULE = "router_rules",
+  RATELIMIT_RULE = "ratelimit_rules",
+  CIRCUIT_BREAKER_RULE = "circuitbreaker_rules",
+  FAULTDETECT_RULE = "faultdetect_rules",
+  LANE_RULE = "lane_rules",
+  AUTH_USERS = "users",
+  AUTH_USER_GROUP = "user_groups",
+  AUTH_ROLE = "roles",
+  AUTH_POLICY = "auth_policies",
 }
 export const AUTH_SUBJECT_TYPE_MAP = {
   [AuthSubjectType.USER]: { text: '用户', urlKey: 'user' },
@@ -55,6 +64,34 @@ export const AUTH_RESOURCE_TYPE_MAP = {
   },
   [AuthResourceType.CONFIGURATION]: {
     text: '配置分组',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.ROUTER_RULE]: {
+    text: '路由规则',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.RATELIMIT_RULE]: {
+    text: '限流规则',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.CIRCUIT_BREAKER_RULE]: {
+    text: '熔断规则',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.FAULTDETECT_RULE]: {
+    text: '探测规则',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.AUTH_USERS]: {
+    text: '用户',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.AUTH_USER_GROUP]: {
+    text: '用户组',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.AUTH_POLICY]: {
+    text: '鉴权策略',
     columnsRender: x => x.name,
   },
 }
@@ -334,6 +371,37 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                             <Text style={{ margin: '20px 10px' }} parent={'p'}>
                               {'暂无对应授权对象'}
                             </Text>
+                          )}
+                        </Tabs>
+                      </Card.Body>
+                    </Card>
+                    <Card bordered>
+                      <Card.Body title={'可访问接口'}>
+                        <Tabs
+                          tabs={AuthResourceTabs}
+                          activeId={showAuthResourceType}
+                          onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
+                          style={{ marginBottom: '20px' }}
+                        >
+                          {currentAuthItem.resources[showAuthResourceType].length === 1 &&
+                            currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
+                            <section style={{ margin: '20px 10px' }}>
+                              {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
+                            </section>
+                          ) : (
+                            <Table
+                              bordered
+                              records={currentAuthItem.functions}
+                              columns={[
+                                {
+                                  key: 'name',
+                                  header: '名称',
+                                  render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
+                                },
+                              ]}
+                              addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
+                              style={{ marginTop: '20px' }}
+                            />
                           )}
                         </Tabs>
                       </Card.Body>

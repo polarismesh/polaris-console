@@ -2,7 +2,7 @@ import { select, put } from 'redux-saga/effects'
 import { takeLatest } from 'redux-saga-catch'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
-import { UserSelectDuck } from '../../userGroup/operation/CreateDuck'
+import { FunctionSelectDuck, UserSelectDuck } from '../../userGroup/operation/CreateDuck'
 import { UserGroupSelectDuck } from '../../user/operation/AttachUserGroupDuck'
 import {
   AuthStrategy,
@@ -64,6 +64,7 @@ export default abstract class CreateDuck extends DetailPage {
     return {
       ...super.quickDucks,
       form: CreateFormDuck,
+      functions: FunctionSelectDuck,
       user: UserSelectDuck,
       userGroup: UserGroupSelectDuck,
       namespace: NamespaceSelectDuck,
@@ -100,7 +101,7 @@ export default abstract class CreateDuck extends DetailPage {
     yield* super.saga()
     const duck = this
     const { types, ducks, selectors, selector } = duck
-    yield takeLatest(types.SUBMIT, function*() {
+    yield takeLatest(types.SUBMIT, function* () {
       try {
         yield* ducks.form.submit()
       } catch (e) {
@@ -230,7 +231,7 @@ export default abstract class CreateDuck extends DetailPage {
         }
       }
     })
-    yield takeLatest(types.FETCH_DONE, function*(action) {
+    yield takeLatest(types.FETCH_DONE, function* (action) {
       const { form, user, userGroup, namespace, service, configGroup } = ducks
       yield put(user.creators.load({}))
       yield put(userGroup.creators.load({}))
@@ -273,8 +274,10 @@ export interface Fvalues {
   useAllNamespace: boolean
   useAllService: boolean
   useAllConfigGroup: boolean
+  useAllFunctions: boolean
   comment: string
   id: string
+  effect: string
 }
 
 export class CreateFormDuck extends Form {

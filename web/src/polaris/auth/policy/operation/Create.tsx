@@ -32,15 +32,15 @@ const steps = [
   { id: '3', label: '预览' },
 ]
 
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { selectors, ducks, selector, creators } = duck
   const composedId = selectors.composedId(store)
   const { id } = composedId
   const [step, setStep] = React.useState('1')
-  const { name, useAllNamespace, useAllService, useAllConfigGroup, comment } = ducks.form
+  const { name, useAllNamespace, useAllService, useAllConfigGroup, useAllFunctions, comment, effect } = ducks.form
     .getAPI(store, dispatch)
-    .getFields(['name', 'useAllNamespace', 'useAllService', 'useAllConfigGroup', 'comment'])
+    .getFields(['name', 'useAllNamespace', 'useAllService', 'useAllConfigGroup', 'useAllFunctions', 'comment', 'effect'])
   const isModify = !!id
 
   const [showAuthSubjectType, setShowAuthSubjectType] = React.useState(AuthSubjectType.USER)
@@ -52,6 +52,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
     namespace: { selection: namespaceSelection },
     service: { selection: serviceSelection },
     configGroup: { selection: configGroupSelection },
+    functions: { selection: functionSelection },
     originPolicy,
   } = selector(store)
   return (
@@ -111,6 +112,23 @@ export default purify(function(props: DuckCmpProps<Duck>) {
           )}
           {step === '2' && (
             <Form>
+              <FormItem label={'可访问接口'}>
+                <SearchableTransfer
+                  title={'请选择接口'}
+                  duck={ducks.functions}
+                  store={store}
+                  dispatch={dispatch}
+                  itemRenderer={(record: string) => (
+                    <Text overflow>
+                      {record}
+                    </Text>
+                  )}
+                />
+              </FormItem>
+            </Form>
+          )}
+          {step === '3' && (
+            <Form>
               <FormItem label={'资源'}>
                 <Tabs
                   tabs={AuthResourceTabs}
@@ -165,36 +183,35 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                       />
                     )}
                   </TabPanel>
-                  <TabPanel id={AuthResourceType.CONFIGURATION}>
+                  <TabPanel id={"policy_effect"}>
                     <RadioGroup
-                      value={useAllConfigGroup.getValue() ? 'all' : 'partial'}
+                      value={effect.getValue() ? 'ALLOW' : 'DENY'}
                       onChange={value => {
-                        useAllConfigGroup.setValue(value === 'all')
+                        effect.setValue(value)
                       }}
                       style={{ marginTop: '10px' }}
                     >
-                      <Radio name={'all'}>{'全部配置分组（含后续新增）'}</Radio>
-                      <Radio name={'partial'}>{'指定配置分组'}</Radio>
+                      <Radio name={'ALLOW'}>{'允许'}</Radio>
+                      <Radio name={'DENY'}>{'禁止'}</Radio>
                     </RadioGroup>
-                    {!useAllConfigGroup.getValue() && (
-                      <SearchableTransfer
-                        style={{ marginTop: '10px' }}
-                        title={'请选择配置分组'}
-                        duck={ducks.configGroup}
-                        store={store}
-                        dispatch={dispatch}
-                        itemRenderer={(record: ConfigFileGroup) => <Text overflow>{record.name}</Text>}
-                      />
-                    )}
                   </TabPanel>
                 </Tabs>
               </FormItem>
               <FormItem label={'操作'}>
-                <FormText>{'读操作｜写操作'}</FormText>
+                <RadioGroup
+                  value={useAllConfigGroup.getValue() ? 'all' : 'partial'}
+                  onChange={value => {
+                    useAllConfigGroup.setValue(value === 'all')
+                  }}
+                  style={{ marginTop: '10px' }}
+                >
+                  <Radio name={'all'}>{'全部配置分组（含后续新增）'}</Radio>
+                  <Radio name={'partial'}>{'指定配置分组'}</Radio>
+                </RadioGroup>
               </FormItem>
             </Form>
           )}
-          {step === '3' && (
+          {step === '4' && (
             <Form>
               <FormItem label={'策略名称'}>
                 <FormText>{name.getValue()}</FormText>
@@ -206,6 +223,24 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                 <FormText>
                   {userGroupSelection.map(item => `${item.name}(${item.id})`).join(',' || '无选中用户组')}
                 </FormText>
+              </FormItem>
+              <FormItem label={'可访问接口'}>
+                {useAllFunctions.getValue() ? (
+                  <FormText>{'全部接口（含后续新增）'}</FormText>
+                ) : (
+                  <Table
+                    records={functionSelection}
+                    columns={[
+                      {
+                        key: 'name',
+                        header: '名称',
+                        render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
+                      },
+                      { key: 'auth', header: '权限', render: () => effect.getValue() },
+                    ]}
+                    addons={[autotip({})]}
+                  />
+                )}
               </FormItem>
               <FormItem label={'资源'}>
                 <Tabs
@@ -225,7 +260,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                             header: '名称',
                             render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
                           },
-                          { key: 'auth', header: '权限', render: () => '读｜写' },
+                          { key: 'auth', header: '权限', render: () => effect.getValue() },
                         ]}
                         addons={[autotip({})]}
                       />
@@ -243,15 +278,15 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                             header: '名称',
                             render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
                           },
-                          { key: 'auth', header: '权限', render: () => '读｜写' },
+                          { key: 'auth', header: '权限', render: () => effect.getValue() },
                         ]}
                         addons={[autotip({})]}
                       />
                     )}
                   </TabPanel>
                   <TabPanel id={AuthResourceType.CONFIGURATION}>
-                    {useAllService.getValue() ? (
-                      <FormText>{'全部服务（含后续新增）'}</FormText>
+                    {useAllConfigGroup.getValue() ? (
+                      <FormText>{'全部配置分组（含后续新增）'}</FormText>
                     ) : (
                       <Table
                         records={configGroupSelection}
@@ -261,7 +296,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
                             header: '名称',
                             render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
                           },
-                          { key: 'auth', header: '权限', render: () => '读｜写' },
+                          { key: 'auth', header: '权限', render: () => effect.getValue() },
                         ]}
                         addons={[autotip({})]}
                       />
@@ -273,7 +308,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
           )}
         </Card.Body>
         <Card.Footer style={{ padding: '15px' }}>
-          {step === '3' && (
+          {step === '4' && (
             <Button
               type={'primary'}
               onClick={() => {
@@ -284,7 +319,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
               {'完成'}
             </Button>
           )}
-          {Number(step) < 3 && (
+          {Number(step) < 4 && (
             <Button
               type={'primary'}
               onClick={() => {
