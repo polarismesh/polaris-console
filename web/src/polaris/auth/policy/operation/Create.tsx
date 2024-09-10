@@ -86,6 +86,27 @@ export default purify(function (props: DuckCmpProps<Duck>) {
     { groupKey: "authView", text: "鉴权策略", value: "AuthPolicy" },
   ];
 
+  const serverFunctionGroups = {
+    namespaceView: "命名空间",
+    configView: "配置中心",
+    discoverView: "注册发现",
+    governanceView: "治理规则",
+  };
+
+  const serverFunctionOptions = [
+    { groupKey: "namespaceView", text: "命名空间", value: "namespace" },
+    { groupKey: "configView", text: "配置分组", value: "config_group" },
+    { groupKey: "configView", text: "配置文件", value: "config_file" },
+    { groupKey: "discoverView", text: "服务", value: "service" },
+    { groupKey: "discoverView", text: "实例", value: "instance" },
+    { groupKey: "governanceView", text: "路由规则", value: "router_rule" },
+    { groupKey: "governanceView", text: "限流规则", value: "ratelimit" },
+    { groupKey: "governanceView", text: "熔断规则", value: "circuit_breaker" },
+    { groupKey: "governanceView", text: "探测规则", value: "fault_detect" },
+  ];
+
+  const [serverFunctionView, setServerFunctionView] = React.useState("namespace");
+
   const {
     user: { selection: userSelection },
     userGroup: { selection: userGroupSelection },
@@ -255,16 +276,16 @@ export default purify(function (props: DuckCmpProps<Duck>) {
                       />
                     )}
                   </TabPanel>
-                  <TabPanel id={"policy_effect"}>
+                  <TabPanel id={AuthResourceType.CONFIGURATION}>
                     <RadioGroup
-                      value={effect.getValue() ? 'ALLOW' : 'DENY'}
+                      value={useAllConfigGroup.getValue() ? 'all' : 'partial'}
                       onChange={value => {
-                        effect.setValue(value)
+                        useAllConfigGroup.setValue(value === 'all')
                       }}
                       style={{ marginTop: '10px' }}
                     >
-                      <Radio name={'ALLOW'}>{'允许'}</Radio>
-                      <Radio name={'DENY'}>{'禁止'}</Radio>
+                      <Radio name={'all'}>{'全部配置分组（含后续新增）'}</Radio>
+                      <Radio name={'partial'}>{'指定配置分组'}</Radio>
                     </RadioGroup>
                     {!useAllConfigGroup.getValue() && (
                       <SearchableTransfer
