@@ -255,16 +255,16 @@ export default purify(function (props: DuckCmpProps<Duck>) {
                       />
                     )}
                   </TabPanel>
-                  <TabPanel id={AuthResourceType.CONFIGURATION}>
+                  <TabPanel id={"policy_effect"}>
                     <RadioGroup
-                      value={useAllConfigGroup.getValue() ? 'all' : 'partial'}
+                      value={effect.getValue() ? 'ALLOW' : 'DENY'}
                       onChange={value => {
-                        useAllConfigGroup.setValue(value === 'all')
+                        effect.setValue(value)
                       }}
                       style={{ marginTop: '10px' }}
                     >
-                      <Radio name={'all'}>{'全部配置分组（含后续新增）'}</Radio>
-                      <Radio name={'partial'}>{'指定配置分组'}</Radio>
+                      <Radio name={'ALLOW'}>{'允许'}</Radio>
+                      <Radio name={'DENY'}>{'禁止'}</Radio>
                     </RadioGroup>
                     {!useAllConfigGroup.getValue() && (
                       <SearchableTransfer
