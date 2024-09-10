@@ -34,12 +34,13 @@ import UseableResource from '../common/UseableResource'
 export enum AuthSubjectType {
   USER = 'user',
   USERGROUP = 'group',
+  ROLE = "role",
 }
 export enum AuthResourceType {
   NAMESPACE = 'namespaces',
   SERVICE = 'services',
   CONFIGURATION = 'config_groups',
-  ROUTER_RULE = "router_rules",
+  ROUTER_RULE = "route_rules",
   RATELIMIT_RULE = "ratelimit_rules",
   CIRCUIT_BREAKER_RULE = "circuitbreaker_rules",
   FAULTDETECT_RULE = "faultdetect_rules",
@@ -51,6 +52,7 @@ export enum AuthResourceType {
 }
 export const AUTH_SUBJECT_TYPE_MAP = {
   [AuthSubjectType.USER]: { text: '用户', urlKey: 'user' },
+  // [AuthSubjectType.ROLE]: { text: '角色', urlKey: 'role' },
   [AuthSubjectType.USERGROUP]: { text: '用户组', urlKey: 'usergroup' },
 }
 export const AUTH_RESOURCE_TYPE_MAP = {
@@ -255,7 +257,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
       </Table.ActionPanel>
       <Row>
         <Col span={6}>
-          <div style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%', maxHeight: '1000px' }}>
+          <div style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%', maxHeight: '1200px' }}>
             <SearchBox
               value={searchword}
               onSearch={handlers.search}
@@ -291,7 +293,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
           </div>
         </Col>
         <Col span={18}>
-          <Card bordered style={{ height: '100%', maxHeight: '1000px' }}>
+          <Card bordered style={{ height: '100%', maxHeight: '1200px' }}>
             {currentAuthItem.id ? (
               <Card.Body
                 title={formatPolicyName(currentAuthItem.name)}
@@ -321,6 +323,9 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                   <Form>
                     <FormItem label={'备注'}>
                       <FormText>{currentAuthItem.comment || '无备注'}</FormText>
+                    </FormItem>
+                    <FormItem label={'效果'}>
+                      <FormText>{currentAuthItem.action}</FormText>
                     </FormItem>
                   </Form>
                 </Card>
@@ -377,33 +382,26 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                     </Card>
                     <Card bordered>
                       <Card.Body title={'可访问接口'}>
-                        <Tabs
-                          tabs={AuthResourceTabs}
-                          activeId={showAuthResourceType}
-                          onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
-                          style={{ marginBottom: '20px' }}
-                        >
-                          {currentAuthItem.resources[showAuthResourceType].length === 1 &&
-                            currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
-                            <section style={{ margin: '20px 10px' }}>
-                              {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
-                            </section>
-                          ) : (
-                            <Table
-                              bordered
-                              records={currentAuthItem.functions}
-                              columns={[
-                                {
-                                  key: 'name',
-                                  header: '名称',
-                                  render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
-                                },
-                              ]}
-                              addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
-                              style={{ marginTop: '20px' }}
-                            />
-                          )}
-                        </Tabs>
+                        {currentAuthItem.functions.length === 1 &&
+                          currentAuthItem.functions[0] === '*' ? (
+                          <section style={{ margin: '20px 10px' }}>
+                            {`全部（含后续新增）`}
+                          </section>
+                        ) : (
+                          <Table
+                            bordered
+                            records={currentAuthItem.functions}
+                            columns={[
+                              {
+                                key: 'name',
+                                header: '名称',
+                                render: x => x,
+                              },
+                            ]}
+                            addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
+                            style={{ marginTop: '20px' }}
+                          />
+                        )}
                       </Card.Body>
                     </Card>
                     <Card bordered>
@@ -414,7 +412,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                           onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
                           style={{ marginBottom: '20px' }}
                         >
-                          {currentAuthItem.resources[showAuthResourceType].length === 1 &&
+                          {currentAuthItem.resources[showAuthResourceType]?.length === 1 &&
                             currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
                             <section style={{ margin: '20px 10px' }}>
                               {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
@@ -429,7 +427,6 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                                   header: '名称',
                                   render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
                                 },
-                                { key: 'auth', header: '权限', render: () => '读｜写' },
                               ]}
                               addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
                               style={{ marginTop: '20px' }}

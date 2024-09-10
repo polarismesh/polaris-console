@@ -2,13 +2,15 @@ import { select, put } from 'redux-saga/effects'
 import { takeLatest } from 'redux-saga-catch'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
-import { FunctionSelectDuck, UserSelectDuck } from '../../userGroup/operation/CreateDuck'
+import { UserSelectDuck } from '../../userGroup/operation/CreateDuck'
 import { UserGroupSelectDuck } from '../../user/operation/AttachUserGroupDuck'
 import {
   AuthStrategy,
   describeGovernanceStrategyDetail,
   createGovernanceStrategy,
   modifyGovernanceStrategy,
+  ServerFunctionGroup,
+  describeServerFunctions,
 } from '../../model'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { Namespace, Service } from '@src/polaris/service/types'
@@ -21,6 +23,14 @@ import { notification } from 'tea-component'
 import router from '@src/polaris/common/util/router'
 import { ConfigFileGroup } from '@src/polaris/configuration/fileGroup/types'
 import { describeConfigFileGroups } from '@src/polaris/configuration/fileGroup/model'
+import { DescribeFaultDetects } from '@src/polaris/administration/breaker/faultDetect/model'
+import { DescribeCircuitBreakers } from '@src/polaris/administration/breaker/model'
+import { describeLimitRules, RateLimit } from '@src/polaris/administration/accessLimiting/model'
+import { describeRoutes } from '@src/polaris/service/detail/route/model'
+import { CustomRoute, describeCustomRoute } from '@src/polaris/administration/dynamicRoute/customRoute/model'
+import { CircuitBreakerRule, FaultDetectConfig } from '@src/polaris/administration/breaker/types'
+import { FaultDetectRule } from '@src/polaris/administration/breaker/faultDetect/types'
+import Dialog from '@src/polaris/common/duckComponents/Dialog'
 
 interface ComposedId {
   id: string
@@ -70,6 +80,10 @@ export default abstract class CreateDuck extends DetailPage {
       namespace: NamespaceSelectDuck,
       service: ServiceSelectDuck,
       configGroup: ConfigurationSelectDuck,
+      routerRules: RouterRulesSelectDuck,
+      ratelimitRules: RatelimitRulesSelectDuck,
+      circuitbreakerRules: CircuitbreakerRulesSelectDuck,
+      faultdetectRules: FaultdetectRulesSelectDuck,
     }
   }
   get reducers() {
@@ -113,6 +127,7 @@ export default abstract class CreateDuck extends DetailPage {
         namespace: { selection: namespaceSelection },
         service: { selection: serviceSelection },
         configGroup: { selection: configGroupSelection },
+        functions: { selection: functionSelection },
         originPolicy,
       } = selector(yield select())
       const values = ducks.form.selectors.values(yield select())
@@ -196,7 +211,14 @@ export default abstract class CreateDuck extends DetailPage {
               services: removeServices.map(item => ({ id: item })),
               config_groups: removeConfigGroup.map(id => ({ id })),
             },
+            action: values.effect,
             comment: values.comment,
+            functions: () => {
+              if (values.useAllFunctions) {
+                return ["*"]
+              }
+              return functionSelection.map(item => ({ id: item.id }))
+            },
           },
         ] as any)
         if (result) {
@@ -212,6 +234,8 @@ export default abstract class CreateDuck extends DetailPage {
             users: userSelection.map(item => ({ id: item.id })),
             groups: userGroupSelection.map(item => ({ id: item.id })),
           },
+          action: values.effect,
+          functions: values.useAllFunctions ? ["*"] : functionSelection.map(item => item.id),
           resources: {
             namespaces: values.useAllNamespace
               ? [{ id: '*' }]
@@ -232,12 +256,26 @@ export default abstract class CreateDuck extends DetailPage {
       }
     })
     yield takeLatest(types.FETCH_DONE, function* (action) {
-      const { form, user, userGroup, namespace, service, configGroup } = ducks
+      const { form,
+        user, userGroup,
+        namespace,
+        service,
+        configGroup,
+        functions,
+        routerRules, ratelimitRules, circuitbreakerRules, faultdetectRules,
+      } = ducks
+      // 查询资源的 duck 这里需要进行一次 load 加载
       yield put(user.creators.load({}))
       yield put(userGroup.creators.load({}))
       yield put(namespace.creators.load({}))
       yield put(service.creators.load({}))
       yield put(configGroup.creators.load({}))
+      yield put(functions.creators.load({}))
+      // 治理规则
+      yield put(routerRules.creators.load({}))
+      yield put(ratelimitRules.creators.load({}))
+      yield put(circuitbreakerRules.creators.load({}))
+      yield put(faultdetectRules.creators.load({}))
       if (!action.payload.id) return
       const policy = action.payload as AuthStrategy
       yield put({ type: types.SET_ORIGIN_POLICY, payload: policy })
@@ -248,6 +286,9 @@ export default abstract class CreateDuck extends DetailPage {
       yield put(form.creators.setValue('useAllService', !!policy.resources.services.find(item => item.id === '*')))
       yield put(
         form.creators.setValue('useAllConfigGroup', !!policy.resources.config_groups.find(item => item.id === '*')),
+      )
+      yield put(
+        form.creators.setValue('useAllFunctions', !!policy.functions.find(item => item === '*')),
       )
       yield put(user.creators.select(policy.principals.users))
       yield put(userGroup.creators.select(policy.principals.groups))
@@ -417,6 +458,124 @@ export class ConfigurationSelectDuck extends SearchableMultiSelect {
     const result = await getAllList(describeConfigFileGroups)(keyword ? { group: keyword } : {})
     result.list = result.list.map(item => ({ ...item }))
 
+    return result
+  }
+}
+
+export class RouterRulesSelectDuck extends SearchableMultiSelect {
+  Item: CustomRoute
+
+  getId(item: this['Item']) {
+    return item.id
+  }
+
+  get autoSearch() {
+    return false
+  }
+
+  get autoClearBeforeLoad() {
+    return false
+  }
+
+  async getData(param) {
+    const { keyword } = param
+
+    const result = await getAllList(describeCustomRoute)(keyword ? { group: keyword } : {})
+    result.list = result.list.map(item => ({ ...item }))
+
+    return result
+  }
+}
+
+export class RatelimitRulesSelectDuck extends SearchableMultiSelect {
+  Item: RateLimit
+
+  getId(item: this['Item']) {
+    return item.id
+  }
+
+  get autoSearch() {
+    return false
+  }
+
+  get autoClearBeforeLoad() {
+    return false
+  }
+
+  async getData(param) {
+    const { keyword } = param
+
+    const result = await getAllList(describeLimitRules)(keyword ? { group: keyword } : {})
+    result.list = result.list.map(item => ({ ...item }))
+
+    return result
+  }
+}
+export class CircuitbreakerRulesSelectDuck extends SearchableMultiSelect {
+  Item: CircuitBreakerRule
+
+  getId(item: this['Item']) {
+    return item.id
+  }
+
+  get autoSearch() {
+    return false
+  }
+
+  get autoClearBeforeLoad() {
+    return false
+  }
+
+  async getData(param) {
+    const { keyword } = param
+
+    const result = await getAllList(DescribeCircuitBreakers)(keyword ? { group: keyword } : {})
+    result.list = result.list.map(item => ({ ...item }))
+
+    return result
+  }
+}
+export class FaultdetectRulesSelectDuck extends SearchableMultiSelect {
+  Item: FaultDetectRule
+
+  getId(item: this['Item']) {
+    return item.id
+  }
+
+  get autoSearch() {
+    return false
+  }
+
+  get autoClearBeforeLoad() {
+    return false
+  }
+
+  async getData(param) {
+    const { keyword } = param
+
+    const result = await getAllList(DescribeFaultDetects)(keyword ? { group: keyword } : {})
+    result.list = result.list.map(item => ({ ...item }))
+
+    return result
+  }
+}
+
+export class FunctionSelectDuck extends SearchableMultiSelect {
+  Item: ServerFunctionGroup
+  getId(item: this['Item']) {
+    return item.name
+  }
+
+  get autoSearch() {
+    return false
+  }
+
+  get autoClearBeforeLoad() {
+    return false
+  }
+
+  async getData(filter) {
+    const result = await describeServerFunctions()
     return result
   }
 }

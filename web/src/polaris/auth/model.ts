@@ -301,6 +301,18 @@ export interface CreateGovernanceStrategyParams {
 
   /** 策略关联的资源 */
   resources?: StrategyResource
+
+  /** 鉴权规则来源 */
+  source?: string
+
+  /** 服务端接口 */
+  functions?: string[]
+
+  /** 策略生效的资源标签 */
+  resource_labels?: string[]
+
+  /** 策略资源标签 */
+  metadata?: Record<string, string>
 }
 /** **CreateGovernanceStrategy出参**
 
@@ -908,4 +920,25 @@ export interface LoginResponse {
   role: string
   user_id: string
   owner_id: string
+}
+
+/** 查询治理中心接口列表 */
+export async function describeServerFunctions() {
+  const result = await getApiRequest<ServerFunctionGroup[]>({
+    action: 'maintain/v1/server/functions',
+  })
+  for (let i = 0; i < result.length; ++i) {
+    result[i].id = result[i].name
+  }
+  return {
+    list: result,
+    totalCount: result.length,
+  }
+}
+
+/** 查询服务接口列表 */
+export interface ServerFunctionGroup {
+  id: string
+  name: string
+  functions: string[]
 }
