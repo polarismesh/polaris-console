@@ -942,3 +942,8 @@ export interface ServerFunctionGroup {
   name: string
   functions: string[]
 }
+
+export interface ServerFunction {
+  id: string
+  name: string
+}

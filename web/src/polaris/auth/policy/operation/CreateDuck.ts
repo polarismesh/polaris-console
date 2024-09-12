@@ -11,6 +11,7 @@ import {
   modifyGovernanceStrategy,
   ServerFunctionGroup,
   describeServerFunctions,
+  ServerFunction,
 } from '../../model'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { Namespace, Service } from '@src/polaris/service/types'
@@ -48,6 +49,7 @@ export default abstract class CreateDuck extends DetailPage {
       SET_INSTANCE_ID,
       SUBMIT,
       SET_ORIGIN_POLICY,
+      SET_FUNCTION_GROUP,
     }
     return {
       ...super.quickTypes,
@@ -92,6 +94,7 @@ export default abstract class CreateDuck extends DetailPage {
       ...super.reducers,
       instanceId: reduceFromPayload(types.SET_INSTANCE_ID, ''),
       originPolicy: reduceFromPayload(types.SET_ORIGIN_POLICY, {} as AuthStrategy),
+      functionGroup: reduceFromPayload(types.SET_FUNCTION_GROUP, "Namespace"),
     }
   }
 
@@ -109,6 +112,7 @@ export default abstract class CreateDuck extends DetailPage {
     return {
       ...super.creators,
       submit: createToPayload<void>(types.SUBMIT),
+      setFunctionGroup: createToPayload<string>(types.SET_FUNCTION_GROUP),
     }
   }
   *saga() {
@@ -217,7 +221,7 @@ export default abstract class CreateDuck extends DetailPage {
               if (values.useAllFunctions) {
                 return ["*"]
               }
-              return functionSelection.map(item => ({ id: item.id }))
+              return functionSelection.map(item => item.id)
             },
           },
         ] as any)
@@ -301,6 +305,12 @@ export default abstract class CreateDuck extends DetailPage {
           policy.resources.config_groups.filter(item => item.id !== '*') as ConfigFileGroup[],
         ),
       )
+    })
+    yield takeLatest(types.SET_FUNCTION_GROUP, function* (action) {
+      const { form,
+        functions,
+      } = ducks
+      yield put(functions.creators.load({ "name": action.payload }))
     })
   }
   async getData(composedId) {
@@ -561,9 +571,9 @@ export class FaultdetectRulesSelectDuck extends SearchableMultiSelect {
 }
 
 export class FunctionSelectDuck extends SearchableMultiSelect {
-  Item: ServerFunctionGroup
+  Item: ServerFunction
   getId(item: this['Item']) {
-    return item.name
+    return item.id
   }
 
   get autoSearch() {
@@ -575,7 +585,45 @@ export class FunctionSelectDuck extends SearchableMultiSelect {
   }
 
   async getData(filter) {
+    const keyword: string = filter["name"]
+    if (keyword === "" || keyword === undefined) {
+      return {
+        list: [],
+        totalCount: 0,
+      }
+    }
+    const allKeyWord = keyword.split("|")
     const result = await describeServerFunctions()
-    return result
+    const targetGroup = result.list.filter(item => {
+      for (const searchKey of allKeyWord) {
+        if (searchKey === "" || searchKey === undefined) {
+          continue
+        }
+        if (searchKey === item.name) {
+          return true
+        }
+      }
+      return false
+    })
+
+    if (targetGroup.length === 0) {
+      return {
+        list: [],
+        totalCount: 0,
+      }
+    }
+
+    const functionList = new Array()
+    for (const group of targetGroup) {
+      functionList.push(...group.functions.map(item => ({
+        id: item,
+        name: item,
+      })))
+    }
+
+    return {
+      list: functionList,
+      totalCount: functionList.length,
+    }
   }
 }
