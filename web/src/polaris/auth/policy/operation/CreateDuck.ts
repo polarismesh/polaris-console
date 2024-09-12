@@ -530,6 +530,12 @@ export default abstract class CreateDuck extends DetailPage {
       } = ducks
       yield put(functions.creators.load({ "name": action.payload }))
     })
+    yield takeLatest(types.SET_FUNCTION_GROUP, function* (action) {
+      const { form,
+        functions,
+      } = ducks
+      yield put(functions.creators.load({ "name": action.payload }))
+    })
   }
   async getData(composedId) {
     const { id } = composedId

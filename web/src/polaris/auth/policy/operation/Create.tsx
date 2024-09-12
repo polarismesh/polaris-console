@@ -94,18 +94,16 @@ export default purify(function (props: DuckCmpProps<Duck>) {
   };
 
   const serverFunctionOptions = [
-    { groupKey: "namespaceView", text: "命名空间", value: "namespace" },
-    { groupKey: "configView", text: "配置分组", value: "config_group" },
-    { groupKey: "configView", text: "配置文件", value: "config_file" },
-    { groupKey: "discoverView", text: "服务", value: "service" },
-    { groupKey: "discoverView", text: "实例", value: "instance" },
-    { groupKey: "governanceView", text: "路由规则", value: "router_rule" },
-    { groupKey: "governanceView", text: "限流规则", value: "ratelimit" },
-    { groupKey: "governanceView", text: "熔断规则", value: "circuit_breaker" },
-    { groupKey: "governanceView", text: "探测规则", value: "fault_detect" },
+    { groupKey: "namespaceView", text: "命名空间", value: "Namespace" },
+    { groupKey: "configView", text: "配置分组", value: "ConfigGroup" },
+    { groupKey: "configView", text: "配置文件", value: "ConfigFile|ConfigRelease" },
+    { groupKey: "discoverView", text: "服务", value: "Service|ServiceContract" },
+    { groupKey: "discoverView", text: "实例", value: "Instance" },
+    { groupKey: "governanceView", text: "路由规则", value: "RouteRule" },
+    { groupKey: "governanceView", text: "限流规则", value: "RateLimitRule" },
+    { groupKey: "governanceView", text: "熔断规则", value: "CircuitBreakerRule" },
+    { groupKey: "governanceView", text: "探测规则", value: "FaultDetectRule" },
   ];
-
-  const [serverFunctionView, setServerFunctionView] = React.useState("namespace");
 
   const {
     user: { selection: userSelection },
