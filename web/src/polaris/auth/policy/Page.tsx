@@ -178,7 +178,8 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
     ...item,
     label: `${item.label}(${currentAuthItem?.principals?.[`${item.id}s`]?.length ?? 0})`,
   }))
-  const defaultList = authList.filter(item => item.default_strategy)
+  const defaultList = authList.filter(item => item.default_strategy && item.name.indexOf('默认策略') > -1)
+  const globalList = authList.filter(item => item.default_strategy && item.name.indexOf('默认策略') === -1)
   const customList = authList.filter(item => !item.default_strategy)
   const isCurrAuthItemOwnerDefaultPrinciple =
     currentAuthItem?.default_strategy &&
@@ -280,6 +281,18 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
               <ListItem
                 key={'collapse-button'}
                 onClick={() => {
+                  setCollapseDefault(!collapseDefault)
+                }}
+                className={'auth-item'}
+                current={false}
+              >
+                <Icon type={collapseDefault ? 'arrowdown' : 'arrowup'} />
+                全局策略（{globalList.length}）
+              </ListItem>
+              {globalList.filter(() => collapseDefault).map(renderListItem)}
+              <ListItem
+                key={'collapse-button'}
+                onClick={() => {
                   setCollapseCustom(!collapseCustom)
                 }}
                 className={'auth-item'}
@@ -338,6 +351,14 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                           namespaces: currentAuthItem?.resources?.['namespaces'],
                           services: currentAuthItem?.resources?.['services'],
                           configGroups: currentAuthItem?.resources?.config_groups,
+                          router_rules: currentAuthItem?.resources?.route_rules,
+                          ratelimit_rules: currentAuthItem?.resources?.ratelimit_rules,
+                          circuitbreaker_rules: currentAuthItem?.resources?.circuitbreaker_rules,
+                          faultdetect_rules: currentAuthItem?.resources?.faultdetect_rules,
+                          users: currentAuthItem?.resources?.users,
+                          user_groups: currentAuthItem?.resources?.user_groups,
+                          auth_policies: currentAuthItem?.resources?.auth_policies,
+                          // lane_rules: currentAuthItem?.resources?.lane_rules,
                         }}
                       />
                     </Card.Body>
@@ -405,7 +426,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                       </Card.Body>
                     </Card>
                     <Card bordered>
-                      <Card.Body title={'资源'}>
+                      <Card.Body title={'可操作资源'}>
                         <Tabs
                           tabs={AuthResourceTabs}
                           activeId={showAuthResourceType}
