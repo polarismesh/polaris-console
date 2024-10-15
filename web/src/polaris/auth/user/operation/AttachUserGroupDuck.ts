@@ -1,5 +1,5 @@
 import { put, select } from 'redux-saga/effects'
-import { UserGroup, describeGovernanceGroups, modifyGovernanceGroup } from '../../model'
+import { AuthStrategy, UserGroup, describeGovernanceGroups, describeGovernanceStrategies, modifyGovernanceGroup } from '../../model'
 import FormDialog from '@src/polaris/common/ducks/FormDialog'
 import { diffAddRemoveArray } from '@src/polaris/common/util/common'
 import { resolvePromise } from 'saga-duck/build/helper'
@@ -18,7 +18,7 @@ export default class AttachUserGroupDuck extends FormDialog {
     return CreateForm
   }
   get quickTypes() {
-    enum Types {}
+    enum Types { }
     return {
       ...super.quickTypes,
       ...Types,
@@ -114,6 +114,31 @@ export class UserGroupSelectDuck extends SearchableMultiSelect {
     const params = { ...(keyword ? { name: keyword } : {}) }
 
     const result = await getAllList(describeGovernanceGroups, { listKey: 'content' })(params)
+
+    return result
+  }
+}
+
+
+export class AuthPolicySelectDuck extends SearchableMultiSelect {
+  Item: AuthStrategy
+  getId(item: this['Item']) {
+    return item.id
+  }
+
+  get autoSearch() {
+    return false
+  }
+
+  get autoClearBeforeLoad() {
+    return false
+  }
+
+  async getData(filter) {
+    const { keyword } = filter
+    const params = { ...(keyword ? { name: keyword } : {}) }
+
+    const result = await getAllList(describeGovernanceStrategies, { listKey: 'content' })(params)
 
     return result
   }

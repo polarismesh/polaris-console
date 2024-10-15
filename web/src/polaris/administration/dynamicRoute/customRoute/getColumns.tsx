@@ -97,34 +97,38 @@ export default (
           id: string
           text: string
           fn: (dispatch?: Dispatch<any>, e?) => void
+          disabled: boolean
         }[] = [
-          {
-            id: 'switchStatus',
-            text: x.enable ? '禁用' : '启用',
-            fn: dispatch => {
-              const swtichStatusAction = x.enable ? SwitchStatusAction.disable : SwitchStatusAction.start
-              dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
+            {
+              id: 'switchStatus',
+              text: x.enable ? '禁用' : '启用',
+              fn: dispatch => {
+                const swtichStatusAction = x.enable ? SwitchStatusAction.disable : SwitchStatusAction.start
+                dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
+              },
+              disabled: !x.editable,
             },
-          },
-          {
-            id: 'modify',
-            text: '编辑',
-            fn: dispatch => {
-              dispatch(creators.modify(x))
+            {
+              id: 'modify',
+              text: '编辑',
+              fn: dispatch => {
+                dispatch(creators.modify(x))
+              },
+              disabled: !x.editable,
             },
-          },
-          {
-            id: 'remove',
-            text: '删除',
-            fn: dispatch => {
-              dispatch(creators.delete(x))
+            {
+              id: 'remove',
+              text: '删除',
+              fn: dispatch => {
+                dispatch(creators.delete(x))
+              },
+              disabled: !x.deleteable,
             },
-          },
-        ]
+          ]
         return (
           <React.Fragment>
             {actions.map(action => (
-              <Action key={action.id} text={action.text} fn={action.fn} />
+              <Action disabled={action.disabled} key={action.id} text={action.text} fn={action.fn} />
             ))}
           </React.Fragment>
         )

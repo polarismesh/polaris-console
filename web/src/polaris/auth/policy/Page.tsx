@@ -34,14 +34,25 @@ import UseableResource from '../common/UseableResource'
 export enum AuthSubjectType {
   USER = 'user',
   USERGROUP = 'group',
+  ROLE = "role",
 }
 export enum AuthResourceType {
   NAMESPACE = 'namespaces',
   SERVICE = 'services',
   CONFIGURATION = 'config_groups',
+  ROUTER_RULE = "route_rules",
+  RATELIMIT_RULE = "ratelimit_rules",
+  CIRCUIT_BREAKER_RULE = "circuitbreaker_rules",
+  FAULTDETECT_RULE = "faultdetect_rules",
+  LANE_RULE = "lane_rules",
+  AUTH_USERS = "users",
+  AUTH_USER_GROUP = "user_groups",
+  AUTH_ROLE = "roles",
+  AUTH_POLICY = "auth_policies",
 }
 export const AUTH_SUBJECT_TYPE_MAP = {
   [AuthSubjectType.USER]: { text: '用户', urlKey: 'user' },
+  // [AuthSubjectType.ROLE]: { text: '角色', urlKey: 'role' },
   [AuthSubjectType.USERGROUP]: { text: '用户组', urlKey: 'usergroup' },
 }
 export const AUTH_RESOURCE_TYPE_MAP = {
@@ -55,6 +66,34 @@ export const AUTH_RESOURCE_TYPE_MAP = {
   },
   [AuthResourceType.CONFIGURATION]: {
     text: '配置分组',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.ROUTER_RULE]: {
+    text: '路由规则',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.RATELIMIT_RULE]: {
+    text: '限流规则',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.CIRCUIT_BREAKER_RULE]: {
+    text: '熔断规则',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.FAULTDETECT_RULE]: {
+    text: '探测规则',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.AUTH_USERS]: {
+    text: '用户',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.AUTH_USER_GROUP]: {
+    text: '用户组',
+    columnsRender: x => x.name,
+  },
+  [AuthResourceType.AUTH_POLICY]: {
+    text: '鉴权策略',
     columnsRender: x => x.name,
   },
 }
@@ -139,7 +178,8 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
     ...item,
     label: `${item.label}(${currentAuthItem?.principals?.[`${item.id}s`]?.length ?? 0})`,
   }))
-  const defaultList = authList.filter(item => item.default_strategy)
+  const defaultList = authList.filter(item => item.default_strategy && item.name.indexOf('默认策略') > -1)
+  const globalList = authList.filter(item => item.default_strategy && item.name.indexOf('默认策略') === -1)
   const customList = authList.filter(item => !item.default_strategy)
   const isCurrAuthItemOwnerDefaultPrinciple =
     currentAuthItem?.default_strategy &&
@@ -218,7 +258,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
       </Table.ActionPanel>
       <Row>
         <Col span={6}>
-          <div style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%', maxHeight: '1000px' }}>
+          <div style={{ padding: '10px', backgroundColor: '#f9f9f9', height: '100%', maxHeight: '1200px' }}>
             <SearchBox
               value={searchword}
               onSearch={handlers.search}
@@ -241,6 +281,18 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
               <ListItem
                 key={'collapse-button'}
                 onClick={() => {
+                  setCollapseDefault(!collapseDefault)
+                }}
+                className={'auth-item'}
+                current={false}
+              >
+                <Icon type={collapseDefault ? 'arrowdown' : 'arrowup'} />
+                全局策略（{globalList.length}）
+              </ListItem>
+              {globalList.filter(() => collapseDefault).map(renderListItem)}
+              <ListItem
+                key={'collapse-button'}
+                onClick={() => {
                   setCollapseCustom(!collapseCustom)
                 }}
                 className={'auth-item'}
@@ -254,7 +306,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
           </div>
         </Col>
         <Col span={18}>
-          <Card bordered style={{ height: '100%', maxHeight: '1000px' }}>
+          <Card bordered style={{ height: '100%', maxHeight: '1200px' }}>
             {currentAuthItem.id ? (
               <Card.Body
                 title={formatPolicyName(currentAuthItem.name)}
@@ -285,6 +337,9 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                     <FormItem label={'备注'}>
                       <FormText>{currentAuthItem.comment || '无备注'}</FormText>
                     </FormItem>
+                    <FormItem label={'效果'}>
+                      <FormText>{currentAuthItem.action}</FormText>
+                    </FormItem>
                   </Form>
                 </Card>
                 <section style={{ borderTop: '1px solid #cfd5de', margin: '20px 0' }}></section>
@@ -296,6 +351,14 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                           namespaces: currentAuthItem?.resources?.['namespaces'],
                           services: currentAuthItem?.resources?.['services'],
                           configGroups: currentAuthItem?.resources?.config_groups,
+                          router_rules: currentAuthItem?.resources?.route_rules,
+                          ratelimit_rules: currentAuthItem?.resources?.ratelimit_rules,
+                          circuitbreaker_rules: currentAuthItem?.resources?.circuitbreaker_rules,
+                          faultdetect_rules: currentAuthItem?.resources?.faultdetect_rules,
+                          users: currentAuthItem?.resources?.users,
+                          user_groups: currentAuthItem?.resources?.user_groups,
+                          auth_policies: currentAuthItem?.resources?.auth_policies,
+                          // lane_rules: currentAuthItem?.resources?.lane_rules,
                         }}
                       />
                     </Card.Body>
@@ -339,14 +402,38 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                       </Card.Body>
                     </Card>
                     <Card bordered>
-                      <Card.Body title={'资源'}>
+                      <Card.Body title={'可访问接口'}>
+                        {currentAuthItem.functions.length === 1 &&
+                          currentAuthItem.functions[0] === '*' ? (
+                          <section style={{ margin: '20px 10px' }}>
+                            {`全部（含后续新增）`}
+                          </section>
+                        ) : (
+                          <Table
+                            bordered
+                            records={currentAuthItem.functions}
+                            columns={[
+                              {
+                                key: 'name',
+                                header: '名称',
+                                render: x => x,
+                              },
+                            ]}
+                            addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
+                            style={{ marginTop: '20px' }}
+                          />
+                        )}
+                      </Card.Body>
+                    </Card>
+                    <Card bordered>
+                      <Card.Body title={'可操作资源'}>
                         <Tabs
                           tabs={AuthResourceTabs}
                           activeId={showAuthResourceType}
                           onActive={tab => setShowAuthResourceType(tab.id as AuthResourceType)}
                           style={{ marginBottom: '20px' }}
                         >
-                          {currentAuthItem.resources[showAuthResourceType].length === 1 &&
+                          {currentAuthItem.resources[showAuthResourceType]?.length === 1 &&
                             currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
                             <section style={{ margin: '20px 10px' }}>
                               {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
@@ -361,7 +448,6 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                                   header: '名称',
                                   render: AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].columnsRender,
                                 },
-                                { key: 'auth', header: '权限', render: () => '读｜写' },
                               ]}
                               addons={[scrollable({ maxHeight: '300px' }), autotip({})]}
                               style={{ marginTop: '20px' }}
@@ -381,20 +467,13 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
       </Row>
     </>
   )
-  const [alertVisible, setAlertVisible] = React.useState(true);
   return isInDetailpage ? (
     contentElement
   ) : (
     <BasicLayout title={'策略'} store={store} selectors={duck.selectors} header={<></>}>
       <Card>
         <Card.Body>
-            <Alert visible={alertVisible}
-              onClose={() => setAlertVisible(false)}
-              extra={
-                <Button type="link" onClick={() => setAlertVisible(false)}>
-                  关闭
-                </Button>
-              }>{authStatusMsg}</Alert>
+          <Alert>{authStatusMsg}</Alert>
           {contentElement}
         </Card.Body>
       </Card>

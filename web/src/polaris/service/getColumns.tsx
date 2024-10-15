@@ -67,8 +67,8 @@ export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<S
           </Action>
           <Action
             fn={dispatch => dispatch(creators.remove([x]))}
-            disabled={disabled || !x.editable}
-            tip={disabled ? '该命名空间为只读的' : !x.editable ? '无权限' : '删除'}
+            disabled={disabled || !x.deleteable}
+            tip={disabled ? '该命名空间为只读的' : !x.deleteable ? '无权限' : '删除'}
           >
             <Icon type={'delete'}></Icon>
           </Action>
