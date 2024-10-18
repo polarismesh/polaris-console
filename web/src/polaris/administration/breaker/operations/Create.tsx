@@ -155,12 +155,26 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                       <Card.Body title='主调服务'>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                           <FormField field={sourceNamespace} label='命名空间' required>
-                            <TeaSelect
-                              value={sourceNamespace.getValue()}
+                            <AutoComplete
                               options={[
-                                { text: '全部命名空间', value: '*', disabled: destinationNamespace.getValue() === '*' },
-                                ...(data?.namespaceList || []),
+                                ...new Set([
+                                  {
+                                    text: '全部命名空间',
+                                    value: '*',
+                                    disabled: destinationNamespace.getValue() === '*',
+                                  },
+                                  ...(sourceNamespace.getValue()
+                                    ? [
+                                        {
+                                          text: `(输入值)${sourceNamespace.getValue()}`,
+                                          value: sourceNamespace.getValue(),
+                                        },
+                                      ]
+                                    : []),
+                                  ...data?.namespaceList,
+                                ]),
                               ]}
+                              tips='没有匹配的命名空间名称'
                               onChange={value => {
                                 if (value === '*') {
                                   sourceNamespace.setValue('*')
@@ -170,13 +184,26 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 sourceNamespace.setValue(value)
                                 sourceService.setValue('')
                               }}
-                              searchable
-                              type={'simulate'}
-                              appearance={'button'}
-                              matchButtonWidth
-                              placeholder='请选择命名空间'
-                              style={{ width: '80%', maxWidth: '600px' }}
-                            />
+                            >
+                              {ref => (
+                                <TeaInput
+                                  ref={ref}
+                                  value={
+                                    sourceNamespace.getValue() === '*' ? '全部命名空间' : sourceNamespace.getValue()
+                                  }
+                                  onChange={value => {
+                                    if (value === '*') {
+                                      sourceNamespace.setValue('*')
+                                      sourceService.setValue('*')
+                                      return
+                                    }
+                                    sourceNamespace.setValue(value)
+                                    sourceService.setValue('')
+                                  }}
+                                  style={{ width: '80%', maxWidth: '600px' }}
+                                />
+                              )}
+                            </AutoComplete>
                           </FormField>
                           <FormField field={sourceService} label='服务名称' required>
                             <AutoComplete
@@ -203,6 +230,7 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   onChange={value => {
                                     sourceService.setValue(value)
                                   }}
+                                  disabled={sourceNamespace.getValue() === '*'}
                                   style={{ width: '80%', maxWidth: '600px' }}
                                 />
                               )}
@@ -222,12 +250,26 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                       <Card.Body title='被调服务'>
                         <Form style={{ padding: '0px', backgroundColor: 'inherit' }}>
                           <FormField field={destinationNamespace} label='命名空间' required>
-                            <TeaSelect
-                              value={destinationNamespace.getValue()}
+                            <AutoComplete
                               options={[
-                                { text: '全部命名空间', value: '*', disabled: sourceNamespace.getValue() === '*' },
-                                ...(data?.namespaceList || []),
+                                ...new Set([
+                                  {
+                                    text: '全部命名空间',
+                                    value: '*',
+                                    disabled: sourceNamespace.getValue() === '*',
+                                  },
+                                  ...(destinationNamespace.getValue()
+                                    ? [
+                                        {
+                                          text: `(输入值)${destinationNamespace.getValue()}`,
+                                          value: destinationNamespace.getValue(),
+                                        },
+                                      ]
+                                    : []),
+                                  ...data?.namespaceList,
+                                ]),
                               ]}
+                              tips='没有匹配的命名空间名称'
                               onChange={value => {
                                 if (value === '*') {
                                   destinationNamespace.setValue('*')
@@ -237,13 +279,28 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                 destinationNamespace.setValue(value)
                                 destinationService.setValue('')
                               }}
-                              searchable
-                              type={'simulate'}
-                              appearance={'button'}
-                              matchButtonWidth
-                              placeholder='请选择命名空间'
-                              style={{ width: '80%', maxWidth: '600px' }}
-                            />
+                            >
+                              {ref => (
+                                <TeaInput
+                                  ref={ref}
+                                  value={
+                                    destinationNamespace.getValue() === '*'
+                                      ? '全部命名空间'
+                                      : destinationNamespace.getValue()
+                                  }
+                                  onChange={value => {
+                                    if (value === '*') {
+                                      destinationNamespace.setValue('*')
+                                      destinationService.setValue('*')
+                                      return
+                                    }
+                                    destinationNamespace.setValue(value)
+                                    destinationService.setValue('')
+                                  }}
+                                  style={{ width: '80%', maxWidth: '600px' }}
+                                />
+                              )}
+                            </AutoComplete>
                           </FormField>
                           <FormField field={destinationService} label='服务名称' required>
                             <AutoComplete

@@ -70,6 +70,7 @@ export default class CreateDuck extends FormDialog {
             remove_user_ids: removeUserIds,
             remove_group_ids: removeGroupIds,
             service_export_to,
+            sync_to_global_registry: values.sync_to_global_registry,
           },
         ]),
       )
@@ -83,6 +84,7 @@ export default class CreateDuck extends FormDialog {
             user_ids: userIds,
             group_ids: groupIds,
             service_export_to,
+            sync_to_global_registry: values.sync_to_global_registry,
           },
         ]),
       )
@@ -169,6 +171,7 @@ export interface Values {
   groupIds: string[]
   service_export_to?: string[]
   visibilityMode?: string
+  sync_to_global_registry: boolean
 }
 class CreateForm extends Form {
   Values: Values
