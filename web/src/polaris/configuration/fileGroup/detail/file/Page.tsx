@@ -25,8 +25,9 @@ import {
   Badge,
   Modal,
   notification,
+  Alert,
 } from 'tea-component'
-import { FileStatus, FileStatusMap } from './constants'
+import { FileStatus, FileStatusMap, NeedCheckFormat } from './constants'
 import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
 import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
@@ -56,6 +57,7 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   select: v => dispatch(creators.select(v)),
   cancel: () => dispatch(creators.cancel()),
   getTemplate: v => dispatch(creators.getTemplate(v)),
+  checkFileFormatValid: v => dispatch(creators.checkFileFormatValid(v)),
 }))
 
 insertCSS(
@@ -106,7 +108,7 @@ export function toHighlightLanguage(format?: string) {
     return 'ini'
   }
   if (format === 'yml') {
-    return FileFormat.YAML
+    return 'yaml'
   }
   return format
 }
@@ -135,7 +137,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
   const searchKeyword = selectors.searchKeyword(store)
   const editing = selectors.editing(store)
   const fileTree = selectors.fileTree(store)
-  const { showHistoryMap, editContent, data } = selector(store)
+  const { showHistoryMap, editContent, data, formatError } = selector(store)
   const currentHistoryDuck = ducks.configFileDynamicDuck.getDuck(currentNode?.name)
 
   function RefreshConfigButton(): JSX.Element {
@@ -224,12 +226,12 @@ export default function Page(props: DuckCmpProps<Duck>) {
                   fullExpandable
                   height={900}
                   style={{ width: '450px', maxWidth: '450px' }}
-                // onSelect={v => {
-                //   handlers.select(v)
-                // }}
-                // selectable
-                // selectedIds={selection}
-                // selectValueMode={'onlyLeaf'}
+                  // onSelect={v => {
+                  //   handlers.select(v)
+                  // }}
+                  // selectable
+                  // selectedIds={selection}
+                  // selectValueMode={'onlyLeaf'}
                 >
                   {renderTree(props, fileTree, '', '')}
                 </Tree>
@@ -280,8 +282,8 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 content={
                                   currentNode.tags.length > 3
                                     ? currentNode.tags?.map(item => (
-                                      <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
-                                    ))
+                                        <Text parent={'div'} key={item.key}>{`${item.key}:${item.value}`}</Text>
+                                      ))
                                     : null
                                 }
                               >
@@ -416,21 +418,34 @@ export default function Page(props: DuckCmpProps<Duck>) {
                           </Col>
                         </Row>
                       ) : (
-                        <section
-                          style={{ border: '1px solid #cfd5de', width: '100%', height: '750px' }}
-                          className={'config-editor'}
-                        >
-                          <MonacoEditor
-                            language={toHighlightLanguage(currentNode?.format)}
-                            value={editing ? editContent : currentNode?.content}
-                            options={{ readOnly: !editing }}
-                            height={700}
-                            width={'100%'}
-                            onChange={v => {
-                              handlers.setEditContent(v)
-                            }}
-                          />
-                        </section>
+                        <>
+                          {formatError && (
+                            <Alert type={'error'} style={{ marginBottom: '20px' }}>
+                              <Text parent={'div'}>
+                                {formatError.name}:{formatError.reason}
+                              </Text>
+                              <Text parent={'div'}>{formatError.message}</Text>
+                            </Alert>
+                          )}
+                          <section
+                            style={{ border: '1px solid #cfd5de', width: '100%', height: '750px' }}
+                            className={'config-editor'}
+                          >
+                            <MonacoEditor
+                              language={toHighlightLanguage(currentNode?.format)}
+                              value={editing ? editContent : currentNode?.content}
+                              options={{ readOnly: !editing }}
+                              height={700}
+                              width={'100%'}
+                              onChange={v => {
+                                handlers.setEditContent(v)
+                                if (NeedCheckFormat.includes(currentNode?.format as FileFormat)) {
+                                  handlers.checkFileFormatValid({ content: v, format: currentNode.format })
+                                }
+                              }}
+                            />
+                          </section>
+                        </>
                       )}
                     </Card.Body>
                   </>
@@ -455,9 +470,12 @@ function getFileNameContext(fileName, status, file) {
   const splitArray = fileName.split('/')
   return (
     <div>
-      <span className='configuration-tree-node-content'>{splitArray[splitArray.length - 1]}</span>
+      <span className='configuration-tree-node-content'>
+        {splitArray[splitArray.length - 1]}({file.id})
+      </span>
       {FileStatus.Edited === status && <Badge theme='warning'>待发布</Badge>}
       {FileStatus.Betaing === status && <Badge theme='warning'>灰度发布中</Badge>}
+      {FileStatus.Normal === status && <Badge theme='success'>已发布</Badge>}
       {file.isEncrypt && <Badge theme='warning'>已加密</Badge>}
     </div>
   )
@@ -501,6 +519,13 @@ function renderTree(props, folder, path: string, currPath: string) {
             operation={
               !obj.__isDir__ && (
                 <div style={{ visibility: currentNode && currentNode?.key === obj.name ? 'visible' : null }}>
+                  <span
+                    onClick={e => {
+                      e.stopPropagation()
+                    }}
+                  >
+                    <Copy text={obj.id} />
+                  </span>
                   <Dropdown appearence='pure' clickClose={true} button={<Button type='icon' icon='more' />}>
                     <List type='option'>
                       <List.Item

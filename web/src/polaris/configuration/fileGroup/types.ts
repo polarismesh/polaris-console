@@ -56,6 +56,7 @@ export interface ConfigFileRelease {
   releaseType?: string
   format: string
   betaLabels: ClientLabel[]
+  id: string
 }
 export interface ConfigFileReleaseHistory {
   id: string

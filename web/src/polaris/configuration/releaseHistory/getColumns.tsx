@@ -30,6 +30,11 @@ export default ({
   duck: { creators },
 }: DuckCmpProps<ConfigFileReleaseHistoryDuck>): Column<ConfigFileReleaseHistoryItem>[] => [
   {
+    key: 'id',
+    header: '发布历史ID',
+    render: x => x.id,
+  },
+  {
     key: 'fileName',
     header: '名称',
     render: x =>

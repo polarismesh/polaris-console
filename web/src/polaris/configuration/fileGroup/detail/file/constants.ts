@@ -1,9 +1,11 @@
+import { FileFormat } from './operation/Create'
+
 export enum FileStatus {
   Normal = 'normal',
   Success = 'success',
   Fail = 'failure',
   Edited = 'to-be-released',
-  Betaing = "betaing"
+  Betaing = 'betaing',
 }
 export const FileStatusMap = {
   [FileStatus.Normal]: {
@@ -27,3 +29,4 @@ export const FileStatusMap = {
     theme: 'warning',
   },
 }
+export const NeedCheckFormat = [FileFormat.YAML, FileFormat.JSON]
