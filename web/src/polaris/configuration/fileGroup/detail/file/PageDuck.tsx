@@ -204,7 +204,7 @@ export default class PageDuck extends Base {
       select: createToPayload<string[]>(types.SELECT),
       cancel: createToPayload<void>(types.CANCEL),
       getTemplate: createToPayload<ConfigFile>(types.GET_FILE_TEMPLATE),
-      checkFileFormatValid: createToPayload<{ content: string; format: string }>(types.CHECK_FILE_FORMAT),
+      checkFileFormatValid: createToPayload<void>(types.CHECK_FILE_FORMAT),
     }
   }
 
@@ -300,9 +300,11 @@ export default class PageDuck extends Base {
       yield put({ type: types.SET_EDITING, payload: true })
       yield put(creators.setEditContent(currentNode.content))
     })
-    yield takeLatest(types.CHECK_FILE_FORMAT, function*(action) {
+    yield takeLatest(types.CHECK_FILE_FORMAT, function*() {
       yield delay(500)
-      const { format, content } = action.payload
+      const currentNode = selectors.currentNode(yield select())
+      const { editContent: content } = selector(yield select())
+      const { format } = currentNode
       if (format === FileFormat.YAML) {
         try {
           jsYaml.load(content)

@@ -27,7 +27,7 @@ import {
   notification,
   Alert,
 } from 'tea-component'
-import { FileStatus, FileStatusMap, NeedCheckFormat } from './constants'
+import { FileStatus, FileStatusMap } from './constants'
 import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
 import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
@@ -57,7 +57,7 @@ const getHandlers = memorize(({ creators }: Duck, dispatch) => ({
   select: v => dispatch(creators.select(v)),
   cancel: () => dispatch(creators.cancel()),
   getTemplate: v => dispatch(creators.getTemplate(v)),
-  checkFileFormatValid: v => dispatch(creators.checkFileFormatValid(v)),
+  checkFileFormatValid: () => dispatch(creators.checkFileFormatValid()),
 }))
 
 insertCSS(
@@ -439,9 +439,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                               width={'100%'}
                               onChange={v => {
                                 handlers.setEditContent(v)
-                                if (NeedCheckFormat.includes(currentNode?.format as FileFormat)) {
-                                  handlers.checkFileFormatValid({ content: v, format: currentNode.format })
-                                }
+                                handlers.checkFileFormatValid()
                               }}
                             />
                           </section>
