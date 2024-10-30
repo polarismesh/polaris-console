@@ -357,7 +357,12 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 <Button type={'weak'} onClick={() => handlers.getTemplate(currentNode)}>
                                   应用模板
                                 </Button>
-                                <Button type={'weak'} onClick={() => handlers.save()}>
+                                <Button
+                                  type={'weak'}
+                                  onClick={() => handlers.save()}
+                                  disabled={editContent === ''}
+                                  tooltip={editContent === '' && '不能修改为空'}
+                                >
                                   保存
                                 </Button>
                               </>
