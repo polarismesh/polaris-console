@@ -305,7 +305,7 @@ export default class PageDuck extends Base {
       const currentNode = selectors.currentNode(yield select())
       const { editContent: content } = selector(yield select())
       const { format } = currentNode
-      if (format === FileFormat.YAML) {
+      if (format === FileFormat.YAML || format === 'yaml') {
         try {
           jsYaml.load(content)
         } catch (e) {
