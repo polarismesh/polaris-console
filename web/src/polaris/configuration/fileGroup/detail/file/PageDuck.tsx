@@ -346,6 +346,10 @@ export default class PageDuck extends Base {
       const searchKeyword = selectors.searchKeyword(yield select())
       const currentNode = selectors.currentNode(yield select())
       const { namespace, group } = composedId
+
+      if (!namespace || !group) {
+        return
+      }
       const fileResult = yield getAllList(describeConfigFilesByGroup)({
         namespace,
         group,
