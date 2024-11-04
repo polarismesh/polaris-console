@@ -68,7 +68,7 @@ export default ({
             <Action fn={dispatch => dispatch(creators.rollback(x))} disabled={!editable || !!x.active}>
               {'回滚'}
             </Action>
-            <Action fn={dispatch => dispatch(creators.delete(x))} disabled={!deleteable}>
+            <Action fn={dispatch => dispatch(creators.delete(x))} disabled={deleteable === false}>
               {'删除'}
             </Action>
           </React.Fragment>

@@ -61,8 +61,8 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
           </Action>
           <Action
             fn={dispatch => dispatch(creators.remove(x))}
-            disabled={!x.deleteable}
-            tip={!x.deleteable ? '无权限' : '编辑'}
+            disabled={x.deleteable === false}
+            tip={x.deleteable === false ? '无权限' : '编辑'}
           >
             {'删除'}
           </Action>

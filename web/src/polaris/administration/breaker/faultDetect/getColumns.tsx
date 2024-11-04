@@ -89,7 +89,7 @@ export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[]
               }}
             />
             <Action
-              disabled={!x.deleteable}
+              disabled={x.deleteable === false}
               text={'删除'}
               fn={() => {
                 dispatch(creators.remove(x))

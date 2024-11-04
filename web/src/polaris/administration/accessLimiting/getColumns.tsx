@@ -93,7 +93,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
         {
           id: 'modify',
           text: '编辑',
-          disabled:!x.editable,
+          disabled: !x.editable,
           fn: dispatch => {
             dispatch(creators.modify(x))
           },
@@ -101,7 +101,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
         {
           id: 'remove',
           text: '删除',
-          disabled:!x.deleteable,
+          disabled: x.deleteable === false,
           fn: dispatch => {
             dispatch(creators.delete(x))
           },

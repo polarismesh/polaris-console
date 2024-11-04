@@ -111,7 +111,7 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
               }}
             />
             <Action
-              disabled={!x.deleteable}
+              disabled={x.deleteable === false}
               text={'删除'}
               fn={() => {
                 dispatch(creators.remove(x))

@@ -560,7 +560,7 @@ function renderTree(props, folder, path: string, currPath: string) {
                       >
                         {'查看发布历史'}
                       </List.Item>
-                      <List.Item onClick={() => handlers.delete(obj.name)} disabled={!deleteable}>
+                      <List.Item onClick={() => handlers.delete(obj.name)} disabled={deleteable === false}>
                         删除
                       </List.Item>
                     </List>

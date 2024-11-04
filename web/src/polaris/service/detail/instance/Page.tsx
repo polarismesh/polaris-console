@@ -213,8 +213,8 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 style={{ marginRight: 10 }}
                 button={
                   <Button
-                    disabled={selection?.length === 0 || !deleteable}
-                    tooltip={selection?.length === 0 ? '请选择实例' : !deleteable ? '无写权限' : ''}
+                    disabled={selection?.length === 0 || deleteable === false}
+                    tooltip={selection?.length === 0 ? '请选择实例' : deleteable === false ? '无写权限' : ''}
                   >
                     其他操作
                   </Button>

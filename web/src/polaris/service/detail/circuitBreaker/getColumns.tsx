@@ -96,8 +96,8 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<RoutePageD
             </Action>
             <Action
               fn={dispatch => dispatch(creators.remove(x.id))}
-              disabled={isReadOnly(namespace) || !deleteable}
-              tip={isReadOnly(namespace) ? '该命名空间为只读的' : !deleteable ? '无写权限' : '删除'}
+              disabled={isReadOnly(namespace) || deleteable === false}
+              tip={isReadOnly(namespace) ? '该命名空间为只读的' : deleteable === false ? '无写权限' : '删除'}
             >
               <Icon type={'delete'}></Icon>
             </Action>
