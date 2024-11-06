@@ -99,14 +99,12 @@ export default (
           fn: (dispatch?: Dispatch<any>, e?) => void
           disabled: boolean
         }[] = [
-            {
-              id: 'switchStatus',
-              text: x.enable ? '禁用' : '启用',
-              fn: dispatch => {
-                const swtichStatusAction = x.enable ? SwitchStatusAction.disable : SwitchStatusAction.start
-                dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
-              },
-              disabled: !x.editable,
+          {
+            id: 'switchStatus',
+            text: x.enable ? '禁用' : '启用',
+            fn: dispatch => {
+              const swtichStatusAction = x.enable ? SwitchStatusAction.disable : SwitchStatusAction.start
+              dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
             },
             disabled: !x.editable,
           },
