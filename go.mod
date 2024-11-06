@@ -8,7 +8,7 @@ require (
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/stretchr/testify v1.8.1
 	go.uber.org/zap v1.13.0
-	google.golang.org/grpc v1.50.1
+	google.golang.org/grpc v1.51.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -36,6 +36,7 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/polarismesh/specification v1.5.3
 	go.uber.org/atomic v1.10.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/net v0.4.0 // indirect

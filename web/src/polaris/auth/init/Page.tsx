@@ -6,8 +6,6 @@ import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, Copy, Bubble } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
-import { checkExistAdminUser } from '../model'
-import router from '@src/polaris/common/util/router'
 insertCSS(
   'login',
   `.login-background{
@@ -22,8 +20,6 @@ export default purify(function (props: DuckCmpProps<Duck>) {
   const { ducks, creators, selector } = duck
   const { userName, password } = ducks.form.getAPI(store, dispatch).getFields(['userName', 'password'])
   const { preError } = selector(store)
-  const licenseToolTip = preError && 'License已超过最大过期时间'
-
   return (
     <div
       style={{ background: 'url(static/img/login-background.png)', backgroundSize: '100% 100%' }}
@@ -64,7 +60,7 @@ export default purify(function (props: DuckCmpProps<Duck>) {
                     <Col>
                       <H2>
                         <Text align={'center'} parent={'div'} style={{ width: '100%' }}>
-                          登录
+                          初始化主账户
                         </Text>
                       </H2>
                     </Col>
@@ -76,16 +72,9 @@ export default purify(function (props: DuckCmpProps<Duck>) {
                       </Text>
                     </Col>
                   </Row>
-                  <Row>
-                    <Col>
-                      <Text theme={'weak'} parent={'div'} style={{ width: '100%' }} align={'center'}>
-                        初始用户名和密码为<Copy text={'polaris'}>polaris</Copy>/<Copy text={'polaris'}>polaris</Copy>
-                      </Text>
-                    </Col>
-                  </Row>
                   <Form style={{ padding: '20px 0px' }}>
                     <FormField field={userName} label={'用户名'}>
-                      <Input field={userName} size={'full'} disabled={preError} placeholder={licenseToolTip} />
+                      <Input field={userName} size={'full'} />
                     </FormField>
                     <FormField field={password} label={'密码'}>
                       <TeaInput.Password
@@ -102,13 +91,12 @@ export default purify(function (props: DuckCmpProps<Duck>) {
                         }}
                         rules={false}
                         disabled={preError}
-                        placeholder={licenseToolTip}
                       />
                     </FormField>
                   </Form>
                   <Row>
                     <Col span={8}></Col>
-                    <Bubble content={licenseToolTip}>
+                    <Bubble>
                       <Col span={8}>
                         <Button
                           type={'primary'}
@@ -119,7 +107,7 @@ export default purify(function (props: DuckCmpProps<Duck>) {
                           }}
                           disabled={preError}
                         >
-                          登录
+                          初始化
                         </Button>
                       </Col>
                     </Bubble>

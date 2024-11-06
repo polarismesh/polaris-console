@@ -109,11 +109,6 @@ type Options struct {
 	// JSONEncoding controls whether the log is formatted as JSON.
 	JSONEncoding bool
 
-	// LogGrpc indicates that Grpc logs should be captured. The default is true.
-	// This is not exposed through the command-line flags, as this flag is mainly useful for testing: Grpc
-	// stack will hold on to the logger even though it gets closed. This causes data races.
-	LogGrpc bool
-
 	Level string
 
 	outputLevels     string
@@ -131,7 +126,6 @@ func DefaultOptions() *Options {
 		RotationMaxBackups: defaultRotationMaxBackups,
 		outputLevels:       DefaultScopeName + ":" + levelToString[defaultOutputLevel],
 		stackTraceLevels:   DefaultScopeName + ":" + levelToString[defaultStackTraceLevel],
-		LogGrpc:            false,
 	}
 }
 

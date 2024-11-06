@@ -25,6 +25,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -33,7 +34,53 @@ import (
 
 	"github.com/polarismesh/polaris-console/bootstrap"
 	"github.com/polarismesh/polaris-console/common/log"
+	"github.com/polarismesh/specification/source/go/api/v1/security"
 )
+
+func NewAdminGetter(conf *bootstrap.Config) {
+	_adminGetter.conf = conf
+}
+
+var _adminGetter = &AdminUserGetter{}
+
+type AdminUserGetter struct {
+	conf *bootstrap.Config
+	lock sync.RWMutex
+	user *security.User
+}
+
+func (a *AdminUserGetter) GetAdminInfo() (*security.User, error) {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
+	if a.user != nil {
+		return a.user, nil
+	}
+
+	resp, err := http.Get(fmt.Sprintf("http://%s/maintain/v1/mainuser/exist", a.conf.PolarisServer.Address))
+	if err != nil {
+		log.Error("[Proxy][Login] get admin info fail", zap.Error(err))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("get admin info fail")
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Error("[Proxy][Login] get admin info fail", zap.Error(err))
+		return nil, err
+	}
+
+	user := &security.User{}
+	if err = json.Unmarshal(body, user); err != nil {
+		log.Error("[Proxy][Login] get admin info fail", zap.Error(err))
+		return nil, err
+	}
+	a.user = user
+	return a.user, nil
+}
 
 // ServiceOwner 服务(规则)负责人信息
 type ServiceOwner struct {
@@ -63,12 +110,16 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 				log.Error("[Proxy][Login] modify login request fail", zap.Error(err))
 				return
 			}
+
+			admin, err := _adminGetter.GetAdminInfo()
+			if err != nil {
+				log.Error("[Proxy][Login] modify login request fail", zap.Error(err))
+				return
+			}
+
 			loginBody := &LoginRequest{}
 			_ = json.Unmarshal(body, loginBody)
-			loginBody.Owner = "polaris"
-			if len(conf.WebServer.MainUser) != 0 {
-				loginBody.Owner = conf.WebServer.MainUser
-			}
+			loginBody.Owner = admin.GetName().GetValue()
 			body, err = json.Marshal(loginBody)
 			if err != nil {
 				log.Error("[Proxy][Login] modify login request fail", zap.Error(err))

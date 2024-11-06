@@ -46,4 +46,7 @@ func AdminRouter(webSvr *gin.Engine, config *bootstrap.Config) {
 	// 后端server路由组
 	admin := webSvr.Group("/maintain/v1")
 	admin.GET("/server/functions", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
+	admin.GET("/mainuser/exist", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
+	admin.POST("/mainuser/create", handlers.ReverseProxyNoAuthForServer(&config.PolarisServer, config))
+
 }
