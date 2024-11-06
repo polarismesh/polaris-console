@@ -86,31 +86,6 @@ export default purify(function (props: DuckCmpProps<Duck>) {
     { groupKey: "authView", text: "鉴权策略", value: "AuthPolicy" },
   ];
 
-  const serverFunctionGroups = {
-    namespaceView: "命名空间",
-    clientView: "客户端",
-    discoverView: "注册发现",
-    governanceView: "治理规则",
-    configView: "配置中心",
-    authView: "鉴权",
-  };
-
-  const serverFunctionOptions = [
-    { groupKey: "namespaceView", text: "命名空间", value: "Namespace" },
-    { groupKey: "clientView", text: "客户端", value: "Client" },
-    { groupKey: "discoverView", text: "服务", value: "Service|ServiceContract" },
-    { groupKey: "discoverView", text: "实例", value: "Instance" },
-    { groupKey: "governanceView", text: "路由规则", value: "RouteRule" },
-    { groupKey: "governanceView", text: "限流规则", value: "RateLimitRule" },
-    { groupKey: "governanceView", text: "熔断规则", value: "CircuitBreakerRule" },
-    { groupKey: "governanceView", text: "探测规则", value: "FaultDetectRule" },
-    { groupKey: "configView", text: "配置分组", value: "ConfigGroup" },
-    { groupKey: "configView", text: "配置文件", value: "ConfigFile|ConfigRelease" },
-    { groupKey: "authView", text: "用户", value: "User" },
-    { groupKey: "authView", text: "用户组", value: "UserGroup" },
-    { groupKey: "authView", text: "鉴权策略", value: "AuthPolicy" },
-  ];
-
   const {
     user: { selection: userSelection },
     userGroup: { selection: userGroupSelection },
