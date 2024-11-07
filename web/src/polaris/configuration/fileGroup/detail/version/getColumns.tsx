@@ -11,28 +11,34 @@ export default ({
 }: DuckCmpProps<ConfigFileReleaseDuck>): Column<ConfigFileRelease>[] => {
   const { data } = selector(store)
   const editable = data.editable
+  const deleteable = data.deleteable
   return [
+    {
+      key: 'id',
+      header: '配置版本ID',
+      render: x => <Text>{x.id}</Text>,
+    },
     {
       key: 'fileName',
       header: '名称',
       render: x => (
         <Text>
           {x.fileName}
-          {(x.active && x.releaseType === 'gray') ? (
+          {x.active && x.releaseType === 'gray' ? (
             <Badge theme='warning' dark style={{ verticalAlign: 'bottom', marginLeft: '5px' }}>
               {'灰度使用中'}
             </Badge>
           ) : (
             <></>
           )}
-          {(x.active && x.releaseType !== 'gray') ? (
+          {x.active && x.releaseType !== 'gray' ? (
             <Badge dark style={{ verticalAlign: 'bottom', marginLeft: '5px' }}>
               {'使用中'}
             </Badge>
           ) : (
             <></>
           )}
-          {(!x.active && x.releaseType === 'gray') ? (
+          {!x.active && x.releaseType === 'gray' ? (
             <Badge theme='default' style={{ verticalAlign: 'bottom', marginLeft: '5px' }}>
               {'灰度版本'}
             </Badge>
@@ -62,7 +68,7 @@ export default ({
             <Action fn={dispatch => dispatch(creators.rollback(x))} disabled={!editable || !!x.active}>
               {'回滚'}
             </Action>
-            <Action fn={dispatch => dispatch(creators.delete(x))} disabled={!editable}>
+            <Action fn={dispatch => dispatch(creators.delete(x))} disabled={deleteable === false}>
               {'删除'}
             </Action>
           </React.Fragment>

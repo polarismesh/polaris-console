@@ -119,6 +119,7 @@ export default function FileDiff(props: Props) {
         language={format}
         original={original}
         value={now}
+        options={{ ignoreTrimWhitespace: false }}
       />
     </section>
   )

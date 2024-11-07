@@ -104,17 +104,6 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
           </Button>
           {showAdvance && (
             <>
-              {options.authOpen && (
-                <FormItem label={'授权'}>
-                  <ResourcePrincipalAuth
-                    userDuck={userSelect}
-                    userGroupDuck={userGroupSelect}
-                    duck={duck}
-                    store={store}
-                    dispatch={dispatch}
-                  />
-                </FormItem>
-              )}
               <FormItem
                 label={'可见性'}
                 tips={'当前服务允许可见的命名空间列表，当与命名空间的服务可见性冲突时，优先使用该选项配置'}
@@ -148,6 +137,17 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                   ></SelectMultiple>
                 )}
               </FormItem>
+              {options.authOpen && (
+                <FormItem label={'授权'}>
+                  <ResourcePrincipalAuth
+                    userDuck={userSelect}
+                    userGroupDuck={userGroupSelect}
+                    duck={duck}
+                    store={store}
+                    dispatch={dispatch}
+                  />
+                </FormItem>
+              )}
             </>
           )}
         </>

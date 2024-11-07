@@ -189,31 +189,12 @@ export interface DescribeGovernanceUserTokenResult {
 export type ModifyGovernanceServicesResult = {}
 
 /** 修改治理中心鉴权策略 */
-export async function modifyGovernanceStrategy(params: ModifyGovernanceStrategyParams[]) {
+export async function modifyGovernanceStrategy(params: ModifyAuthStrategy[]) {
   const result = await putApiRequest<ModifyGovernanceStrategyResult>({
     action: 'core/v1/auth/strategies',
     data: params,
   })
   return result.responses.every(item => Number(item.code) === SuccessCode)
-}
-/** **ModifyGovernanceStrategy入参**
-
-修改治理中心鉴权策略  */
-export interface ModifyGovernanceStrategyParams {
-  /** 策略名称 */
-  id: string
-
-  /** 涉及的用户 or 用户组 */
-  principals?: Principal
-
-  /** 资源操作权限 */
-  action?: string
-
-  /** 简单描述 */
-  comment?: string
-
-  /** 策略关联的资源 */
-  resources?: StrategyResource
 }
 /** **ModifyGovernanceStrategy出参**
 
@@ -320,6 +301,18 @@ export interface CreateGovernanceStrategyParams {
 
   /** 策略关联的资源 */
   resources?: StrategyResource
+
+  /** 鉴权规则来源 */
+  source?: string
+
+  /** 服务端接口 */
+  functions?: string[]
+
+  /** 策略生效的资源标签 */
+  resource_labels?: string[]
+
+  /** 策略资源标签 */
+  metadata?: Record<string, string>
 }
 /** **CreateGovernanceStrategy出参**
 
@@ -656,7 +649,7 @@ export interface AuthStrategy {
   id?: string
 
   /** 策略名称 */
-  name: string
+  name?: string
 
   /** 涉及的用户 or 用户组 */
   principals?: Principal
@@ -680,6 +673,18 @@ export interface AuthStrategy {
   resources?: StrategyResource
 
   default_strategy?: boolean
+
+  /** 鉴权规则来源 */
+  source?: string
+
+  /** 服务端接口 */
+  functions?: string[]
+
+  /** 策略生效的资源标签 */
+  resource_labels?: string[]
+
+  /** 策略资源标签 */
+  metadata?: Record<string, string>
 }
 /** 鉴权策略涉及的用户 or 用户组信息 */
 export interface Principal {
@@ -688,6 +693,9 @@ export interface Principal {
 
   /** 用户组ID列表 */
   groups?: PrincipalEntry[]
+
+  /** 角色ID列表 */
+  roles?: PrincipalEntry[]
 }
 /** 鉴权策略资源信息 */
 export interface StrategyResource {
@@ -702,6 +710,33 @@ export interface StrategyResource {
 
   /** 配置组ID列表 */
   config_groups?: StrategyResourceEntry[]
+
+  /** 路由规则ID列表 */
+  route_rules?: StrategyResourceEntry[]
+
+  /** 泳道规则ID列表 */
+  lane_rules?: StrategyResourceEntry[]
+
+  /** 熔断规则ID列表 */
+  circuitbreaker_rules?: StrategyResourceEntry[]
+
+  /** 主动探测规则ID列表 */
+  faultdetect_rules?: StrategyResourceEntry[]
+
+  /** 限流规则ID列表 */
+  ratelimit_rules?: StrategyResourceEntry[]
+
+  /** 用户ID列表 */
+  users?: StrategyResourceEntry[]
+
+  /** 用户组ID列表 */
+  user_groups?: StrategyResourceEntry[]
+
+  /** 资源鉴权规则ID列表 */
+  auth_policies?: StrategyResourceEntry[]
+
+  /** 角色ID列表 */
+  roles?: StrategyResourceEntry[]
 }
 /** 资源 */
 export interface StrategyResourceEntry {
@@ -793,7 +828,7 @@ export interface ModifyUserGroup {
 /** 用户 */
 export interface User {
   /** 用户ID */
-  id: string
+  id?: string
 
   /** 用户名称，对应云上的话应该是UIN */
   name?: string
@@ -841,14 +876,37 @@ export interface ModifyAuthStrategy {
   remove_resources?: StrategyResource
 
   /** 鉴权策略动作 */
-  action?: string[]
+  action?: string
 
   /** 简单描述 */
   comment?: string
 
   /** 腾讯云主账户ID */
   owner?: string
+
+  /** 鉴权规则来源 */
+  source?: string
+
+  /** 服务端接口 */
+  functions?: string[]
+
+  /** 策略生效的资源标签 */
+  resource_labels?: StrategyResourceLabel[]
+
+  /** 策略资源标签 */
+  metadata?: Record<string, string>
 }
+
+export interface StrategyResourceLabel {
+  /** 标签键 */
+  key?: string
+  /** 标签值 */
+  value?: string
+  /** 比较类型 */
+  compare_type?: string
+}
+
+
 export interface PrincipalEntry {
   /** 用户ID｜用户组ID */
   id: string
@@ -862,4 +920,196 @@ export interface LoginResponse {
   role: string
   user_id: string
   owner_id: string
+}
+
+/** 查询治理中心接口列表 */
+export async function describeServerFunctions() {
+  const result = await getApiRequest<ServerFunctionGroup[]>({
+    action: 'maintain/v1/server/functions',
+  })
+  for (let i = 0; i < result.length; ++i) {
+    result[i].id = result[i].name
+  }
+  return {
+    list: result,
+    totalCount: result.length,
+  }
+}
+
+/** 查询服务接口列表 */
+export interface ServerFunctionGroup {
+  id: string
+  name: string
+  functions: string[]
+}
+
+export interface ServerFunction {
+  id: string
+  name: string
+  desc: string
+}
+
+export function getServerFunctionDesc(group: string, name: string) {
+  for (var i in ServerFunctionZhDesc) {
+    if (ServerFunctionZhDesc[i].hasOwnProperty(name)) {
+      return ServerFunctionZhDesc[i][name]
+    }
+  }
+  return "未知"
+}
+
+export const ServerFunctionZhDesc =
+{
+  "Client": {
+    "RegisterInstance": "注册实例",
+    "DeregisterInstance": "注销实例",
+    "ReportServiceContract": "上报服务契约",
+    "DiscoverServices": "查询服务列表",
+    "DiscoverInstances": "查询服务实例",
+    "UpdateInstance": "更新服务实例",
+    "DiscoverRouterRule": "查询自定义路由规则",
+    "DiscoverRateLimitRule": "查询限流规则",
+    "DiscoverCircuitBreakerRule": "查询熔断规则",
+    "DiscoverFaultDetectRule": "查询探测规则",
+    "DiscoverServiceContract": "查询服务契约",
+    "DiscoverLaneRule": "查询泳道规则",
+    "DiscoverConfigFile": "查询配置文件",
+    "WatchConfigFile": "监听配置文件",
+    "DiscoverConfigFileNames": "查询配置分组下已发布的文件列表",
+    "DiscoverConfigGroups": "查询配置分组列表"
+  },
+  "Namespace": {
+    "CreateNamespace": "创建单个命名空间",
+    "CreateNamespaces": "批量创建命名空间",
+    "DeleteNamespaces": "批量删除命名空间",
+    "UpdateNamespaces": "批量更新命名空间",
+    "DescribeNamespaces": "查询命名空间列表"
+  },
+  "Service": {
+    "CreateServices": "批量创建服务",
+    "DeleteServices": "批量删除服务",
+    "UpdateServices": "批量更新服务",
+    "DescribeAllServices": "查询全部服务列表",
+    "DescribeServices": "查询服务列表",
+    "DescribeServicesCount": "查询服务总数",
+    "CreateServiceAlias": "批量创建服务别名",
+    "DeleteServiceAliases": "批量删除服务别名",
+    "UpdateServiceAlias": "批量更新服务别名",
+    "DescribeServiceAliases": "查询服务别名列表"
+  },
+  "ServiceContract": {
+    "CreateServiceContracts": "批量创建服务契约",
+    "DescribeServiceContracts": "查询服务契约列表",
+    "DescribeServiceContractVersions": "查询服务契约版本列表",
+    "DeleteServiceContracts": "批量删除服务契约",
+    "CreateServiceContractInterfaces": "在某个契约版本下创建接口列表",
+    "AppendServiceContractInterfaces": "在某个契约版本下追加或覆盖接口列表",
+    "DeleteServiceContractInterfaces": "在某个契约版本下删除接口列表"
+  },
+  "Instance": {
+    "CreateInstances": "批量创建服务实例",
+    "DeleteInstances": "批量删除服务实例",
+    "DeleteInstancesByHost": "根据 IP 批量删除服务实例",
+    "UpdateInstances": "批量更新服务实例",
+    "UpdateInstancesIsolate": "批量更新服务实例隔离状态",
+    "DescribeInstances": "查询服务实例列表",
+    "DescribeInstancesCount": "查询服务实例总数",
+    "DescribeInstanceLabels": "查询服务实例标签集合",
+    "CleanInstance": "清理服务实例",
+    "BatchCleanInstances": "批量清理服务实例",
+    "DescribeInstanceLastHeartbeat": "查询服务实例的最后一次心跳时间"
+  },
+  "RouteRule": {
+    "CreateRouteRules": "批量创建自定义路由",
+    "DeleteRouteRules": "批量删除自定义路由",
+    "UpdateRouteRules": "批量更新自定义路由",
+    "EnableRouteRules": "批量启用/禁用自定义路由",
+    "DescribeRouteRules": "查询自定义路由规则列表"
+  },
+  "RateLimitRule": {
+    "CreateRateLimitRules": "批量创建限流规则",
+    "DeleteRateLimitRules": "批量删除批量创建限流规则",
+    "UpdateRateLimitRules": "批量更新批量创建限流规则",
+    "EnableRateLimitRules": "批量启用/禁用批量创建限流规则",
+    "DescribeRateLimitRules": "查询批量创建限流规列表"
+  },
+  "CircuitBreakerRule": {
+    "CreateCircuitBreakerRules": "批量创建熔断规则",
+    "DeleteCircuitBreakerRules": "批量删除熔断规则",
+    "EnableCircuitBreakerRules": "批量启用/禁用熔断规则",
+    "UpdateCircuitBreakerRules": "批量更新熔断规则",
+    "DescribeCircuitBreakerRules": "查询熔断规则列表"
+  },
+  "FaultDetectRule": {
+    "CreateFaultDetectRules": "批量创建探测规则",
+    "DeleteFaultDetectRules": "批量删除探测规则",
+    "UpdateFaultDetectRules": "批量更新探测规则",
+    "EnableFaultDetectRules": "批量启用/禁用探测规则",
+    "DescribeFaultDetectRules": "查询探测规则列表",
+  },
+  "LaneRule": {
+    "CreateLaneGroups": "批量创建泳道组",
+    "DeleteLaneGroups": "批量删除泳道组",
+    "UpdateLaneGroups": "批量更新泳道组",
+    "EnableLaneGroups": "批量启用/禁用泳道组",
+    "DescribeLaneGroups": "查询泳道组规则列表",
+  },
+  "ConfigGroup": {
+    "CreateConfigFileGroup": "创建配置分组",
+    "DeleteConfigFileGroup": "删除配置分组",
+    "UpdateConfigFileGroup": "更新配置分组",
+    "DescribeConfigFileGroups": "查询配置分组列表"
+  },
+  "ConfigFile": {
+    "PublishConfigFile": "发布配置文件",
+    "CreateConfigFile": "创建配置文件",
+    "UpdateConfigFile": "更新配置文件",
+    "DeleteConfigFile": "删除配置文件",
+    "DescribeConfigFileRichInfo": "查询单个配置文件详细",
+    "DescribeConfigFiles": "查询配置文件列表",
+    "BatchDeleteConfigFiles": "批量删除配置文件",
+    "ExportConfigFiles": "导出配置文件",
+    "ImportConfigFiles": "导入配置文件",
+    "DescribeConfigFileReleaseHistories": "查询配置文件发布历史",
+    "DescribeAllConfigFileTemplates": "查询配置模版列表",
+    "DescribeConfigFileTemplate": "查询单个配置模版",
+    "CreateConfigFileTemplate": "创建配置模版"
+  },
+  "ConfigRelease": {
+    "RollbackConfigFileReleases": "批量回滚配置发布",
+    "DeleteConfigFileReleases": "批量删除已发布配置版本",
+    "StopGrayConfigFileReleases": "批量停止灰度发布配置版本",
+    "DescribeConfigFileRelease": "查询单个配置发布版本详细",
+    "DescribeConfigFileReleases": "查询配置发布列表",
+    "DescribeConfigFileReleaseVersions": "查询某一配置文件的发布版本列表",
+    "UpsertAndReleaseConfigFile": "创建/更新并发布配置文件"
+  },
+  "User": {
+    "CreateUsers": "批量创建用户",
+    "DeleteUsers": "批量更新用户",
+    "DescribeUsers": "查询用户列表",
+    "DescribeUserToken": "查询用户的Token",
+    "EnableUserToken": "启用/禁用用户Token",
+    "ResetUserToken": "重置用户Token",
+    "UpdateUser": "更新用户信息",
+    "UpdateUserPassword": "更新用户密码"
+  },
+  "UserGroup": {
+    "CreateUserGroup": "创建用户组",
+    "UpdateUserGroups": "更新用户组",
+    "DeleteUserGroups": "删除用户组",
+    "DescribeUserGroups": "查询用户组列表",
+    "DescribeUserGroupDetail": "查询用户组详细信息",
+    "DescribeUserGroupToken": "查询用户组的Token",
+    "EnableUserGroupToken": "启用/禁用用户组Token",
+    "ResetUserGroupToken": "重置用户组Token",
+  },
+  "AuthPolicy": {
+    "CreateAuthPolicy": "创建鉴权策略",
+    "UpdateAuthPolicies": "更新鉴权策略",
+    "DeleteAuthPolicies": "删除鉴权策略",
+    "DescribeAuthPolicies": "查询鉴权策略列表",
+    "DescribeAuthPolicyDetail": "查询鉴权策略详细",
+    "DescribePrincipalResources": "查询可授权资源列表"
+  }
 }

@@ -2,15 +2,17 @@ import { apiRequest, getApiRequest, putApiRequest } from '@src/polaris/common/ut
 
 export interface CustomRoute {
   id?: string
-  name: string // 规则名
-  enable: boolean // 是否启用
-  priority: number
-  description: string
-  routing_config: RoutingConfig
-  ctime: string
-  mtime: string
-  etime: string
-  routing_policy: string
+  name?: string // 规则名
+  enable?: boolean // 是否启用
+  priority?: number
+  description?: string
+  routing_config?: RoutingConfig
+  ctime?: string
+  mtime?: string
+  etime?: string
+  routing_policy?: string
+  editable?: boolean
+  deleteable?: boolean
 }
 
 export interface DescribeCustomRouteParams {

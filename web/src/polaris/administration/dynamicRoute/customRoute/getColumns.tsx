@@ -97,6 +97,7 @@ export default (
           id: string
           text: string
           fn: (dispatch?: Dispatch<any>, e?) => void
+          disabled: boolean
         }[] = [
           {
             id: 'switchStatus',
@@ -105,6 +106,7 @@ export default (
               const swtichStatusAction = x.enable ? SwitchStatusAction.disable : SwitchStatusAction.start
               dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
             },
+            disabled: !x.editable,
           },
           {
             id: 'modify',
@@ -112,6 +114,7 @@ export default (
             fn: dispatch => {
               dispatch(creators.modify(x))
             },
+            disabled: !x.editable,
           },
           {
             id: 'remove',
@@ -119,12 +122,13 @@ export default (
             fn: dispatch => {
               dispatch(creators.delete(x))
             },
+            disabled: x.deleteable === false,
           },
         ]
         return (
           <React.Fragment>
             {actions.map(action => (
-              <Action key={action.id} text={action.text} fn={action.fn} />
+              <Action disabled={action.disabled} key={action.id} text={action.text} fn={action.fn} />
             ))}
           </React.Fragment>
         )

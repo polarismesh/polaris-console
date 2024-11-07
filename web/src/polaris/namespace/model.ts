@@ -16,6 +16,7 @@ export interface CreateNamespaceParams {
   user_ids?: string[]
   group_ids?: string[]
   service_export_to?: string[]
+  sync_to_global_registry?: boolean
 }
 export interface CreateNamespaceResult {
   namespace: Namespace
@@ -29,6 +30,7 @@ export interface ModifyNamespaceParams {
   remove_user_ids?: string[]
   remove_group_ids?: string[]
   service_export_to?: string[]
+  sync_to_global_registry?: boolean
 }
 export interface ModifyNamespaceResult {
   size: number

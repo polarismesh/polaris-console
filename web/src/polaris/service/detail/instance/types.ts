@@ -22,6 +22,7 @@ export interface Instance {
   vpc_id: string
   weight: number
   editable: boolean
+  deleteable: boolean
   location: InstanceLocation
 }
 
