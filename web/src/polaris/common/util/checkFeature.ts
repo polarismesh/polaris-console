@@ -33,9 +33,7 @@ export const checkFeatureKey = (feature: Feature[], key: string) => {
 export async function checkFeatureValid(featureKey) {
   const feature = await cacheCheckFeature()
   if (feature.length === 0) return true
-  const check = feature.find(item => item.name === featureKey)
-  if (!check) return true
-  return check?.display === FeatureDisplayType.visible
+  return feature.find(item => item.name === featureKey)?.display === FeatureDisplayType.visible
 }
 export function useCheckFeatureValid(features: string[] = []) {
   const [result, setResult] = React.useState([] as Feature[])

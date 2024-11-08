@@ -6,13 +6,7 @@ import ServiceInstanceDuck from './PageDuck'
 import { Text, Icon } from 'tea-component'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
 import { isReadOnly } from '../../utils'
-import { checkGlobalRegistry } from '@src/polaris/administration/breaker/getColumns'
-import { disableDeleteTip } from '../../getColumns'
 
-export const getSourcePolairisIp = x => {
-  const hasSyncGlobal = Object.entries(x.metadata).find(([key]) => key === 'MetadataKeySyncLocalRegistryHost')
-  return hasSyncGlobal?.[1]
-}
 export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceInstanceDuck>): Column<Instance>[] => [
   // {
   //   key: "id",
@@ -31,11 +25,6 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceIns
   {
     key: 'host',
     header: '实例IP',
-    render: x => <Text overflow>{getSourcePolairisIp(x) || '-'}</Text>,
-  },
-  {
-    key: 'sourceIp',
-    header: '来源北极星IP',
     render: x => <Text overflow>{x.host}</Text>,
   },
   {
@@ -119,22 +108,13 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceIns
       const {
         data: { namespace, editable, deleteable },
       } = selector(store)
-      const hasGlobalRegistry = checkGlobalRegistry(x)
 
       return (
         <React.Fragment>
           <Action
             fn={dispatch => dispatch(creators.edit(x))}
-            disabled={isReadOnly(namespace) || !editable || hasGlobalRegistry}
-            tip={
-              isReadOnly(namespace)
-                ? '该命名空间为只读的'
-                : !editable
-                ? '无写权限'
-                : hasGlobalRegistry
-                ? disableDeleteTip
-                : '编辑'
-            }
+            disabled={isReadOnly(namespace) || !editable}
+            tip={isReadOnly(namespace) ? '该命名空间为只读的' : !editable ? '无写权限' : '编辑'}
           >
             <Icon type={'pencil'}></Icon>
           </Action>

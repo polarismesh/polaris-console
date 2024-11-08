@@ -2,7 +2,7 @@ import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
-import { AutoComplete, Form, Input as TeaInput } from 'tea-component'
+import { Form, Select } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 
@@ -50,46 +50,34 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
         </FormField>
 
         <FormField field={alias_namespace} label={'别名所在命名空间'} required>
-          <AutoComplete
+          <Select
+            value={alias_namespace.getValue()}
             options={options.namespaceList}
-            onChange={value => {
-              alias_namespace.setValue(value)
-            }}
-          >
-            {ref => (
-              <TeaInput
-                ref={ref}
-                value={alias_namespace.getValue()}
-                onChange={value => {
-                  alias_namespace.setValue(value)
-                }}
-                disabled={options.isModify}
-                size={'l'}
-              />
-            )}
-          </AutoComplete>
+            onChange={value => alias_namespace.setValue(value)}
+            type={'simulate'}
+            appearance={'button'}
+            size={'l'}
+            disabled={options.isModify}
+          ></Select>
         </FormField>
+
         <FormField field={service} label={'指向服务'} required>
-          <AutoComplete
+          <Select
+            searchable
+            value={service.getValue()}
             options={options.serviceList}
             onChange={value => {
               const [, namespaceName] = value.split('=>')
               service.setValue(value)
               namespace.setValue(namespaceName)
             }}
-          >
-            {ref => (
-              <TeaInput
-                ref={ref}
-                value={service.getValue()}
-                onChange={value => {
-                  service.setValue(value)
-                }}
-                size={'l'}
-              />
-            )}
-          </AutoComplete>
+            type={'simulate'}
+            appearance={'button'}
+            size='l'
+            boxSizeSync
+          ></Select>
         </FormField>
+
         <FormField field={comment} label={'描述'}>
           <Input field={comment} maxLength={1024} placeholder={'长度不超过1024个字符'} size={'l'} />
         </FormField>

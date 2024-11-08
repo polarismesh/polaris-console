@@ -7,7 +7,6 @@ import { Justify, Table, Button, SearchBox, Card } from 'tea-component'
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import BasicLayout from '../common/components/BaseLayout'
-import { useServerConfig } from '../common/util/serverConfig'
 
 insertCSS(
   'service',
@@ -32,8 +31,6 @@ export default function ServicePage(props: DuckCmpProps<NamespaceDuck>) {
   const { selectors } = duck
   const columns = getColumns(props)
   const handlers = getHandlers(props)
-  const multiRegConfig = useServerConfig('multiregistries')
-  const multiRegConfigEnabled = multiRegConfig.open
   return (
     <BasicLayout title={'命名空间'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
@@ -58,17 +55,7 @@ export default function ServicePage(props: DuckCmpProps<NamespaceDuck>) {
         />
       </Table.ActionPanel>
       <Card>
-        <GridPageGrid
-          duck={duck}
-          dispatch={dispatch}
-          store={store}
-          columns={columns.filter(item => {
-            if (item.key === 'sync_to_global_registry') {
-              return multiRegConfigEnabled
-            }
-            return true
-          })}
-        />
+        <GridPageGrid duck={duck} dispatch={dispatch} store={store} columns={columns} />
         <GridPagePagination duck={duck} dispatch={dispatch} store={store} />
       </Card>
     </BasicLayout>

@@ -15,7 +15,6 @@ import {
   Copy,
   TagSearchBox,
   notification,
-  Bubble,
 } from 'tea-component'
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
@@ -27,8 +26,6 @@ import { HEALTH_STATUS, HEALTH_STATUS_MAP, ISOLATE_STATUS_MAP, ISOLATE_STATUS, H
 import { isReadOnly, showAllLabels } from '../../utils'
 import MetadataSelectPanel from '@src/polaris/common/components/MetadataSelectPanel'
 import { replaceTags } from '@src/polaris/configuration/utils'
-import { checkGlobalRegistry } from '@src/polaris/administration/breaker/getColumns'
-import { disableDeleteTip } from '../../getColumns'
 
 insertCSS(
   'service-detail-instance',
@@ -321,27 +318,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               all: true,
               value: selection,
               onChange: handlers.select,
-              rowSelectable: (rowKey, { record }) => !isReadOnly(namespace) && editable && !checkGlobalRegistry(record),
-              render: (element, { record }) => {
-                if (isReadOnly(namespace) || !editable || !checkGlobalRegistry(record)) {
-                  return (
-                    <Bubble
-                      content={
-                        isReadOnly(namespace)
-                          ? '该命名空间为只读的'
-                          : !editable
-                          ? '无权限'
-                          : checkGlobalRegistry(record)
-                          ? disableDeleteTip
-                          : '编辑'
-                      }
-                    >
-                      {element}
-                    </Bubble>
-                  )
-                }
-                return <>{element}</>
-              },
+              rowSelectable: (rowKey, { record }) => !isReadOnly(namespace) || record.editable,
             }),
             filterable({
               type: 'single',

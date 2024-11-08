@@ -3,25 +3,15 @@ import { DuckCmpProps } from 'saga-duck'
 import { Link } from 'react-router-dom'
 import ServiceAliasPageDuck, { GovernanceAliasItem } from './PageDuck'
 import { Column } from '../common/ducks/GridPage'
-import { Bubble, Icon, Tag, Text } from 'tea-component'
+import { Tag, Text } from 'tea-component'
 import Action from '../common/duckComponents/grid/Action'
-import { disableDeleteTip } from '../service/getColumns'
 
 export default ({ duck: { creators } }: DuckCmpProps<ServiceAliasPageDuck>): Column<GovernanceAliasItem>[] => {
   return [
     {
       key: 'alias',
       header: '服务别名',
-      render: x => (
-        <Text>
-          {x.alias}
-          {x.sync_to_global_registry && (
-            <Bubble content={disableDeleteTip}>
-              <Icon type='convertip--blue' />
-            </Bubble>
-          )}
-        </Text>
-      ),
+      render: x => <Text>{x.alias}</Text>,
       required: true,
     },
     {
@@ -64,8 +54,8 @@ export default ({ duck: { creators } }: DuckCmpProps<ServiceAliasPageDuck>): Col
         return (
           <React.Fragment>
             <Action
-              disabled={!x.editable || x.sync_to_global_registry}
-              tip={!x.editable ? '无写权限' : x.sync_to_global_registry ? disableDeleteTip : '编辑'}
+              disabled={!x.editable}
+              tip={!x.editable ? '无写权限' : '编辑'}
               fn={dispatch => dispatch(creators.edit(x))}
             >
               {'编辑'}

@@ -2,7 +2,7 @@ import React from 'react'
 import { DuckCmpProps, memorize } from 'saga-duck'
 import ServiceAliasDuck from './PageDuck'
 import getColumns from './getColumns'
-import { Table, Card, Justify, Button, TagSearchBox, Bubble } from 'tea-component'
+import { Table, Card, Justify, Button, TagSearchBox } from 'tea-component'
 import FieldManagerButton from '../common/duckComponents/FieldManager'
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import { selectable, filterable } from 'tea-component/lib/table/addons'
@@ -10,7 +10,6 @@ import { replaceTags } from '../configuration/utils'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import { useFieldManager } from '../common/components/UseFieldManager'
 import BasicLayout from '../common/components/BaseLayout'
-import { disableDeleteTip } from '../service/getColumns'
 const getHandlers = memorize(({ creators }: ServiceAliasDuck, dispatch) => ({
   reload: () => dispatch(creators.reload()),
   create: () => dispatch(creators.create()),
@@ -99,19 +98,6 @@ export default function ServiceAliasPage(props: DuckCmpProps<ServiceAliasDuck>) 
               all: true,
               value: selection,
               onChange: handlers.setSelection,
-              rowSelectable: (rowKey, { record }) => record.editable && !record.sync_to_global_registry,
-              render: (element, { record }) => {
-                if (!record.editable || record.sync_to_global_registry) {
-                  return (
-                    <Bubble
-                      content={!record.editable ? '无权限' : record.sync_to_global_registry ? disableDeleteTip : '编辑'}
-                    >
-                      {element}
-                    </Bubble>
-                  )
-                }
-                return <>{element}</>
-              },
             }),
             filterable({
               type: 'single',

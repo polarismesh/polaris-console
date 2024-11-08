@@ -1,20 +1,12 @@
 import * as React from 'react'
 import CircuitBreakerDuck from './PageDuck'
-import { Text, Copy, Bubble, Icon } from 'tea-component'
+import { Text, Copy } from 'tea-component'
 import { Column } from '@src/polaris/common/ducks/GridPage'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
 import { checkRuleType, CircuitBreakerRule } from './types'
 import { DuckCmpProps } from 'saga-duck'
 import router from '@src/polaris/common/util/router'
 import { LimitMethodTypeMap } from '../accessLimiting/types'
-import { disableDeleteTip } from '@src/polaris/service/getColumns'
-
-export const checkGlobalRegistry = x => {
-  const hasSyncGlobal = Object.entries(x.metadata).find(
-    ([key, value]) => key === 'MetadataKeySyncFromLocalRegistry' && value === 'internal-sync-from-local-registry',
-  )
-  return !!hasSyncGlobal
-}
 
 export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerRule>[] => {
   const {
@@ -34,14 +26,7 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
               <Copy text={x.id} />
             </Text>
             <br />
-            <Text>
-              {x.name}
-              {checkGlobalRegistry(x) && (
-                <Bubble content={disableDeleteTip}>
-                  <Icon type='convertip--blue' />
-                </Bubble>
-              )}
-            </Text>
+            <Text>{x.name}</Text>
           </>
         )
       },
@@ -108,25 +93,22 @@ export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerR
       key: 'action',
       header: '操作',
       render: x => {
-        const hasGlobalRegistry = checkGlobalRegistry(x)
         return (
           <React.Fragment>
             <Action
-              disabled={!x.editable || hasGlobalRegistry}
+              disabled={!x.editable}
               text={x.enable ? '禁用' : '启用'}
               fn={() => {
                 dispatch(creators.toggle(x))
               }}
-              tip={hasGlobalRegistry ? disableDeleteTip : ''}
             />
             <Action
-              disabled={!x.editable || hasGlobalRegistry}
+              disabled={!x.editable}
               text={'编辑'}
               fn={() => {
                 const type = checkRuleType(x?.level)
                 router.navigate(`/circuitBreaker-create?id=${x.id}&type=${type}`)
               }}
-              tip={hasGlobalRegistry ? disableDeleteTip : ''}
             />
             <Action
               disabled={x.deleteable === false}

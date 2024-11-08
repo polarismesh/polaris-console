@@ -2,10 +2,10 @@ import BasicLayout from '../common/components/BaseLayout'
 import React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import ServicePageDuck, { EmptyCustomFilter } from './PageDuck'
-import { Button, Card, Justify, Table, FormItem, Form, FormText, TagSearchBox, Bubble } from 'tea-component'
+import { Button, Card, Justify, Table, FormItem, Form, FormText, TagSearchBox } from 'tea-component'
 import GridPageGrid from '../common/duckComponents/GridPageGrid'
 import GridPagePagination from '../common/duckComponents/GridPagePagination'
-import getColumns, { disableDeleteTip } from './getColumns'
+import getColumns from './getColumns'
 import { selectable, expandable, filterable } from 'tea-component/lib/table/addons'
 import insertCSS from '../common/helpers/insertCSS'
 import csvColumns from './csvColumns'
@@ -13,7 +13,6 @@ import { enableNearbyString } from './operation/CreateDuck'
 import { isReadOnly, showAllLabels } from './utils'
 import MetadataSelectPanel from '../common/components/MetadataSelectPanel'
 import { replaceTags } from '../configuration/utils'
-import { useServerConfig } from '../common/util/serverConfig'
 
 insertCSS(
   'service',
@@ -89,15 +88,15 @@ function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
       values: [
         {
           name: '是',
-          value: true,
+          value: true
         },
         {
           name: '否',
-          value: false,
+          value: false
         },
       ],
       reusable: false,
-    },
+    }
   ]
 }
 export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
@@ -127,8 +126,6 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
     tags,
     grid: { list },
   } = selector(store)
-  const multiRegConfig = useServerConfig('multiregistries')
-  const multiRegConfigEnabled = multiRegConfig.open
   return (
     <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>
@@ -170,39 +167,13 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
           duck={duck}
           dispatch={dispatch}
           store={store}
-          columns={columns.filter(item => {
-            if (item.key === 'sync_to_global_registry') {
-              return multiRegConfigEnabled
-            }
-            return true
-          })}
+          columns={columns}
           addons={[
             selectable({
               all: true,
               value: selection,
               onChange: handlers.select,
-              rowSelectable: (rowKey, { record }) =>
-                !isReadOnly(record.namespace) && record.editable && !record.sync_to_global_registry,
-              render: (element, { record }) => {
-                if (isReadOnly(record.namespace) || !record.editable || record.sync_to_global_registry) {
-                  return (
-                    <Bubble
-                      content={
-                        isReadOnly(record.namespace)
-                          ? '该命名空间为只读的'
-                          : !record.editable
-                          ? '无权限'
-                          : record.sync_to_global_registry
-                          ? disableDeleteTip
-                          : '编辑'
-                      }
-                    >
-                      {element}
-                    </Bubble>
-                  )
-                }
-                return <>{element}</>
-              },
+              rowSelectable: (rowKey, { record }) => !isReadOnly(record.namespace) && record.editable,
             }),
             expandable({
               // 已经展开的产品

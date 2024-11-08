@@ -1,27 +1,12 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck, { VisibilityMode } from './CreateDuck'
-import {
-  Form,
-  Text,
-  Icon,
-  Bubble,
-  Button,
-  FormItem,
-  Radio,
-  RadioGroup,
-  SelectMultiple,
-  AutoComplete,
-  Input as TeaInput,
-  Modal,
-  Switch,
-} from 'tea-component'
+import { Form, Select, Text, Icon, Bubble, Button, FormItem, Radio, RadioGroup, SelectMultiple } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import ResourcePrincipalAuth from '@src/polaris/auth/user/operation/ResourcePrincipalAuth'
 import { TagTable } from '@src/polaris/common/components/TagTable'
-import { useServerConfig } from '@src/polaris/common/util/serverConfig'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -46,17 +31,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   } = duck
 
   const formApi = form.getAPI(store, dispatch)
-  const {
-    namespace,
-    name,
-    comment,
-    metadata,
-    department,
-    business,
-    export_to,
-    visibilityMode,
-    sync_to_global_registry,
-  } = formApi.getFields([
+  const { namespace, name, comment, metadata, department, business, export_to, visibilityMode } = formApi.getFields([
     'namespace',
     'name',
     'comment',
@@ -66,34 +41,23 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     'department',
     'export_to',
     'visibilityMode',
-    'sync_to_global_registry',
   ])
   const options = selectors.options(store)
   const [showAdvance, setShowAdvance] = React.useState(false)
-  const multiRegConfig = useServerConfig('multiregistries')
-  const multiRegConfigEnabled = multiRegConfig.open
+
   return (
     <>
       <Form>
         <FormField field={namespace} label='命名空间' required>
-          <AutoComplete
+          <Select
+            disabled={options.isModify}
+            value={namespace.getValue()}
             options={options.namespaceList}
-            onChange={value => {
-              namespace.setValue(value)
-            }}
-          >
-            {ref => (
-              <TeaInput
-                ref={ref}
-                value={namespace.getValue()}
-                onChange={value => {
-                  namespace.setValue(value)
-                }}
-                disabled={options.isModify}
-                size={'l'}
-              />
-            )}
-          </AutoComplete>
+            onChange={value => namespace.setValue(value)}
+            type={'simulate'}
+            appearance={'button'}
+            size='l'
+          ></Select>
         </FormField>
 
         <FormField field={name} label={'服务名'} required>
@@ -173,29 +137,6 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                   ></SelectMultiple>
                 )}
               </FormItem>
-              {multiRegConfigEnabled && (
-                <FormItem label={'同步全局实例'}>
-                  <Switch
-                    value={sync_to_global_registry.getValue()}
-                    onChange={async v => {
-                      let confirm = false
-                      if (v) {
-                        confirm = await Modal.confirm({
-                          message: '确认开启同步开关',
-                          description:
-                            '开启后，该服务、服务实例以及与该服务相关的治理规则将同步至全局实例。同步至全局实例后，全局实例中的服务可见性为全局可见。',
-                        })
-                      } else {
-                        confirm = await Modal.confirm({
-                          message: '确认关闭同步开关',
-                          description: '关闭后，该服务、服务实例以及与该服务相关的治理规则将不再同步至全局实例。',
-                        })
-                      }
-                      if (confirm) sync_to_global_registry.setValue(v)
-                    }}
-                  ></Switch>
-                </FormItem>
-              )}
               {options.authOpen && (
                 <FormItem label={'授权'}>
                   <ResourcePrincipalAuth

@@ -74,9 +74,6 @@ export interface GovernanceAlias {
 
   /** 服务别名是否可删除 */
   deleteable?: boolean
-
-  /** 同步全局命名中心 */
-  sync_to_global_registry?: boolean
 }
 
 /** 创建治理中心服务别名 */
