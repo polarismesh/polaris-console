@@ -3,9 +3,10 @@ import { Column } from '../common/ducks/GridPage'
 import { DuckCmpProps } from 'saga-duck'
 import ServicePageDuck, { ServiceItem } from './PageDuck'
 import { Link } from 'react-router-dom'
-import { Text, Icon } from 'tea-component'
+import { Text, Icon, Bubble } from 'tea-component'
 import Action from '../common/duckComponents/grid/Action'
 import { isReadOnly } from './utils'
+export const disableDeleteTip = '从北极星实例同步至全局实例的数据，不支持操作。'
 
 export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<ServiceItem>[] => [
   {
@@ -14,6 +15,11 @@ export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<S
     render: x => (
       <React.Fragment>
         <Link to={`/service-detail?name=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
+        {x.sync_to_global_registry && (
+          <Bubble content={disableDeleteTip}>
+            <Icon type='convertip--blue' />
+          </Bubble>
+        )}
       </React.Fragment>
     ),
   },
@@ -60,8 +66,16 @@ export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<S
         <React.Fragment>
           <Action
             fn={dispatch => dispatch(creators.edit(x))}
-            disabled={disabled || !x.editable}
-            tip={disabled ? '该命名空间为只读的' : !x.editable ? '无权限' : '编辑'}
+            disabled={disabled || !x.editable || x.sync_to_global_registry}
+            tip={
+              disabled
+                ? '该命名空间为只读的'
+                : !x.editable
+                ? '无权限'
+                : x.sync_to_global_registry
+                ? disableDeleteTip
+                : '编辑'
+            }
           >
             <Icon type={'pencil'}></Icon>
           </Action>

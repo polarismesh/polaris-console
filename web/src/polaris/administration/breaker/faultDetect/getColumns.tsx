@@ -1,11 +1,13 @@
 import * as React from 'react'
 import FaultDetectDuck from './PageDuck'
-import { Text, Copy } from 'tea-component'
+import { Text, Copy, Bubble, Icon } from 'tea-component'
 import { Column } from '@src/polaris/common/ducks/GridPage'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
 import { DuckCmpProps } from 'saga-duck'
 import router from '@src/polaris/common/util/router'
 import { FaultDetectRule } from './types'
+import { disableDeleteTip } from '@src/polaris/service/getColumns'
+import { checkGlobalRegistry } from '../getColumns'
 
 export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[] => {
   const {
@@ -25,7 +27,14 @@ export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[]
               <Copy text={x.id} />
             </Text>
             <br />
-            <Text>{x.name}</Text>
+            <Text>
+              {x.name}
+              {checkGlobalRegistry(x) && (
+                <Bubble content={disableDeleteTip}>
+                  <Icon type='convertip--blue' />
+                </Bubble>
+              )}
+            </Text>
           </>
         )
       },
@@ -79,14 +88,16 @@ export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[]
       key: 'action',
       header: '操作',
       render: x => {
+        const hasGlobalRegistry = checkGlobalRegistry(x)
         return (
           <React.Fragment>
             <Action
-              disabled={!x.editable}
+              disabled={!x.editable || hasGlobalRegistry}
               text={'编辑'}
               fn={() => {
                 router.navigate(`/faultDetect-create?id=${x.id}`)
               }}
+              tip={hasGlobalRegistry ? disableDeleteTip : '编辑'}
             />
             <Action
               disabled={x.deleteable === false}

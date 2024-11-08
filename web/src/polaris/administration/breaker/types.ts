@@ -30,6 +30,7 @@ export interface CircuitBreakerRule {
   etime?: string
   editable: boolean
   deleteable: boolean
+  metadata?: Record<string, string>
 }
 export interface ErrorCondition {
   inputType: string

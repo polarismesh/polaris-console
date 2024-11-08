@@ -16,6 +16,7 @@ export interface Service {
   deleteable: boolean
   healthy_instance_count?: string
   total_instance_count?: string
+  sync_to_global_registry?: boolean
   export_to?: string[]
 }
 

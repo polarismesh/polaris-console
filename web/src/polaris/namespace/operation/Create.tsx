@@ -1,12 +1,13 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
-import { Form, Button, Icon, FormItem, Radio, RadioGroup, SelectMultiple, Switch } from 'tea-component'
+import { Form, Button, Icon, FormItem, Radio, RadioGroup, Switch, TagSelect, Modal } from 'tea-component'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import ResourcePrincipalAuth from '@src/polaris/auth/user/operation/ResourcePrincipalAuth'
 import { VisibilityMode } from '@src/polaris/service/operation/CreateDuck'
+import { useServerConfig } from '@src/polaris/common/util/serverConfig'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -47,6 +48,8 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   const options = selectors.options(store)
   const [showAdvance, setShowAdvance] = React.useState(false)
 
+  const multiRegConfig = useServerConfig('multiregistries')
+  const multiRegConfigEnabled = multiRegConfig.open
   return (
     <>
       <Form>
@@ -72,15 +75,6 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
 
           {showAdvance && (
             <>
-              <FormItem
-                label={'同步全局注册中心'}
-                tips={'开启后该命名空间下全部服务将均注册至全局注册中心相同命名空间下'}
-              >
-                <Switch
-                  value={sync_to_global_registry.getValue()}
-                  onChange={v => sync_to_global_registry.setValue(v)}
-                ></Switch>
-              </FormItem>
               <FormItem label={'服务可见性'} tips={'当前命名空间下的服务被允许可见的命名空间列表'} required>
                 <section style={{ marginBottom: '15px' }}>
                   <RadioGroup
@@ -96,20 +90,47 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                   </RadioGroup>
                 </section>
                 {visibilityMode.getValue() === '' && (
-                  <SelectMultiple
-                    searchable
-                    allOption={{ text: '当前全部命名空间', value: 'all' }}
+                  <TagSelect
                     value={service_export_to.getValue() || []}
-                    options={options.namespaceList || []}
+                    options={[{ text: '当前全部命名空间', value: '__all__' }, ...options.namespaceList] || []}
                     onChange={value => {
-                      service_export_to.setValue(value)
-                      visibilityMode.setValue('')
+                      if (value.includes('__all__')) {
+                        service_export_to.setValue([
+                          ...new Set([...service_export_to.getValue(), ...options.namespaceList.map(x => x.value)]),
+                        ])
+                        visibilityMode.setValue('')
+                      } else {
+                        service_export_to.setValue(value)
+                        visibilityMode.setValue('')
+                      }
                     }}
-                    appearance={'button'}
-                    size='l'
-                  ></SelectMultiple>
+                  />
                 )}
               </FormItem>
+              {multiRegConfigEnabled && (
+                <FormItem label={'同步全局实例'}>
+                  <Switch
+                    value={sync_to_global_registry.getValue()}
+                    onChange={async v => {
+                      let confirm = false
+                      if (v) {
+                        confirm = await Modal.confirm({
+                          message: '确认开启同步开关',
+                          description:
+                            '开启后，该命名空间下，全部服务的同步开关将自动开启。全部服务、服务实例、治理规则将同步至全局实例。同步至全局实例后，全局实例中的服务可见性为全局可见。',
+                        })
+                      } else {
+                        confirm = await Modal.confirm({
+                          message: '确认关闭同步开关',
+                          description:
+                            '关闭后，该命名空间下，全部服务的同步开关将自动关闭。全部服务、服务实例、治理规则将不再同步至全局实例。',
+                        })
+                      }
+                      if (confirm) sync_to_global_registry.setValue(v)
+                    }}
+                  ></Switch>
+                </FormItem>
+              )}
               {options.authOpen && (
                 <FormItem label={'授权'}>
                   <ResourcePrincipalAuth
