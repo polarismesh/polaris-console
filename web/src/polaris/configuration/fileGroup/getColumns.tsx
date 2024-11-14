@@ -54,8 +54,8 @@ export default ({ duck: { creators } }: DuckCmpProps<ConfigFileGroupDuck>): Colu
         <React.Fragment>
           <Action
             fn={dispatch => dispatch(creators.edit(x))}
-            disabled={!x.editable}
-            tip={!x.editable ? '无权限' : '编辑'}
+            disabled={x.editable === false}
+            tip={x.editable === false ? '无权限' : '编辑'}
           >
             {'编辑'}
           </Action>

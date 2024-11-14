@@ -84,7 +84,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
         {
           id: 'switchStatus',
           text: x.disable ? '禁用' : '启用',
-          disabled: !x.editable,
+          disabled: x.editable === false,
           fn: dispatch => {
             const swtichStatusAction = x.disable ? SwitchStatusAction.disable : SwitchStatusAction.start
             dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
@@ -93,7 +93,7 @@ export default ({ creators }: AccessLimitingDuck): Column<RateLimit>[] => [
         {
           id: 'modify',
           text: '编辑',
-          disabled: !x.editable,
+          disabled: x.editable === false,
           fn: dispatch => {
             dispatch(creators.modify(x))
           },

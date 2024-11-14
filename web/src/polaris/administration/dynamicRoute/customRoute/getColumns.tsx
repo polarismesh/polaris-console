@@ -106,7 +106,7 @@ export default (
               const swtichStatusAction = x.enable ? SwitchStatusAction.disable : SwitchStatusAction.start
               dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
             },
-            disabled: !x.editable,
+            disabled: x.editable === false,
           },
           {
             id: 'modify',
@@ -114,7 +114,7 @@ export default (
             fn: dispatch => {
               dispatch(creators.modify(x))
             },
-            disabled: !x.editable,
+            disabled: x.editable === false,
           },
           {
             id: 'remove',

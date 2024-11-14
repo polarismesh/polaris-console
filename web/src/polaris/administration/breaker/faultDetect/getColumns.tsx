@@ -82,7 +82,7 @@ export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[]
         return (
           <React.Fragment>
             <Action
-              disabled={!x.editable}
+              disabled={x.editable === false}
               text={'编辑'}
               fn={() => {
                 router.navigate(`/faultDetect-create?id=${x.id}`)
