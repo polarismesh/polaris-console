@@ -17,7 +17,7 @@ export default abstract class CreateDuck extends Page {
     return `/#/login`
   }
   get preEffects() {
-    return [call([this, this.ready], this), call([this, this.checkLicense], this)]
+    return [call([this, this.ready], this), call([this, this.checkAdminUserExist]), call([this, this.checkUserLogin], this)]
   }
   get quickTypes() {
     enum Types {
@@ -48,7 +48,7 @@ export default abstract class CreateDuck extends Page {
     yield* super.saga()
     const duck = this
     const { types, ducks } = duck
-    yield takeLatest(types.SUBMIT, function*() {
+    yield takeLatest(types.SUBMIT, function* () {
       try {
         yield* ducks.form.submit()
       } catch (e) {

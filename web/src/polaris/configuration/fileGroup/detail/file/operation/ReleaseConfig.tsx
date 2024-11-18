@@ -4,16 +4,18 @@ import Duck from './ReleaseConfigDuck'
 import FileDiff from '../FileDiff'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
-import { Form, FormItem, FormText, Button, Stepper } from 'tea-component'
+import { Form, FormItem, FormText, Button, Stepper, notification, Bubble } from 'tea-component'
 import Input from '@src/polaris/common/duckComponents/form/Input'
+import { checkReleaseVersionExist } from '../../../model'
 
-export default purify(function(props: DuckCmpProps<Duck>) {
+export default purify(function (props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
   const { ducks, selector } = duck
   const formApi = ducks.form.getAPI(store, dispatch)
   const { releaseVersion, comment } = formApi.getFields(['name', 'releaseVersion', 'comment'])
   const { data } = selector(store)
   const [step, setStep] = React.useState('0')
+  const [existRelease, setExistRelease] = React.useState(false)
   if (!data) return <noscript />
   const { lastRelease, content, format } = data
   const stepInfo = {
@@ -23,7 +25,27 @@ export default purify(function(props: DuckCmpProps<Duck>) {
           <FormText>{data.group}</FormText>
         </FormItem>
         <FormField field={releaseVersion} label={'版本号'}>
-          <Input placeholder={'请输入版本号'} field={releaseVersion} />
+          <Bubble
+            trigger="focus"
+            content={existRelease ? "该版本已存在，请重新填写版本号" : content}
+            placement="right"
+            error={existRelease}
+          >
+            <Input placeholder={'请输入版本号'} field={releaseVersion} onChange={async (val, ctx) => {
+              if (!val) {
+                setExistRelease(false)
+                return
+              }
+              const exist = await checkReleaseVersionExist({
+                namespace: data.namespace,
+                group: data.group,
+                release_name: val,
+                name: data.name,
+              })
+              setExistRelease(exist)
+            }} />
+          </Bubble>
+
         </FormField>
         <FormField field={comment} label={'备注'}>
           <Input placeholder={'请输入版本备注'} field={comment} maxLength={200} />
@@ -53,6 +75,7 @@ export default purify(function(props: DuckCmpProps<Duck>) {
           <Button
             key='step-button'
             type={isFirstStep ? 'primary' : 'weak'}
+            disabled={isFirstStep && existRelease}
             onClick={() => setStep(isFirstStep ? '1' : '0')}
           >
             {isFirstStep ? '下一步' : '上一步'}

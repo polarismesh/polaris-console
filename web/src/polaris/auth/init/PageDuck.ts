@@ -103,12 +103,8 @@ export class CreateFormDuck extends Form {
     if (firstInvalid) throw firstInvalid
     try {
       const values = yield select(selectors.values)
-      const { ret } = yield initAdminUser({ name: values.userName, password: values.password })
-      if (ret === "ok") {
-        window.location.hash = "/login"
-      } else {
-        throw new Error()
-      }
+      yield initAdminUser({ name: values.userName, password: values.password })
+      window.location.hash = "/login"
     } catch (e) {
       yield put(creators.markInvalid('password', '网络异常'))
       throw e

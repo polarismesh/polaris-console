@@ -21,6 +21,7 @@ import (
 	"fmt"
 
 	"github.com/polarismesh/polaris-console/bootstrap"
+	"github.com/polarismesh/polaris-console/handlers"
 	"github.com/polarismesh/polaris-console/router"
 )
 
@@ -32,6 +33,9 @@ func main() {
 		fmt.Printf("[ERROR] loadConfig fail\n")
 		return
 	}
+
+	handlers.NewAdminGetter(config)
+
 	// 初始化相关配置
 	bootstrap.Initialize(config)
 	// 设置模式

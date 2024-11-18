@@ -604,13 +604,18 @@ export interface InitAdminUserParams {
 }
 
 export async function initAdminUser(params: InitAdminUserParams) {
-  const result = await apiRequest<string>({ action: 'maintain/v1/mainuser/create', data: params })
+  const result = await apiRequest<any>({ action: 'maintain/v1/mainuser/create', data: params })
   return result
 }
 
+/* 查询治理中心用户组详细 */
+export type DescribeAdminUserResult = {
+  /** 用户组详细 */
+  user: User
+}
 
 export async function checkExistAdminUser() {
-  const result = await getApiRequest<User>({ action: 'maintain/v1/mainuser/exist' })
+  const result = await getApiRequest<DescribeAdminUserResult>({ action: 'maintain/v1/mainuser/exist' })
   return result
 }
 

@@ -22,7 +22,7 @@ export default purify(function (props: DuckCmpProps<Duck>) {
   const { ducks, creators, selector } = duck
   const { userName, password } = ducks.form.getAPI(store, dispatch).getFields(['userName', 'password'])
   const { preError } = selector(store)
-  const licenseToolTip = preError && 'License已超过最大过期时间'
+  const licenseToolTip = preError && ''
 
   return (
     <div

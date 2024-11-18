@@ -347,12 +347,12 @@ get preSagas(){
    * 判断是否初始化了主账户
    */
   *checkAdminUserExist() {
-    const { data } = yield checkExistAdminUser()
-    if (data !== undefined) {
-      alert("主账户已初始化")
+    const ret = yield checkExistAdminUser()
+    if (ret?.user) {
+      console.log("主账户已初始化")
       return true
     } else {
-      window.alert("主账户没有初始化")
+      console.log("主账户没有初始化")
       router.navigate('/init')
     }
   }
