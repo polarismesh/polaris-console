@@ -22,7 +22,7 @@ insertCSS(
 )
 export const NamespaceTagKey = 'namespace'
 export const GroupNameTagKey = 'group'
-export const FileNameTagKey = 'fileName'
+export const FileNameTagKey = 'file_name'
 export const DefaultGroupTagAttribute = {
   type: 'input',
   key: GroupNameTagKey,
