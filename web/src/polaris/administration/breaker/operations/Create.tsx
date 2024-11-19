@@ -424,9 +424,9 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CreateDuck>) 
                                   inputType.getValue() !== ErrorConditionType.DELAY &&
                                   checkNeedTagInput(type.getValue())
                                 }
-                                inputProps={{}}
+                                inputProps={{ size: 'm' }}
                                 tagSelectProps={{
-                                  style: { maxWidth: '600px', width: '100%' },
+                                  style: { width: '600px', maxWidth: '600px' },
                                 }}
                                 field={value}
                               ></TagSelectOrInput>

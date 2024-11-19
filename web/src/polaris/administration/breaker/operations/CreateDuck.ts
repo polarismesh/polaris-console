@@ -135,6 +135,10 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
       if (values.level !== BreakLevelType.Method) {
         delete values.ruleMatcher.destination.method
       }
+
+      // values暂时没有定义block_configs结构，暂时先类型断言这么写
+      delete (values as any)?.block_configs
+
       if (id) {
         delete values['@type']
         delete values.ctime
@@ -350,7 +354,7 @@ export class BreakerRuleCreateDuck extends Form {
         },
       },
       editable: true,
-      deleteable: true
+      deleteable: true,
     }
   }
 

@@ -8,7 +8,7 @@ insertCSS(
   `request-notification`,
   `
   .tea-notification-wrap{
-    z-index: 999;
+    z-index: 9999;
   }
 `,
 )
@@ -52,7 +52,6 @@ export async function apiRequest<T>(options: APIRequestOption) {
             return
           }
           notification.error({
-            style: { zIndex: 9999 },
             unique: true,
             title: '请求错误',
             description: error.response?.data?.info,
@@ -133,7 +132,6 @@ export async function putApiRequest<T>(options: APIRequestOption) {
             return
           }
           notification.error({
-            style: { zIndex: 9999 },
             unique: true,
             title: '请求错误',
             description: error.response?.data?.info,
