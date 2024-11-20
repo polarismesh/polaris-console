@@ -1,16 +1,30 @@
 import * as React from 'react'
 import { DuckCmpProps } from 'saga-duck'
 import NamespacePageDuck, { NamespaceItem } from './PageDuck'
-import { Bubble, Text } from 'tea-component'
+import { Bubble, Icon, Text } from 'tea-component'
 import { Column } from '../common/ducks/GridPage'
 import Action from '../common/duckComponents/grid/Action'
 import { CheckVisibilityMode, VisibilityModeMap } from '../service/operation/CreateDuck'
-
+import { disableDeleteTip } from '../service/getColumns'
 export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column<NamespaceItem>[] => [
   {
     key: 'name',
     header: '名称',
-    render: x => <Text>{x.name}</Text>,
+    render: x => (
+      <Text>
+        {x.name}
+        {x.sync_to_global_registry && (
+          <Bubble content={disableDeleteTip}>
+            <Icon type='convertip--blue' />
+          </Bubble>
+        )}
+      </Text>
+    ),
+  },
+  {
+    key: 'sync_to_global_registry',
+    header: '同步全局注册中心',
+    render: x => <Text>{x.sync_to_global_registry ? '开启' : '关闭' || '-'}</Text>,
   },
   {
     key: 'service_export_to',
@@ -42,11 +56,7 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
       )
     },
   },
-  {
-    key: 'sync_to_global_registry',
-    header: '同步全局注册中心',
-    render: x => <Text>{x.sync_to_global_registry ? '开启' : '关闭' || '-'}</Text>,
-  },
+
   {
     key: 'commnet',
     header: '描述',
@@ -82,7 +92,11 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
     render: x => {
       return (
         <React.Fragment>
-          <Action fn={dispatch => dispatch(creators.edit(x))} disabled={!x.editable} tip={'编辑'}>
+          <Action
+            fn={dispatch => dispatch(creators.edit(x))}
+            disabled={!x.editable || x.sync_to_global_registry}
+            tip={x.sync_to_global_registry ? disableDeleteTip : '编辑'}
+          >
             {'编辑'}
           </Action>
           <Action fn={dispatch => dispatch(creators.remove(x))} disabled={x.deleteable === false} tip={'删除'}>

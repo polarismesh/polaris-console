@@ -1,12 +1,14 @@
 import * as React from 'react'
 import AccessLimitingDuck from './PageDuck'
-import { Text, Copy } from 'tea-component'
+import { Text, Copy, Bubble, Icon } from 'tea-component'
 import { Column } from '@src/polaris/common/ducks/GridPage'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
 import { Dispatch } from 'redux'
 import { CustomRoute } from './model'
 import { SwitchStatusAction } from '../../accessLimiting/types'
 import { Link } from 'react-router-dom'
+import { disableDeleteTip } from '@src/polaris/service/getColumns'
+import { checkGlobalRegistry } from '../../breaker/getColumns'
 
 export default (
   { creators, selector }: AccessLimitingDuck,
@@ -27,7 +29,14 @@ export default (
             <Copy text={x.id} />
           </Text>
           <br />
-          <Text>{x.name}</Text>
+          <Text>
+            {x.name}
+            {checkGlobalRegistry(x) && (
+              <Bubble content={disableDeleteTip}>
+                <Icon type='convertip--blue' />
+              </Bubble>
+            )}
+          </Text>
         </>
       ),
     },
@@ -93,11 +102,13 @@ export default (
       key: 'action',
       header: '操作',
       render: x => {
+        const hasGlobalRegistry = checkGlobalRegistry(x)
         const actions: {
           id: string
           text: string
           fn: (dispatch?: Dispatch<any>, e?) => void
           disabled: boolean
+          tip?: string
         }[] = [
           {
             id: 'switchStatus',
@@ -106,7 +117,8 @@ export default (
               const swtichStatusAction = x.enable ? SwitchStatusAction.disable : SwitchStatusAction.start
               dispatch(creators.switchStatus(x.id, x.name, swtichStatusAction))
             },
-            disabled: x.editable === false,
+            disabled: x.editable === false || hasGlobalRegistry,
+            tip: hasGlobalRegistry ? disableDeleteTip : '',
           },
           {
             id: 'modify',
@@ -114,7 +126,8 @@ export default (
             fn: dispatch => {
               dispatch(creators.modify(x))
             },
-            disabled: x.editable === false,
+            disabled: x.editable === false || hasGlobalRegistry,
+            tip: hasGlobalRegistry ? disableDeleteTip : '',
           },
           {
             id: 'remove',
@@ -128,7 +141,7 @@ export default (
         return (
           <React.Fragment>
             {actions.map(action => (
-              <Action disabled={action.disabled} key={action.id} text={action.text} fn={action.fn} />
+              <Action disabled={action.disabled} key={action.id} text={action.text} fn={action.fn} tip={action.tip} />
             ))}
           </React.Fragment>
         )
