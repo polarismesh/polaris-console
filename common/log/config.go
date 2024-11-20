@@ -23,29 +23,29 @@
 // easy to build programs that use a consistent interface for logging. Here's an example
 // of a simple Cobra-based program using this log package:
 //
-//		func main() {
-//			// get the default logging options
-//			options := log.DefaultOptions()
+//			func main() {
+//				// get the default logging options
+//				options := log.DefaultOptions()
 //
-//			rootCmd := &cobra.Command{
-//				Run: func(cmd *cobra.Command, args []string) {
+//				rootCmd := &cobra.Command{
+//					Run: func(cmd *cobra.Command, args []string) {
 //
-//					// configure the logging system
-//					if err := log.Configure(options); err != nil {
-//                      // print an error and quit
-//                  }
+//						// configure the logging system
+//						if err := log.Configure(options); err != nil {
+//	                     // print an error and quit
+//	                 }
 //
-//					// output some logs
-//					log.Info("Hello")
-//					log.Sync()
-//				},
+//						// output some logs
+//						log.Info("Hello")
+//						log.Sync()
+//					},
+//				}
+//
+//				// add logging-specific flags to the cobra command
+//				options.AttachCobraFlags(rootCmd)
+//				rootCmd.SetArgs(os.Args[1:])
+//				rootCmd.Execute()
 //			}
-//
-//			// add logging-specific flags to the cobra command
-//			options.AttachCobraFlags(rootCmd)
-//			rootCmd.SetArgs(os.Args[1:])
-//			rootCmd.Execute()
-//		}
 //
 // Once configured, this package intercepts the output of the standard golang "log" package as well as anything
 // sent to the global zap logger (zap.L()).
@@ -61,8 +61,6 @@ import (
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"go.uber.org/zap/zapgrpc"
-	"google.golang.org/grpc/grpclog"
 )
 
 // none is used to disable logging output as well as to disable stack tracing.
@@ -323,12 +321,6 @@ func Configure(options *Options) error {
 
 	// capture standard golang "log" package output and force it through our logger
 	_ = zap.RedirectStdLog(captureLogger)
-
-	// capture gRPC logging
-	if options.LogGrpc {
-		grpclog.SetLogger(zapgrpc.NewLogger(captureLogger.WithOptions(zap.AddCallerSkip(2))))
-	}
-
 	return nil
 }
 

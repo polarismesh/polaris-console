@@ -182,17 +182,17 @@ export default class ServicePageDuck extends GridPageDuck {
     } else {
       yield* this.loadNamespaceList()
     }
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
       const { list } = action.payload
       const { selection } = selector(yield select())
       const validSelection = selection.filter(id => !!list.find(item => item.id === id))
       yield put(creators.setSelection(validSelection))
     })
-    yield takeLatest(types.CREATE, function*() {
+    yield takeLatest(types.CREATE, function* () {
       const { authOpen } = selector(yield select())
       const res = yield* resolvePromise(
         new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute({}, { isModify: false, authOpen }))
             } finally {
@@ -205,7 +205,7 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.CHANGE_TAGS, function*(action) {
+    yield takeLatest(types.CHANGE_TAGS, function* (action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
       const validTags = tags.map(item => {
@@ -226,11 +226,11 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
-    yield takeLatest(types.EDIT, function*(action) {
+    yield takeLatest(types.EDIT, function* (action) {
       const data = action.payload
       const res = yield* resolvePromise(
         new Promise(resolve => {
-          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
+          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
             try {
               resolve(yield* duck.execute(data, { isModify: true, authOpen }))
             } finally {
@@ -243,7 +243,7 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.REMOVE, function*(action) {
+    yield takeLatest(types.REMOVE, function* (action) {
       const data = action.payload
       const params = data
         .map(item => {

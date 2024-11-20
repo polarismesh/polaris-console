@@ -227,6 +227,42 @@ export async function describeLastReleaseConfigFile(params: DescribeLastReleaseC
   })
   return res
 }
+
+export interface DescribeConfigFileReleaseParams {
+  /** 命名空间名称 */
+  namespace: string
+
+  /** 配置分组名称 */
+  group: string
+
+  /** 配置文件版本 */
+  release_name: string
+
+  /** 配置文件名称 */
+  name: string
+}
+
+
+/**
+ * **DescribeConfigFileRelease出参**
+ *
+ * 获取配置文件发布
+ */
+export interface DescribeConfigFileReleaseResult {
+  /** 配置文件发布详情 */
+  configFileRelease: ConfigFileRelease
+}
+export async function checkReleaseVersionExist(params: DescribeConfigFileReleaseParams) {
+  const res = await getApiRequest<DescribeConfigFileReleaseResult>({
+    action: '/config/v1/configfiles/release',
+    data: params,
+  })
+  if (res.configFileRelease) {
+    return true
+  }
+  return false
+}
+
 export interface StopBetaReleaseConfigFileParams {
   file_name: string
   namespace: string

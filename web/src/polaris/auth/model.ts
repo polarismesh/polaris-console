@@ -597,6 +597,29 @@ export async function loginUser(params: LoginUserParams) {
   return result
 }
 
+export interface InitAdminUserParams {
+  /** 用户组ID */
+  name: string
+  password: string
+}
+
+export async function initAdminUser(params: InitAdminUserParams) {
+  const result = await apiRequest<any>({ action: 'maintain/v1/mainuser/create', data: params })
+  return result
+}
+
+/* 查询治理中心用户组详细 */
+export type DescribeAdminUserResult = {
+  /** 用户组详细 */
+  user: User
+}
+
+export async function checkExistAdminUser() {
+  const result = await getApiRequest<DescribeAdminUserResult>({ action: 'maintain/v1/mainuser/exist' })
+  return result
+}
+
+
 /** **CheckAuth**
 
 检查策略是否已开启  */

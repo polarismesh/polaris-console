@@ -9,6 +9,7 @@ import { PolarisTokenKey } from '../util/common'
 import router from '../util/router'
 import insertCSS from '../helpers/insertCSS'
 import React from 'react'
+import { checkExistAdminUser, loginUser } from '@src/polaris/auth/model'
 
 insertCSS(
   `license-notification`,
@@ -293,7 +294,7 @@ get preSagas(){
    * ```
    */
   get preEffects(): Effect[] {
-    return [call([this, this.ready], this), call([this, this.checkLicense], this), call([this, this.checkUserLogin])]
+    return [call([this, this.ready], this), call([this, this.checkLicense], this), call([this, this.checkAdminUserExist]), call([this, this.checkUserLogin])]
   }
   /** preEffects类型定义 */
   get PreEffects(): Effect[] {
@@ -341,6 +342,21 @@ get preSagas(){
   ready(duck): any {
     return true
   }
+
+  /**
+   * 判断是否初始化了主账户
+   */
+  *checkAdminUserExist() {
+    const ret = yield checkExistAdminUser()
+    if (ret?.user) {
+      console.log("主账户已初始化")
+      return true
+    } else {
+      console.log("主账户没有初始化")
+      router.navigate('/init')
+    }
+  }
+
   *checkUserLogin() {
     if (!window.localStorage.getItem(PolarisTokenKey)) {
       router.navigate('/login')
@@ -348,6 +364,7 @@ get preSagas(){
       return true
     }
   }
+
   *checkLicense() {
     return true
   }

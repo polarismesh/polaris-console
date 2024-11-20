@@ -3,21 +3,14 @@ import { takeLatest } from 'redux-saga-catch'
 import { createToPayload } from 'saga-duck'
 import Page from '@src/polaris/common/ducks/Page'
 import Form from '@src/polaris/common/ducks/Form'
-import { loginUser } from '../model'
-import {
-  PolarisTokenKey,
-  LoginRoleKey,
-  LoginUserIdKey,
-  LoginUserOwnerIdKey,
-  LoginUserNameKey,
-} from '@src/polaris/common/util/common'
+import { initAdminUser } from '../model'
 
 export default abstract class CreateDuck extends Page {
   get baseUrl() {
-    return `/#/login`
+    return `/#/init`
   }
   get preEffects() {
-    return [call([this, this.ready], this), call([this, this.checkAdminUserExist]), call([this, this.checkUserLogin], this)]
+    return [call([this, this.ready], this), call([this, this.checkLicense], this)]
   }
   get quickTypes() {
     enum Types {
@@ -110,19 +103,10 @@ export class CreateFormDuck extends Form {
     if (firstInvalid) throw firstInvalid
     try {
       const values = yield select(selectors.values)
-      const { loginResponse } = yield loginUser({ name: values.userName, password: values.password, owner: 'polaris' })
-      if (loginResponse.token) {
-        window.localStorage.setItem(PolarisTokenKey, loginResponse.token)
-        window.localStorage.setItem(LoginUserNameKey, loginResponse.name)
-        window.localStorage.setItem(LoginRoleKey, loginResponse.role)
-        window.localStorage.setItem(LoginUserIdKey, loginResponse.user_id)
-        window.localStorage.setItem(LoginUserOwnerIdKey, loginResponse.owner_id)
-        window.location.hash = "/service"
-      } else {
-        throw new Error()
-      }
+      yield initAdminUser({ name: values.userName, password: values.password })
+      window.location.hash = "/login"
     } catch (e) {
-      yield put(creators.markInvalid('password', '网络异常或用户名，密码错误'))
+      yield put(creators.markInvalid('password', '网络异常'))
       throw e
     }
   }

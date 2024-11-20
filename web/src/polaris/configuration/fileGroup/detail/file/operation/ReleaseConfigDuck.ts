@@ -37,8 +37,8 @@ export default class ReleaseConfigDuck extends Base {
   }
   static show(data: any) {
     return new Promise(resolve => {
-      showDialog(Create, ReleaseConfigDuck, function*(duck) {
-        yield duck.show(data, function*() {
+      showDialog(Create, ReleaseConfigDuck, function* (duck) {
+        yield duck.show(data, function* () {
           resolve(yield duck.ducks.form.submit())
         })
       })
