@@ -204,6 +204,11 @@ export async function releaseConfigFile(params: ReleaseConfigFileParams) {
   const res = await apiRequest<ReleaseConfigFileResult>({
     action: 'config/v1/configfiles/release',
     data: params,
+    opts: {
+      headers: {
+        'X-Polaris-Config-Release-Strict': 'true',
+      },
+    },
   })
   return res
 }
