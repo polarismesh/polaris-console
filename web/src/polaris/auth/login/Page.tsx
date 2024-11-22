@@ -6,8 +6,6 @@ import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import { Row, Col, Card, H2, Text, Form, Button, Input as TeaInput, Copy, Bubble } from 'tea-component'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
-import { checkExistAdminUser } from '../model'
-import router from '@src/polaris/common/util/router'
 insertCSS(
   'login',
   `.login-background{

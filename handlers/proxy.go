@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
@@ -31,6 +32,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"github.com/polarismesh/polaris-console/bootstrap"
 	"github.com/polarismesh/polaris-console/common/log"
@@ -58,13 +60,12 @@ func (a *AdminUserGetter) GetAdminInfo() (*security.User, error) {
 	}
 
 	resp, err := http.Get(fmt.Sprintf("http://%s/maintain/v1/mainuser/exist", a.conf.PolarisServer.Address))
-	if err != nil {
+	if err != nil || resp.StatusCode != http.StatusOK {
+		// 降级回旧的数据信息
 		log.Error("[Proxy][Login] get admin info fail", zap.Error(err))
-		return nil, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New("get admin info fail")
+		return &security.User{
+			Name: wrapperspb.String(a.conf.WebServer.MainUser),
+		}, nil
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -119,7 +120,9 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 
 			loginBody := &LoginRequest{}
 			_ = json.Unmarshal(body, loginBody)
-			loginBody.Owner = admin.GetName().GetValue()
+			if len(admin.GetName().GetValue()) != 0 {
+				loginBody.Owner = admin.GetName().GetValue()
+			}
 			body, err = json.Marshal(loginBody)
 			if err != nil {
 				log.Error("[Proxy][Login] modify login request fail", zap.Error(err))
@@ -152,11 +155,11 @@ func ReverseProxyForLogin(polarisServer *bootstrap.PolarisServer, conf *bootstra
 						return err
 					}
 					resp.Header["Content-Length"] = []string{fmt.Sprint(len(body))}
-					resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+					resp.Body = io.NopCloser(bytes.NewBuffer(body))
 					return nil
 				}
 			}
-			resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+			resp.Body = io.NopCloser(bytes.NewBuffer(body))
 			return nil
 		}
 		proxy := &httputil.ReverseProxy{Director: director, ModifyResponse: modifyResp}
