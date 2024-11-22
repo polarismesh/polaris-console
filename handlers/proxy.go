@@ -31,12 +31,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang/protobuf/jsonpb"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"github.com/polarismesh/polaris-console/bootstrap"
 	"github.com/polarismesh/polaris-console/common/log"
 	"github.com/polarismesh/specification/source/go/api/v1/security"
+	"github.com/polarismesh/specification/source/go/api/v1/service_manage"
 )
 
 func NewAdminGetter(conf *bootstrap.Config) {
@@ -61,25 +63,25 @@ func (a *AdminUserGetter) GetAdminInfo() (*security.User, error) {
 
 	resp, err := http.Get(fmt.Sprintf("http://%s/maintain/v1/mainuser/exist", a.conf.PolarisServer.Address))
 	if err != nil || resp.StatusCode != http.StatusOK {
-		// 降级回旧的数据信息
-		log.Error("[Proxy][Login] get admin info fail", zap.Error(err))
-		return &security.User{
+		user := &security.User{
 			Name: wrapperspb.String(a.conf.WebServer.MainUser),
-		}, nil
+		}
+		// 降级回旧的数据信息
+		if resp.StatusCode == http.StatusNotFound {
+			a.user = user
+		} else {
+			log.Error("[Proxy][Login] get admin info fail", zap.Error(err))
+		}
+		return user, nil
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
+	rsp := &service_manage.Response{}
+	marshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = marshaler.Unmarshal(resp.Body, rsp); err != nil {
 		log.Error("[Proxy][Login] get admin info fail", zap.Error(err))
 		return nil, err
 	}
-
-	user := &security.User{}
-	if err = json.Unmarshal(body, user); err != nil {
-		log.Error("[Proxy][Login] get admin info fail", zap.Error(err))
-		return nil, err
-	}
-	a.user = user
+	a.user = rsp.User
 	return a.user, nil
 }
 
