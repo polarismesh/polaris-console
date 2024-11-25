@@ -8,13 +8,7 @@ import { DuckCmpProps } from 'saga-duck'
 import router from '@src/polaris/common/util/router'
 import { LimitMethodTypeMap } from '../accessLimiting/types'
 import { disableDeleteTip } from '@src/polaris/service/getColumns'
-
-export const checkGlobalRegistry = x => {
-  const hasSyncGlobal = Object.entries(x.metadata).find(
-    ([key, value]) => key === 'MetadataKeySyncFromLocalRegistry' && value === 'internal-sync-from-local-registry',
-  )
-  return !!hasSyncGlobal
-}
+import { checkGlobalRegistry } from '@src/polaris/service/utils'
 
 export default (props: DuckCmpProps<CircuitBreakerDuck>): Column<CircuitBreakerRule>[] => {
   const {

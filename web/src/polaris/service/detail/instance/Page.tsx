@@ -24,10 +24,9 @@ import { selectable, expandable, filterable } from 'tea-component/lib/table/addo
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import csvColumns from './csvColumns'
 import { HEALTH_STATUS, HEALTH_STATUS_MAP, ISOLATE_STATUS_MAP, ISOLATE_STATUS, HEALTH_CHECK_METHOD_MAP } from './types'
-import { isReadOnly, showAllLabels } from '../../utils'
+import { checkGlobalRegistry, isReadOnly, showAllLabels } from '../../utils'
 import MetadataSelectPanel from '@src/polaris/common/components/MetadataSelectPanel'
 import { replaceTags } from '@src/polaris/configuration/utils'
-import { checkGlobalRegistry } from '@src/polaris/administration/breaker/getColumns'
 import { disableDeleteTip } from '../../getColumns'
 
 insertCSS(

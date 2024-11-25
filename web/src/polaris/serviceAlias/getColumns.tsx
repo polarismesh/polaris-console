@@ -6,6 +6,7 @@ import { Column } from '../common/ducks/GridPage'
 import { Bubble, Icon, Tag, Text } from 'tea-component'
 import Action from '../common/duckComponents/grid/Action'
 import { disableDeleteTip } from '../service/getColumns'
+import { checkGlobalRegistry } from '../service/utils'
 
 export default ({ duck: { creators } }: DuckCmpProps<ServiceAliasPageDuck>): Column<GovernanceAliasItem>[] => {
   return [
@@ -15,7 +16,7 @@ export default ({ duck: { creators } }: DuckCmpProps<ServiceAliasPageDuck>): Col
       render: x => (
         <Text>
           {x.alias}
-          {x.sync_to_global_registry && (
+          {checkGlobalRegistry(x) && (
             <Bubble content={disableDeleteTip}>
               <Icon type='convertip--blue' />
             </Bubble>
@@ -61,11 +62,12 @@ export default ({ duck: { creators } }: DuckCmpProps<ServiceAliasPageDuck>): Col
       key: 'action',
       header: '操作',
       render: x => {
+        const hasGlobalRegistry = checkGlobalRegistry(x)
         return (
           <React.Fragment>
             <Action
-              disabled={!x.editable || x.sync_to_global_registry}
-              tip={!x.editable ? '无写权限' : x.sync_to_global_registry ? disableDeleteTip : '编辑'}
+              disabled={!x.editable || hasGlobalRegistry}
+              tip={!x.editable ? '无写权限' : hasGlobalRegistry ? disableDeleteTip : '编辑'}
               fn={dispatch => dispatch(creators.edit(x))}
             >
               {'编辑'}

@@ -35,6 +35,7 @@ interface Filter extends BaseFilter {
   department?: string
   business?: string
   hideEmptyService?: boolean
+  sync_to_global_registry: string
 }
 interface CustomFilters {
   namespace?: string
@@ -77,6 +78,7 @@ export default class ServicePageDuck extends GridPageDuck {
       SET_AUTH_OPEN,
       CHANGE_TAGS,
       SET_TAGS,
+      SET_SYNC_TO_GLOBAL_REGISTRY,
     }
     return {
       ...super.quickTypes,
@@ -90,7 +92,12 @@ export default class ServicePageDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_CUSTOM_FILTERS]
+    return [
+      ...super.watchTypes,
+      this.types.SEARCH,
+      this.types.SET_CUSTOM_FILTERS,
+      this.types.SET_SYNC_TO_GLOBAL_REGISTRY,
+    ]
   }
   get params() {
     return [...super.params]
@@ -110,6 +117,7 @@ export default class ServicePageDuck extends GridPageDuck {
       expandedKeys: reduceFromPayload<string[]>(types.SET_EXPANDED_KEYS, []),
       authOpen: reduceFromPayload<boolean>(types.SET_AUTH_OPEN, false),
       tags: reduceFromPayload<TagValue[]>(types.SET_TAGS, []),
+      sync_to_global_registry: reduceFromPayload<string>(types.SET_SYNC_TO_GLOBAL_REGISTRY, ''),
     }
   }
   get creators() {
@@ -133,6 +141,7 @@ export default class ServicePageDuck extends GridPageDuck {
       setSelection: createToPayload<string[]>(types.SET_SELECTION),
       setExpandedKeys: createToPayload<string[]>(types.SET_EXPANDED_KEYS),
       changeTags: createToPayload(types.CHANGE_TAGS),
+      setSyncToGlobalRegistry: createToPayload<string>(types.SET_SYNC_TO_GLOBAL_REGISTRY),
     }
   }
   get rawSelectors() {
@@ -151,6 +160,7 @@ export default class ServicePageDuck extends GridPageDuck {
         department: state.customFilters.department,
         business: state.customFilters.business,
         hideEmptyService: state.customFilters.hideEmptyService,
+        sync_to_global_registry: state.sync_to_global_registry,
       }),
       customFilters: (state: State) => state.customFilters,
       selection: (state: State) => state.selection,
@@ -182,17 +192,17 @@ export default class ServicePageDuck extends GridPageDuck {
     } else {
       yield* this.loadNamespaceList()
     }
-    yield takeLatest(ducks.grid.types.FETCH_DONE, function* (action) {
+    yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
       const { list } = action.payload
       const { selection } = selector(yield select())
       const validSelection = selection.filter(id => !!list.find(item => item.id === id))
       yield put(creators.setSelection(validSelection))
     })
-    yield takeLatest(types.CREATE, function* () {
+    yield takeLatest(types.CREATE, function*() {
       const { authOpen } = selector(yield select())
       const res = yield* resolvePromise(
         new Promise(resolve => {
-          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
+          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
               resolve(yield* duck.execute({}, { isModify: false, authOpen }))
             } finally {
@@ -205,7 +215,7 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.CHANGE_TAGS, function* (action) {
+    yield takeLatest(types.CHANGE_TAGS, function*(action) {
       const tags = action.payload
       const customFilters = { ...EmptyCustomFilter }
       const validTags = tags.map(item => {
@@ -226,11 +236,11 @@ export default class ServicePageDuck extends GridPageDuck {
       })
       yield put({ type: types.SET_CUSTOM_FILTERS, payload: customFilters })
     })
-    yield takeLatest(types.EDIT, function* (action) {
+    yield takeLatest(types.EDIT, function*(action) {
       const data = action.payload
       const res = yield* resolvePromise(
         new Promise(resolve => {
-          showDialog(Create, CreateDuck, function* (duck: CreateDuck) {
+          showDialog(Create, CreateDuck, function*(duck: CreateDuck) {
             try {
               resolve(yield* duck.execute(data, { isModify: true, authOpen }))
             } finally {
@@ -243,7 +253,7 @@ export default class ServicePageDuck extends GridPageDuck {
         yield put(creators.reload())
       }
     })
-    yield takeLatest(types.REMOVE, function* (action) {
+    yield takeLatest(types.REMOVE, function*(action) {
       const data = action.payload
       const params = data
         .map(item => {
@@ -266,7 +276,17 @@ export default class ServicePageDuck extends GridPageDuck {
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, namespace, serviceTag, instanceIp, department, business, hideEmptyService } = filters
+    const {
+      page,
+      count,
+      namespace,
+      serviceTag,
+      instanceIp,
+      department,
+      business,
+      hideEmptyService,
+      sync_to_global_registry,
+    } = filters
     const { key, value } = serviceTag?.[0] || {}
     const serviceName = filters.serviceName
     const result = await describeServices({
@@ -280,6 +300,7 @@ export default class ServicePageDuck extends GridPageDuck {
       department: department || undefined,
       business: business || undefined,
       only_exist_health_instance: hideEmptyService || undefined,
+      ...(sync_to_global_registry ? { sync_to_global_registry: sync_to_global_registry === 'true' } : {}),
     })
     return {
       totalCount: result.totalCount,

@@ -8,7 +8,7 @@ import { CustomRoute } from './model'
 import { SwitchStatusAction } from '../../accessLimiting/types'
 import { Link } from 'react-router-dom'
 import { disableDeleteTip } from '@src/polaris/service/getColumns'
-import { checkGlobalRegistry } from '../../breaker/getColumns'
+import { checkGlobalRegistry } from '@src/polaris/service/utils'
 
 export default (
   { creators, selector }: AccessLimitingDuck,

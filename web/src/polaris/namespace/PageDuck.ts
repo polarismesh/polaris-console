@@ -15,8 +15,11 @@ import { checkAuth } from '../auth/model'
 export interface NamespaceItem extends Namespace {
   id: string
 }
+export interface Filter extends BaseFilter {
+  sync_to_global_registry: string
+}
 export default class ServicePageDuck extends GridPageDuck {
-  Filter: BaseFilter
+  Filter: Filter
   Item: NamespaceItem
   get baseUrl() {
     return ''
@@ -29,6 +32,7 @@ export default class ServicePageDuck extends GridPageDuck {
       LOAD,
       SET_COMPOSE_ID,
       SET_AUTH_OPEN,
+      SET_SYNC_TO_GLOBAL_REGISTRY,
     }
     return {
       ...super.quickTypes,
@@ -42,7 +46,7 @@ export default class ServicePageDuck extends GridPageDuck {
     return 'id'
   }
   get watchTypes() {
-    return [...super.watchTypes, this.types.SEARCH, this.types.SET_COMPOSE_ID]
+    return [...super.watchTypes, this.types.SEARCH, this.types.SET_COMPOSE_ID, this.types.SET_SYNC_TO_GLOBAL_REGISTRY]
   }
   get params() {
     return [...super.params]
@@ -58,6 +62,7 @@ export default class ServicePageDuck extends GridPageDuck {
       ...super.reducers,
       composedId: reduceFromPayload(types.SET_COMPOSE_ID, {} as ComposedId),
       authOpen: reduceFromPayload(types.SET_AUTH_OPEN, false),
+      sync_to_global_registry: reduceFromPayload(types.SET_SYNC_TO_GLOBAL_REGISTRY, ''),
     }
   }
   get creators() {
@@ -71,6 +76,7 @@ export default class ServicePageDuck extends GridPageDuck {
         type: types.LOAD,
         payload: { composedId, data },
       }),
+      setSyncToGlobalRegistry: createToPayload<string>(types.SET_SYNC_TO_GLOBAL_REGISTRY),
     }
   }
   get rawSelectors() {
@@ -81,6 +87,7 @@ export default class ServicePageDuck extends GridPageDuck {
         page: state.page,
         count: state.count,
         keyword: state.keyword,
+        sync_to_global_registry: state.sync_to_global_registry,
       }),
     }
   }
@@ -145,11 +152,12 @@ export default class ServicePageDuck extends GridPageDuck {
   }
 
   async getData(filters: this['Filter']) {
-    const { page, count, keyword } = filters
+    const { page, count, keyword, sync_to_global_registry } = filters
     const result = await describeComplicatedNamespaces({
       limit: count,
       offset: (page - 1) * count,
       name: keyword || undefined,
+      ...(sync_to_global_registry ? { sync_to_global_registry: sync_to_global_registry === 'true' } : {}),
     })
     return {
       totalCount: result.amount,

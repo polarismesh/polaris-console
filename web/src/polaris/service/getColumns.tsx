@@ -5,7 +5,7 @@ import ServicePageDuck, { ServiceItem } from './PageDuck'
 import { Link } from 'react-router-dom'
 import { Text, Icon, Bubble } from 'tea-component'
 import Action from '../common/duckComponents/grid/Action'
-import { isReadOnly } from './utils'
+import { checkGlobalRegistry, isReadOnly } from './utils'
 export const disableDeleteTip = '从北极星实例同步至全局实例的数据，不支持操作。'
 
 export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<ServiceItem>[] => [
@@ -15,13 +15,18 @@ export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<S
     render: x => (
       <React.Fragment>
         <Link to={`/service-detail?name=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
-        {x.sync_to_global_registry && (
+        {checkGlobalRegistry(x) && (
           <Bubble content={disableDeleteTip}>
             <Icon type='convertip--blue' />
           </Bubble>
         )}
       </React.Fragment>
     ),
+  },
+  {
+    key: 'sync_to_global_registry',
+    header: '同步全局实例',
+    render: x => <Text>{x.sync_to_global_registry ? '开启' : '关闭' || '-'}</Text>,
   },
   {
     key: 'namespace',
@@ -62,19 +67,14 @@ export default ({ duck: { creators } }: DuckCmpProps<ServicePageDuck>): Column<S
     header: '操作',
     render: x => {
       const disabled = isReadOnly(x.namespace)
+      const hasGlobalRegistry = checkGlobalRegistry(x)
       return (
         <React.Fragment>
           <Action
             fn={dispatch => dispatch(creators.edit(x))}
-            disabled={disabled || !x.editable || x.sync_to_global_registry}
+            disabled={disabled || !x.editable || hasGlobalRegistry}
             tip={
-              disabled
-                ? '该命名空间为只读的'
-                : !x.editable
-                ? '无权限'
-                : x.sync_to_global_registry
-                ? disableDeleteTip
-                : '编辑'
+              disabled ? '该命名空间为只读的' : !x.editable ? '无权限' : hasGlobalRegistry ? disableDeleteTip : '编辑'
             }
           >
             <Icon type={'pencil'}></Icon>

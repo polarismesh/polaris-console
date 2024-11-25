@@ -115,6 +115,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
       remove: payload => dispatch(creators.remove(payload)),
       setExpandedKeys: payload => dispatch(creators.setExpandedKeys(payload)),
       changeTags: payload => dispatch(creators.changeTags(payload)),
+      setSyncToGlobalRegistry: payload => dispatch(creators.setSyncToGlobalRegistry(payload)),
     }),
     [],
   )
@@ -125,6 +126,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
     namespaceList,
     expandedKeys,
     tags,
+    sync_to_global_registry,
     grid: { list },
   } = selector(store)
   const multiRegConfig = useServerConfig('multiregistries')
@@ -177,6 +179,21 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
             return true
           })}
           addons={[
+            filterable({
+              type: 'single',
+              column: 'sync_to_global_registry',
+              searchable: true,
+              value: sync_to_global_registry,
+              onChange: value => handlers.setSyncToGlobalRegistry(value),
+              all: {
+                value: '',
+                text: '全部',
+              },
+              options: [
+                { text: '开启', value: 'true' },
+                { text: '关闭', value: 'false' },
+              ],
+            }),
             selectable({
               all: true,
               value: selection,

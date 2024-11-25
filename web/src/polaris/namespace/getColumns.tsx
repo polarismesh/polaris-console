@@ -6,6 +6,7 @@ import { Column } from '../common/ducks/GridPage'
 import Action from '../common/duckComponents/grid/Action'
 import { CheckVisibilityMode, VisibilityModeMap } from '../service/operation/CreateDuck'
 import { disableDeleteTip } from '../service/getColumns'
+import { checkGlobalRegistry } from '../service/utils'
 export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column<NamespaceItem>[] => [
   {
     key: 'name',
@@ -13,7 +14,7 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
     render: x => (
       <Text>
         {x.name}
-        {x.sync_to_global_registry && (
+        {checkGlobalRegistry(x) && (
           <Bubble content={disableDeleteTip}>
             <Icon type='convertip--blue' />
           </Bubble>
@@ -94,8 +95,8 @@ export default ({ duck: { creators } }: DuckCmpProps<NamespacePageDuck>): Column
         <React.Fragment>
           <Action
             fn={dispatch => dispatch(creators.edit(x))}
-            disabled={!x.editable || x.sync_to_global_registry}
-            tip={x.sync_to_global_registry ? disableDeleteTip : '编辑'}
+            disabled={!x.editable || checkGlobalRegistry(x)}
+            tip={checkGlobalRegistry(x) ? disableDeleteTip : '编辑'}
           >
             {'编辑'}
           </Action>

@@ -5,8 +5,7 @@ import { DuckCmpProps } from 'saga-duck'
 import ServiceInstanceDuck from './PageDuck'
 import { Text, Icon } from 'tea-component'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
-import { isReadOnly } from '../../utils'
-import { checkGlobalRegistry } from '@src/polaris/administration/breaker/getColumns'
+import { checkGlobalRegistry, isReadOnly } from '../../utils'
 import { disableDeleteTip } from '../../getColumns'
 
 export const getSourcePolairisIp = x => {

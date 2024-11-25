@@ -7,7 +7,7 @@ import { DuckCmpProps } from 'saga-duck'
 import router from '@src/polaris/common/util/router'
 import { FaultDetectRule } from './types'
 import { disableDeleteTip } from '@src/polaris/service/getColumns'
-import { checkGlobalRegistry } from '../getColumns'
+import { checkGlobalRegistry } from '@src/polaris/service/utils'
 
 export default (props: DuckCmpProps<FaultDetectDuck>): Column<FaultDetectRule>[] => {
   const {

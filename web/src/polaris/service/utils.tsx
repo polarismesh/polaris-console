@@ -1,7 +1,6 @@
 import { Namespace, READ_ONLY_NAMESPACE } from './types'
-import { Modal, Table } from 'tea-component'
+import { Modal } from 'tea-component'
 import React from 'react'
-import { scrollable } from 'tea-component/lib/table/addons'
 import LabelTable from '../common/components/LabelTable'
 import { ConfigFileGroup } from '../configuration/fileGroup/types'
 
@@ -17,7 +16,7 @@ export const isReadOnlyConfigGroup = (group: ConfigFileGroup) => {
   return !group.editable
 }
 
-export const showAllLabels = (labels) => {
+export const showAllLabels = labels => {
   Modal.confirm({
     message: `标签展示`,
     description: (
@@ -26,4 +25,11 @@ export const showAllLabels = (labels) => {
       </>
     ),
   })
+}
+
+export const checkGlobalRegistry = x => {
+  const hasSyncGlobal = Object.entries(x.metadata).find(
+    ([key, value]) => key === 'internal-sync-from-local-registry' && value === 'true',
+  )
+  return !!hasSyncGlobal
 }

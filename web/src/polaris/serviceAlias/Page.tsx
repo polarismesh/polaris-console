@@ -11,6 +11,7 @@ import GridPagePagination from '../common/duckComponents/GridPagePagination'
 import { useFieldManager } from '../common/components/UseFieldManager'
 import BasicLayout from '../common/components/BaseLayout'
 import { disableDeleteTip } from '../service/getColumns'
+import { checkGlobalRegistry } from '../service/utils'
 const getHandlers = memorize(({ creators }: ServiceAliasDuck, dispatch) => ({
   reload: () => dispatch(creators.reload()),
   create: () => dispatch(creators.create()),
@@ -99,13 +100,12 @@ export default function ServiceAliasPage(props: DuckCmpProps<ServiceAliasDuck>) 
               all: true,
               value: selection,
               onChange: handlers.setSelection,
-              rowSelectable: (rowKey, { record }) => record.editable && !record.sync_to_global_registry,
+              rowSelectable: (rowKey, { record }) => record.editable && !checkGlobalRegistry(record),
               render: (element, { record }) => {
-                if (!record.editable || record.sync_to_global_registry) {
+                const hasGlobalRegistry = checkGlobalRegistry(record)
+                if (!record.editable || hasGlobalRegistry) {
                   return (
-                    <Bubble
-                      content={!record.editable ? '无权限' : record.sync_to_global_registry ? disableDeleteTip : '编辑'}
-                    >
+                    <Bubble content={!record.editable ? '无权限' : hasGlobalRegistry ? disableDeleteTip : '编辑'}>
                       {element}
                     </Bubble>
                   )
