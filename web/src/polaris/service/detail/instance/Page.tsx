@@ -322,7 +322,7 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               onChange: handlers.select,
               rowSelectable: (rowKey, { record }) => !isReadOnly(namespace) && editable && !checkGlobalRegistry(record),
               render: (element, { record }) => {
-                if (isReadOnly(namespace) || !editable || !checkGlobalRegistry(record)) {
+                if (isReadOnly(namespace) || !editable || checkGlobalRegistry(record)) {
                   return (
                     <Bubble
                       content={

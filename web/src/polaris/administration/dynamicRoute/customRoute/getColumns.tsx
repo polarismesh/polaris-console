@@ -46,6 +46,11 @@ export default (
       render: x => (x.enable ? <Text theme='success'>已启用</Text> : <Text theme='danger'>未启用</Text>),
     },
     {
+      key: 'priority',
+      header: '优先级',
+      render: x => x.priority,
+    },
+    {
       key: 'description',
       header: '描述',
       render: x => x.description || '-',

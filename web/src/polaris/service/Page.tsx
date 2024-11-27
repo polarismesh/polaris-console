@@ -10,7 +10,7 @@ import { selectable, expandable, filterable } from 'tea-component/lib/table/addo
 import insertCSS from '../common/helpers/insertCSS'
 import csvColumns from './csvColumns'
 import { enableNearbyString } from './operation/CreateDuck'
-import { isReadOnly, showAllLabels } from './utils'
+import { checkGlobalRegistry, isReadOnly, showAllLabels } from './utils'
 import MetadataSelectPanel from '../common/components/MetadataSelectPanel'
 import { replaceTags } from '../configuration/utils'
 import { useServerConfig } from '../common/util/serverConfig'
@@ -199,9 +199,9 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
               value: selection,
               onChange: handlers.select,
               rowSelectable: (rowKey, { record }) =>
-                !isReadOnly(record.namespace) && record.editable && !record.sync_to_global_registry,
+                !isReadOnly(record.namespace) && record.editable && !checkGlobalRegistry(record),
               render: (element, { record }) => {
-                if (isReadOnly(record.namespace) || !record.editable || record.sync_to_global_registry) {
+                if (isReadOnly(record.namespace) || !record.editable || checkGlobalRegistry(record)) {
                   return (
                     <Bubble
                       content={
@@ -209,7 +209,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
                           ? '该命名空间为只读的'
                           : !record.editable
                           ? '无权限'
-                          : record.sync_to_global_registry
+                          : checkGlobalRegistry(record)
                           ? disableDeleteTip
                           : '编辑'
                       }

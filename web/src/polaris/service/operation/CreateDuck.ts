@@ -103,6 +103,7 @@ export default class CreateDuck extends FormDialog {
             remove_user_ids: removeUserIds,
             remove_group_ids: removeGroupIds,
             export_to: values.export_to,
+            sync_to_global_registry: values.sync_to_global_registry,
           },
         ]),
       )
@@ -122,6 +123,7 @@ export default class CreateDuck extends FormDialog {
             user_ids: userIds,
             group_ids: groupIds,
             export_to: values.export_to,
+            sync_to_global_registry: values.sync_to_global_registry,
           },
         ]),
       )

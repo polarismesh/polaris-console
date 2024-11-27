@@ -157,7 +157,7 @@ export default class CreateDuck extends FormDialog {
       form.creators.setValues({
         ...data,
         visibilityMode,
-        sync_to_global_registry: false,
+        sync_to_global_registry: data.sync_to_global_registry ?? false,
       }),
     )
     // TODO 表单弹窗逻辑，在弹窗关闭后自动cancel

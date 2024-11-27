@@ -9,7 +9,7 @@ import { checkGlobalRegistry, isReadOnly } from '../../utils'
 import { disableDeleteTip } from '../../getColumns'
 
 export const getSourcePolairisIp = x => {
-  const hasSyncGlobal = Object.entries(x.metadata).find(([key]) => key === 'MetadataKeySyncLocalRegistryHost')
+  const hasSyncGlobal = Object.entries(x.metadata).find(([key]) => key === 'internal-sync-local-registry-host')
   return hasSyncGlobal?.[1]
 }
 export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceInstanceDuck>): Column<Instance>[] => [
@@ -30,12 +30,12 @@ export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceIns
   {
     key: 'host',
     header: '实例IP',
-    render: x => <Text overflow>{getSourcePolairisIp(x) || '-'}</Text>,
+    render: x => <Text overflow>{x.host}</Text>,
   },
   {
     key: 'sourceIp',
     header: '来源北极星IP',
-    render: x => <Text overflow>{x.host}</Text>,
+    render: x => <Text overflow>{getSourcePolairisIp(x) || '-'}</Text>,
   },
   {
     key: 'port',
