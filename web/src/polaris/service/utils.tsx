@@ -26,10 +26,8 @@ export const showAllLabels = labels => {
     ),
   })
 }
-
+export const InternalSyncKey = 'internal-sync-from-local-registry'
 export const checkGlobalRegistry = x => {
-  const hasSyncGlobal = Object.entries(x.metadata).find(
-    ([key, value]) => key === 'internal-sync-from-local-registry' && value === 'true',
-  )
+  const hasSyncGlobal = Object.entries(x.metadata).find(([key, value]) => key === InternalSyncKey && value === 'true')
   return !!hasSyncGlobal
 }

@@ -12,8 +12,9 @@ import CreateDuck from './operations/CreateDuck'
 import Create from './operations/Create'
 import { Modal, TagValue } from 'tea-component'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
-import { MetadataTagKey, HealthyTagKey, DefaultHostTagAttribute, HostTagKey, HealthStatusOptions } from './Page'
+import { MetadataTagKey, HealthyTagKey, DefaultHostTagAttribute, HostTagKey } from './Page'
 import { Service } from '../../types'
+import { InternalSyncKey } from '../../utils'
 
 export const EmptyCustomFilter = {
   host: '',
@@ -26,6 +27,7 @@ export const EmptyCustomFilter = {
   healthy: '',
   isolate: null,
   metadata: { key: '', value: '' },
+  sourceIp: '',
 }
 
 interface Filter extends BaseFilter {
@@ -52,6 +54,7 @@ interface CustomFilters {
   healthy?: any
   isolate?: any
   keys?: string
+  sourceIp?: string
 }
 interface ComposedId {
   name: string
@@ -289,9 +292,13 @@ export default class ServicePageDuck extends GridPageDuck {
       count,
       namespace,
       service,
-      customFilters: { host, port, weight, protocol, version, healthy, isolate, metadata },
+      customFilters: { host, port, weight, protocol, version, healthy, isolate, metadata, sourceIp },
     } = filters
-    const { key, value } = metadata || {}
+    let { key, value } = metadata || {}
+    if (sourceIp) {
+      key = InternalSyncKey
+      value = sourceIp
+    }
     const searchParams = {
       limit: count,
       offset: (page - 1) * count,

@@ -11,13 +11,18 @@ import {
   LoginUserOwnerIdKey,
   LoginUserNameKey,
 } from '@src/polaris/common/util/common'
+import router from '@src/polaris/common/util/router'
 
 export default abstract class CreateDuck extends Page {
   get baseUrl() {
     return `/#/login`
   }
   get preEffects() {
-    return [call([this, this.ready], this), call([this, this.checkAdminUserExist]), call([this, this.checkUserLogin], this)]
+    return [
+      call([this, this.ready], this),
+      call([this, this.checkAdminUserExist]),
+      call([this, this.checkUserLogin], this),
+    ]
   }
   get quickTypes() {
     enum Types {
@@ -48,7 +53,7 @@ export default abstract class CreateDuck extends Page {
     yield* super.saga()
     const duck = this
     const { types, ducks } = duck
-    yield takeLatest(types.SUBMIT, function* () {
+    yield takeLatest(types.SUBMIT, function*() {
       try {
         yield* ducks.form.submit()
       } catch (e) {
@@ -117,7 +122,7 @@ export class CreateFormDuck extends Form {
         window.localStorage.setItem(LoginRoleKey, loginResponse.role)
         window.localStorage.setItem(LoginUserIdKey, loginResponse.user_id)
         window.localStorage.setItem(LoginUserOwnerIdKey, loginResponse.owner_id)
-        window.location.hash = "/service"
+        router.navigate('/service')
       } else {
         throw new Error()
       }

@@ -19,7 +19,7 @@ import {
 } from 'tea-component'
 import GridPageGrid from '@src/polaris/common/duckComponents/GridPageGrid'
 import GridPagePagination from '@src/polaris/common/duckComponents/GridPagePagination'
-import getColumns from './getColumns'
+import getColumns, { getSourcePolairisIp } from './getColumns'
 import { selectable, expandable, filterable } from 'tea-component/lib/table/addons'
 import insertCSS from '@src/polaris/common/helpers/insertCSS'
 import csvColumns from './csvColumns'
@@ -110,6 +110,7 @@ export const DefaultHostTagAttribute = {
   key: HostTagKey,
   name: '实例IP',
 }
+
 function getTagAttributes(props: DuckCmpProps<ServicePageDuck>) {
   const { duck, store } = props
   const { customFilters } = duck.selector(store)
@@ -361,6 +362,22 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
             }),
             filterable({
               type: 'single',
+              column: 'sourceIp',
+              value: customFilters.sourceIp,
+              all: {
+                text: '全部',
+                value: '',
+              },
+              onChange: value => {
+                handlers.setCustomFilters({ ...customFilters, sourceIp: value })
+              },
+              options: list
+                .map(item => getSourcePolairisIp(item) as string)
+                .filter(item => item)
+                .map(item => ({ text: item, value: item })),
+            }),
+            filterable({
+              type: 'single',
               column: 'isolate',
               value: customFilters.isolate,
               onChange: value => {
@@ -373,7 +390,6 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
                 handlers.changeTags(replacedTags)
               },
 
-              // 选项列表
               options: IsolateStatusOptions,
             }),
             expandable({

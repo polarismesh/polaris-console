@@ -91,6 +91,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                 }}
                 disabled={options.isModify}
                 size={'l'}
+                placeholder={'请选择或输入命名空间'}
               />
             )}
           </AutoComplete>

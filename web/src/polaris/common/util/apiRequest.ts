@@ -59,10 +59,10 @@ export async function apiRequest<T>(options: APIRequestOption) {
         }
       })) as AxiosResponse<T & ApiResponse>
 
-    if (res.data.code > 200000 && !noError) {
-      throw res.data.info
+    if (res?.data.code > 200000 && !noError) {
+      throw res?.data.info
     }
-    return res.data
+    return res?.data
   } catch (e) {
     console.error(e)
   } finally {
@@ -99,10 +99,10 @@ export async function getApiRequest<T>(options: APIRequestOption) {
           })
         }
       })) as AxiosResponse<T & ApiResponse>
-    if (res.data.code > 200000 && !noError) {
-      throw res.data.info
+    if (res?.data.code > 200000 && !noError) {
+      throw res?.data.info
     }
-    return res.data
+    return res?.data
   } catch (e) {
     console.error(e)
   } finally {
@@ -138,10 +138,10 @@ export async function putApiRequest<T>(options: APIRequestOption) {
           })
         }
       })) as AxiosResponse<T & ApiResponse>
-    if (res.data.code > 200000 && !noError) {
-      throw res.data.info
+    if (res?.data.code > 200000 && !noError) {
+      throw res?.data.info
     }
-    return res.data
+    return res?.data
   } catch (e) {
     console.error(e)
   } finally {
@@ -178,10 +178,10 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
           })
         }
       })) as AxiosResponse<T & ApiResponse>
-    if (res.data.code > 200000 && !noError) {
-      throw res.data.info
+    if (res?.data.code > 200000 && !noError) {
+      throw res?.data.info
     }
-    return res.data
+    return res?.data
   } catch (e) {
     console.error(e)
   } finally {
