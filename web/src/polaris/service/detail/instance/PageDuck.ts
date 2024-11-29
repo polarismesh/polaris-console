@@ -14,7 +14,7 @@ import { Modal, TagValue } from 'tea-component'
 import { KeyValuePair } from '@src/polaris/configuration/fileGroup/types'
 import { MetadataTagKey, HealthyTagKey, DefaultHostTagAttribute, HostTagKey } from './Page'
 import { Service } from '../../types'
-import { InternalSyncKey } from '../../utils'
+import { SourcePolarisIpKey } from './getColumns'
 
 export const EmptyCustomFilter = {
   host: '',
@@ -296,7 +296,7 @@ export default class ServicePageDuck extends GridPageDuck {
     } = filters
     let { key, value } = metadata || {}
     if (sourceIp) {
-      key = InternalSyncKey
+      key = SourcePolarisIpKey
       value = sourceIp
     }
     const searchParams = {

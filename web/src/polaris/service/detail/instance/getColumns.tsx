@@ -7,9 +7,9 @@ import { Text, Icon } from 'tea-component'
 import Action from '@src/polaris/common/duckComponents/grid/Action'
 import { checkGlobalRegistry, isReadOnly } from '../../utils'
 import { disableDeleteTip } from '../../getColumns'
-
+export const SourcePolarisIpKey = 'internal-sync-local-registry-host'
 export const getSourcePolairisIp = x => {
-  const hasSyncGlobal = Object.entries(x.metadata).find(([key]) => key === 'internal-sync-local-registry-host')
+  const hasSyncGlobal = Object.entries(x.metadata).find(([key]) => key === SourcePolarisIpKey)
   return hasSyncGlobal?.[1]
 }
 export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceInstanceDuck>): Column<Instance>[] => [
