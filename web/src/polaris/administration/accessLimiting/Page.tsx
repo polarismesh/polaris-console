@@ -51,6 +51,13 @@ export default purify(function AccessLimitingPage(props: DuckCmpProps<AccessLimi
                 onSearch={value => handlers.changeName(value)}
                 onClear={() => handlers.changeName('')}
               />
+              <Button
+                type={'icon'}
+                icon={'refresh'}
+                onClick={() => {
+                  dispatch(creators.reload())
+                }}
+              ></Button>
             </>
           }
         />

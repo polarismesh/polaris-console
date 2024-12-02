@@ -10,7 +10,6 @@ import { StatusOptions } from '../../accessLimiting/types'
 import getColumns from './getColumns'
 import { enableNearbyString } from '@src/polaris/service/operation/CreateDuck'
 import { FeatureDisplayType, useCheckFeatureValid } from '@src/polaris/common/util/checkFeature'
-import router from '@src/polaris/common/util/router'
 
 export enum TagSearchType {
   RuleName = 'name',
@@ -94,6 +93,13 @@ export default purify(function CustomRoutePage(props: DuckCmpProps<CustomRouteDu
                 tips={'请选择条件进行过滤'}
                 hideHelp={true}
               />
+              <Button
+                type={'icon'}
+                icon={'refresh'}
+                onClick={() => {
+                  dispatch(creators.reload())
+                }}
+              ></Button>
             </>
           }
         />

@@ -150,6 +150,13 @@ export default purify(function CircuitBreakerPage(props: DuckCmpProps<CircuitBre
                 tips={'请选择条件进行过滤'}
                 hideHelp={true}
               />
+              <Button
+                type={'icon'}
+                icon={'refresh'}
+                onClick={() => {
+                  dispatch(creators.reload())
+                }}
+              ></Button>
             </>
           }
         />

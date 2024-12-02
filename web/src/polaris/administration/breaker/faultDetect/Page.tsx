@@ -95,6 +95,13 @@ export default purify(function FaultDetectPage(props: DuckCmpProps<FaultDetectDu
                 tips={'请选择条件进行过滤'}
                 hideHelp={true}
               />
+              <Button
+                type={'icon'}
+                icon={'refresh'}
+                onClick={() => {
+                  dispatch(creators.reload())
+                }}
+              ></Button>
             </>
           }
         />
