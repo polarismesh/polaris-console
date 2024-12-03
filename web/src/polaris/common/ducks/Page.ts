@@ -353,13 +353,15 @@ get preSagas(){
    * 判断是否初始化了主账户
    */
   *checkAdminUserExist() {
-    const ret = yield* resolvePromise(checkExistAdminUser())
-    if (ret?.user) {
-      console.log('主账户已初始化')
-    } else {
-      console.log('主账户没有初始化')
-      router.navigate('/init')
-    }
+    checkExistAdminUser()
+      .then(res => {
+        if (!res.user) {
+          router.navigate('/init')
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
     return true
   }
 

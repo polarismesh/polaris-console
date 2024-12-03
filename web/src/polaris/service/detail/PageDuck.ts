@@ -1,6 +1,6 @@
 import DetailPageDuck from '@src/polaris/common/ducks/DetailPage'
 import { reduceFromPayload, createToPayload } from 'saga-duck'
-import { select, put, takeLatest } from 'redux-saga/effects'
+import { select, put, takeLatest, take } from 'redux-saga/effects'
 import { TAB, ComposedId } from './types'
 import InfoDuck from './info/PageDuck'
 import InstanceDuck from './instance/PageDuck'
@@ -115,6 +115,10 @@ export default class RegistryDetailDuck extends DetailPageDuck {
         return
       }
       const subDuck = ducks[tab]
+      const ready = yield select(subDuck.selectors.ready)
+      if (!ready) {
+        yield take(subDuck.types.READY)
+      }
       yield put(subDuck.creators.load({ ...composedId, ...data }))
     })
   }
