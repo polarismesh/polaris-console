@@ -265,7 +265,7 @@ export default class InterfacePageDuck extends GridPageDuck {
     })
     yield takeLatest(types.SHOW_DETAIL, function*(action) {
       const detail = action.payload as InterfacePageDuck['Item']
-      if (detail.protocol === "dubbo") {
+      if (detail.protocol === 'dubbo') {
         yield Modal.confirm({
           size: 'l',
           message: 'dubbo接口详情',
@@ -273,54 +273,80 @@ export default class InterfacePageDuck extends GridPageDuck {
             <Form>
               <FormText>{detail.content}</FormText>
             </Form>
-          )
+          ),
         })
       }
-      const parameterDetail = JSON.parse(detail.content)?.[detail.method?.toLowerCase()]
-      const requestParameter = parameterDetail.parameters
-      const responses = parameterDetail.responses
-      yield Modal.confirm({
-        size: 'l',
-        message: '查看接口详情',
-        description: (
-          <Form>
-            <FormItem label={'版本'}>
-              <FormText>{detail.version}</FormText>
-            </FormItem>
-            <FormItem label={'路径'}>
-              <FormText>{detail.path}</FormText>
-            </FormItem>
-            <FormItem label={'请求方法'}>
-              <FormText>{detail.method}</FormText>
-            </FormItem>
-            <FormItem label={'协议'}>
-              <FormText>{detail.protocol}</FormText>
-            </FormItem>
-            <FormItem label={'入参'}>
-              <FormText>
-                <Table
-                  records={requestParameter.map(handleRequestParameters) || []}
-                  columns={parameterColumns}
-                  recordKey={'name'}
-                  addons={[scrollable({ maxHeight: 300 }), autotip({})]}
-                  bordered
-                ></Table>
-              </FormText>
-            </FormItem>
-            <FormItem label={'出参'}>
-              <FormText>
-                <Table
-                  records={[handleResponses(responses['200'])]}
-                  columns={responseColumns}
-                  recordKey={'name'}
-                  addons={[scrollable({ maxHeight: 300 }), autotip({})]}
-                  bordered
-                ></Table>
-              </FormText>
-            </FormItem>
-          </Form>
-        ),
-      })
+      try {
+        const parameterDetail = JSON.parse(detail.content)?.[detail.method?.toLowerCase()]
+        const requestParameter = parameterDetail.parameters
+        const responses = parameterDetail.responses
+        yield Modal.confirm({
+          size: 'l',
+          message: '查看接口详情',
+          description: (
+            <Form>
+              <FormItem label={'版本'}>
+                <FormText>{detail.version}</FormText>
+              </FormItem>
+              <FormItem label={'路径'}>
+                <FormText>{detail.path}</FormText>
+              </FormItem>
+              <FormItem label={'请求方法'}>
+                <FormText>{detail.method}</FormText>
+              </FormItem>
+              <FormItem label={'协议'}>
+                <FormText>{detail.protocol}</FormText>
+              </FormItem>
+              <FormItem label={'入参'}>
+                <FormText>
+                  <Table
+                    records={requestParameter.map(handleRequestParameters) || []}
+                    columns={parameterColumns}
+                    recordKey={'name'}
+                    addons={[scrollable({ maxHeight: 300 }), autotip({})]}
+                    bordered
+                  ></Table>
+                </FormText>
+              </FormItem>
+              <FormItem label={'出参'}>
+                <FormText>
+                  <Table
+                    records={[handleResponses(responses['200'])]}
+                    columns={responseColumns}
+                    recordKey={'name'}
+                    addons={[scrollable({ maxHeight: 300 }), autotip({})]}
+                    bordered
+                  ></Table>
+                </FormText>
+              </FormItem>
+            </Form>
+          ),
+        })
+      } catch (e) {
+        yield Modal.confirm({
+          size: 'l',
+          message: '查看接口详情',
+          description: (
+            <Form>
+              <FormItem label={'版本'}>
+                <FormText>{detail.version}</FormText>
+              </FormItem>
+              <FormItem label={'路径'}>
+                <FormText>{detail.path}</FormText>
+              </FormItem>
+              <FormItem label={'请求方法'}>
+                <FormText>{detail.method}</FormText>
+              </FormItem>
+              <FormItem label={'协议'}>
+                <FormText>{detail.protocol}</FormText>
+              </FormItem>
+              <FormItem label={'内容'}>
+                <FormText>{detail.content}</FormText>
+              </FormItem>
+            </Form>
+          ),
+        })
+      }
     })
     yield takeLatest(ducks.grid.types.FETCH_DONE, function*(action) {
       const { list, serviceContracts } = action.payload
