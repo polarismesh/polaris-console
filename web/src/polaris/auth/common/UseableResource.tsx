@@ -15,7 +15,7 @@ interface Props {
   resources: {
     namespaces: StrategyResourceEntry[]
     services: StrategyResourceEntry[]
-    configGroups: StrategyResourceEntry[]
+    config_groups: StrategyResourceEntry[]
     router_rules: StrategyResourceEntry[]
     // lane_rules: StrategyResourceEntry[]
     circuitbreaker_rules: StrategyResourceEntry[]
@@ -26,7 +26,7 @@ interface Props {
     auth_policies: StrategyResourceEntry[]
   }
 }
-export default purify(function (props: Props) {
+export default purify(function(props: Props) {
   const { resources } = props
   const [filterResourceType, setFilterResourceType] = React.useState('namespaces')
   const [keyword, setKeyword] = React.useState('')
@@ -59,7 +59,7 @@ export default purify(function (props: Props) {
                 if (filterResourceType === 'namespaces') {
                   return '所有命名空间'
                 }
-                if (filterResourceType === 'service') {
+                if (filterResourceType === 'services') {
                   return '所有服务'
                 }
                 return '所有配置分组'
@@ -67,7 +67,7 @@ export default purify(function (props: Props) {
               if (filterResourceType === 'namespaces') {
                 return x.name
               }
-              if (filterResourceType === 'service') {
+              if (filterResourceType === 'services') {
                 return <Link to={`/service-detail?name=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
               }
               return <Link to={`/filegroup-detail?name=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>

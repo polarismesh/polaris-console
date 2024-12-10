@@ -34,21 +34,21 @@ import UseableResource from '../common/UseableResource'
 export enum AuthSubjectType {
   USER = 'user',
   USERGROUP = 'group',
-  ROLE = "role",
+  ROLE = 'role',
 }
 export enum AuthResourceType {
   NAMESPACE = 'namespaces',
   SERVICE = 'services',
   CONFIGURATION = 'config_groups',
-  ROUTER_RULE = "route_rules",
-  RATELIMIT_RULE = "ratelimit_rules",
-  CIRCUIT_BREAKER_RULE = "circuitbreaker_rules",
-  FAULTDETECT_RULE = "faultdetect_rules",
-  LANE_RULE = "lane_rules",
-  AUTH_USERS = "users",
-  AUTH_USER_GROUP = "user_groups",
-  AUTH_ROLE = "roles",
-  AUTH_POLICY = "auth_policies",
+  ROUTER_RULE = 'route_rules',
+  RATELIMIT_RULE = 'ratelimit_rules',
+  CIRCUIT_BREAKER_RULE = 'circuitbreaker_rules',
+  FAULTDETECT_RULE = 'faultdetect_rules',
+  LANE_RULE = 'lane_rules',
+  AUTH_USERS = 'users',
+  AUTH_USER_GROUP = 'user_groups',
+  AUTH_ROLE = 'roles',
+  AUTH_POLICY = 'auth_policies',
 }
 export const AUTH_SUBJECT_TYPE_MAP = {
   [AuthSubjectType.USER]: { text: '用户', urlKey: 'user' },
@@ -150,25 +150,25 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
   const [authConsoleOpen, setAuthConsoleOpen] = React.useState(true)
   const fetchAuth = useCallback(async () => {
     const { clientOpen, consoleOpen } = await describeAuthStatus({})
-    setAuthClientOpen(clientOpen === "true")
-    setAuthConsoleOpen(consoleOpen === "true")
+    setAuthClientOpen(clientOpen === 'true')
+    setAuthConsoleOpen(consoleOpen === 'true')
   }, [])
   React.useEffect(() => {
     fetchAuth()
   }, [fetchAuth])
 
-  let tempAuthStatus = ""
+  let tempAuthStatus = ''
   if (authClientOpen && authConsoleOpen) {
-    tempAuthStatus = "鉴权策略针对控制台接口以及客户端接口均生效"
+    tempAuthStatus = '鉴权策略针对控制台接口以及客户端接口均生效'
   }
   if (authClientOpen && !authConsoleOpen) {
-    tempAuthStatus = "鉴权策略仅针对客户端接口生效"
+    tempAuthStatus = '鉴权策略仅针对客户端接口生效'
   }
   if (!authClientOpen && authConsoleOpen) {
-    tempAuthStatus = "鉴权策略仅针对控制台接口生效"
+    tempAuthStatus = '鉴权策略仅针对控制台接口生效'
   }
   if (!authClientOpen && !authConsoleOpen) {
-    tempAuthStatus = "鉴权策略不生效"
+    tempAuthStatus = '鉴权策略不生效'
   }
   const authStatusMsg = tempAuthStatus
 
@@ -350,7 +350,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                         resources={{
                           namespaces: currentAuthItem?.resources?.['namespaces'],
                           services: currentAuthItem?.resources?.['services'],
-                          configGroups: currentAuthItem?.resources?.config_groups,
+                          config_groups: currentAuthItem?.resources?.config_groups,
                           router_rules: currentAuthItem?.resources?.route_rules,
                           ratelimit_rules: currentAuthItem?.resources?.ratelimit_rules,
                           circuitbreaker_rules: currentAuthItem?.resources?.circuitbreaker_rules,
@@ -403,11 +403,8 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                     </Card>
                     <Card bordered>
                       <Card.Body title={'可访问接口'}>
-                        {currentAuthItem.functions.length === 1 &&
-                          currentAuthItem.functions[0] === '*' ? (
-                          <section style={{ margin: '20px 10px' }}>
-                            {`全部（含后续新增）`}
-                          </section>
+                        {currentAuthItem.functions.length === 1 && currentAuthItem.functions[0] === '*' ? (
+                          <section style={{ margin: '20px 10px' }}>{`全部（含后续新增）`}</section>
                         ) : (
                           <Table
                             bordered
@@ -434,7 +431,7 @@ export default function AuthPage(props: DuckCmpProps<Duck>) {
                           style={{ marginBottom: '20px' }}
                         >
                           {currentAuthItem.resources[showAuthResourceType]?.length === 1 &&
-                            currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
+                          currentAuthItem.resources[showAuthResourceType][0].id === '*' ? (
                             <section style={{ margin: '20px 10px' }}>
                               {`全部${AUTH_RESOURCE_TYPE_MAP[showAuthResourceType].text}（含后续新增）`}
                             </section>
