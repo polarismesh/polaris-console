@@ -371,10 +371,9 @@ export default function ServiceInstancePage(props: DuckCmpProps<ServicePageDuck>
               onChange: value => {
                 handlers.setCustomFilters({ ...customFilters, sourceIp: value })
               },
-              options: list
-                .map(item => getSourcePolairisIp(item) as string)
-                .filter(item => item)
-                .map(item => ({ text: item, value: item })),
+              options: [
+                ...new Set(list.map(item => getSourcePolairisIp(item) as string).filter(item => item)),
+              ].map(item => ({ text: item, value: item })),
             }),
             filterable({
               type: 'single',
