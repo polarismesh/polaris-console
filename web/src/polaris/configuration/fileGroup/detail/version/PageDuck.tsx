@@ -241,7 +241,7 @@ export default class ConfigFileReleaseHistoryDuck extends GridPageDuck {
       fileName,
     })
     return {
-      totalCount: result.configFileReleases.length,
+      totalCount: result.total,
       list:
         result.configFileReleases?.map(item => ({
           ...item,

@@ -16,14 +16,6 @@ interface Props {
     namespaces: StrategyResourceEntry[]
     services: StrategyResourceEntry[]
     config_groups: StrategyResourceEntry[]
-    router_rules: StrategyResourceEntry[]
-    // lane_rules: StrategyResourceEntry[]
-    circuitbreaker_rules: StrategyResourceEntry[]
-    faultdetect_rules: StrategyResourceEntry[]
-    ratelimit_rules: StrategyResourceEntry[]
-    users: StrategyResourceEntry[]
-    user_groups: StrategyResourceEntry[]
-    auth_policies: StrategyResourceEntry[]
   }
 }
 export default purify(function(props: Props) {

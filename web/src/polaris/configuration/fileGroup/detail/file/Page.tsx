@@ -335,7 +335,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             >
                               发布
                             </Button>
-                            {isBetaingRelease(currentNode) ? (
+                            {/* {isBetaingRelease(currentNode) ? (
                               <Button
                                 type={'primary'}
                                 disabled={editing || !data.editable}
@@ -351,7 +351,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                               >
                                 灰度发布
                               </Button>
-                            )}
+                            )} */}
                             {editing ? (
                               <>
                                 <Button type={'weak'} onClick={() => handlers.getTemplate(currentNode)}>

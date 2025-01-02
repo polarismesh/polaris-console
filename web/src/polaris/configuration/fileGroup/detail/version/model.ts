@@ -83,6 +83,7 @@ export interface DescribeConfigFileReleasesParams {
  */
 export interface DescribeConfigFileReleasesResult {
   configFileReleases: ConfigFileRelease[]
+  total: number
 }
 
 /** 查询某个配置所有版本信息 */
