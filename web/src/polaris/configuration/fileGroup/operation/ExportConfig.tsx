@@ -1,10 +1,10 @@
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { DuckCmpProps, memorize, purify } from 'saga-duck'
 import { Form, Select, Segment, Table } from 'tea-component'
-import { selectable } from 'tea-component/lib/table/addons'
+import { autotip, selectable } from 'tea-component/lib/table/addons'
 import ExportConfigDuck from './ExportConfigDuck'
 
 const segmentOptions = [
@@ -75,6 +75,9 @@ const ConfigFileGroupTable = purify(function ConfigFileGroupTable(props: DuckCmp
       onChange: (value: string[]) => {
         groups.setValue(value)
       },
+    }),
+    autotip({
+      emptyText: '暂无分组',
     }),
   ]
 

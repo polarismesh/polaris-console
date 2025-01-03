@@ -9,7 +9,10 @@ import { describeConfigFileGroups, exportConfigFile } from '../model'
 import { createToPayload } from 'saga-duck'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IExportConfigOption {}
+export interface IExportConfigOption {
+  configFileGroupList: any[]
+  namespaceList: any[]
+}
 
 export default class ExportConfigDuck extends FormDialog {
   Options: IExportConfigOption
@@ -41,11 +44,16 @@ export default class ExportConfigDuck extends FormDialog {
       changeNamespace: createToPayload(types.CHANGE_NAMESPACE),
     }
   }
-
   *execute() {
     yield super.execute(this.ducks.form.defaultValue)
   }
-
+  get rawSelectors() {
+    type State = this['State']
+    return {
+      ...super.rawSelectors,
+      canSubmit: (state: State) => !state.submitting && !state.disabled && !!state.options?.configFileGroupList?.length,
+    }
+  }
   *saga() {
     const { types } = this
     const {

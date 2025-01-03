@@ -117,13 +117,13 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                         confirm = await Modal.confirm({
                           message: '确认开启同步开关',
                           description:
-                            '开启后，该命名空间下，全部服务的同步开关将自动开启。全部服务、服务实例、治理规则将同步至全局实例。同步至全局实例后，全局实例中的服务可见性为全局可见。',
+                            '开启后，该命名空间下，全部服务的同步开关将自动开启。全部服务资源将同步至全局实例。同步至全局实例后，全局实例中的服务可见性为全局可见。如需关闭某个指定服务的同步状态，可前往具体服务详情中关闭。',
                         })
                       } else {
                         confirm = await Modal.confirm({
                           message: '确认关闭同步开关',
                           description:
-                            '关闭后，该命名空间下，全部服务的同步开关将自动关闭。全部服务、服务实例、治理规则将不再同步至全局实例。',
+                            '关闭后，该命名空间下，全部服务的同步开关将自动关闭。全部服务资源将不再同步至全局实例。如需开启某个指定服务的同步状态，可前往具体服务详情中关闭。',
                         })
                       }
                       if (confirm) sync_to_global_registry.setValue(v)
