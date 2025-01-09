@@ -1,4 +1,6 @@
-import { apiRequest, getApiRequest, putApiRequest } from '../common/util/apiRequest'
+import { delay } from 'redux-saga'
+import { once, ttl } from '../common/helpers/cacheable'
+import { apiRequest, getAllList, getApiRequest, putApiRequest } from '../common/util/apiRequest'
 import { Service, Namespace } from './types'
 
 export interface DescribeServicesParams {
@@ -73,7 +75,23 @@ export async function describeServices(params: DescribeServicesParams) {
     totalCount: res.amount,
   }
 }
+export async function describeServicesSilence(params: DescribeServicesParams) {
+  const res = await getApiRequest<OperateServicesResult>({
+    action: 'naming/v1/services',
+    data: params,
+    silence: true,
+  })
+  return {
+    list: res.services,
+    totalCount: res.amount,
+  }
+}
+export async function fetchAllServices(params = {}) {
+  await delay(5000)
+  return getAllList(describeServicesSilence, {})(params)
+}
 
+export const cacheFetchAllServices = once(fetchAllServices, ttl(60 * 5 * 1000))
 export async function modifyServices(params: ModifyServicesParams[]) {
   const res = await putApiRequest<OperateServicesResult>({
     action: 'naming/v1/services',

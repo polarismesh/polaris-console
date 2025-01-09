@@ -1,8 +1,5 @@
 import { createToPayload, reduceFromPayload } from 'saga-duck'
 import DetailPage from '@src/polaris/common/ducks/DetailPage'
-import { getAllList } from '@src/polaris/common/util/apiRequest'
-import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
-import { describeServices } from '@src/polaris/service/model'
 import { put } from 'redux-saga/effects'
 import { takeLatest } from 'redux-saga-catch'
 import { CustomRoute, describeCustomRoute } from '../model'
@@ -14,14 +11,9 @@ interface ComposedId {
   service: string
 }
 
-interface Data {
-  namespaceList: { value: string; text: string }[]
-  serviceList: { value: string; text: string; namespace: string }[]
-}
-
 export default class RouteDetailPageDuck extends DetailPage {
   ComposedId: ComposedId
-  Data: Data
+  Data: {}
 
   get baseUrl() {
     return `/#/custom-route-detail`
@@ -148,27 +140,6 @@ export default class RouteDetailPageDuck extends DetailPage {
   }
 
   async getData() {
-    const [namespaceOptions, serviceOptions] = await Promise.all([
-      getAllList(describeComplicatedNamespaces, {
-        listKey: 'namespaces',
-        totalKey: 'amount',
-      })({}),
-      getAllList(describeServices, {})({}),
-    ])
-
-    const namespaceList = namespaceOptions.list.map(item => ({
-      text: item.name,
-      value: item.name,
-    }))
-
-    const serviceList = serviceOptions.list.map(item => ({
-      text: item.name,
-      value: item.name,
-      namespace: item.namespace,
-    }))
-    return {
-      namespaceList,
-      serviceList,
-    }
+    return {}
   }
 }

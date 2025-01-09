@@ -8,7 +8,7 @@ import { deleteRateLimit, describeLimitRules, DescribeLimitRulesParams, enableRa
 import getColumns from './getColumns'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
-import { describeServices } from '@src/polaris/service/model'
+import { cacheFetchAllServices } from '@src/polaris/service/model'
 import { RuleStatus, SwitchStatusAction } from './types'
 import LimitRuleCreatePageDuck from './operations/CreateDuck'
 import { ComposedId } from '@src/polaris/service/detail/types'
@@ -214,7 +214,7 @@ export default class AccessLimitingDuck extends GridPageDuck {
           listKey: 'namespaces',
           totalKey: 'amount',
         })({}),
-        getAllList(describeServices, {})({}),
+        cacheFetchAllServices(),
       ])
 
       const namespaceOptions = namespaceList.list.map(item => ({

@@ -3,8 +3,8 @@ import DetailPage from '@src/polaris/common/ducks/DetailPage'
 import Form from '@src/polaris/common/ducks/Form'
 import { getAllList } from '@src/polaris/common/util/apiRequest'
 import { describeComplicatedNamespaces } from '@src/polaris/namespace/model'
-import { describeServices } from '@src/polaris/service/model'
-import { select, put, call } from 'redux-saga/effects'
+import { cacheFetchAllServices } from '@src/polaris/service/model'
+import { select, put, call, fork } from 'redux-saga/effects'
 import { takeLatest, takeEvery } from 'redux-saga-catch'
 import { delay } from 'redux-saga'
 import router from '@src/polaris/common/util/router'
@@ -152,6 +152,7 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
   *saga() {
     yield* super.saga()
     const { types, ducks, selectors, selector, getLabelList } = this
+    yield fork([this, this.sagaOnFetchLists])
 
     // 规则创建
     yield takeLatest(types.SUBMIT, function*() {
@@ -323,29 +324,43 @@ export default class CustomRouteCreatePageDuck extends DetailPage {
       yield* getLabelList(values[type].namespace, action.payload, setLabelListType)
     })
   }
+  *sagaOnFetchLists() {
+    const { types } = this
+    yield takeLatest(types.ROUTE_INITIALIZED, function*() {
+      yield delay(10000)
+      const [namespaceList, serviceList] = yield Promise.all([
+        getAllList(describeComplicatedNamespaces, {
+          listKey: 'namespaces',
+          totalKey: 'amount',
+        })({}),
+        cacheFetchAllServices(),
+      ])
 
+      const namespaceOptions = namespaceList.list.map(item => ({
+        text: item.name,
+        value: item.name,
+      }))
+
+      const serviceOptions = serviceList.list.map(item => ({
+        text: item.name,
+        value: item.name,
+        namespace: item.namespace,
+      }))
+
+      yield put({
+        type: types.UPDATE,
+        payload: {
+          namespaceList: namespaceOptions,
+          serviceList: serviceOptions,
+          hasGlobalLimit: true,
+        },
+      })
+    })
+  }
   async getData() {
-    const [namespaceOptions, serviceOptions] = await Promise.all([
-      getAllList(describeComplicatedNamespaces, {
-        listKey: 'namespaces',
-        totalKey: 'amount',
-      })({}),
-      getAllList(describeServices, {})({}),
-    ])
-
-    const namespaceList = namespaceOptions.list.map(item => ({
-      text: item.name,
-      value: item.name,
-    }))
-
-    const serviceList = serviceOptions.list.map(item => ({
-      text: item.name,
-      value: item.name,
-      namespace: item.namespace,
-    }))
     return {
-      namespaceList,
-      serviceList,
+      namespaceList: [],
+      serviceList: [],
     }
   }
 }

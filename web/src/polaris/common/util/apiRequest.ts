@@ -18,6 +18,7 @@ export interface APIRequestOption {
   data?: any
   opts?: AxiosRequestConfig
   noError?: boolean
+  silence?: boolean
 }
 export interface ApiResponse {
   code: number
@@ -29,9 +30,11 @@ const handleTokenNotExist = () => {
   userLogout()
 }
 export async function apiRequest<T>(options: APIRequestOption) {
-  const { action, data = {}, opts, noError = false } = options
+  const { action, data = {}, opts, noError = false, silence = false } = options
   try {
-    tips.showLoading({})
+    if (!silence) {
+      tips.showLoading({})
+    }
     const res = (await axios
       .post<T & ApiResponse>(action, data, {
         ...opts,
@@ -66,13 +69,17 @@ export async function apiRequest<T>(options: APIRequestOption) {
   } catch (e) {
     console.error(e)
   } finally {
-    tips.hideLoading()
+    if (!silence) {
+      tips.hideLoading()
+    }
   }
 }
 export async function getApiRequest<T>(options: APIRequestOption) {
-  const { action, data = {}, opts, noError = false } = options
+  const { action, data = {}, opts, noError = false, silence = false } = options
   try {
-    tips.showLoading({})
+    if (!silence) {
+      tips.showLoading({})
+    }
     const res = (await axios
       .get<T & ApiResponse>(action, {
         params: data,
@@ -106,13 +113,17 @@ export async function getApiRequest<T>(options: APIRequestOption) {
   } catch (e) {
     console.error(e)
   } finally {
-    tips.hideLoading()
+    if (!silence) {
+      tips.hideLoading()
+    }
   }
 }
 export async function putApiRequest<T>(options: APIRequestOption) {
-  const { action, data = {}, opts, noError = false } = options
+  const { action, data = {}, opts, noError = false, silence = false } = options
   try {
-    tips.showLoading({})
+    if (!silence) {
+      tips.showLoading({})
+    }
     const res = (await axios
       .put<T & ApiResponse>(action, data, {
         ...opts,
@@ -145,13 +156,17 @@ export async function putApiRequest<T>(options: APIRequestOption) {
   } catch (e) {
     console.error(e)
   } finally {
-    tips.hideLoading()
+    if (!silence) {
+      tips.hideLoading()
+    }
   }
 }
 export async function deleteApiRequest<T>(options: APIRequestOption) {
-  const { action, data = {}, opts, noError = false } = options
+  const { action, data = {}, opts, noError = false, silence = false } = options
   try {
-    tips.showLoading({})
+    if (!silence) {
+      tips.showLoading({})
+    }
     const res = (await axios
       .delete<T & ApiResponse>(action, {
         params: data,
@@ -185,7 +200,9 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
   } catch (e) {
     console.error(e)
   } finally {
-    tips.hideLoading()
+    if (!silence) {
+      tips.hideLoading()
+    }
   }
 }
 export interface FetchAllOptions {
