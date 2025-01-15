@@ -49,7 +49,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   const [showAdvance, setShowAdvance] = React.useState(false)
 
   const multiRegConfig = useServerConfig('multiregistries')
-  const multiRegConfigEnabled = multiRegConfig.open
+  const multiRegConfigEnabled = multiRegConfig?.open
   return (
     <>
       <Form>

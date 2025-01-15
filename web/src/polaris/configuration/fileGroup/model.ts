@@ -89,6 +89,12 @@ export interface CreateConfigFileParams {
   createBy?: string
   encrypted: boolean
   encryptAlgo: string
+  supported_client: string
+  persistent: {
+    encoding: string
+    path: string
+    postCmd: string
+  }
 }
 export interface CreateConfigFileResult {
   configFile: ConfigFile
@@ -161,6 +167,12 @@ export interface ModifyConfigFileParams {
   modifyBy?: string
   encrypted: boolean
   encryptAlgo: string
+  supported_client: string
+  persistent: {
+    encoding: string
+    path: string
+    postCmd: string
+  }
 }
 export interface ModifyConfigFileResult {
   configFile: ConfigFile
@@ -241,7 +253,6 @@ export interface DescribeConfigFileReleaseParams {
   /** 配置文件名称 */
   name: string
 }
-
 
 /**
  * **DescribeConfigFileRelease出参**

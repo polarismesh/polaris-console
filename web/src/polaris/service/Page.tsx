@@ -130,7 +130,7 @@ export default function ServicePage(props: DuckCmpProps<ServicePageDuck>) {
     grid: { list },
   } = selector(store)
   const multiRegConfig = useServerConfig('multiregistries')
-  const multiRegConfigEnabled = multiRegConfig.open
+  const multiRegConfigEnabled = multiRegConfig?.open
   return (
     <BasicLayout title={'服务列表'} store={store} selectors={duck.selectors} header={<></>}>
       <Table.ActionPanel>

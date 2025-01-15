@@ -30,3 +30,42 @@ export const FileStatusMap = {
   },
 }
 export const NeedCheckFormat = [FileFormat.YAML, FileFormat.JSON]
+export enum ConfigFileMode {
+  Default = 'CLIENT_SDK', //SDKonly
+  FileMode = 'CLIENT_AGENT', //AgentOnly
+  ShareMode = 'CLIENT_ALL', //both
+}
+export const ConfigFileModeMap = {
+  [ConfigFileMode.Default]: '仅SDK读取',
+  [ConfigFileMode.FileMode]: '仅Agent读取',
+  [ConfigFileMode.ShareMode]: 'SDK和Agent同时读取',
+}
+export const ConfigFileModeOptions = [
+  {
+    value: String(ConfigFileMode.Default),
+    text: ConfigFileModeMap[ConfigFileMode.Default],
+  },
+  {
+    value: String(ConfigFileMode.FileMode),
+    text: ConfigFileModeMap[ConfigFileMode.FileMode],
+  },
+  {
+    value: String(ConfigFileMode.ShareMode),
+    text: ConfigFileModeMap[ConfigFileMode.ShareMode],
+  },
+]
+
+export enum SaveFileEncoding {
+  UTF8 = 'UTF-8',
+  GBK = 'GBK',
+}
+export const SaveFileEncodingMap = {
+  [SaveFileEncoding.UTF8]: 'utf-8',
+  [SaveFileEncoding.GBK]: 'gbk',
+}
+export const SaveFileEncodingOptions = Object.keys(SaveFileEncoding).map((key: string) => {
+  return {
+    value: SaveFileEncoding[key],
+    text: SaveFileEncodingMap[key],
+  }
+})

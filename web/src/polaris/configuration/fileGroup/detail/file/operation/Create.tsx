@@ -1,11 +1,13 @@
 import React from 'react'
 import { DuckCmpProps, purify } from 'saga-duck'
 import Duck from './CreateDuck'
-import { Form, Select, FormItem, Switch, InputAdornment } from 'tea-component'
+import { Form, Select, FormItem, Switch, InputAdornment, Button, Icon, Segment } from 'tea-component'
 import Dialog from '@src/polaris/common/duckComponents/Dialog'
 import FormField from '@src/polaris/common/duckComponents/form/Field'
 import Input from '@src/polaris/common/duckComponents/form/Input'
 import { TagTable } from '@src/polaris/common/components/TagTable'
+import { ConfigFileModeOptions, SaveFileEncodingOptions } from '../constants'
+import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
 
 export default function Create(props: DuckCmpProps<Duck>) {
   const { duck, store, dispatch } = props
@@ -45,7 +47,20 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
   } = duck
 
   const formApi = form.getAPI(store, dispatch)
-  const { namespace, comment, name, group, format, tags, encrypted, encryptAlgo } = formApi.getFields([
+  const [showAdvance, setShowAdvance] = React.useState(false)
+
+  const {
+    namespace,
+    comment,
+    name,
+    group,
+    format,
+    tags,
+    encrypted,
+    encryptAlgo,
+    supported_client,
+    persistent,
+  } = formApi.getFields([
     'namespace',
     'name',
     'comment',
@@ -54,7 +69,10 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
     'tags',
     'encrypted',
     'encryptAlgo',
+    'supported_client',
+    'persistent',
   ])
+  const { encoding, path, postCmd } = persistent.getFields(['encoding', 'path', 'postCmd'])
   const options = selectors.options(store)
 
   return (
@@ -149,6 +167,38 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
             </>
           )}
         </FormField>
+        <Button type={'link'} onClick={() => setShowAdvance(!showAdvance)} style={{ cursor: 'pointer' }}>
+          <Icon type={showAdvance ? 'arrowup' : 'arrowdown'} />
+          {'高级设置'}
+        </Button>
+        {showAdvance && (
+          <>
+            <FormItem label={'推送方式'}>
+              <Segment
+                options={ConfigFileModeOptions}
+                value={supported_client.getValue()}
+                onChange={v => supported_client.setValue(v)}
+              />
+            </FormItem>
+            <FormItem label={'文件编码方式'}>
+              <Segment
+                options={SaveFileEncodingOptions}
+                value={encoding.getValue()}
+                onChange={v => encoding.setValue(v)}
+              />
+            </FormItem>
+            <FormField field={path} label={'配置下发路径'}>
+              <Input field={path} placeholder={'e.g. /etc/nginx/conf.d/'} size={'m'} />
+            </FormField>
+            <FormField
+              field={postCmd}
+              label={'后置脚本命令'}
+              message={'选填，不超过200个字符，如 sh /etc/nginx/conf.d/start.sh'}
+            >
+              <MonacoEditor height={300} width={500} value={postCmd.getValue()} onChange={v => postCmd.setValue(v)} />
+            </FormField>
+          </>
+        )}
       </Form>
     </>
   )

@@ -16,6 +16,7 @@ import { reduceFromPayload } from 'saga-duck'
 import { notification } from 'tea-component'
 import { isReadOnlyConfigGroup, isReadOnlyNamespace } from '@src/polaris/service/utils'
 import { FileFormat } from './Create'
+import { ConfigFileMode, SaveFileEncoding } from '../constants'
 
 export interface DialogOptions {
   namespaceList?: NamespaceItem[]
@@ -56,9 +57,18 @@ export default class CreateDuck extends FormDialog {
       selectors,
     } = this
 
-    const { name, comment, namespace, group, format, tags, encrypted, encryptAlgo } = form.selectors.values(
-      yield select(),
-    )
+    const {
+      name,
+      comment,
+      namespace,
+      group,
+      format,
+      tags,
+      encrypted,
+      encryptAlgo,
+      persistent,
+      supported_client,
+    } = form.selectors.values(yield select())
     const options = selectors.options(yield select())
     const data = selectors.data(yield select())
     const parsedName = name
@@ -77,6 +87,8 @@ export default class CreateDuck extends FormDialog {
         tags,
         encrypted,
         encryptAlgo,
+        persistent,
+        supported_client,
       })
       if (configFile?.name) {
         notification.success({ description: '编辑成功' })
@@ -96,6 +108,8 @@ export default class CreateDuck extends FormDialog {
         content: format === FileFormat.JSON ? '{}' : '',
         encrypted: encrypted,
         encryptAlgo: encryptAlgo,
+        persistent,
+        supported_client,
       })
       if (configFile?.name) {
         notification.success({ description: '创建成功' })
@@ -213,6 +227,10 @@ export default class CreateDuck extends FormDialog {
     yield put(form.creators.setMeta(options))
     yield put(
       form.creators.setValues({
+        supported_client: ConfigFileMode.Default,
+        persistent: {
+          encoding: SaveFileEncoding.UTF8,
+        },
         ...data,
       }),
     )
@@ -229,6 +247,12 @@ export interface Values {
   tags?: Array<KeyValuePair>
   encrypted: boolean
   encryptAlgo: string
+  supported_client: string
+  persistent: {
+    encoding: string
+    path: string
+    postCmd: string
+  }
 }
 class CreateForm extends Form {
   Values: Values
@@ -268,5 +292,12 @@ const validator = CreateForm.combineValidators<Values, any>({
   },
   format(v) {
     if (!v) return '请选择格式'
+  },
+  persistent: {
+    postCmd(v) {
+      if (v?.length > 200) {
+        return '命令长度不能超过200'
+      }
+    },
   },
 })

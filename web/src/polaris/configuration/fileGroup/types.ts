@@ -31,6 +31,12 @@ export interface ConfigFile {
   releaseBy: string
   encrypted: boolean
   encryptAlgo: string
+  supported_client: string
+  persistent: {
+    encoding: string
+    path: string
+    postCmd: string
+  }
 }
 export interface KeyValuePair {
   key: string
