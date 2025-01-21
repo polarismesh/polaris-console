@@ -35,7 +35,7 @@ export default function ServicePage(props: DuckCmpProps<NamespaceDuck>) {
   const columns = getColumns(props)
   const handlers = getHandlers(props)
   const multiRegConfig = useServerConfig('multiregistries')
-  const multiRegConfigEnabled = multiRegConfig.open
+  const multiRegConfigEnabled = multiRegConfig?.open
   const { sync_to_global_registry } = selector(store)
   return (
     <BasicLayout title={'命名空间'} store={store} selectors={duck.selectors} header={<></>}>

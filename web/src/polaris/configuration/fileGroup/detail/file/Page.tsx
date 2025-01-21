@@ -26,8 +26,10 @@ import {
   Modal,
   notification,
   Alert,
+  Popover,
+  Upload,
 } from 'tea-component'
-import { FileStatus, FileStatusMap } from './constants'
+import { ConfigFileModeMap, FileStatus, FileStatusMap, SaveFileEncodingMap } from './constants'
 import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
 import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
@@ -307,6 +309,12 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 </Text>
                               </FormText>
                             </FormItem>
+                            <FormItem label={'推送方式'}>
+                              <FormText>{ConfigFileModeMap[currentNode.supported_client]}</FormText>
+                            </FormItem>
+                            <FormItem label={'配置下发路径'}>
+                              <FormText>{currentNode?.persistent?.path || '-'}</FormText>
+                            </FormItem>
                           </Col>
                           <Col span={12}>
                             <FormItem label='最后修改人'>
@@ -320,6 +328,31 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             </FormItem>
                             <FormItem label='格式'>
                               <FormText>{currentNode.format || '-'}</FormText>
+                            </FormItem>
+                            <FormItem label={'文件保存编码'}>
+                              <FormText>{SaveFileEncodingMap[currentNode?.persistent?.encoding] || '-'}</FormText>
+                            </FormItem>
+                            <FormItem label={'后置脚本命令'}>
+                              <FormText>
+                                <div style={{ textOverflow: 'ellipsis', width: '150px', display: 'inline-block' }}>
+                                  {currentNode?.persistent?.postCmd || '-'}
+                                </div>
+                                {currentNode?.persistent?.postCmd && (
+                                  <Popover
+                                    placement='top-start'
+                                    overlay={
+                                      <Card>
+                                        <Card.Body>
+                                          <pre>{currentNode?.persistent?.postCmd}</pre>
+                                        </Card.Body>
+                                      </Card>
+                                    }
+                                    trigger={'click'}
+                                  >
+                                    {'显示全部'}
+                                  </Popover>
+                                )}
+                              </FormText>
                             </FormItem>
                           </Col>
                         </Row>
@@ -380,6 +413,37 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 取消
                               </Button>
                             )}
+                            <Upload
+                              maxSize={500 * 1024}
+                              beforeUpload={async (file, files, isAccepted) => {
+                                if (isAccepted) {
+                                  const readFileTask = new Promise<string>((resolve, reject) => {
+                                    const reader = new FileReader()
+                                    reader.readAsText(file, 'utf8')
+                                    reader.onload = event => {
+                                      resolve(event.target.result.toString())
+                                    }
+                                    reader.onerror = event => reject(`文件读取出错: ${event.target.error.toString()}`)
+                                  })
+                                  await readFileTask
+                                    .then(res => {
+                                      handlers.editCurrentNode()
+                                      handlers.setEditContent(res)
+                                    })
+                                    .catch(err => {
+                                      notification.error({ description: err.toString() })
+                                    })
+                                } else {
+                                  notification.error({
+                                    description: `文件大小大于${500 * 1024}bytes，请重新上传`,
+                                  })
+                                }
+                                // 文件不符合 accept，无法被选中
+                                return false
+                              }}
+                            >
+                              <Button>{'上传文件'}</Button>
+                            </Upload>
                           </>
                         }
                       />

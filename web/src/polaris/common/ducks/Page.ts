@@ -353,15 +353,15 @@ get preSagas(){
    * 判断是否初始化了主账户
    */
   *checkAdminUserExist() {
-    checkExistAdminUser()
-      .then(res => {
-        if (!res.user) {
-          router.navigate('/init')
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    // checkExistAdminUser()
+    //   .then(res => {
+    //     if (!res?.user) {
+    //       router.navigate('/init')
+    //     }
+    //   })
+    //   .catch(err => {
+    //     console.log(err)
+    //   })
     return true
   }
 
