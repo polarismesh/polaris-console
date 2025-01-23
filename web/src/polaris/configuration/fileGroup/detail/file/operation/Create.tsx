@@ -196,6 +196,7 @@ const CreateForm = purify(function CreateForm(props: DuckCmpProps<Duck>) {
                   field={postCmd}
                   label={'后置脚本命令'}
                   message={'选填，不超过200个字符，如 sh /etc/nginx/conf.d/start.sh'}
+                  showStatusIcon={false}
                 >
                   <MonacoEditor
                     height={300}

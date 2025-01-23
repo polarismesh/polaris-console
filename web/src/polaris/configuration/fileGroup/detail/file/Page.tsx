@@ -29,7 +29,7 @@ import {
   Popover,
   Upload,
 } from 'tea-component'
-import { ConfigFileModeMap, FileStatus, FileStatusMap, SaveFileEncodingMap } from './constants'
+import { ConfigFileMode, ConfigFileModeMap, FileStatus, FileStatusMap, SaveFileEncodingMap } from './constants'
 import { autotip, radioable, scrollable } from 'tea-component/lib/table/addons'
 import FileDiff from './FileDiff'
 import MonacoEditor from '@src/polaris/common/components/MocacoEditor'
@@ -312,9 +312,11 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <FormItem label={'推送方式'}>
                               <FormText>{ConfigFileModeMap[currentNode.supported_client]}</FormText>
                             </FormItem>
-                            <FormItem label={'配置下发路径'}>
-                              <FormText>{currentNode?.persistent?.path || '-'}</FormText>
-                            </FormItem>
+                            {currentNode.supported_client !== ConfigFileMode.Default && (
+                              <FormItem label={'配置下发路径'}>
+                                <FormText>{currentNode?.persistent?.path || '-'}</FormText>
+                              </FormItem>
+                            )}
                           </Col>
                           <Col span={12}>
                             <FormItem label='最后修改人'>
@@ -329,31 +331,35 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             <FormItem label='格式'>
                               <FormText>{currentNode.format || '-'}</FormText>
                             </FormItem>
-                            <FormItem label={'文件保存编码'}>
-                              <FormText>{SaveFileEncodingMap[currentNode?.persistent?.encoding] || '-'}</FormText>
-                            </FormItem>
-                            <FormItem label={'后置脚本命令'}>
-                              <FormText>
-                                <div style={{ textOverflow: 'ellipsis', width: '150px', display: 'inline-block' }}>
-                                  {currentNode?.persistent?.postCmd || '-'}
-                                </div>
-                                {currentNode?.persistent?.postCmd && (
-                                  <Popover
-                                    placement='top-start'
-                                    overlay={
-                                      <Card>
-                                        <Card.Body>
-                                          <pre>{currentNode?.persistent?.postCmd}</pre>
-                                        </Card.Body>
-                                      </Card>
-                                    }
-                                    trigger={'click'}
-                                  >
-                                    {'显示全部'}
-                                  </Popover>
-                                )}
-                              </FormText>
-                            </FormItem>
+                            {currentNode.supported_client !== ConfigFileMode.Default && (
+                              <>
+                                <FormItem label={'文件保存编码'}>
+                                  <FormText>{SaveFileEncodingMap[currentNode?.persistent?.encoding] || '-'}</FormText>
+                                </FormItem>
+                                <FormItem label={'后置脚本命令'}>
+                                  <FormText>
+                                    <div style={{ textOverflow: 'ellipsis', width: '150px', display: 'inline-block' }}>
+                                      {currentNode?.persistent?.postCmd || '-'}
+                                    </div>
+                                    {currentNode?.persistent?.postCmd && (
+                                      <Popover
+                                        placement='top-start'
+                                        overlay={
+                                          <Card>
+                                            <Card.Body>
+                                              <pre>{currentNode?.persistent?.postCmd}</pre>
+                                            </Card.Body>
+                                          </Card>
+                                        }
+                                        trigger={'click'}
+                                      >
+                                        {'显示全部'}
+                                      </Popover>
+                                    )}
+                                  </FormText>
+                                </FormItem>
+                              </>
+                            )}
                           </Col>
                         </Row>
                       </Form>
