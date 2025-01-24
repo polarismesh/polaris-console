@@ -309,28 +309,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                 </Text>
                               </FormText>
                             </FormItem>
-                            <FormItem label={'推送方式'}>
-                              <FormText>{ConfigFileModeMap[currentNode.supported_client]}</FormText>
-                            </FormItem>
-                            {currentNode.supported_client !== ConfigFileMode.Default && (
-                              <FormItem label={'配置下发路径'}>
-                                <FormText>{currentNode?.persistent?.path || '-'}</FormText>
-                              </FormItem>
-                            )}
-                          </Col>
-                          <Col span={12}>
-                            <FormItem label='最后修改人'>
-                              <FormText>{currentNode.modifyBy || '-'}</FormText>
-                            </FormItem>
-                            <FormItem label='最后发布人'>
-                              <FormText>{currentNode.releaseBy || '-'}</FormText>
-                            </FormItem>
-                            <FormItem label='备注'>
-                              <FormText>{currentNode.comment || '-'}</FormText>
-                            </FormItem>
-                            <FormItem label='格式'>
-                              <FormText>{currentNode.format || '-'}</FormText>
-                            </FormItem>
+
                             {currentNode.supported_client !== ConfigFileMode.Default && (
                               <>
                                 <FormItem label={'文件保存编码'}>
@@ -353,10 +332,34 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                         }
                                         trigger={'click'}
                                       >
-                                        {'显示全部'}
+                                        <Button type={'link'}>{'显示全部'}</Button>
                                       </Popover>
                                     )}
                                   </FormText>
+                                </FormItem>
+                              </>
+                            )}
+                          </Col>
+                          <Col span={12}>
+                            <FormItem label='最后修改人'>
+                              <FormText>{currentNode.modifyBy || '-'}</FormText>
+                            </FormItem>
+                            <FormItem label='最后发布人'>
+                              <FormText>{currentNode.releaseBy || '-'}</FormText>
+                            </FormItem>
+                            <FormItem label='备注'>
+                              <FormText>{currentNode.comment || '-'}</FormText>
+                            </FormItem>
+                            <FormItem label='格式'>
+                              <FormText>{currentNode.format || '-'}</FormText>
+                            </FormItem>
+                            <FormItem label={'推送方式'}>
+                              <FormText>{ConfigFileModeMap[currentNode.supported_client]}</FormText>
+                            </FormItem>
+                            {currentNode.supported_client !== ConfigFileMode.Default && (
+                              <>
+                                <FormItem label={'配置下发路径'}>
+                                  <FormText>{currentNode?.persistent?.path || '-'}</FormText>
                                 </FormItem>
                               </>
                             )}
@@ -439,6 +442,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                     .catch(err => {
                                       notification.error({ description: err.toString() })
                                     })
+                                  return false
                                 } else {
                                   notification.error({
                                     description: `文件大小大于${500 * 1024}bytes，请重新上传`,

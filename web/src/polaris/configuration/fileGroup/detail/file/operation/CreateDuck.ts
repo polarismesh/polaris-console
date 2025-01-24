@@ -294,6 +294,11 @@ const validator = CreateForm.combineValidators<Values, any>({
     if (!v) return '请选择格式'
   },
   persistent: {
+    path(v) {
+      if (!/^[\w\-_\/\.]{0,100}$/.test(v)) {
+        return '不超过100个字符，只能包含英文、数字、"-"（英文）、"_"（英文）、"."（英文）、"/"（英文）'
+      }
+    },
     postCmd(v) {
       if (v?.length > 200) {
         return '命令长度不能超过200'
