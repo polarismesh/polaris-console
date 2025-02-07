@@ -424,7 +424,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                             )}
                             <Upload
                               maxSize={500 * 1024}
-                              beforeUpload={async (file, files, isAccepted) => {
+                              beforeUpload={(file, files, isAccepted) => {
                                 if (isAccepted) {
                                   const readFileTask = new Promise<string>((resolve, reject) => {
                                     const reader = new FileReader()
@@ -434,7 +434,7 @@ export default function Page(props: DuckCmpProps<Duck>) {
                                     }
                                     reader.onerror = event => reject(`文件读取出错: ${event.target.error.toString()}`)
                                   })
-                                  await readFileTask
+                                  readFileTask
                                     .then(res => {
                                       handlers.editCurrentNode()
                                       handlers.setEditContent(res)
