@@ -37,11 +37,18 @@ export default ({
   {
     key: 'fileName',
     header: '名称',
+    width: 200,
     render: x =>
       x.type === ConfigReleaseType.CLEAN ? (
-        x.fileName
+        <Text overflow tooltip={x.fileName} style={{ maxWidth: '200px' }}>
+          {x.fileName}
+        </Text>
       ) : (
-        <Action fn={dispatch => dispatch(creators.showDiff(x))}>{x.fileName}</Action>
+        <Action fn={dispatch => dispatch(creators.showDiff(x))}>
+          <Text overflow tooltip={x.fileName} style={{ maxWidth: '200px' }}>
+            {x.fileName}
+          </Text>
+        </Action>
       ),
   },
   {
