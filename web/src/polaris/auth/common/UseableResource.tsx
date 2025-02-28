@@ -62,7 +62,7 @@ export default purify(function(props: Props) {
               if (filterResourceType === 'services') {
                 return <Link to={`/service-detail?name=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
               }
-              return <Link to={`/filegroup-detail?name=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
+              return <Link to={`/filegroup-detail?group=${x.name}&namespace=${x.namespace}`}>{x.name}</Link>
             },
           },
           {
