@@ -23,7 +23,7 @@ export interface ApiResponse {
   code: number
   info: string
 }
-export const SuccessCode = 200000
+export const SuccessCode = 299999
 export const TokenNotExistCode = 407
 const errorHandle = error => {
   if (error.response.status === TokenNotExistCode) {
@@ -58,7 +58,7 @@ export async function apiRequest<T>(options: APIRequestOption) {
       },
     })) as AxiosResponse<T & ApiResponse>
 
-    if (res.data.code > 200000 && !noError) {
+    if (res.data.code > 299999 && !noError) {
       throw res.data.info
     }
     return res.data
@@ -84,7 +84,7 @@ export async function getApiRequest<T>(options: APIRequestOption) {
         'X-Polaris-User': window.localStorage.getItem('login-user-id'),
       },
     })) as AxiosResponse<T & ApiResponse>
-    if (res?.data?.code > 200000 && !noError) {
+    if (res?.data?.code > 299999 && !noError) {
       throw res.data.info
     }
     return res?.data
@@ -109,7 +109,7 @@ export async function putApiRequest<T>(options: APIRequestOption) {
         'X-Polaris-User': window.localStorage.getItem('login-user-id'),
       },
     })) as AxiosResponse<T & ApiResponse>
-    if (res.data.code > 200000 && !noError) {
+    if (res.data.code > 299999 && !noError) {
       throw res.data.info
     }
     return res.data
@@ -135,7 +135,7 @@ export async function deleteApiRequest<T>(options: APIRequestOption) {
         'X-Polaris-User': window.localStorage.getItem('login-user-id'),
       },
     })) as AxiosResponse<T & ApiResponse>
-    if (res.data.code > 200000 && !noError) {
+    if (res.data.code > 299999 && !noError) {
       throw res.data.info
     }
     return res.data
