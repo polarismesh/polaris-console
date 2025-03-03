@@ -107,8 +107,7 @@ export default abstract class CreateDuck extends DetailPage {
       selector,
       creators,
     } = this
-    const authOpen = yield checkAuth({})
-    yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
+
     yield takeLatest(types.FETCH_DONE, function*() {
       const { id } = selectors.composedId(yield select())
       yield put({ type: types.FETCH_USEABLE_RESOURCE })
@@ -206,6 +205,8 @@ export default abstract class CreateDuck extends DetailPage {
         notification.error({ description: '重置失败' })
       }
     })
+    const authOpen = yield checkAuth({})
+    yield put({ type: types.SET_AUTH_OPEN, payload: authOpen })
   }
   async getData(composedId) {
     const { id } = composedId
