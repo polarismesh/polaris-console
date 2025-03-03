@@ -61,7 +61,7 @@ export default class CreateDuck extends FormDialog {
     const { name, comment, namespace, department, business, metadata: configFileGroupTags } = values
 
     if (options.isModify) {
-      const { code } = yield modifyConfigFileGroup({
+      const res = yield modifyConfigFileGroup({
         namespace,
         name,
         comment,
@@ -73,9 +73,9 @@ export default class CreateDuck extends FormDialog {
         business: business || undefined,
         metadata: configFileGroupTags?.length ? convertMetadataArrayToMap(configFileGroupTags) : undefined,
       })
-      return code === 200000
+      return res
     } else {
-      const { code } = yield createConfigFileGroup({
+      const res = yield createConfigFileGroup({
         namespace,
         name,
         comment,
@@ -85,7 +85,7 @@ export default class CreateDuck extends FormDialog {
         business: business || undefined,
         metadata: configFileGroupTags?.length ? convertMetadataArrayToMap(configFileGroupTags) : undefined,
       })
-      return code === 200000
+      return res
     }
   }
   *beforeSubmit() {
