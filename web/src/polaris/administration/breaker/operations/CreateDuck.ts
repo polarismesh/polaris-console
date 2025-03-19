@@ -140,6 +140,8 @@ export default class CircuitBreakerCreatePageDuck extends DetailPage {
         delete values.ctime
         delete values.mtime
         delete values.etime
+        // values暂时没有定义block_configs结构，暂时先类型断言这么写
+        delete (values as any)?.block_configs
         result = yield modifyCircuitBreaker([values])
       } else {
         result = yield createCircuitBreaker([values])
