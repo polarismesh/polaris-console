@@ -1,8 +1,5 @@
 import { apiRequest, getApiRequest, putApiRequest, SuccessCode, ApiResponse } from '../common/util/apiRequest'
 import { ttl, once } from '../common/helpers/cacheable'
-import router from '../common/util/router'
-import { PolarisTokenKey } from '../common/util/common'
-import { showNoLoginTip } from '../service/utils'
 
 /** 删除治理中心鉴权策略 */
 export async function deleteGovernanceStrategies(params: DeleteGovernanceStrategiesParams[]) {
@@ -10,7 +7,7 @@ export async function deleteGovernanceStrategies(params: DeleteGovernanceStrateg
     action: 'core/v1/auth/strategies/delete',
     data: params,
   })
-  return Number(result.code) === SuccessCode
+  return Number(result.code) <= SuccessCode
 }
 /** **DeleteGovernanceStrategies入参**
 
@@ -30,7 +27,7 @@ export interface DeleteGovernanceStrategiesResult {
 /** 删除治理中心的用户 */
 export async function deleteGovernanceUsers(params: DeleteGovernanceUsersParams[]) {
   const result = await apiRequest<DeleteGovernanceUsersResult>({ action: 'core/v1/users/delete', data: params })
-  return result.responses.every(item => Number(item.code) === SuccessCode)
+  return result.responses.every(item => Number(item.code) <= SuccessCode)
 }
 /** **DeleteGovernanceUsers入参**
 
@@ -195,7 +192,7 @@ export async function modifyGovernanceStrategy(params: ModifyGovernanceStrategyP
     action: 'core/v1/auth/strategies',
     data: params,
   })
-  return result.responses.every(item => Number(item.code) === SuccessCode)
+  return result.responses.every(item => Number(item.code) <= SuccessCode)
 }
 /** **ModifyGovernanceStrategy入参**
 
@@ -227,7 +224,7 @@ export interface ModifyGovernanceStrategyResult {
 /** 修改治理中心用户信息 */
 export async function modifyGovernanceUser(params: ModifyGovernanceUserParams) {
   const result = await putApiRequest<ModifyGovernanceUserResult>({ action: 'core/v1/user', data: params })
-  return Number(result.code) === SuccessCode
+  return Number(result.code) <= SuccessCode
 }
 /** **ModifyGovernanceUser入参**
 
@@ -253,7 +250,7 @@ export async function modifyGovernanceUserPassword(params: ModifyGovernanceUserP
     action: 'core/v1/user/password',
     data: params,
   })
-  return Number(result.code) === SuccessCode
+  return Number(result.code) <= SuccessCode
 }
 /** **ModifyGovernanceUser入参**
 
@@ -278,7 +275,7 @@ export async function modifyGovernanceUserToken(params: ModifyGovernanceUserToke
     action: 'core/v1/user/token/status',
     data: params,
   })
-  return Number(result.code) === SuccessCode
+  return Number(result.code) <= SuccessCode
 }
 /** **ModifyGovernanceUserToken入参**
 
@@ -298,7 +295,7 @@ export interface ModifyGovernanceUserTokenResult {
 /** 创建治理中心鉴权策略 */
 export async function createGovernanceStrategy(params: CreateGovernanceStrategyParams) {
   const result = await apiRequest<CreateGovernanceStrategyResult>({ action: 'core/v1/auth/strategy', data: params })
-  return Number(result.code) === SuccessCode
+  return Number(result.code) <= SuccessCode
 }
 /** **CreateGovernanceStrategy入参**
 
@@ -333,7 +330,7 @@ export interface CreateGovernanceStrategyResult {
 /** 批量创建治理中心用户 */
 export async function createGovernanceUsers(params: CreateGovernanceUsersParams[]) {
   const result = await apiRequest<CreateGovernanceUsersResult>({ action: 'core/v1/users', data: params })
-  return result.responses.every(item => Number(item.code) === SuccessCode)
+  return result.responses.every(item => Number(item.code) <= SuccessCode)
 }
 /** **CreateGovernanceUsers入参**
 
@@ -357,7 +354,7 @@ export interface CreateGovernanceUsersResult {
 /** 创建单个治理中心用户组 */
 export async function createGovernanceGroup(params: CreateUserGroup) {
   const result = await apiRequest<CreateGovernanceGroupResult>({ action: 'core/v1/usergroup', data: params })
-  return Number(result.code) === SuccessCode
+  return Number(result.code) <= SuccessCode
 }
 /** **CreateGovernanceGroup入参**
 
@@ -382,7 +379,7 @@ export interface CreateGovernanceGroupResult {
 /** 修改治理中心用户组信息 */
 export async function modifyGovernanceGroup(params: ModifyGovernanceGroupParams[]) {
   const result = await putApiRequest<ModifyGovernanceGroupResult>({ action: 'core/v1/usergroups', data: params })
-  return result.responses.every(item => Number(item.code) === SuccessCode)
+  return result.responses.every(item => Number(item.code) <= SuccessCode)
 }
 /** **ModifyGovernanceGroup入参**
 
@@ -402,7 +399,7 @@ export async function modifyGovernanceGroupToken(params: ModifyGovernanceGroupTo
     action: 'core/v1/usergroup/token/status',
     data: params,
   })
-  return Number(result.code) === SuccessCode
+  return Number(result.code) <= SuccessCode
 }
 /** **ModifyGovernanceGroupToken入参**
 
@@ -422,7 +419,7 @@ export interface ModifyGovernanceGroupTokenResult {
 /** 删除治理中心的用户组 */
 export async function deleteGovernanceGroups(params: DeleteGovernanceGroupsParams[]) {
   const result = await apiRequest<DeleteGovernanceGroupsResult>({ action: 'core/v1/usergroups/delete', data: params })
-  return Number(result.code) === SuccessCode
+  return Number(result.code) <= SuccessCode
 }
 /** **DeleteGovernanceGroups入参**
 
@@ -557,7 +554,7 @@ export async function resetGovernanceUserToken(params: ResetGovernanceUserTokenP
     action: 'core/v1/user/token/refresh',
     data: params,
   })
-  return Number(result.code) === SuccessCode
+  return Number(result.code) <= SuccessCode
 }
 /** **ResetGovernanceUserToken入参**
 
@@ -579,7 +576,7 @@ export async function resetGovernanceGroupToken(params: ResetGovernanceGroupToke
     action: 'core/v1/usergroup/token/refresh',
     data: params,
   })
-  return Number(result.code) === SuccessCode
+  return Number(result.code) <= SuccessCode
 }
 
 /** **DescribeGovernanceGroupDetail入参**
