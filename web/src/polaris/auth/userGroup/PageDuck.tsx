@@ -236,7 +236,6 @@ export default class PageDuck extends GridPageDuck {
         }),
       )
       if (result) {
-        notification.success({ description: '编辑成功' })
         yield put(creators.reload())
       }
     })
