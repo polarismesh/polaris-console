@@ -275,6 +275,7 @@ export default class InterfacePageDuck extends GridPageDuck {
             </Form>
           ),
         })
+        return
       }
       try {
         const parameterDetail = JSON.parse(detail.content)?.[detail.method?.toLowerCase()]
