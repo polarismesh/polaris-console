@@ -9,7 +9,8 @@ import { checkGlobalRegistry, isReadOnly } from '../../utils'
 import { disableDeleteTip } from '../../getColumns'
 export const SourcePolarisIpKey = 'internal-sync-local-registry-host'
 export const getSourcePolairisIp = x => {
-  const hasSyncGlobal = Object.entries(x.metadata).find(([key]) => key === SourcePolarisIpKey)
+  // metadata 可能缺失（开源版 server），必须判空
+  const hasSyncGlobal = Object.entries(x.metadata ?? {}).find(([key]) => key === SourcePolarisIpKey)
   return hasSyncGlobal?.[1]
 }
 export default ({ duck: { creators, selector }, store }: DuckCmpProps<ServiceInstanceDuck>): Column<Instance>[] => [

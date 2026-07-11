@@ -28,6 +28,9 @@ export const showAllLabels = labels => {
 }
 export const InternalSyncKey = 'internal-sync-from-local-registry'
 export const checkGlobalRegistry = x => {
-  const hasSyncGlobal = Object.entries(x.metadata).find(([key, value]) => key === InternalSyncKey && value === 'true')
+  // 开源版 polaris-server 不返回 namespace/service 的 metadata 字段，必须判空，否则整页崩溃
+  const hasSyncGlobal = Object.entries(x.metadata ?? {}).find(
+    ([key, value]) => key === InternalSyncKey && value === 'true',
+  )
   return !!hasSyncGlobal
 }
